@@ -1,9 +1,9 @@
 [package]
 name = "phase1"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2021"
 authors = ["Chase Bryan"]
-description = "Terminal-based educational embedded OS simulator in Rust. Demonstrates process management, memory accounting, kernel concepts, and extensibility."
+description = "Terminal-based educational embedded OS simulator in Rust. Demonstrates process management, memory accounting, kernel concepts, extensibility, dynamic spawning + disk simulation."
 license = "GPL-3.0"
 readme = "README.md"
 
@@ -13,3 +13,6 @@ lto = true
 codegen-units = 1
 panic = "abort"
 strip = true
+
+[dependencies]
+chrono = "0.4.44"
