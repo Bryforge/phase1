@@ -1,28 +1,29 @@
 // =====================================================
-// phase1 v1.0.0 — Advanced Educational Embedded OS Simulator
+// phase1 v1.0.5 — Advanced Educational Embedded OS Simulator
 // =====================================================
 // Complete in-memory tree VFS with permissions, read/write/append,
 // environment variables with expansion, command history, basic
 // redirection (echo > file and >>), improved plugins, scheduler
 // with priorities and ticks, many realistic OS commands,
-// dynamic /proc, educational comments throughout, colored boot,
-// and much more — all in pure Rust userspace using only chrono.
+// dynamic /proc, PCIe subsystem, CR3/CR4 paging register management
+// with full PCID support and hardware-accurate #GP fault simulation —
+// all in pure Rust userspace using only chrono.
 
 use std::collections::{HashMap, VecDeque};
 use std::fs;
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::process::{self, Command};
+use std::os::unix::process::ExitStatusExt;
 use std::thread;
 use std::time::{Duration, Instant};
 
-// macOS / Unix-specific import for ExitStatus fallback (required on macOS)
-use std::os::unix::process::ExitStatusExt;
-
 use chrono::prelude::*;
 
-const VERSION: &str = "1.0.0";
+const VERSION: &str = "1.0.5";
 const BUILD_DATE: &str = "2026-05-03";
+
+const MAX_PROCS: usize = 64;
 
 const ANSI_CLEAR: &str = "\x1b[2J\x1b[H";
 const ANSI_RESET: &str = "\x1b[0m";
@@ -36,13 +37,43 @@ const ANSI_MAGENTA: &str = "\x1b[35m";
 const ANSI_WHITE: &str = "\x1b[37m";
 
 // ==============================================
+// Process State Enum — kernel-style lifecycle
+// ==============================================
+#[derive(Clone, Debug, PartialEq)]
+enum ProcessState {
+    Void,       // free/cleared slot
+    New,
+    Ready,
+    Running,
+    RunningBg,
+    Blocked,
+    Zombie,
+    Terminated,
+}
+
+impl std::fmt::Display for ProcessState {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ProcessState::Void => write!(f, "VOID"),
+            ProcessState::New => write!(f, "NEW"),
+            ProcessState::Ready => write!(f, "READY"),
+            ProcessState::Running => write!(f, "R"),
+            ProcessState::RunningBg => write!(f, "R(bg)"),
+            ProcessState::Blocked => write!(f, "S"),
+            ProcessState::Zombie => write!(f, "Z"),
+            ProcessState::Terminated => write!(f, "T"),
+        }
+    }
+}
+
+// ==============================================
 // VFS Node & Complete Virtual File System
 // ==============================================
 #[derive(Clone, Debug)]
 enum VfsNode {
     File {
         content: String,
-        perm: u8, // owner rwx simulation (4+2+1)
+        perm: u8,
     },
     Dir {
         children: HashMap<String, VfsNode>,
@@ -59,7 +90,6 @@ impl Vfs {
     fn new() -> Self {
         let mut root_children: HashMap<String, VfsNode> = HashMap::new();
 
-        // /proc — dynamic kernel information
         let mut proc_children: HashMap<String, VfsNode> = HashMap::new();
         proc_children.insert(
             "cpuinfo".to_string(),
@@ -92,7 +122,7 @@ impl Vfs {
         proc_children.insert(
             "version".to_string(),
             VfsNode::File {
-                content: format!("phase1 v{} (Grok Advanced Educational Build {})", VERSION, BUILD_DATE),
+                content: format!("phase1 v{} (Advanced Educational Build {})", VERSION, BUILD_DATE),
                 perm: 4,
             },
         );
@@ -104,32 +134,18 @@ impl Vfs {
             },
         );
 
-        root_children.insert(
-            "proc".to_string(),
-            VfsNode::Dir {
-                children: proc_children,
-                perm: 5,
-            },
-        );
+        root_children.insert("proc".to_string(), VfsNode::Dir { children: proc_children, perm: 5 });
 
-        // /home with welcome file
         let mut home_children: HashMap<String, VfsNode> = HashMap::new();
         home_children.insert(
             "readme.txt".to_string(),
             VfsNode::File {
-                content: "Welcome to phase1 v1.0.0 — Advanced Educational OS Simulator!\n\nTry these commands:\n  ls -l, mkdir, touch, echo \"text\" > file.txt\n  cat, cp, mv, rm, ps, top, jobs, su\n  python plugins, env, export, history, uname\n\nEverything runs entirely in memory for safe learning.\n".to_string(),
+                content: "Welcome to phase1 v1.0.5 — Advanced Educational OS Simulator!\n\nTry these commands:\n  ls -l, mkdir, touch, echo \"text\" > file.txt\n  cat, cp, mv, rm, ps, top, jobs, su\n  python plugins, env, export, history, uname\n  lspci, pcie, cr3, loadcr3, cr4, pcide\n\nEverything runs entirely in memory for safe learning.\n".to_string(),
                 perm: 6,
             },
         );
-        root_children.insert(
-            "home".to_string(),
-            VfsNode::Dir {
-                children: home_children,
-                perm: 7,
-            },
-        );
+        root_children.insert("home".to_string(), VfsNode::Dir { children: home_children, perm: 7 });
 
-        // /etc
         let mut etc_children: HashMap<String, VfsNode> = HashMap::new();
         etc_children.insert(
             "passwd".to_string(),
@@ -145,63 +161,23 @@ impl Vfs {
                 perm: 4,
             },
         );
-        root_children.insert(
-            "etc".to_string(),
-            VfsNode::Dir {
-                children: etc_children,
-                perm: 5,
-            },
-        );
+        root_children.insert("etc".to_string(), VfsNode::Dir { children: etc_children, perm: 5 });
 
-        // /dev (simulated devices)
         let mut dev_children: HashMap<String, VfsNode> = HashMap::new();
-        dev_children.insert(
-            "null".to_string(),
-            VfsNode::File {
-                content: "".to_string(),
-                perm: 6,
-            },
-        );
-        dev_children.insert(
-            "zero".to_string(),
-            VfsNode::File {
-                content: "\0".repeat(1024),
-                perm: 4,
-            },
-        );
-        root_children.insert(
-            "dev".to_string(),
-            VfsNode::Dir {
-                children: dev_children,
-                perm: 5,
-            },
-        );
+        dev_children.insert("null".to_string(), VfsNode::File { content: "".to_string(), perm: 6 });
+        dev_children.insert("zero".to_string(), VfsNode::File { content: "\0".repeat(1024), perm: 4 });
+        root_children.insert("dev".to_string(), VfsNode::Dir { children: dev_children, perm: 5 });
 
-        // /bin (symbolic placeholder)
-        root_children.insert(
-            "bin".to_string(),
-            VfsNode::Dir {
-                children: HashMap::new(),
-                perm: 5,
-            },
-        );
+        root_children.insert("bin".to_string(), VfsNode::Dir { children: HashMap::new(), perm: 5 });
 
         Vfs {
-            root: VfsNode::Dir {
-                children: root_children,
-                perm: 5,
-            },
+            root: VfsNode::Dir { children: root_children, perm: 5 },
             cwd: PathBuf::from("/"),
         }
     }
 
     fn resolve_path(&self, path: &str) -> PathBuf {
-        let mut p = if path.starts_with('/') {
-            PathBuf::from("/")
-        } else {
-            self.cwd.clone()
-        };
-
+        let mut p = if path.starts_with('/') { PathBuf::from("/") } else { self.cwd.clone() };
         for part in Path::new(path).components() {
             match part.as_os_str().to_str().unwrap_or("") {
                 "" | "." => {}
@@ -242,7 +218,6 @@ impl Vfs {
         let path = self.resolve_path(path_str);
         let parent = path.parent().unwrap_or(Path::new("/"));
         let name = path.file_name().and_then(|s| s.to_str()).ok_or("Invalid name")?.to_string();
-
         let parent_node = self.get_node_mut(parent).ok_or("Parent directory not found")?;
         if let VfsNode::Dir { children, perm } = parent_node {
             if *perm & 2 == 0 { return Err("Permission denied (write)".to_string()); }
@@ -257,7 +232,6 @@ impl Vfs {
         let path = self.resolve_path(path_str);
         let parent = path.parent().unwrap_or(Path::new("/"));
         let name = path.file_name().and_then(|s| s.to_str()).ok_or("Invalid name")?.to_string();
-
         let parent_node = self.get_node_mut(parent).ok_or("Parent directory not found")?;
         if let VfsNode::Dir { children, perm } = parent_node {
             if *perm & 2 == 0 { return Err("Permission denied (write)".to_string()); }
@@ -281,17 +255,11 @@ impl Vfs {
         let path = self.resolve_path(path_str);
         let parent = path.parent().unwrap_or(Path::new("/"));
         let name = path.file_name().and_then(|s| s.to_str()).ok_or("Invalid filename")?.to_string();
-
         let parent_node = self.get_node_mut(parent).ok_or("Parent directory not found")?;
         if let VfsNode::Dir { children, perm } = parent_node {
             if *perm & 2 == 0 { return Err("Permission denied (write)".to_string()); }
-
             if let Some(VfsNode::File { content: existing, .. }) = children.get_mut(&name) {
-                if append {
-                    existing.push_str(content);
-                } else {
-                    *existing = content.to_string();
-                }
+                if append { existing.push_str(content); } else { *existing = content.to_string(); }
             } else {
                 children.insert(name, VfsNode::File { content: content.to_string(), perm: 6 });
             }
@@ -305,9 +273,7 @@ impl Vfs {
         let path = self.resolve_path(path_str.unwrap_or("."));
         if let Some(VfsNode::Dir { children, .. }) = self.get_node(&path) {
             let mut out = String::new();
-            if long {
-                out.push_str("total 0\n");
-            }
+            if long { out.push_str("total 0\n"); }
             for (name, node) in children.iter() {
                 match node {
                     VfsNode::Dir { .. } => {
@@ -336,15 +302,10 @@ impl Vfs {
         let path = self.resolve_path(path_str);
         let parent = path.parent().unwrap_or(Path::new("/"));
         let name = path.file_name().and_then(|s| s.to_str()).ok_or("Invalid name")?.to_string();
-
         let parent_node = self.get_node_mut(parent).ok_or("Parent directory not found")?;
         if let VfsNode::Dir { children, perm } = parent_node {
             if *perm & 2 == 0 { return Err("Permission denied".to_string()); }
-            if children.remove(&name).is_some() {
-                Ok(())
-            } else {
-                Err("No such file or directory".to_string())
-            }
+            if children.remove(&name).is_some() { Ok(()) } else { Err("No such file or directory".to_string()) }
         } else {
             Err("Not a directory".to_string())
         }
@@ -353,15 +314,12 @@ impl Vfs {
     fn cp(&mut self, src: &str, dst: &str) -> Result<(), String> {
         let src_path = self.resolve_path(src);
         let dst_path = self.resolve_path(dst);
-
         let content = match self.get_node(&src_path) {
             Some(VfsNode::File { content, .. }) => content.clone(),
             _ => return Err("Source is not a file".to_string()),
         };
-
         let dst_parent = dst_path.parent().unwrap_or(Path::new("/"));
         let dst_name = dst_path.file_name().and_then(|s| s.to_str()).ok_or("Invalid destination")?.to_string();
-
         let parent_node = self.get_node_mut(dst_parent).ok_or("Destination parent not found")?;
         if let VfsNode::Dir { children, perm } = parent_node {
             if *perm & 2 == 0 { return Err("Permission denied".to_string()); }
@@ -375,10 +333,8 @@ impl Vfs {
     fn mv(&mut self, src: &str, dst: &str) -> Result<(), String> {
         let src_path = self.resolve_path(src);
         let dst_path = self.resolve_path(dst);
-
         let parent_src = src_path.parent().unwrap_or(Path::new("/"));
         let name_src = src_path.file_name().and_then(|s| s.to_str()).ok_or("Invalid source")?.to_string();
-
         let src_node = {
             let parent_node = self.get_node_mut(parent_src).ok_or("Source parent not found")?;
             if let VfsNode::Dir { children, .. } = parent_node {
@@ -387,10 +343,8 @@ impl Vfs {
                 return Err("Source parent is not a directory".to_string());
             }
         };
-
         let dst_parent = dst_path.parent().unwrap_or(Path::new("/"));
         let dst_name = dst_path.file_name().and_then(|s| s.to_str()).ok_or("Invalid destination")?.to_string();
-
         let dst_parent_node = self.get_node_mut(dst_parent).ok_or("Destination parent not found")?;
         if let VfsNode::Dir { children, perm } = dst_parent_node {
             if *perm & 2 == 0 { return Err("Permission denied".to_string()); }
@@ -412,82 +366,202 @@ impl Vfs {
 }
 
 // ==============================================
-// Process Scheduler with priorities and ticks
+// PCIe Management Subsystem
+// ==============================================
+#[derive(Clone)]
+struct PcieDevice {
+    bus: u8,
+    device: u8,
+    function: u8,
+    vendor_id: u16,
+    device_id: u16,
+    class: u8,
+    subclass: u8,
+    name: String,
+    driver: Option<String>,
+}
+
+struct PcieManager {
+    devices: Vec<PcieDevice>,
+}
+
+impl PcieManager {
+    fn new() -> Self {
+        let mut mgr = PcieManager { devices: vec![] };
+        mgr.devices.extend_from_slice(&[
+            PcieDevice { bus: 0, device: 0, function: 0, vendor_id: 0x8086, device_id: 0x1237, class: 0x06, subclass: 0x00, name: "Intel 440FX - 82441FX PMC [Natoma]".to_string(), driver: Some("host".to_string()) },
+            PcieDevice { bus: 0, device: 1, function: 0, vendor_id: 0x10de, device_id: 0x1e07, class: 0x03, subclass: 0x00, name: "NVIDIA TU104 [GeForce RTX 2080] (virtual)".to_string(), driver: Some("nvidia".to_string()) },
+            PcieDevice { bus: 0, device: 3, function: 0, vendor_id: 0x8086, device_id: 0x100e, class: 0x02, subclass: 0x00, name: "Intel 82540EM Gigabit Ethernet".to_string(), driver: Some("e1000".to_string()) },
+            PcieDevice { bus: 0, device: 4, function: 0, vendor_id: 0x1b36, device_id: 0x000d, class: 0x01, subclass: 0x08, name: "QEMU NVM Express Controller".to_string(), driver: Some("nvme".to_string()) },
+            PcieDevice { bus: 0, device: 5, function: 0, vendor_id: 0x1b36, device_id: 0x0001, class: 0x0c, subclass: 0x03, name: "QEMU USB Controller".to_string(), driver: Some("xhci".to_string()) },
+        ]);
+        mgr
+    }
+
+    fn lspci(&self) -> String {
+        let mut out = format!("{}00:00.0 Host bridge: Intel Corporation 440FX - 82441FX PMC [Natoma] (rev 02){}\n", ANSI_CYAN, ANSI_RESET);
+        for dev in &self.devices {
+            out.push_str(&format!(
+                "{:02x}:{:02x}.{:x} {} [{}:{:04x}] {} {}\n",
+                dev.bus, dev.device, dev.function,
+                if dev.driver.is_some() { format!("[{}] ", dev.driver.as_ref().unwrap()) } else { "".to_string() },
+                format!("{:04x}", dev.vendor_id),
+                dev.device_id,
+                dev.name,
+                ANSI_RESET
+            ));
+        }
+        out
+    }
+
+    fn pcie_info(&self) -> String {
+        let mut out = "PCIe bus enumeration complete (simulated ECAM + MCFG table)\n".to_string();
+        out.push_str(&format!("Found {} PCIe devices\n\n", self.devices.len()));
+        for dev in &self.devices {
+            out.push_str(&format!("  [{:02x}:{:02x}.{:x}] {} (class {:02x}{:02x})\n",
+                dev.bus, dev.device, dev.function, dev.name, dev.class, dev.subclass));
+        }
+        out
+    }
+}
+
+// ==============================================
+// Scheduler — kernel-style with VOID slots + full CR3/CR4/PCID support
 // ==============================================
 #[derive(Clone)]
 struct SimProcess {
     pid: u32,
     ppid: u32,
     name: String,
-    state: String,
+    state: ProcessState,
     mem_kb: u64,
     cmdline: String,
     priority: i32,
     cpu_time: u64,
     background: bool,
     start_time: Instant,
+    cr3: u64,
 }
 
 struct Scheduler {
-    processes: Vec<SimProcess>,
+    processes: [Option<SimProcess>; MAX_PROCS],
     next_pid: u32,
     current_user: String,
     current_uid: u32,
+    current_cr3: u64,
+    cr4_pcide: bool,
 }
 
 impl Scheduler {
     fn new() -> Self {
         let mut sched = Scheduler {
-            processes: vec![],
+            processes: std::array::from_fn(|_| None),
             next_pid: 1000,
             current_user: "root".to_string(),
             current_uid: 0,
+            current_cr3: 0x1000,
+            cr4_pcide: false,
         };
-        sched.spawn("init", 0, "/sbin/init", 128, false, 0);
-        sched.spawn("phase1-shell", process::id(), &format!("phase1 v{}", VERSION), 8192, false, 0);
+        let _ = sched.spawn("init", 0, "/sbin/init", 128, false, 0);
+        let _ = sched.spawn("phase1-shell", process::id(), &format!("phase1 v{}", VERSION), 8192, false, 0);
         sched
     }
 
-    fn spawn(&mut self, name: &str, ppid: u32, cmdline: &str, mem_kb: u64, background: bool, priority: i32) -> u32 {
-        let pid = self.next_pid;
-        self.next_pid += 1;
-        let p = SimProcess {
-            pid,
-            ppid,
-            name: name.to_string(),
-            state: if background { "running (bg)".to_string() } else { "running".to_string() },
-            mem_kb,
-            cmdline: cmdline.to_string(),
-            priority,
-            cpu_time: 0,
-            background,
-            start_time: Instant::now(),
-        };
-        self.processes.push(p.clone());
-        if background {
-            let _ = thread::spawn(move || {
-                thread::sleep(Duration::from_secs(6));
-            });
-        }
-        pid
+    fn find_free_slot(&self) -> Option<usize> {
+        self.processes.iter().position(|s| s.is_none() || matches!(s.as_ref().unwrap().state, ProcessState::Void))
     }
 
-    fn ps(&self) -> String {
-        let mut out = format!("{:>5} {:>5} {:>8} {:>8} {:>6} {:>8} {}\n", "PID", "PPID", "USER", "PRI", "STATE", "MEM", "CMD");
-        for p in &self.processes {
-            out.push_str(&format!("{:>5} {:>5} {:>8} {:>8} {:>6} {:>8} {}\n",
-                p.pid, p.ppid, self.current_user, p.priority, p.state, p.mem_kb, p.cmdline));
+    fn spawn(&mut self, name: &str, ppid: u32, cmdline: &str, mem_kb: u64, background: bool, priority: i32) -> Option<u32> {
+        if let Some(idx) = self.find_free_slot() {
+            let pid = self.next_pid;
+            self.next_pid += 1;
+            let p = SimProcess {
+                pid,
+                ppid,
+                name: name.to_string(),
+                state: if background { ProcessState::RunningBg } else { ProcessState::Running },
+                mem_kb,
+                cmdline: cmdline.to_string(),
+                priority,
+                cpu_time: 0,
+                background,
+                start_time: Instant::now(),
+                cr3: 0x10000 + (pid as u64) * 0x1000,
+            };
+            self.processes[idx] = Some(p);
+            Some(pid)
+        } else {
+            None
+        }
+    }
+
+    fn reap_zombies(&mut self) {
+        for slot in &mut self.processes {
+            if let Some(p) = slot {
+                if p.state == ProcessState::Zombie {
+                    p.state = ProcessState::Void;
+                }
+            }
+        }
+    }
+
+    fn load_cr3(&mut self, value: u64) {
+        let pcid = value & 0xFFF;
+        let pml4_base = value & !0xFFF;
+
+        if pcid != 0 && !self.cr4_pcide {
+            println!("{}#GP(0): invalid CR3 value (CR3[11:0] != 0 but CR4.PCIDE is clear){}", ANSI_RED, ANSI_RESET);
+            println!("         (would trigger General Protection Fault on real hardware)");
+            return;
+        }
+
+        self.current_cr3 = value;
+
+        if pcid != 0 {
+            println!("CR3 loaded successfully — PCID = {} (0x{:03x}) enabled", pcid, pcid);
+        } else {
+            println!("CR3 loaded successfully — page-aligned PML4 base 0x{:016x}", pml4_base);
+        }
+    }
+
+    fn get_cr3(&self) -> u64 { self.current_cr3 }
+
+    fn cr4(&self) -> String {
+        let pcide_bit = if self.cr4_pcide { 1u64 << 17 } else { 0 };
+        format!("CR4 = 0x{:016x} (PCIDE = {})", pcide_bit, if self.cr4_pcide { "enabled" } else { "disabled" })
+    }
+
+    fn set_pcide(&mut self, enable: bool) {
+        self.cr4_pcide = enable;
+        println!("CR4.PCIDE {}", if enable { "enabled" } else { "disabled" });
+    }
+
+    fn ps(&mut self) -> String {
+        self.reap_zombies();
+        let mut out = format!("{:>5} {:>5} {:>8} {:>8} {:>6} {:>8} {:>16} {}\n", "PID", "PPID", "USER", "PRI", "STATE", "MEM", "CR3", "CMD");
+        for slot in &self.processes {
+            if let Some(p) = slot {
+                if p.state != ProcessState::Void {
+                    out.push_str(&format!("{:>5} {:>5} {:>8} {:>8} {:>6} {:>8} {:>16x} {}\n",
+                        p.pid, p.ppid, self.current_user, p.priority, p.state, p.mem_kb, p.cr3, p.cmdline));
+                }
+            }
         }
         out
     }
 
-    fn top(&self) -> String {
-        let mut out = String::from("top — phase1 live process view (3 second snapshot)\n");
+    fn top(&mut self) -> String {
+        self.reap_zombies();
+        let mut out = String::from("top — phase1 live process view\n");
         out.push_str(&format!("{:>5} {:>8} {:>6} {:>8} {:>8} {}\n", "PID", "USER", "%CPU", "MEM", "TIME+", "COMMAND"));
-        for p in &self.processes {
-            let cpu = ((p.cpu_time % 500) as f32) / 5.0;
-            out.push_str(&format!("{:>5} {:>8} {:>6.1} {:>8} {:>8} {}\n",
-                p.pid, self.current_user, cpu, p.mem_kb, p.cpu_time / 1000, p.name));
+        for slot in &self.processes {
+            if let Some(p) = slot {
+                if p.state != ProcessState::Void && p.state != ProcessState::Zombie {
+                    let cpu = ((p.cpu_time % 500) as f32) / 5.0;
+                    out.push_str(&format!("{:>5} {:>8} {:>6.1} {:>8} {:>8} {}\n",
+                        p.pid, self.current_user, cpu, p.mem_kb, p.cpu_time / 1000, p.name));
+                }
+            }
         }
         out
     }
@@ -495,32 +569,45 @@ impl Scheduler {
     fn kill(&mut self, pid_str: Option<&&str>) -> String {
         if let Some(pid_str) = pid_str {
             if let Ok(pid) = pid_str.parse::<u32>() {
-                self.processes.retain(|p| p.pid != pid);
-                return format!("Process {} terminated", pid);
+                for slot in &mut self.processes {
+                    if let Some(p) = slot {
+                        if p.pid == pid {
+                            p.state = ProcessState::Zombie;
+                            return format!("Process {} killed (now Zombie → VOID on next ps)", pid);
+                        }
+                    }
+                }
+                return format!("No such process: {}", pid);
             }
         }
         "Usage: kill <PID>".to_string()
     }
 
-    fn jobs(&self) -> String {
-        let bg: Vec<_> = self.processes.iter().filter(|p| p.background).collect();
-        if bg.is_empty() {
-            "No background jobs running".to_string()
-        } else {
-            let mut s = "Background jobs:\n".to_string();
-            for p in bg {
-                s.push_str(&format!(" [{}] {} ({})\n", p.pid, p.name, p.state));
+    fn jobs(&mut self) -> String {
+        self.reap_zombies();
+        let mut s = "Background jobs:\n".to_string();
+        let mut found = false;
+        for slot in &self.processes {
+            if let Some(p) = slot {
+                if p.background && p.state != ProcessState::Void && p.state != ProcessState::Zombie {
+                    s.push_str(&format!(" [{}] {} ({})\n", p.pid, p.name, p.state));
+                    found = true;
+                }
             }
-            s
         }
+        if !found { "No background jobs running".to_string() } else { s }
     }
 
     fn nice(&mut self, pid_str: Option<&&str>, pri: i32) -> String {
         if let Some(pid_str) = pid_str {
             if let Ok(pid) = pid_str.parse::<u32>() {
-                if let Some(p) = self.processes.iter_mut().find(|p| p.pid == pid) {
-                    p.priority = pri.clamp(-20, 19);
-                    return format!("Priority of process {} changed to {}", pid, p.priority);
+                for slot in &mut self.processes {
+                    if let Some(p) = slot {
+                        if p.pid == pid && p.state != ProcessState::Void {
+                            p.priority = pri.clamp(-20, 19);
+                            return format!("Priority of process {} changed to {}", pid, p.priority);
+                        }
+                    }
                 }
             }
         }
@@ -528,20 +615,24 @@ impl Scheduler {
     }
 
     fn tick(&mut self) {
-        for p in &mut self.processes {
-            if p.state.contains("running") {
-                p.cpu_time += 120; // simulate preemptive scheduling tick
+        self.reap_zombies();
+        for slot in &mut self.processes {
+            if let Some(p) = slot {
+                if matches!(p.state, ProcessState::Running | ProcessState::RunningBg) {
+                    p.cpu_time += 120;
+                }
             }
         }
     }
 }
 
 // ==============================================
-// Main Shell with environment, history, parsing
+// Main Shell
 // ==============================================
 struct Phase1Shell {
     scheduler: Scheduler,
     vfs: Vfs,
+    pcie: PcieManager,
     start_time: Instant,
     history: VecDeque<String>,
     plugins_dir: PathBuf,
@@ -553,6 +644,7 @@ impl Phase1Shell {
         let mut shell = Phase1Shell {
             scheduler: Scheduler::new(),
             vfs: Vfs::new(),
+            pcie: PcieManager::new(),
             start_time: Instant::now(),
             history: VecDeque::with_capacity(300),
             plugins_dir: PathBuf::from("plugins"),
@@ -569,7 +661,6 @@ impl Phase1Shell {
             let _ = fs::create_dir_all(&shell.plugins_dir);
         }
 
-        // Example Python plugin (simple key=value protocol, no extra crates)
         let example_plugin = r#"import sys
 data = {}
 for line in sys.stdin:
@@ -590,16 +681,16 @@ print("Plugin executed successfully! You can extend this freely.")
     fn print_boot() {
         println!("{}", ANSI_CLEAR);
         println!("{}╔══════════════════════════════════════════════════════════════════════════════╗{}", ANSI_GREEN, ANSI_RESET);
-        println!("{}║                    phase1 v1.0.0  —  Advanced OS Simulator                   ║{}", ANSI_GREEN, ANSI_RESET);
-        println!("{}║                 Full VFS • Scheduler • Plugins • Education Focus             ║{}", ANSI_GREEN, ANSI_RESET);
+        println!("{}║                    phase1 v1.0.5  —  Advanced OS Simulator                   ║{}", ANSI_GREEN, ANSI_RESET);
+        println!("{}║          Full VFS • Scheduler • PCIe • CR3/CR4 with PCID support            ║{}", ANSI_GREEN, ANSI_RESET);
         println!("{}╚══════════════════════════════════════════════════════════════════════════════╝{}", ANSI_GREEN, ANSI_RESET);
-        println!("{}[    0.000000] phase1 kernel booted on virtual ARM64 hardware{}", ANSI_YELLOW, ANSI_RESET);
+        println!("{}[    0.000000] phase1 kernel booted on virtual x86_64 hardware{}", ANSI_YELLOW, ANSI_RESET);
         println!("{}[    0.012345] Initializing in-memory tree Virtual File System{}", ANSI_YELLOW, ANSI_RESET);
         println!("{}[    0.034567] Mounting /proc, /dev, /home, /etc{}", ANSI_YELLOW, ANSI_RESET);
         println!("{}[    0.067890] Preemptive scheduler with priority support activated{}", ANSI_YELLOW, ANSI_RESET);
-        println!("{}[    0.089012] Environment subsystem loaded with variable expansion{}", ANSI_YELLOW, ANSI_RESET);
-        println!("{}[    0.112345] Python plugin bridge ready (stdin key=value protocol){}", ANSI_YELLOW, ANSI_RESET);
-        println!("{}[    0.145678] Educational boot complete — type 'help' or 'man' for details{}", ANSI_GREEN, ANSI_RESET);
+        println!("{}[    0.089012] PCIe enumeration subsystem loaded{}", ANSI_YELLOW, ANSI_RESET);
+        println!("{}[    0.112345] CR3/CR4 paging register management ready (PCID capable){}", ANSI_YELLOW, ANSI_RESET);
+        println!("{}[    0.145678] Educational boot complete — type 'help' for commands{}", ANSI_GREEN, ANSI_RESET);
         println!();
     }
 
@@ -614,17 +705,12 @@ print("Plugin executed successfully! You can extend this freely.")
 
     fn try_plugin(&self, cmd: &str, args: &[&str]) -> bool {
         let plugin_path = self.plugins_dir.join(format!("{}.py", cmd));
-        if !plugin_path.exists() {
-            return false;
-        }
+        if !plugin_path.exists() { return false; }
 
         let context_str = format!(
             "COMMAND={}\nARGS={}\nUSER={}\nCWD={}\nPID={}\nHOME={}\n",
-            cmd,
-            args.join(" "),
-            self.scheduler.current_user,
-            self.vfs.cwd.to_str().unwrap_or("/"),
-            process::id(),
+            cmd, args.join(" "), self.scheduler.current_user,
+            self.vfs.cwd.to_str().unwrap_or("/"), process::id(),
             self.env.get("HOME").unwrap_or(&"/home".to_string())
         );
 
@@ -656,7 +742,6 @@ print("Plugin executed successfully! You can extend this freely.")
 
         let mut input = String::new();
         loop {
-            // Update dynamic proc files
             let uptime_secs = self.start_time.elapsed().as_secs();
             self.vfs.update_proc_uptime(format!("{} seconds", uptime_secs));
             self.scheduler.tick();
@@ -665,24 +750,16 @@ print("Plugin executed successfully! You can extend this freely.")
             let _ = io::stdout().flush();
 
             input.clear();
-            if io::stdin().read_line(&mut input).is_err() {
-                break;
-            }
+            if io::stdin().read_line(&mut input).is_err() { break; }
             let line = input.trim();
-            if line.is_empty() {
-                continue;
-            }
+            if line.is_empty() { continue; }
 
             self.history.push_back(line.to_string());
-            if self.history.len() > 300 {
-                self.history.pop_front();
-            }
+            if self.history.len() > 300 { self.history.pop_front(); }
 
             let expanded = self.expand_env(line);
             let parts: Vec<&str> = expanded.split_whitespace().collect();
-            if parts.is_empty() {
-                continue;
-            }
+            if parts.is_empty() { continue; }
 
             let cmd = parts[0];
             let args = &parts[1..];
@@ -695,17 +772,43 @@ print("Plugin executed successfully! You can extend this freely.")
                 "help" => self.cmd_help(),
                 "man" => self.cmd_man(args.first().copied()),
                 "ps" => println!("{}", self.scheduler.ps()),
-                "top" => {
-                    println!("{}", self.scheduler.top());
-                    thread::sleep(Duration::from_secs(3));
-                }
+                "top" => { println!("{}", self.scheduler.top()); thread::sleep(Duration::from_secs(3)); }
                 "free" | "mem" => self.cmd_free(),
                 "kill" => println!("{}", self.scheduler.kill(args.first())),
                 "nice" => println!("{}", self.scheduler.nice(args.first(), args.get(1).and_then(|s| s.parse().ok()).unwrap_or(0))),
                 "spawn" => {
                     let name = args.get(0).unwrap_or(&"anon");
-                    let pid = self.scheduler.spawn(name, process::id(), &args.join(" "), 2048, false, 0);
-                    println!("Spawned new process with PID {}", pid);
+                    match self.scheduler.spawn(name, process::id(), &args.join(" "), 2048, false, 0) {
+                        Some(pid) => println!("Spawned new process with PID {}", pid),
+                        None => println!("{}Process table full (max {}){}", ANSI_RED, MAX_PROCS, ANSI_RESET),
+                    }
+                }
+                "lspci" => println!("{}", self.pcie.lspci()),
+                "pcie" => println!("{}", self.pcie.pcie_info()),
+                "cr3" => println!("Current CR3: 0x{:016x}", self.scheduler.get_cr3()),
+                "loadcr3" => {
+                    if let Some(val_str) = args.first() {
+                        let val = if val_str.starts_with("0x") {
+                            u64::from_str_radix(&val_str[2..], 16).unwrap_or(0)
+                        } else {
+                            val_str.parse().unwrap_or(0)
+                        };
+                        self.scheduler.load_cr3(val);
+                    } else {
+                        println!("Usage: loadcr3 <value> (hex or decimal — must be page-aligned unless CR4.PCIDE=1)");
+                    }
+                }
+                "cr4" => println!("{}", self.scheduler.cr4()),
+                "pcide" => {
+                    if let Some(arg) = args.first() {
+                        match *arg {
+                            "on" | "1" | "enable" => self.scheduler.set_pcide(true),
+                            "off" | "0" | "disable" => self.scheduler.set_pcide(false),
+                            _ => println!("Usage: pcide <on|off|1|0|enable|disable>"),
+                        }
+                    } else {
+                        println!("CR4.PCIDE is currently {}", if self.scheduler.cr4_pcide { "enabled" } else { "disabled" });
+                    }
                 }
                 "df" => println!("{}Filesystem     1K-blocks    Used Available Use% Mounted on\nphase1-vfs     4194304   1048576   3145728  25% /{}", ANSI_YELLOW, ANSI_RESET),
                 "whoami" => println!("{}", self.scheduler.current_user),
@@ -751,7 +854,6 @@ print("Plugin executed successfully! You can extend this freely.")
                 },
                 "echo" => {
                     let text = args.join(" ");
-                    // Very basic redirection support: echo text > file   or   echo text >> file
                     if let Some(redirect_pos) = args.iter().position(|&x| x == ">" || x == ">>") {
                         if redirect_pos + 1 < args.len() {
                             let content = args[0..redirect_pos].join(" ");
@@ -798,9 +900,10 @@ print("Plugin executed successfully! You can extend this freely.")
     }
 
     fn cmd_help(&self) {
-        println!("{}phase1 v1.0.0 — Complete Command Reference{}", ANSI_BOLD, ANSI_RESET);
+        println!("{}phase1 v1.0.5 — Complete Command Reference{}", ANSI_BOLD, ANSI_RESET);
         println!("Core filesystem:   ls [-l]  cd  pwd  cat  mkdir  touch  rm  cp  mv  echo [> or >> file]");
         println!("Process mgmt:      ps  top  kill  spawn  nice  jobs  fg  bg");
+        println!("Hardware / Paging: lspci  pcie  cr3  loadcr3  cr4  pcide");
         println!("System info:       free  df  uname  date  uptime  dmesg  vmstat  ifconfig  ping");
         println!("Shell:             env  export  unset  history  clear  su  whoami  id");
         println!("Plugins:           python/py  plugin/plugins  (any .py in ./plugins/)");
@@ -810,6 +913,11 @@ print("Plugin executed successfully! You can extend this freely.")
 
     fn cmd_man(&self, topic: Option<&str>) {
         match topic {
+            Some("cr3") => println!("cr3: display current CR3 register value (paging base)"),
+            Some("loadcr3") => println!("loadcr3 <value>: direct load into CR3 register (privileged, hardware-accurate PCID validation)"),
+            Some("cr4") => println!("cr4: display current CR4 register value (includes PCIDE bit)"),
+            Some("pcide") => println!("pcide <on|off>: toggle CR4.PCIDE (enables PCID usage in CR3)"),
+            Some("lspci") => println!("lspci: list PCI/PCIe devices (simulated hardware enumeration)"),
             Some("ls") => println!("ls: list directory contents. Use -l for long format with permissions."),
             Some("echo") => println!("echo: print text. Supports basic redirection: echo text > file or >> file"),
             Some("cd") => println!("cd: change working directory. Use .. for parent."),
@@ -900,7 +1008,7 @@ print("Plugin executed successfully! You can extend this freely.")
         println!("{}[    0.000000] phase1 kernel: virtual hardware detected{}", ANSI_YELLOW, ANSI_RESET);
         println!("{}[    0.012345] VFS: mounted in-memory tree filesystem{}", ANSI_YELLOW, ANSI_RESET);
         println!("{}[    0.045678] Scheduler: preemptive multitasking with priorities enabled{}", ANSI_YELLOW, ANSI_RESET);
-        println!("{}[    0.078901] Environment and plugin subsystems initialized{}", ANSI_YELLOW, ANSI_RESET);
+        println!("{}[    0.078901] PCIe + CR3/CR4 paging subsystems initialized{}", ANSI_YELLOW, ANSI_RESET);
     }
 
     fn cmd_vmstat(&self) {
