@@ -603,7 +603,7 @@ print("Plugin executed successfully! You can extend this freely.")
         println!("{}", ANSI_CLEAR);
         println!("{}╔══════════════════════════════════════════════════════════════════════════════╗{}", ANSI_GREEN, ANSI_RESET);
         println!("{}║                    phase1 v1.1.1  —  Advanced OS Simulator                   ║{}", ANSI_GREEN, ANSI_RESET);
-        println!("{}║  Full VFS • Scheduler • PCIe • CR3/CR4/PCID • Cross-platform Networking     ║{}", ANSI_GREEN, ANSI_RESET);
+        println!("{}║  Full VFS - Scheduler - PCIe - CR3/CR4/PCID - Cross-platform Networking     ║{}", ANSI_GREEN, ANSI_RESET);
         println!("{}╚══════════════════════════════════════════════════════════════════════════════╝{}", ANSI_GREEN, ANSI_RESET);
         println!("{}[    0.000000] phase1 kernel booted on virtual x86_64 hardware{}", ANSI_YELLOW, ANSI_RESET);
         println!("{}[    0.012345] Initializing in-memory tree Virtual File System{}", ANSI_YELLOW, ANSI_RESET);
