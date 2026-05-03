@@ -1,39 +1,18 @@
 # phase1
 
-**phase1 v0.4.0** — Educational Embedded Operating System
-
-A terminal-based educational OS simulator written in **Rust**. Demonstrates core OS concepts including process management, memory accounting, kernel simulation, **dynamic process spawning**, and **disk simulation** in a safe userspace environment with Python plugin support.
-
-<image-card alt="Rust" src="https://img.shields.io/badge/Rust-1.75%2B-orange?logo=rust" ></image-card>
-<image-card alt="License" src="https://img.shields.io/badge/License-GPLv3-blue.svg" ></image-card>
-<image-card alt="Platform" src="https://img.shields.io/badge/Platform-Linux%20%7C%20macOS-lightgrey" ></image-card>
+phase1 v1.0.0 is a terminal-based educational OS simulator written in Rust. It is a research project demonstrating core operating system concepts in safe userspace.
 
 ## Features
 
-### Simulated OS Components
-- Process table (`ps`, `kill`, **new: `spawn`**, **new: `top`**)
-- Memory accounting (`free`)
-- **New:** Disk accounting (`df`)
-- System information (`uptime`, `uname`)
-- Kernel simulation
-
-### Shell Commands (new in v0.4)
-- `spawn <name>` — Dynamically create new simulated processes
-- `df` — Simulated disk usage
-- `whoami` / `id` — User identity
-- `top` — Enhanced process monitor with fake CPU% visualization
-
-### Shell Commands (existing)
-- `help`, `ls`, `pwd`, `cd`, `cat`, `echo`, `clear`, `exit`
-- `python` / `py` — Execute Python code directly
-- `plugins` — List/extend with Python plugins
-
-### Extensibility
-Place `.py` files in the `plugins/` directory to register new commands instantly.
-
-### Isolation
-- On Linux: Full namespace sandboxing
-- On macOS: Reduced host privileges
+- In-memory virtual filesystem (VFS) with permissions, /proc, /dev, and dynamic entries
+- Preemptive process scheduler with priorities, jobs, and background tasks
+- Process management (ps, top, spawn, kill, nice, jobs, fg, bg)
+- Memory and disk accounting (free, df)
+- File operations (ls, cd, pwd, cat, mkdir, touch, rm, cp, mv, tree)
+- Environment variables with expansion, command history, and redirection
+- System commands (uname, uptime, date, whoami, id, dmesg, vmstat, hostname, ifconfig, ping)
+- Python plugin system (plugins/ directory)
+- Linux namespace sandboxing (macOS: reduced privileges)
 
 ## Quick Start
 
