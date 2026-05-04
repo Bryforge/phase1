@@ -1,13 +1,6 @@
-<<<<<<< HEAD
-// man.rs — Comprehensive manual pages for phase1 educational OS simulator
+// man.rs — Comprehensive manual pages for phase1 v3.0.0 Codename Blue
 // Terse, exact documentation for every command. Each entry details usage syntax,
 // the demonstrated kernel/OS concept, and integration within the in-memory system.
-=======
-// src/man.rs — Comprehensive manual pages for phase1 v3.0.0 Codename Blue
-// Terse, exact documentation for every command. Each entry details usage syntax,
-// the demonstrated kernel/OS concept, and integration within the in-memory system.
-// Updated for dynamic VFS, preemptive scheduler, refined networking, and Codename Blue.
->>>>>>> 63d5bbc (update v3.0.0)
 
 use std::collections::HashMap;
 
@@ -76,23 +69,16 @@ pub fn get_man_page(cmd: &str) -> Option<String> {
 
     pages.insert("unset", "unset: Remove environment variable.\n\nDeletes variable from shell environment.\nUsage: unset VAR");
 
-<<<<<<< HEAD
     pages.insert("python", "python: Execute Python script.\n\nRuns external Python code (host python3).\nUsage: python <script.py>");
-=======
-    pages.insert("python", "python: Execute Python script.\n\nRuns external Python code (host python3) loaded from VFS.\nUsage: python <script.py>");
->>>>>>> 63d5bbc (update v3.0.0)
 
     pages.insert("plugin", "plugin: List and execute Python plugins.\n\nPlugins receive context via stdin (COMMAND, USER, CWD etc.).\nConcept: Extensible userspace plugin system.\nUsage: plugin or plugins");
 
     pages.insert("jobs", "jobs: List background jobs.\n\nShows scheduler-managed background processes.\nConcept: Job control in shell.\nUsage: jobs");
 
-<<<<<<< HEAD
     pages.insert("fg", "fg: Bring job to foreground.\n\nSimulated job control interface.\nUsage: fg");
 
     pages.insert("bg", "bg: Send job to background.\n\nSimulated job control.\nUsage: bg");
 
-=======
->>>>>>> 63d5bbc (update v3.0.0)
     pages.insert("su", "su: Switch user.\n\nChanges current user context in scheduler.\nUsage: su <username>");
 
     pages.insert("dmesg", "dmesg: Display kernel ring buffer messages.\n\nShows boot and subsystem initialization logs.\nConcept: Kernel logging.\nUsage: dmesg");
@@ -109,11 +95,7 @@ pub fn get_man_page(cmd: &str) -> Option<String> {
 
     pages.insert("hostname", "hostname: Show system hostname.\n\nFixed virtual hostname.\nUsage: hostname");
 
-<<<<<<< HEAD
     pages.insert("ifconfig", "ifconfig: Configure and display network interfaces.\n\nShows real host interfaces, IP, MAC on Linux/macOS.\nConcept: Network stack abstraction.\nUsage: ifconfig");
-=======
-    pages.insert("ifconfig", "ifconfig: Configure and display network interfaces.\n\nShows real host interfaces, IP, MAC on Linux/macOS with dynamic parsing.\nConcept: Network stack abstraction.\nUsage: ifconfig");
->>>>>>> 63d5bbc (update v3.0.0)
 
     pages.insert("iwconfig", "iwconfig: Display wireless interface configuration.\n\nShows WiFi status and signal.\nUsage: iwconfig");
 
@@ -125,17 +107,21 @@ pub fn get_man_page(cmd: &str) -> Option<String> {
 
     pages.insert("nmcli", "nmcli: NetworkManager command line.\n\nShows active connections and status.\nUsage: nmcli");
 
-<<<<<<< HEAD
     pages.insert("sandbox", "sandbox: Show sandbox information.\n\nConfirms operation inside Rust userspace with Linux namespaces where available.\nConcept: Security isolation.\nUsage: sandbox or nsinfo");
-=======
-    pages.insert("sandbox", "sandbox: Show sandbox information.\n\nConfirms operation inside Rust userspace sandbox.\nConcept: Security isolation.\nUsage: sandbox or nsinfo");
->>>>>>> 63d5bbc (update v3.0.0)
 
     pages.insert("version", "version: Show phase1 version.\n\nReports simulator version and build date.\nUsage: version");
 
     pages.insert("tree", "tree: Display directory tree.\n\nShows static VFS hierarchy.\nUsage: tree");
 
     pages.insert("exit", "exit: Exit the simulator.\n\nAlso accepts quit, shutdown, poweroff.\nTerminates shell cleanly.\nUsage: exit");
+
+    pages.insert("browser", "browser: Terminal web browser.\n\nFetches and renders real web pages or internal simulator pages.\nConcept: Userspace networking integration with HTML-to-text conversion.\nUsage: browser <url> | browser phase1 | browser about");
+
+    pages.insert("nano", "nano: Built-in line editor.\n\nEdits files in VFS. Type lines, end with single . on new line to save/exit, or :q to quit.\nConcept: In-memory editor backed by VFS write operations.\nUsage: nano <file>");
+
+    pages.insert("vi", "vi: Basic editor (nano fallback).\n\nProvides vi-compatible entry point that uses nano implementation.\nUsage: vi <file>");
+
+    pages.insert("gcc", "gcc: Compile and run C code.\n\nSupports source file or inline code. Uses host gcc/clang.\nConcept: Userspace toolchain integration.\nUsage: gcc <file.c> or gcc \"C code here\"");
 
     // Aliases for convenience
     pages.insert("mem", pages.get("free").unwrap_or(&""));
