@@ -9,6 +9,7 @@
 
 mod kernel;
 mod network;
+mod man;
 
 use std::collections::{HashMap, VecDeque};
 use std::fs;
@@ -430,7 +431,7 @@ print("Plugin executed successfully! You can extend this freely.")
         }
     }
 
-    fn cmd_tree(&self) {
+        fn cmd_tree(&self) {
         println!("/");
         println!("├── bin");
         println!("├── dev");
@@ -451,22 +452,17 @@ print("Plugin executed successfully! You can extend this freely.")
 
     fn cmd_man(&self, topic: Option<&str>) {
         match topic {
-            Some("cr3") => println!("cr3: display current CR3 register value (paging base)"),
-            Some("loadcr3") => println!("loadcr3 <value>: direct load into CR3 register (privileged, hardware-accurate PCID validation)"),
-            Some("cr4") => println!("cr4: display current CR4 register value (includes PCIDE bit)"),
-            Some("pcide") => println!("pcide <on|off>: toggle CR4.PCIDE (enables PCID usage in CR3)"),
-            Some("lspci") => println!("lspci: list PCI/PCIe devices (simulated hardware enumeration)"),
-            Some("ifconfig") => println!("ifconfig: show network interfaces (real host data on Linux/macOS)"),
-            Some("wifi-scan") => println!("wifi-scan: scan for nearby WiFi networks (real scan on supported OS)"),
-            Some("ls") => println!("ls: list directory contents. Use -l for long format with permissions."),
-            Some("echo") => println!("echo: print text. Supports basic redirection: echo text > file or >> file"),
-            Some("cd") => println!("cd: change working directory. Use .. for parent."),
-            Some(_) => println!("No manual entry for that command yet."),
+            Some(cmd) => {
+                if let Some(page) = man::get_man_page(cmd) {
+                    println!("{}", page);
+                } else {
+                    println!("No manual entry for '{}' yet. Type 'help' for available commands.", cmd);
+                }
+            }
             None => println!("Usage: man <command>"),
         }
     }
 }
-
 fn main() {
     let mut shell = Phase1Shell::new();
     shell.run();
