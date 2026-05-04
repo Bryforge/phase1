@@ -1,5 +1,5 @@
 // =====================================================
-// phase1 v1.2.0 — Advanced Educational Embedded OS Simulator
+// phase1 v1.2.1 — Advanced Educational Embedded OS Simulator
 // =====================================================
 // Cross-platform (Linux + macOS) terminal-based OS simulator in Rust.
 // Full in-memory VFS, preemptive scheduler, PCIe, CR3/CR4/PCID, Python plugins,
@@ -24,7 +24,7 @@ use chrono::prelude::*;
 
 use kernel::*;
 
-const VERSION: &str = "1.2.0";
+const VERSION: &str = "1.2.1";
 const BUILD_DATE: &str = "2026-05-03";
 
 const ANSI_CLEAR: &str = "\x1b[2J\x1b[H";
@@ -88,7 +88,7 @@ print("Plugin executed successfully! You can extend this freely.")
     fn print_boot() {
         println!("{}", ANSI_CLEAR);
         println!("{}================================================================================{}", ANSI_GREEN, ANSI_RESET);
-        println!("{}/                    phase1 v1.2.0  —  Advanced OS Simulator                   /{}", ANSI_GREEN, ANSI_RESET);
+        println!("{}/                    phase1 v1.2.1  —  Advanced OS Simulator                   /{}", ANSI_GREEN, ANSI_RESET);
         println!("{}/  Full VFS - Scheduler - PCIe - CR3/CR4/PCID - Cross-platform Networking      /{}", ANSI_GREEN, ANSI_RESET);
         println!("{}================================================================================{}", ANSI_GREEN, ANSI_RESET);
         println!("{}[    0.000000] phase1 kernel booted on virtual x86_64 hardware{}", ANSI_YELLOW, ANSI_RESET);
@@ -100,6 +100,56 @@ print("Plugin executed successfully! You can extend this freely.")
         println!("{}[    0.145678] Cross-platform network stack (Linux + macOS) loaded{}", ANSI_YELLOW, ANSI_RESET);
         println!("{}[    0.167890] Educational boot complete — type 'help' for commands{}", ANSI_GREEN, ANSI_RESET);
         println!();
+    }
+    
+    fn find_project_root() -> Option<PathBuf> {
+        let mut dir = std::env::current_exe().ok()?;
+        loop {
+            if dir.join("Cargo.toml").exists() {
+                return Some(dir);
+            }
+            if !dir.pop() {
+                return None;
+            }
+        }
+    }
+
+    fn cmd_update(&self) {
+        println!("Checking for updates from GitHub (main branch)...");
+        if let Some(root) = Self::find_project_root() {
+            println!("Project root located: {}", root.display());
+
+            println!("→ Running git pull --ff-only origin main...");
+            match Command::new("git")
+                .current_dir(&root)
+                .args(["pull", "--ff-only", "origin", "main"])
+                .status() {
+                Ok(status) if status.success() => println!("✓ Git pull completed."),
+                Ok(_) => println!("✓ Already up to date (fast-forward only)."),
+                Err(e) => {
+                    println!("✗ Failed to run git pull: {}", e);
+                    println!("   Ensure git is installed and this is a git-cloned repository.");
+                    return;
+                }
+            }
+
+            println!("→ Building latest version...");
+            match Command::new("cargo")
+                .current_dir(&root)
+                .args(["build", "--release"])
+                .status() {
+                Ok(status) if status.success() => {
+                    println!("✓ Build successful.");
+                    println!("Updated binary ready at: {}/target/release/phase1", root.display());
+                    println!("\nExit the shell (type 'exit') and restart ./target/release/phase1 to load the new version.");
+                }
+                Ok(_) => println!("Build completed (warnings may be present)."),
+                Err(e) => println!("✗ Cargo build failed: {}", e),
+            }
+        } else {
+            println!("Could not locate project source (Cargo.toml not found).");
+            println!("The update command requires running from a git-cloned copy of the repository.");
+        }
     }
 
     fn expand_env(&self, text: &str) -> String {
@@ -311,6 +361,7 @@ print("Plugin executed successfully! You can extend this freely.")
                 "sandbox" | "nsinfo" => println!("{}Running inside pure-Rust userspace sandbox. No real system privileges.{}", ANSI_CYAN, ANSI_RESET),
                 "version" => println!("phase1 v{} — built {}", VERSION, BUILD_DATE),
                 "tree" => self.cmd_tree(),
+                "update" => self.cmd_update(),
                 _ => {
                     if !self.try_plugin(cmd, args) {
                         println!("{}command not found: {}{}   (type 'help' for full list)", ANSI_RED, cmd, ANSI_RESET);
@@ -321,12 +372,12 @@ print("Plugin executed successfully! You can extend this freely.")
     }
 
     fn cmd_help(&self) {
-        println!("{}phase1 v1.2.0 — Complete Command Reference{}", ANSI_BOLD, ANSI_RESET);
+        println!("{}phase1 v1.2.1 — Complete Command Reference{}", ANSI_BOLD, ANSI_RESET);
         println!("Core filesystem:   ls [-l]  cd  pwd  cat  mkdir  touch  rm  cp  mv  echo [> or >> file]");
         println!("Process mgmt:      ps  top  kill  spawn  nice  jobs  fg  bg");
         println!("Hardware / Paging: lspci  pcie  cr3  loadcr3  cr4  pcide");
         println!("Networking:        ifconfig  iwconfig  wifi-scan  wifi-connect  nmcli");
-        println!("System info:       free  df  uname  date  uptime  dmesg  vmstat  hostname  ping");
+        println!("System info:       free  df  uname  date  uptime  dmesg  vmstat  hostname  ping  update");
         println!("Shell:             env  export  unset  history  clear  su  whoami  id");
         println!("Plugins:           python/py  plugin/plugins  (any .py in ./plugins/)");
         println!("Misc:              tree  sandbox  version  man <cmd>  exit");
@@ -431,7 +482,7 @@ print("Plugin executed successfully! You can extend this freely.")
         }
     }
 
-        fn cmd_tree(&self) {
+    fn cmd_tree(&self) {
         println!("/");
         println!("├── bin");
         println!("├── dev");
@@ -463,6 +514,7 @@ print("Plugin executed successfully! You can extend this freely.")
         }
     }
 }
+
 fn main() {
     let mut shell = Phase1Shell::new();
     shell.run();
