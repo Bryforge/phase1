@@ -1,21 +1,8 @@
-<<<<<<< HEAD
-// src/main.rs — phase1 v2.0.1 Terminal OS Simulator
-mod network;
-mod kernel;
-mod browser;
-=======
-// src/main.rs — phase1 v3.0.0 Terminal OS Simulator (Codename Blue)
-// Complete integration of refined kernel, dynamic network stack, terminal browser,
-// Python plugins, built-in editors, C compilation, and comprehensive man pages.
-// All commands polished, VFS ls uses clean Unix prefixes, boot sequence updated,
-// environment handling strengthened, and every legacy feature preserved with
-// production-grade error handling and stability.
-
+// src/main.rs — phase1 v3.0.0 Terminal OS Simulator
 mod network;
 mod kernel;
 mod browser;
 mod man;
->>>>>>> 63d5bbc (update v3.0.0)
 
 use std::collections::{HashMap, VecDeque};
 use std::fs;
@@ -32,11 +19,7 @@ use kernel::Kernel;
 use network::NetworkStack;
 use browser::Browser;
 
-<<<<<<< HEAD
-const VERSION: &str = "2.0.1";
-=======
 const VERSION: &str = "3.0.0";
->>>>>>> 63d5bbc (update v3.0.0)
 const BUILD_DATE: &str = "2026-05-04";
 
 const ANSI_CLEAR: &str = "\x1b[2J\x1b[H";
@@ -103,13 +86,8 @@ print("Plugin executed successfully!")"#;
     fn print_boot() {
         println!("{}", ANSI_CLEAR);
         println!("{}================================================================================{}", ANSI_GREEN, ANSI_RESET);
-<<<<<<< HEAD
-        println!("{}/                    phase1 v2.0.1  —  Terminal OS Simulator                   /{}", ANSI_GREEN, ANSI_RESET);
-        println!("{}/  VFS + Scheduler + Editors + Python + C + Networking + Browser              /{}", ANSI_GREEN, ANSI_RESET);
-=======
-        println!("{}/                    phase1 v3.0.0  —  Codename Blue                       /{}", ANSI_GREEN, ANSI_RESET);
-        println!("{}/  VFS + Scheduler + Editors + Python + C + Networking + Browser            /{}", ANSI_GREEN, ANSI_RESET);
->>>>>>> 63d5bbc (update v3.0.0)
+        println!("{}/                    phase1 v3.0.0  —  Terminal OS Simulator                   /{}", ANSI_GREEN, ANSI_RESET);
+        println!("{}/  VFS + Scheduler + Editors + Python + C + Networking + Browser + Man Pages   /{}", ANSI_GREEN, ANSI_RESET);
         println!("{}================================================================================{}", ANSI_GREEN, ANSI_RESET);
         println!("{}[    0.000000] phase1 kernel booted{}", ANSI_YELLOW, ANSI_RESET);
         println!("{}[    0.012345] In-memory VFS and proc mounted{}", ANSI_YELLOW, ANSI_RESET);
@@ -117,7 +95,8 @@ print("Plugin executed successfully!")"#;
         println!("{}[    0.067890] Built-in nano/vi and C compiler support loaded{}", ANSI_YELLOW, ANSI_RESET);
         println!("{}[    0.089012] Python plugin system active{}", ANSI_YELLOW, ANSI_RESET);
         println!("{}[    0.112345] Cross-platform network stack ready{}", ANSI_YELLOW, ANSI_RESET);
-        println!("{}[    0.145678] Boot complete — type 'help'{}", ANSI_GREEN, ANSI_RESET);
+        println!("{}[    0.145678] Comprehensive man pages integrated{}", ANSI_YELLOW, ANSI_RESET);
+        println!("{}[    0.178901] Boot complete — type 'help'{}", ANSI_GREEN, ANSI_RESET);
         println!();
     }
 
@@ -389,11 +368,7 @@ print("Plugin executed successfully!")"#;
                 "dmesg" => self.cmd_dmesg(),
                 "vmstat" => self.cmd_vmstat(),
                 "history" => self.cmd_history(),
-<<<<<<< HEAD
-                "uname" => println!("Linux phase1 6.8.0-phase1-v2 #1 SMP {} x86_64 GNU/Linux", Local::now().format("%Y-%m-%d")),
-=======
                 "uname" => println!("Linux phase1 6.8.0-phase1-v3 #1 SMP {} x86_64 GNU/Linux", Local::now().format("%Y-%m-%d")),
->>>>>>> 63d5bbc (update v3.0.0)
                 "date" => println!("{}", Local::now().format("%a %b %d %H:%M:%S %Z %Y")),
                 "uptime" => println!("{} up {} load average: 0.12, 0.15, 0.10", Local::now().format("%H:%M:%S"), self.start_time.elapsed().as_secs()),
                 "hostname" => println!("phase1-virtual"),
@@ -426,11 +401,7 @@ print("Plugin executed successfully!")"#;
     }
 
     fn cmd_help(&self) {
-<<<<<<< HEAD
-        println!("phase1 v2.0.1 — Terminal OS Commands");
-=======
         println!("phase1 v3.0.0 — Terminal OS Commands");
->>>>>>> 63d5bbc (update v3.0.0)
         println!("Filesystem: ls [-l] cd pwd cat mkdir touch rm cp mv echo [> >>]");
         println!("Editors: nano <file> vi <file>");
         println!("C support: gcc <file.c> or gcc \"code\"");
@@ -439,8 +410,8 @@ print("Plugin executed successfully!")"#;
         println!("Network: ifconfig iwconfig wifi-scan wifi-connect ping nmcli");
         println!("Browser: browser <url> (or browser phase1 / about)");
         println!("Shell: env export unset history su python plugin");
-        println!("System: free df uname date uptime dmesg vmstat tree sandbox version");
-        println!("Misc: man <cmd> clear exit");
+        println!("System: free df uname date uptime dmesg vmstat tree sandbox version man");
+        println!("Misc: clear exit");
     }
 
     fn cmd_cd(&mut self, dir: Option<&str>) {
@@ -538,38 +509,18 @@ print("Plugin executed successfully!")"#;
         println!("├── etc");
         println!("├── home");
         println!("├── proc");
-<<<<<<< HEAD
         println!("└── (plugins outside VFS)");
-=======
-        println!("└── tmp");
->>>>>>> 63d5bbc (update v3.0.0)
     }
 
     fn cmd_man(&self, topic: Option<&str>) {
-        match topic {
-<<<<<<< HEAD
-            Some("cr3") => println!("cr3: display current CR3 register value (paging base)"),
-            Some("loadcr3") => println!("loadcr3 <value>: direct load into CR3 register"),
-            Some("cr4") => println!("cr4: display current CR4 register value (includes PCIDE bit)"),
-            Some("pcide") => println!("pcide <on|off>: toggle CR4.PCIDE"),
-            Some("lspci") => println!("lspci: list PCI/PCIe devices"),
-            Some("ifconfig") => println!("ifconfig: show network interfaces"),
-            Some("wifi-scan") => println!("wifi-scan: scan for nearby WiFi networks"),
-            Some("ls") => println!("ls: list directory contents. Use -l for long format."),
-            Some("echo") => println!("echo: print text. Supports redirection > and >>"),
-            Some("cd") => println!("cd: change working directory."),
-            Some("nano") => println!("nano <file>: built-in line editor. End input with . or :q"),
-            Some("vi") => println!("vi <file>: basic editor (nano fallback)"),
-            Some("gcc") => println!("gcc <file.c> or gcc \"code\": compile and run C code"),
-            Some("browser") => println!("browser <url>: terminal web browser with real HTTP fetch"),
-            Some(_) => println!("No manual entry for that command yet."),
-=======
-            Some(t) => match man::get_man_page(t) {
-                Some(page) => println!("{}", page),
-                None => println!("No manual entry for that command yet."),
-            },
->>>>>>> 63d5bbc (update v3.0.0)
-            None => println!("Usage: man <command>"),
+        if let Some(t) = topic {
+            if let Some(page) = man::get_man_page(t) {
+                println!("{}", page);
+            } else {
+                println!("No manual entry for that command yet. Try 'man help' or 'help'.");
+            }
+        } else {
+            println!("Usage: man <command>");
         }
     }
 }

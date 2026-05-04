@@ -1,12 +1,4 @@
-<<<<<<< HEAD
-// src/network.rs — Cross-platform networking (Linux + macOS) for phase1 v2.0.0
-=======
-// src/network.rs — Cross-platform networking (Linux + macOS) for phase1 v3.0.0 Codename Blue
-// Dynamic interface parsing from real host commands (ip/ifconfig + airport/nmcli).
-// All methods fully implemented with production-grade error handling and fallback data.
-// No placeholders remain. iwconfig, wifi_scan, wifi_connect, ping, nmcli all present.
-
->>>>>>> 63d5bbc (update v3.0.0)
+// src/network.rs — Cross-platform networking (Linux + macOS) for phase1 v3.0.0
 use std::process::{Command, Output, ExitStatus};
 use std::os::unix::process::ExitStatusExt;
 
@@ -41,61 +33,43 @@ impl NetworkStack {
         stack
     }
 
-<<<<<<< HEAD
     pub fn refresh(&mut self) {
         self.interfaces.clear();
         if cfg!(target_os = "macos") {
-=======
-    fn parse_linux_ip(&self) -> Vec<NetInterface> {
-        let output = Command::new("ip").arg("addr").output().unwrap_or_else(|_| default_output());
-        let text = String::from_utf8_lossy(&output.stdout);
-        let mut ifaces = vec![];
-        let mut current = None;
-        for line in text.lines() {
-            let line = line.trim();
-            if line.ends_with(':') && line.contains(' ') {
-                if let Some(name) = line.split(':').next() {
-                    if current.is_some() {
-                        ifaces.push(current.unwrap());
-                    }
-                    current = Some(NetInterface {
-                        name: name.trim().to_string(),
-                        mac: "00:00:00:00:00:00".to_string(),
-                        ip: String::new(),
-                        netmask: String::new(),
-                        status: "down".to_string(),
-                        wifi_ssid: None,
-                        wifi_signal: 0,
-                        frequency: 0.0,
-                    });
-                }
-            } else if line.starts_with("link/ether") {
-                if let Some(mut iface) = current.take() {
-                    let parts: Vec<&str> = line.split_whitespace().collect();
-                    if parts.len() > 1 {
-                        iface.mac = parts[1].to_string();
-                    }
-                    current = Some(iface);
-                }
-            } else if line.starts_with("inet ") {
-                if let Some(mut iface) = current.take() {
-                    let parts: Vec<&str> = line.split_whitespace().collect();
-                    if parts.len() > 1 {
-                        iface.ip = parts[1].split('/').next().unwrap_or("").to_string();
-                    }
-                    if parts.len() > 3 {
-                        iface.netmask = parts[2].to_string();
-                    }
-                    iface.status = "up".to_string();
-                    current = Some(iface);
-                }
-            }
-        }
-        if let Some(iface) = current {
-            ifaces.push(iface);
-        }
-        if ifaces.is_empty() {
-            vec![NetInterface {
+            let airport = Command::new("/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport")
+                .arg("-I")
+                .output()
+                .unwrap_or_else(|_| default_output());
+            let output = String::from_utf8_lossy(&airport.stdout);
+            let ssid = output.lines().find(|l| l.contains("SSID:")).and_then(|l| l.split(':').nth(1)).map(|s| s.trim().to_string());
+            let signal: i32 = output.lines().find(|l| l.contains("RSSI")).and_then(|l| l.split(':').nth(1)).and_then(|s| s.trim().parse().ok()).unwrap_or(-55);
+            let freq: f32 = output.lines().find(|l| l.contains("channel")).and_then(|l| l.split(':').nth(1)).and_then(|s| s.trim().parse().ok()).unwrap_or(2.437);
+            let ip_output = Command::new("ipconfig").arg("getifaddr").arg("en0").output().unwrap_or_else(|_| default_output());
+            let ip_str = String::from_utf8_lossy(&ip_output.stdout).trim().to_string();
+            let ip = if ip_str.is_empty() { "192.168.1.137".to_string() } else { ip_str };
+            self.interfaces.push(NetInterface {
+                name: "en0".to_string(),
+                mac: "aa:bb:cc:dd:ee:ff".to_string(),
+                ip,
+                netmask: "255.255.255.0".to_string(),
+                status: if ssid.is_some() { "up" } else { "down" }.to_string(),
+                wifi_ssid: ssid,
+                wifi_signal: signal,
+                frequency: freq,
+            });
+            self.interfaces.push(NetInterface {
+                name: "en1".to_string(),
+                mac: "00:11:22:33:44:55".to_string(),
+                ip: "10.0.0.42".to_string(),
+                netmask: "255.255.255.0".to_string(),
+                status: "up".to_string(),
+                wifi_ssid: None,
+                wifi_signal: 0,
+                frequency: 0.0,
+            });
+        } else if cfg!(target_os = "linux") {
+            let _ip_output = Command::new("ip").arg("addr").output().unwrap_or_else(|_| default_output());
+            self.interfaces.push(NetInterface {
                 name: "eth0".to_string(),
                 mac: "00:11:22:33:44:55".to_string(),
                 ip: "192.168.1.100".to_string(),
@@ -104,120 +78,19 @@ impl NetworkStack {
                 wifi_ssid: None,
                 wifi_signal: 0,
                 frequency: 0.0,
-            }]
-        } else {
-            ifaces
-        }
-    }
-
-    fn parse_macos_ifconfig(&self) -> Vec<NetInterface> {
-        let output = Command::new("ifconfig").output().unwrap_or_else(|_| default_output());
-        let text = String::from_utf8_lossy(&output.stdout);
-        let mut ifaces = vec![];
-        for block in text.split("flags=").skip(1) {
-            let lines: Vec<&str> = block.lines().collect();
-            if lines.is_empty() { continue; }
-            let name_line = lines[0].split(':').next().unwrap_or("en0");
-            let mut iface = NetInterface {
-                name: name_line.trim().to_string(),
-                mac: "aa:bb:cc:dd:ee:ff".to_string(),
-                ip: "192.168.1.137".to_string(),
-                netmask: "255.255.255.0".to_string(),
-                status: "down".to_string(),
-                wifi_ssid: None,
-                wifi_signal: 0,
-                frequency: 0.0,
-            };
-            for line in &lines {
-                let line = line.trim();
-                if line.starts_with("ether ") {
-                    if let Some(mac) = line.split_whitespace().nth(1) {
-                        iface.mac = mac.to_string();
-                    }
-                } else if line.starts_with("inet ") {
-                    let parts: Vec<&str> = line.split_whitespace().collect();
-                    if parts.len() > 1 {
-                        iface.ip = parts[1].to_string();
-                    }
-                    iface.status = "up".to_string();
-                }
-            }
-            ifaces.push(iface);
-        }
-        if ifaces.is_empty() {
-            vec![NetInterface {
-                name: "en0".to_string(),
-                mac: "aa:bb:cc:dd:ee:ff".to_string(),
-                ip: "192.168.1.137".to_string(),
-                netmask: "255.255.255.0".to_string(),
-                status: "up".to_string(),
-                wifi_ssid: None,
-                wifi_signal: 0,
-                frequency: 0.0,
-            }]
-        } else {
-            ifaces
-        }
-    }
-
-    pub fn refresh(&mut self) {
-        self.interfaces.clear();
-        if cfg!(target_os = "macos") {
-            let mut ifaces = self.parse_macos_ifconfig();
->>>>>>> 63d5bbc (update v3.0.0)
-            let airport = Command::new("/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport")
-                .arg("-I")
-                .output()
-                .unwrap_or_else(|_| default_output());
-            let output = String::from_utf8_lossy(&airport.stdout);
-<<<<<<< HEAD
-            let ssid = output.lines().find(|l| l.contains("SSID:")).and_then(|l| l.split(':').nth(1)).map(|s| s.trim().to_string());
-            let signal: i32 = output.lines().find(|l| l.contains("RSSI")).and_then(|l| l.split(':').nth(1)).and_then(|s| s.trim().parse().ok()).unwrap_or(-55);
-            let freq: f32 = output.lines().find(|l| l.contains("channel")).and_then(|l| l.split(':').nth(1)).and_then(|s| s.trim().parse().ok()).unwrap_or(2.437);
-            let ip_output = Command::new("ipconfig").arg("getifaddr").arg("en0").output().unwrap_or_else(|_| default_output());
-            let ip = String::from_utf8_lossy(&ip_output.stdout).trim().to_string();
-            let ip = if ip.is_empty() { "192.168.1.137".to_string() } else { ip };
-            self.interfaces.push(NetInterface { name: "en0".to_string(), mac: "aa:bb:cc:dd:ee:ff".to_string(), ip, netmask: "255.255.255.0".to_string(), status: if ssid.is_some() { "up" } else { "down" }.to_string(), wifi_ssid: ssid, wifi_signal: signal, frequency: freq });
-            self.interfaces.push(NetInterface { name: "en1".to_string(), mac: "00:11:22:33:44:55".to_string(), ip: "10.0.0.42".to_string(), netmask: "255.255.255.0".to_string(), status: "up".to_string(), wifi_ssid: None, wifi_signal: 0, frequency: 0.0 });
-        } else if cfg!(target_os = "linux") {
-            let _ip_output = Command::new("ip").arg("addr").output().unwrap_or_else(|_| default_output());
-            self.interfaces.push(NetInterface { name: "eth0".to_string(), mac: "00:11:22:33:44:55".to_string(), ip: "192.168.1.100".to_string(), netmask: "255.255.255.0".to_string(), status: "up".to_string(), wifi_ssid: None, wifi_signal: 0, frequency: 0.0 });
+            });
             let nm_output = Command::new("nmcli").arg("-t").arg("device").arg("wifi").output().unwrap_or_else(|_| default_output());
             if nm_output.status.success() {
-                self.interfaces.push(NetInterface { name: "wlan0".to_string(), mac: "aa:bb:cc:dd:ee:ff".to_string(), ip: "192.168.1.101".to_string(), netmask: "255.255.255.0".to_string(), status: "up".to_string(), wifi_ssid: Some("LinuxNetwork".to_string()), wifi_signal: -52, frequency: 5.2 });
-            }
-        } else {
-            self.interfaces.push(NetInterface { name: "lo".to_string(), mac: "00:00:00:00:00:00".to_string(), ip: "127.0.0.1".to_string(), netmask: "255.0.0.0".to_string(), status: "up".to_string(), wifi_ssid: None, wifi_signal: 0, frequency: 0.0 });
-=======
-            if let Some(ssid_line) = output.lines().find(|l| l.contains("SSID:")) {
-                if let Some(ssid) = ssid_line.split(':').nth(1) {
-                    if let Some(iface) = ifaces.first_mut() {
-                        iface.wifi_ssid = Some(ssid.trim().to_string());
-                        if let Some(sig_line) = output.lines().find(|l| l.contains("RSSI")) {
-                            iface.wifi_signal = sig_line.split(':').nth(1).and_then(|s| s.trim().parse().ok()).unwrap_or(-55);
-                        }
-                        if let Some(freq_line) = output.lines().find(|l| l.contains("channel")) {
-                            iface.frequency = freq_line.split(':').nth(1).and_then(|s| s.trim().parse().ok()).unwrap_or(2.437);
-                        }
-                    }
-                }
-            }
-            self.interfaces = ifaces;
-        } else if cfg!(target_os = "linux") {
-            self.interfaces = self.parse_linux_ip();
-            let nm_output = Command::new("nmcli").arg("-t").arg("device").arg("wifi").output().unwrap_or_else(|_| default_output());
-            if nm_output.status.success() {
-                let text = String::from_utf8_lossy(&nm_output.stdout);
-                if let Some(line) = text.lines().next() {
-                    let parts: Vec<&str> = line.split(':').collect();
-                    if parts.len() > 3 {
-                        if let Some(iface) = self.interfaces.iter_mut().find(|i| i.name.contains("wl") || i.name == "wlan0") {
-                            iface.wifi_ssid = Some(parts[1].to_string());
-                            iface.wifi_signal = -52;
-                            iface.frequency = 5.2;
-                        }
-                    }
-                }
+                self.interfaces.push(NetInterface {
+                    name: "wlan0".to_string(),
+                    mac: "aa:bb:cc:dd:ee:ff".to_string(),
+                    ip: "192.168.1.101".to_string(),
+                    netmask: "255.255.255.0".to_string(),
+                    status: "up".to_string(),
+                    wifi_ssid: Some("LinuxNetwork".to_string()),
+                    wifi_signal: -52,
+                    frequency: 5.2,
+                });
             }
         } else {
             self.interfaces.push(NetInterface {
@@ -230,7 +103,6 @@ impl NetworkStack {
                 wifi_signal: 0,
                 frequency: 0.0,
             });
->>>>>>> 63d5bbc (update v3.0.0)
         }
     }
 
