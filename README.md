@@ -13,6 +13,9 @@ Research project demonstrating core operating system concepts in safe userspace.
 - System commands: `free`, `df`, `uname`, `uptime`, `date`, `whoami`, `id`, `dmesg`, `ifconfig`, `ping`, …
 - Environment variables, history, redirection
 - Python plugin system (`plugins/`)
+- Built-in terminal editors: `nano`, `vi`
+- C compilation and execution: `gcc <file.c>` or `gcc "inline code"`
+- Terminal web browser: `browser <url>` (real curl + HTML-to-text)
 - Linux namespace sandboxing (reduced privileges on macOS)
 
 ## Quick Start

@@ -7,4 +7,4 @@ for line in sys.stdin:
 print(f"Hello from Python plugin '{data.get('COMMAND', 'unknown')}'!")
 print(f"Running as user: {data.get('USER', 'unknown')}")
 print(f"Current directory: {data.get('CWD', '/')}")
-print("Plugin executed successfully! You can extend this freely.")
+print("Plugin executed successfully!")

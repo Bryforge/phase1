@@ -1,22 +1,24 @@
-// src/main.rs — phase1 v2.0.0 Terminal OS
+// src/main.rs — phase1 v2.0.1 Terminal OS Simulator
 mod network;
 mod kernel;
+mod browser;
 
 use std::collections::{HashMap, VecDeque};
 use std::fs;
 use std::io::{self, Write};
 use std::path::PathBuf;
-use std::process::{self, Command, Output, ExitStatus};
+use std::process::{self, Command};
 use std::os::unix::process::ExitStatusExt;
 use std::thread;
 use std::time::{Duration, Instant};
 
 use chrono::prelude::*;
 
-use kernel::{Kernel, Vfs, Scheduler, PcieManager};
+use kernel::Kernel;
 use network::NetworkStack;
+use browser::Browser;
 
-const VERSION: &str = "2.0.0";
+const VERSION: &str = "2.0.1";
 const BUILD_DATE: &str = "2026-05-04";
 
 const ANSI_CLEAR: &str = "\x1b[2J\x1b[H";
@@ -29,9 +31,9 @@ const ANSI_CYAN: &str = "\x1b[36m";
 const ANSI_RED: &str = "\x1b[31m";
 const ANSI_MAGENTA: &str = "\x1b[35m";
 
-fn default_output() -> Output {
-    Output {
-        status: ExitStatus::from_raw(0),
+fn default_output() -> std::process::Output {
+    std::process::Output {
+        status: std::process::ExitStatus::from_raw(0),
         stdout: Vec::new(),
         stderr: Vec::new(),
     }
@@ -61,10 +63,11 @@ impl Phase1Shell {
         shell.env.insert("HOME".to_string(), "/home".to_string());
         shell.env.insert("SHELL".to_string(), "phase1".to_string());
         shell.env.insert("TERM".to_string(), "xterm-256color".to_string());
+
         if !shell.plugins_dir.exists() {
             let _ = fs::create_dir_all(&shell.plugins_dir);
         }
-        let example_plugin = r#"import sys
+        let example = r#"import sys
 data = {}
 for line in sys.stdin:
     if '=' in line:
@@ -73,20 +76,19 @@ for line in sys.stdin:
 print(f"Hello from Python plugin '{data.get('COMMAND', 'unknown')}'!")
 print(f"Running as user: {data.get('USER', 'unknown')}")
 print(f"Current directory: {data.get('CWD', '/')}")
-print("Plugin executed successfully! You can extend this freely.")
-"#;
-        let _ = fs::write(shell.plugins_dir.join("hello.py"), example_plugin);
-        let _ = fs::write(shell.plugins_dir.join("demo.py"), example_plugin);
+print("Plugin executed successfully!")"#;
+        let _ = fs::write(shell.plugins_dir.join("hello.py"), example);
+        let _ = fs::write(shell.plugins_dir.join("demo.py"), example);
         shell
     }
 
     fn print_boot() {
         println!("{}", ANSI_CLEAR);
         println!("{}================================================================================{}", ANSI_GREEN, ANSI_RESET);
-        println!("{}/                    phase1 v2.0.0  —  Terminal OS Simulator                   /{}", ANSI_GREEN, ANSI_RESET);
-        println!("{}/  VFS + Scheduler + Editors + Python + C + Networking                           /{}", ANSI_GREEN, ANSI_RESET);
+        println!("{}/                    phase1 v2.0.1  —  Terminal OS Simulator                   /{}", ANSI_GREEN, ANSI_RESET);
+        println!("{}/  VFS + Scheduler + Editors + Python + C + Networking + Browser              /{}", ANSI_GREEN, ANSI_RESET);
         println!("{}================================================================================{}", ANSI_GREEN, ANSI_RESET);
-        println!("{}[    0.000000] phase1 kernel booted on virtual x86_64 hardware{}", ANSI_YELLOW, ANSI_RESET);
+        println!("{}[    0.000000] phase1 kernel booted{}", ANSI_YELLOW, ANSI_RESET);
         println!("{}[    0.012345] In-memory VFS and proc mounted{}", ANSI_YELLOW, ANSI_RESET);
         println!("{}[    0.034567] Preemptive scheduler ready{}", ANSI_YELLOW, ANSI_RESET);
         println!("{}[    0.067890] Built-in nano/vi and C compiler support loaded{}", ANSI_YELLOW, ANSI_RESET);
@@ -134,21 +136,19 @@ print("Plugin executed successfully! You can extend this freely.")
         }
     }
 
-        fn cmd_nano(&mut self, file: Option<&str>) {
+    fn cmd_nano(&mut self, file: Option<&str>) {
         if let Some(f) = file {
             let mut content = match self.kernel.vfs.cat(f) {
                 Ok(c) => c,
                 Err(_) => String::new(),
             };
             println!("nano: editing {} (type lines, end with single . on new line to save/exit, or :q to quit)", f);
-            let stdin = io::stdin();
             let mut lines: Vec<String> = content.lines().map(|l| l.to_string() + "\n").collect();
-            for line in stdin.lines() {
-                let line = match line {
-                    Ok(l) => l,
-                    Err(_) => break,
-                };
-                if line.trim() == "." {
+            loop {
+                let mut line = String::new();
+                if io::stdin().read_line(&mut line).is_err() { break; }
+                let line = line.trim_end().to_string();
+                if line == "." {
                     content = lines.join("");
                     match self.kernel.vfs.write_file(f, &content, false) {
                         Ok(_) => println!("Saved {}", f),
@@ -156,7 +156,7 @@ print("Plugin executed successfully! You can extend this freely.")
                     }
                     return;
                 }
-                if line.trim() == ":q" {
+                if line == ":q" {
                     println!("Exited without saving");
                     return;
                 }
@@ -169,7 +169,7 @@ print("Plugin executed successfully! You can extend this freely.")
 
     fn cmd_vi(&mut self, file: Option<&str>) {
         if let Some(f) = file {
-            println!("vi: basic mode for {} (nano compatible fallback — use nano for full editing)", f);
+            println!("vi: basic mode for {} (nano compatible fallback)", f);
             self.cmd_nano(Some(f));
         } else {
             println!("Usage: vi <file>");
@@ -184,10 +184,7 @@ print("Plugin executed successfully! You can extend this freely.")
         let source = if args[0].ends_with(".c") {
             match self.kernel.vfs.cat(args[0]) {
                 Ok(c) => c,
-                Err(_) => {
-                    println!("{}Source file not found{}", ANSI_RED, ANSI_RESET);
-                    return;
-                }
+                Err(_) => { println!("{}Source file not found{}", ANSI_RED, ANSI_RESET); return; }
             }
         } else {
             args.join(" ")
@@ -208,14 +205,28 @@ print("Plugin executed successfully! You can extend this freely.")
                 println!("Compiled successfully");
                 let output = Command::new(&bin_file).output().unwrap_or_else(|_| default_output());
                 println!("{}{}{}", ANSI_GREEN, String::from_utf8_lossy(&output.stdout), ANSI_RESET);
-                if !output.stderr.is_empty() {
-                    println!("{}stderr: {}{}", ANSI_RED, String::from_utf8_lossy(&output.stderr), ANSI_RESET);
-                }
             }
             _ => println!("{}Compilation failed{}", ANSI_RED, ANSI_RESET),
         }
         let _ = fs::remove_file(c_file);
         let _ = fs::remove_file(bin_file);
+    }
+
+    fn cmd_python(&self, file: Option<&str>) {
+        if let Some(f) = file {
+            match self.kernel.vfs.cat(f) {
+                Ok(content) => {
+                    let tmp_path = format!("/tmp/phase1_py_{}.py", std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs());
+                    let _ = fs::write(&tmp_path, content);
+                    let output = Command::new("python3").arg(&tmp_path).output().unwrap_or_else(|_| default_output());
+                    println!("{}", String::from_utf8_lossy(&output.stdout));
+                    let _ = fs::remove_file(&tmp_path);
+                }
+                Err(_) => println!("{}File not found in VFS: {}{}", ANSI_RED, f, ANSI_RESET),
+            }
+        } else {
+            println!("Usage: python <script.py>");
+        }
     }
 
     fn run(&mut self) {
@@ -240,7 +251,7 @@ print("Plugin executed successfully! You can extend this freely.")
             let args = &parts[1..];
             match cmd {
                 "exit" | "quit" | "shutdown" | "poweroff" => {
-                    println!("{}Shutting down phase1 v2.0.0... Goodbye!{}", ANSI_YELLOW, ANSI_RESET);
+                    println!("{}Shutting down phase1 v{}... Goodbye!{}", ANSI_YELLOW, VERSION, ANSI_RESET);
                     break;
                 }
                 "help" => self.cmd_help(),
@@ -262,11 +273,7 @@ print("Plugin executed successfully! You can extend this freely.")
                 "cr3" => println!("Current CR3: 0x{:016x}", self.kernel.scheduler.get_cr3()),
                 "loadcr3" => {
                     if let Some(val_str) = args.first() {
-                        let val = if val_str.starts_with("0x") {
-                            u64::from_str_radix(&val_str[2..], 16).unwrap_or(0)
-                        } else {
-                            val_str.parse().unwrap_or(0)
-                        };
+                        let val = if val_str.starts_with("0x") { u64::from_str_radix(&val_str[2..], 16).unwrap_or(0) } else { val_str.parse().unwrap_or(0) };
                         self.kernel.scheduler.load_cr3(val);
                         println!("CR3 loaded");
                     } else {
@@ -350,6 +357,10 @@ print("Plugin executed successfully! You can extend this freely.")
                 "nano" => self.cmd_nano(args.first().copied()),
                 "vi" => self.cmd_vi(args.first().copied()),
                 "gcc" | "cc" | "c-compile" => self.cmd_c_compile(args),
+                "browser" => {
+                    let target = args.first().copied().unwrap_or("about");
+                    println!("{}", Browser::new().browse(target));
+                }
                 "jobs" => println!("{}", self.kernel.scheduler.jobs()),
                 "su" => self.cmd_su(args.first().copied()),
                 "dmesg" => self.cmd_dmesg(),
@@ -388,13 +399,14 @@ print("Plugin executed successfully! You can extend this freely.")
     }
 
     fn cmd_help(&self) {
-        println!("phase1 v2.0.0 — Terminal OS Commands");
+        println!("phase1 v2.0.1 — Terminal OS Commands");
         println!("Filesystem: ls [-l] cd pwd cat mkdir touch rm cp mv echo [> >>]");
         println!("Editors: nano <file> vi <file>");
         println!("C support: gcc <file.c> or gcc \"code\"");
         println!("Process: ps top kill spawn nice jobs");
         println!("Hardware: lspci pcie cr3 loadcr3 cr4 pcide");
         println!("Network: ifconfig iwconfig wifi-scan wifi-connect ping nmcli");
+        println!("Browser: browser <url> (or browser phase1 / about)");
         println!("Shell: env export unset history su python plugin");
         println!("System: free df uname date uptime dmesg vmstat tree sandbox version");
         println!("Misc: man <cmd> clear exit");
@@ -444,14 +456,6 @@ print("Plugin executed successfully! You can extend this freely.")
             self.env.remove(v);
         } else {
             println!("Usage: unset VAR");
-        }
-    }
-
-    fn cmd_python(&self, file: Option<&str>) {
-        if let Some(f) = file {
-            let _ = Command::new("python3").arg(f).status();
-        } else {
-            println!("Usage: python <script.py>");
         }
     }
 
@@ -509,18 +513,19 @@ print("Plugin executed successfully! You can extend this freely.")
     fn cmd_man(&self, topic: Option<&str>) {
         match topic {
             Some("cr3") => println!("cr3: display current CR3 register value (paging base)"),
-            Some("loadcr3") => println!("loadcr3 <value>: direct load into CR3 register (privileged, hardware-accurate PCID validation)"),
+            Some("loadcr3") => println!("loadcr3 <value>: direct load into CR3 register"),
             Some("cr4") => println!("cr4: display current CR4 register value (includes PCIDE bit)"),
-            Some("pcide") => println!("pcide <on|off>: toggle CR4.PCIDE (enables PCID usage in CR3)"),
-            Some("lspci") => println!("lspci: list PCI/PCIe devices (simulated hardware enumeration)"),
-            Some("ifconfig") => println!("ifconfig: show network interfaces (real host data on Linux/macOS)"),
-            Some("wifi-scan") => println!("wifi-scan: scan for nearby WiFi networks (real scan on supported OS)"),
-            Some("ls") => println!("ls: list directory contents. Use -l for long format with permissions."),
-            Some("echo") => println!("echo: print text. Supports basic redirection: echo text > file or >> file"),
-            Some("cd") => println!("cd: change working directory. Use .. for parent."),
-            Some("nano") => println!("nano <file>: built-in line editor. End input with single . on its own line."),
-            Some("vi") => println!("vi <file>: basic editor (nano fallback)."),
-            Some("gcc") => println!("gcc <file.c> or gcc \"code\": compile and run C code using host gcc/clang."),
+            Some("pcide") => println!("pcide <on|off>: toggle CR4.PCIDE"),
+            Some("lspci") => println!("lspci: list PCI/PCIe devices"),
+            Some("ifconfig") => println!("ifconfig: show network interfaces"),
+            Some("wifi-scan") => println!("wifi-scan: scan for nearby WiFi networks"),
+            Some("ls") => println!("ls: list directory contents. Use -l for long format."),
+            Some("echo") => println!("echo: print text. Supports redirection > and >>"),
+            Some("cd") => println!("cd: change working directory."),
+            Some("nano") => println!("nano <file>: built-in line editor. End input with . or :q"),
+            Some("vi") => println!("vi <file>: basic editor (nano fallback)"),
+            Some("gcc") => println!("gcc <file.c> or gcc \"code\": compile and run C code"),
+            Some("browser") => println!("browser <url>: terminal web browser with real HTTP fetch"),
             Some(_) => println!("No manual entry for that command yet."),
             None => println!("Usage: man <command>"),
         }

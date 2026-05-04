@@ -1,9 +1,9 @@
 [package]
 name = "phase1"
-version = "2.0.0"
+version = "2.0.1"
 edition = "2021"
 authors = ["Chase Bryan"]
-description = "Full-featured terminal operating system simulator in Rust. In-memory VFS, scheduler, networking, editors, C/Python support. Educational and practical userspace environment."
+description = "Terminal-based educational embedded OS simulator in Rust. Demonstrates process management, memory accounting, kernel concepts, extensibility, dynamic spawning, disk simulation, editors, C compilation, and terminal web browsing." 
 license = "GPL-3.0"
 readme = "README.md"
 
