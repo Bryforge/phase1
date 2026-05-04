@@ -1,61 +1,41 @@
-// ned is a command line text editor ("new ed")
-use std::env;
-use std::fs::{self, File};
-use std::io::{self, BufRead, BufReader, Write};
+use std::io;
 
-fn main() {
-    let args: Vec<String> = env::args().collect();
-    let filename = if args.len() > 1 {
-        args[1].clone()
-    } else {
-        "buffer.txt".to_string()
+use crate::kernel::Vfs;
+
+pub fn edit(vfs: &mut Vfs, filename: &str) {
+    if filename.trim().is_empty() {
+        println!("Usage: ned <file>");
+        return;
+    }
+
+    let content = match vfs.cat(filename) {
+        Ok(c) => c,
+        Err(_) => String::new(),
     };
 
-    let mut lines: Vec<String> = Vec::new();
+    println!("ned: editing {} (type lines, end with single . on new line to save/exit, or :q to quit)", filename);
 
-    // Load existing file if it exists
-    if fs::metadata(&filename).is_ok() {
-        if let Ok(file) = File::open(&filename) {
-            let reader = BufReader::new(file);
-            for line in reader.lines() {
-                if let Ok(l) = line {
-                    lines.push(l);
-                }
-            }
-        }
-        println!("Loaded {} lines from {}", lines.len(), filename);
-    } else {
-        println!("Creating new file: {}", filename);
-    }
-
-    println!("ned: editing {} (type lines, end with single . on its own line to save/exit)", filename);
+    let mut builder = content;
 
     loop {
-        let mut input = String::new();
-        if io::stdin().read_line(&mut input).is_err() {
+        let mut line = String::new();
+        if io::stdin().read_line(&mut line).is_err() {
             break;
         }
+        let line = line.trim_end().to_string();
 
-        let trimmed = input.trim_end_matches(&['\r', '\n'][..]);
-
-        if trimmed == "." {
-            break;
-        }
-
-        lines.push(trimmed.to_string());
-    }
-
-    // Save the file
-    match File::create(&filename) {
-        Ok(mut file) => {
-            for line in &lines {
-                if let Err(e) = writeln!(file, "{}", line) {
-                    eprintln!("Write error: {}", e);
-                    return;
-                }
+        if line == "." {
+            match vfs.write_file(filename, &builder, false) {
+                Ok(_) => println!("Saved {}", filename),
+                Err(e) => println!("\x1b[31mSave failed: {}\x1b[0m", e),
             }
-            println!("Saved {}", filename);
+            return;
         }
-        Err(e) => eprintln!("Could not save file: {}", e),
+        if line == ":q" {
+            println!("Exited without saving");
+            return;
+        }
+        builder.push_str(&line);
+        builder.push('\n');
     }
 }
