@@ -1,0 +1,18 @@
+[package]
+name = "phase1"
+version = "2.0.0"
+edition = "2021"
+authors = ["Chase Bryan"]
+description = "Full-featured terminal operating system simulator in Rust. In-memory VFS, scheduler, networking, editors, C/Python support. Educational and practical userspace environment."
+license = "GPL-3.0"
+readme = "README.md"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
+
+[dependencies]
+chrono = "0.4.44"
