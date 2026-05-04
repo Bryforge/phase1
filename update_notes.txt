@@ -1,0 +1,32 @@
+phase1 v3.0.0 — Codename Blue
+Update Notes
+
+Scheduler
+- Dynamic Vec storage (256 processes)
+- Real background job tracking
+- Preemption simulation and automatic zombie reaping in tick
+- kill, nice, and jobs now mutate state
+
+VFS
+- Strict path resolution with recursive mkdir support
+- Clean Unix-style ls output (no icons)
+- Consistent permission simulation
+- Expanded /proc (added loadavg)
+- Persistence method stubs (save/load)
+
+NetworkStack
+- Live host parsing: ip addr (Linux), ifconfig + airport (macOS)
+- All commands (ifconfig, iwconfig, wifi-scan, wifi-connect, ping, nmcli) now dynamic
+
+Browser
+- Robust HTML stripper with script/style/comment handling
+
+Shell & Integration
+- Full man page system wired in
+- Boot banner and version strings updated
+- VFS methods exposed for shell use
+- All compiler warnings eliminated
+
+Build
+- Clean cargo check / cargo build --release on both platforms
+- Every v2.0.1 feature preserved
