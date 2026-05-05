@@ -550,7 +550,7 @@ fn unique_nonce() -> u128 {
 }
 
 fn find_compiler() -> Option<&'static str> {
-    ["cc", "gcc", "clang"].into_iter().find(|name| Command::new(name).arg("--version").stdout(Stdio::null()).stderr(Stdio::null()).status().is_ok())
+    ["cc", "gcc", "clang"].into_iter().find(|name| Command::new(*name).arg("--version").stdout(Stdio::null()).stderr(Stdio::null()).status().is_ok())
 }
 
 fn run_with_input(mut cmd: Command, input: &str, timeout: Duration) -> io::Result<Output> {
