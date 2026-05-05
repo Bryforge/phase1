@@ -164,6 +164,10 @@ print("status=ok")
         if !path.exists() {
             return false;
         }
+        if safe_mode_enabled() {
+            println!("plugin: disabled by safe boot profile");
+            return true;
+        }
 
         self.kernel.audit.record(format!("plugin.exec name={} argc={}", name, args.len()));
         let context = format!(
@@ -296,17 +300,37 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
             shell.network.refresh();
             print!("{}", shell.network.iwconfig());
         }
-        "wifi-scan" => print!("{}", shell.network.wifi_scan()),
+        "wifi-scan" => {
+            if safe_mode_enabled() {
+                println!("wifi-scan: disabled by safe boot profile");
+            } else {
+                print!("{}", shell.network.wifi_scan());
+            }
+        }
         "wifi-connect" => {
-            if args.is_empty() {
+            if safe_mode_enabled() {
+                println!("wifi-connect: disabled by safe boot profile");
+            } else if args.is_empty() {
                 println!("usage: wifi-connect <ssid> [password]");
             } else {
                 println!("{}", shell.network.wifi_connect(&args[0], args.get(1).map(String::as_str)));
             }
         }
-        "ping" => one_arg(args, "ping <host>", |host| print!("{}", shell.network.ping(host))),
+        "ping" => {
+            if safe_mode_enabled() {
+                println!("ping: disabled by safe boot profile");
+            } else {
+                one_arg(args, "ping <host>", |host| print!("{}", shell.network.ping(host)));
+            }
+        }
         "nmcli" => print!("{}", shell.network.nmcli()),
-        "browser" => println!("{}", Browser::new().browse(args.first().map(String::as_str).unwrap_or("about"))),
+        "browser" => {
+            if safe_mode_enabled() {
+                println!("browser: disabled by safe boot profile");
+            } else {
+                println!("{}", Browser::new().browse(args.first().map(String::as_str).unwrap_or("about")));
+            }
+        }
         "python" => run_python(shell, args),
         "gcc" => run_c(shell, args),
         "plugins" => print!("{}", shell.list_plugins()),
@@ -457,6 +481,10 @@ fn spawn(shell: &mut Phase1Shell, args: &[String]) {
 }
 
 fn run_python(shell: &mut Phase1Shell, args: &[String]) {
+    if safe_mode_enabled() {
+        println!("python: disabled by safe boot profile");
+        return;
+    }
     if args.is_empty() || (args[0] == "-c" && args.len() < 2) {
         println!("usage: python <file.py> | python -c <code>");
         return;
@@ -482,6 +510,10 @@ fn run_python(shell: &mut Phase1Shell, args: &[String]) {
 }
 
 fn run_c(shell: &mut Phase1Shell, args: &[String]) {
+    if safe_mode_enabled() {
+        println!("gcc: disabled by safe boot profile");
+        return;
+    }
     if args.is_empty() {
         println!("usage: gcc <file.c> | gcc <code>");
         return;
@@ -588,6 +620,10 @@ fn parse_u64(raw: &str) -> Option<u64> {
 
 fn is_safe_name(name: &str) -> bool {
     !name.is_empty() && name.chars().all(|ch| ch.is_ascii_alphanumeric() || matches!(ch, '_' | '-'))
+}
+
+fn safe_mode_enabled() -> bool {
+    std::env::var("PHASE1_SAFE_MODE").ok().as_deref() == Some("1")
 }
 
 fn now_unix() -> u64 {
