@@ -4,6 +4,7 @@ mod kernel;
 mod man;
 mod ned;
 mod network;
+mod registry;
 mod ui;
 
 use commands::{dispatch, parse_line, Phase1Shell};
