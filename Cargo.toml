@@ -1,9 +1,9 @@
 [package]
 name = "phase1"
-version = "3.0.0"
+version = "3.3.2"
 edition = "2021"
 authors = ["Chase Bryan"]
-description = "Terminal-based educational OS simulator in Rust. Demonstrates process management, memory accounting, kernel concepts, extensibility, dynamic spawning, disk simulation, editors, C compilation, networking, and terminal web browsing under Codename Blue."
+description = "Terminal-based educational OS simulator in Rust."
 license = "GPL-3.0"
 readme = "README.md"
 
@@ -15,4 +15,3 @@ panic = "abort"
 strip = true
 
 [dependencies]
-chrono = "0.4.44"
