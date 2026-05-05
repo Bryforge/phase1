@@ -49,6 +49,24 @@ fn boot_help_man_and_completion_work() {
 }
 
 #[test]
+fn roadmap_aliases_and_capabilities_work() {
+    let output = run_phase1("commands\ncaps\npy -c \"print('alias-ok')\"\nquit\n");
+    assert_contains_all(
+        &output,
+        &[
+            "phase1 // command map",
+            "command        category capability",
+            "wifi-connect",
+            "dry-run by default",
+            "python",
+            "timeout+validation",
+            "alias-ok",
+            "shutdown: phase1 3.5.0",
+        ],
+    );
+}
+
+#[test]
 fn filesystem_commands_round_trip() {
     let output = run_phase1(
         "pwd\nls /\nmkdir lab\ncd lab\npwd\necho hello world > note.txt\ncat note.txt\ncp note.txt copy.txt\ncat copy.txt\nmv copy.txt moved.txt\nls\nrm moved.txt\nls\nexit\n",
