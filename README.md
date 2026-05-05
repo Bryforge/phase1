@@ -53,6 +53,19 @@ browser https://example.com
 
 phase1 simulates the kernel, VFS, process table, and scheduler in memory. Some commands call host tools (`python3`, `cc`/`gcc`/`clang`, `curl`, `ping`, `nmcli`, `networksetup`). Those paths use validation and timeouts. `wifi-connect` is dry-run by default and requires `PHASE1_ALLOW_HOST_NETWORK_CHANGES=1` before it attempts host network mutation.
 
+## Roadmap designs
+
+The roadmap design index is in `ROADMAP_DESIGNS.md`.
+
+Detailed design tracks:
+
+- `docs/roadmap/operator-shell.md`
+- `docs/roadmap/virtual-kernel.md`
+- `docs/roadmap/security-capabilities.md`
+- `docs/roadmap/structured-pipelines.md`
+- `docs/roadmap/package-plugin-runtime.md`
+- `docs/roadmap/tui-dashboard.md`
+
 ## Development checks
 
 ```bash
