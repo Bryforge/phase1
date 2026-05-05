@@ -2,14 +2,16 @@
 
 **phase1** is a terminal-first educational virtual operating-system console written in Rust.
 
-It runs as a safe userspace simulator while modeling real OS concepts: an in-memory VFS, simulated process scheduler, syscall-style shell operations, `/proc`, `/dev`, `/var/log`, PCIe enumeration, network inspection, guarded host tools, plugins, generated man pages, command completion metadata, and an in-memory audit log.
+It runs as a safe userspace simulator while modeling real OS concepts: an in-memory VFS, simulated process scheduler, syscall-style shell operations, `/proc`, `/dev`, `/var/log`, PCIe enumeration, network inspection, guarded host tools, plugins, generated man pages, command completion metadata, compact dashboard telemetry, and an in-memory audit log.
 
-Current release: **v3.5.0**
+Current release: **v3.6.0**
 
 ## Highlights
 
-- Mobile-friendly operator console UI.
-- Registry-backed `help`, `man`, and `complete` commands.
+- Mobile-friendly advanced operator console UI.
+- Compact `dash --compact` dashboard for release/demo screenshots.
+- Registry-backed `help`, `man`, `complete`, aliases, and capability metadata.
+- `capabilities` / `caps` command for command guard and policy visibility.
 - Syscall-style kernel boundary for read, write, spawn, and kill paths.
 - In-memory audit log exposed through `audit`.
 - Safer host integrations with validation and timeouts.
@@ -35,7 +37,10 @@ cargo build --release
 
 ```text
 help
+commands
 complete p
+capabilities
+dash --compact
 man browser
 ls -l /
 cat /proc/version
@@ -66,6 +71,10 @@ Detailed design tracks:
 - `docs/roadmap/package-plugin-runtime.md`
 - `docs/roadmap/tui-dashboard.md`
 
+## Release notes
+
+Current release notes are in `RELEASE_NOTES_v3.6.0.md`.
+
 ## Development checks
 
 ```bash
@@ -77,9 +86,14 @@ cargo audit
 cargo deny check
 ```
 
+For the end-to-end command smoke suite:
+
+```bash
+cargo test --test smoke -- --nocapture
+```
+
 ## Roadmap
 
-- Registry-backed alias dispatch.
 - Persistent shell history.
 - Structured command output and pipelines.
 - Capability enforcement based on command metadata.
