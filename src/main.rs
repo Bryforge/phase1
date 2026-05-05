@@ -23,9 +23,19 @@ fn compact_path(path: &Path) -> String {
 }
 
 fn main() {
-    let mut shell = Phase1Shell::new();
+    let boot_config = ui::configure_boot(kernel::VERSION);
+    boot_config.apply();
 
-    ui::print_boot(kernel::VERSION);
+    let mut shell = Phase1Shell::new();
+    shell.env.insert("PHASE1_BOOT_PROFILE".to_string(), boot_config.profile_name().to_string());
+    shell.env.insert("PHASE1_SAFE_MODE".to_string(), if boot_config.safe_mode { "1" } else { "0" }.to_string());
+
+    if boot_config.quick_boot {
+        ui::print_quick_boot(kernel::VERSION, boot_config);
+    } else {
+        ui::print_boot(kernel::VERSION);
+    }
+
     shell.cmd_cd(Some("/home"));
     println!("phase1 {} ready. Type 'help' for commands.", kernel::VERSION);
 
