@@ -1,27 +1,50 @@
 # phase1
 
-**Terminal-based educational OS simulator in Rust.**
+**phase1** is a terminal-based educational operating-system simulator written in Rust.
 
-Research project demonstrating core operating system concepts in safe userspace.
+It demonstrates OS concepts in safe userspace: a virtual filesystem, a simulated process table and scheduler, shell commands, `/proc`-style files, PCIe enumeration, plugins, simple editors, host-tool integration, and a terminal browser.
 
-## Features
+## What changed in this improvement pass
 
-- In-memory VFS with permissions, `/proc`, `/dev`, and dynamic entries
-- Preemptive priority scheduler with jobs (`jobs`, `fg`, `bg`)
-- Process management: `ps`, `top`, `spawn`, `kill`, `nice`
-- File ops: `ls`, `cd`, `pwd`, `cat`, `mkdir`, `touch`, `rm`, `cp`, `mv`, `tree`
-- System commands: `free`, `df`, `uname`, `uptime`, `date`, `whoami`, `id`, `dmesg`, `ifconfig`, `ping`, …
-- Environment variables, history, redirection
-- Python plugin system (`plugins/`)
-- Built-in terminal editors: `nano`, `vi`
-- C compilation and execution: `gcc <file.c>` or `gcc "inline code"`
-- Terminal web browser: `browser <url>` (real curl + HTML-to-text)
-- Linux namespace sandboxing (reduced privileges on macOS)
+- Reformatted the crate into readable Rust source instead of dense single-line files.
+- Removed the external `chrono` dependency; the simulator now builds with only the Rust standard library.
+- Added quote-aware command parsing, safer environment expansion, and deterministic sorted `ls` output.
+- Made `kill`, `nice`, `jobs`, `fg`, and `bg` mutate simulated process state instead of only printing success.
+- Hardened host integrations:
+  - `browser` allows only `http://` and `https://`, rejects `file://`, and bounds curl time/size.
+  - `ping`, Python plugins, Python execution, and C compilation use timeouts.
+  - `wifi-connect` is dry-run by default. Set `PHASE1_ALLOW_HOST_NETWORK_CHANGES=1` to allow real host network changes.
+- Replaced fake Linux network interface data with best-effort host discovery and honest fallbacks.
+- Added clearer man pages and a code-review report.
 
-## Quick Start
+## Quick start
 
 ```bash
-git clone https://github.com/Bryforge/phase1.git
-cd phase1
+cargo run
+```
+
+or
+
+```bash
 cargo build --release
 ./target/release/phase1
+```
+
+## Useful commands
+
+```text
+help
+man browser
+ls -l /
+spawn worker --background
+jobs
+nice 1002 -5
+kill 1002
+echo "hello world" > note.txt
+cat note.txt
+browser https://example.com
+```
+
+## Safety model
+
+phase1 is an educational simulator. Its VFS, processes, and scheduler are simulated in memory. Some features integrate with host tools (`python3`, `gcc`/`clang`, `curl`, `ping`, `nmcli`, `networksetup`). Those integrations are guarded with argument validation, timeouts, and dry-run defaults where the command could mutate host state.
