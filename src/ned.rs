@@ -1,4 +1,4 @@
-use std::io;
+use std::io::{self, Write};
 
 use crate::kernel::Vfs;
 
@@ -8,34 +8,50 @@ pub fn edit(vfs: &mut Vfs, filename: &str) {
         return;
     }
 
-    let content = match vfs.cat(filename) {
-        Ok(c) => c,
+    let mut buffer = match vfs.cat(filename) {
+        Ok(content) => content,
         Err(_) => String::new(),
     };
 
-    println!("ned: editing {} (type lines, end with single . on new line to save/exit, or :q to quit)", filename);
-
-    let mut builder = content;
+    println!("ned: editing {}", filename);
+    println!("Commands: single '.' or ':wq' saves and exits; ':q' exits without saving.");
+    if !buffer.is_empty() {
+        println!("--- current content ---");
+        print!("{}", buffer);
+        if !buffer.ends_with('\n') {
+            println!();
+        }
+        println!("--- append below ---");
+    }
 
     loop {
+        print!("ned> ");
+        let _ = io::stdout().flush();
+
         let mut line = String::new();
         if io::stdin().read_line(&mut line).is_err() {
-            break;
+            println!("ned: input error");
+            return;
         }
-        let line = line.trim_end().to_string();
 
-        if line == "." {
-            match vfs.write_file(filename, &builder, false) {
+        let trimmed = line.trim_end_matches(['\r', '\n']);
+
+        match trimmed {
+            "." | ":wq" => match vfs.write_file(filename, &buffer, false) {
                 Ok(_) => println!("Saved {}", filename),
-                Err(e) => println!("\x1b[31mSave failed: {}\x1b[0m", e),
+                Err(e) => println!("Save failed: {}", e),
+            },
+            ":q" => {
+                println!("Exited without saving");
+                return;
             }
-            return;
+            _ => {
+                buffer.push_str(trimmed);
+                buffer.push('\n');
+                continue;
+            }
         }
-        if line == ":q" {
-            println!("Exited without saving");
-            return;
-        }
-        builder.push_str(&line);
-        builder.push('\n');
+
+        return;
     }
 }
