@@ -9,14 +9,14 @@ pub fn print_boot(version: &str) {
     box_line("mode mobile / sandbox");
     border_mid("subsystems");
     box_line("vfs.proc  sched.jobs");
-    box_line("net.pcie  mem.cr3");
-    box_line("py.c      browser.plug");
+    box_line("sys.audit net.browser");
+    box_line("py.c      pcie.cr3");
     border_mid("quickstart");
     box_line("help | man browser | ps");
-    box_line("ls / | plugins | exit");
+    box_line("audit | complete p | ls /");
     border_bottom();
     println!("[ok] boot nominal");
-    println!("[tip] man browser | browser phase1");
+    println!("[tip] help | audit | browser phase1");
     println!();
 }
 
