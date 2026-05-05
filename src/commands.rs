@@ -243,15 +243,11 @@ pub fn parse_line(line: &str) -> Result<Vec<String>, String> {
 }
 
 pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
-    if shell.try_plugin(cmd, args) {
-        return;
-    }
-
     match cmd {
         "help" | "commands" => print!("{}", registry::command_map()),
         "complete" => print_completions(args.first().map(String::as_str)),
         "version" => println!("phase1 {}", VERSION),
-        "clear" => print!("{}", "\n".repeat(40)),
+        "clear" => print!("\x1b[2J\x1b[H"),
         "exit" | "quit" | "shutdown" | "poweroff" => {
             println!("shutdown: phase1 {}", VERSION);
             std::process::exit(0);
@@ -368,7 +364,11 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
             },
             None => println!("usage: man <command>"),
         },
-        other => println!("command not found: {}", other),
+        other => {
+            if !shell.try_plugin(other, args) {
+                println!("command not found: {}", other);
+            }
+        }
     }
     let _ = io::stdout().flush();
 }
@@ -406,7 +406,7 @@ fn spawn(shell: &mut Phase1Shell, args: &[String]) {
 }
 
 fn run_python(shell: &mut Phase1Shell, args: &[String]) {
-    if args.is_empty() {
+    if args.is_empty() || (args[0] == "-c" && args.len() < 2) {
         println!("usage: python <file.py> | python -c <code>");
         return;
     }
