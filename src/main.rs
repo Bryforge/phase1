@@ -36,7 +36,7 @@ fn main() {
         shell.kernel.tick();
 
         let path = compact_path(&shell.kernel.vfs.cwd);
-        print!("{}@phase1 {} > ", shell.user(), path);
+        ui::print_prompt(shell.user(), &path);
         let _ = io::stdout().flush();
 
         input.clear();
