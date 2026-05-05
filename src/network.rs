@@ -1,5 +1,6 @@
 use std::fs;
 use std::io;
+use std::path::Path;
 use std::process::{Command, Output, Stdio};
 use std::thread;
 use std::time::{Duration, Instant};
@@ -82,9 +83,7 @@ impl NetworkStack {
 
     pub fn wifi_scan(&self) -> String {
         if cfg!(target_os = "macos") {
-            let mut cmd = Command::new("/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport");
-            cmd.arg("-s");
-            return command_text(cmd, Duration::from_secs(8), "airport scan unavailable");
+            return macos_wifi_scan();
         }
         if cfg!(target_os = "linux") {
             let mut cmd = Command::new("nmcli");
@@ -103,8 +102,9 @@ impl NetworkStack {
         }
 
         let result = if cfg!(target_os = "macos") {
+            let device = macos_wifi_device().unwrap_or_else(|| "en0".to_string());
             let mut cmd = Command::new("networksetup");
-            cmd.arg("-setairportnetwork").arg("en0").arg(ssid);
+            cmd.arg("-setairportnetwork").arg(device).arg(ssid);
             if let Some(password) = password {
                 cmd.arg(password);
             }
@@ -244,6 +244,66 @@ fn linux_wifi_ssid() -> Option<String> {
     })
 }
 
+fn macos_wifi_scan() -> String {
+    let airport = "/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport";
+    if Path::new(airport).exists() {
+        let mut cmd = Command::new(airport);
+        cmd.arg("-s");
+        let output = command_text(cmd, Duration::from_secs(8), "airport scan unavailable");
+        if !output.trim().is_empty() && !output.contains("unavailable") {
+            return output;
+        }
+    }
+
+    let mut out = String::from("wifi-scan: macOS nearby scan backend unavailable\n");
+    out.push_str("note: Apple removed or restricts the legacy airport scanner on newer macOS releases.\n\n");
+
+    if Path::new("/usr/bin/wdutil").exists() {
+        let mut cmd = Command::new("/usr/bin/wdutil");
+        cmd.arg("info");
+        let wdutil = command_text(cmd, Duration::from_secs(5), "wdutil info unavailable");
+        if !wdutil.trim().is_empty() {
+            out.push_str("[wdutil info]\n");
+            out.push_str(&wdutil);
+            if !wdutil.ends_with('\n') {
+                out.push('\n');
+            }
+            out.push('\n');
+        }
+    }
+
+    let device = macos_wifi_device().unwrap_or_else(|| "en0".to_string());
+    let mut current = Command::new("networksetup");
+    current.arg("-getairportnetwork").arg(&device);
+    out.push_str(&format!("[current network: {device}]\n"));
+    out.push_str(&command_text(current, Duration::from_secs(5), "current WiFi network unavailable"));
+    out.push('\n');
+
+    let mut preferred = Command::new("networksetup");
+    preferred.arg("-listpreferredwirelessnetworks").arg(&device);
+    out.push_str(&format!("[saved networks: {device}]\n"));
+    out.push_str(&command_text(preferred, Duration::from_secs(5), "saved WiFi networks unavailable"));
+    out
+}
+
+fn macos_wifi_device() -> Option<String> {
+    let mut cmd = Command::new("networksetup");
+    cmd.arg("-listallhardwareports");
+    let output = run_with_timeout(cmd, Duration::from_secs(5)).ok()?;
+    let text = String::from_utf8_lossy(&output.stdout);
+    let mut saw_wifi = false;
+    for line in text.lines().map(str::trim) {
+        if line.starts_with("Hardware Port:") {
+            saw_wifi = line.contains("Wi-Fi") || line.contains("AirPort");
+            continue;
+        }
+        if saw_wifi && line.starts_with("Device:") {
+            return line.split_once(':').map(|(_, value)| value.trim().to_string());
+        }
+    }
+    None
+}
+
 fn prefix_to_netmask(prefix: u8) -> String {
     let prefix = prefix.min(32);
     let mask = if prefix == 0 { 0 } else { u32::MAX << (32 - prefix) };
@@ -281,5 +341,22 @@ fn run_with_timeout(mut cmd: Command, timeout: Duration) -> io::Result<Output> {
             return Err(io::Error::new(io::ErrorKind::TimedOut, "command timed out"));
         }
         thread::sleep(Duration::from_millis(25));
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{prefix_to_netmask, safe_host};
+
+    #[test]
+    fn prefix_to_netmask_handles_common_prefixes() {
+        assert_eq!(prefix_to_netmask(24), "255.255.255.0");
+        assert_eq!(prefix_to_netmask(0), "0.0.0.0");
+    }
+
+    #[test]
+    fn safe_host_rejects_shell_metacharacters() {
+        assert!(safe_host("example.com"));
+        assert!(!safe_host("example.com;rm-rf"));
     }
 }
