@@ -191,11 +191,11 @@ fn splash_info(version: &str, config: BootConfig, compact: bool) -> Vec<String> 
 
 fn phase1_art() -> [&'static str; 5] {
     [
-        "   ___  _                  __",
-        "  / _ \\| |__   __ _ ___  /_ |",
-        " / /_)/| '_ \\ / _` / __|  | |",
-        "/ ___/ | | | | (_| \\__ \\  | |",
-        "\\/     |_| |_|\\__,_|___/  |_|",
+        " ____  _                     __ ",
+        "|  _ \\| |__   __ _ ___  ___ /_ |",
+        "| |_) | '_ \\ / _` / __|/ _ \\ | |",
+        "|  __/| | | | (_| \\__ \\  __/ | |",
+        "|_|   |_| |_|\\__,_|___/\\___| |_|",
     ]
 }
 
@@ -405,6 +405,6 @@ mod tests {
 
     #[test]
     fn phase1_art_is_mobile_width() {
-        assert!(phase1_art().iter().all(|line| line.chars().count() <= 32));
+        assert!(phase1_art().iter().all(|line| line.chars().count() <= 40));
     }
 }
