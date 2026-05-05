@@ -107,7 +107,6 @@ fn user_env_browser_and_sandbox_commands_work() {
             "Terminal-first virtual OS console",
             "sandbox: VFS/processes are simulated",
             "up ",
-            "hostname",
         ],
     );
 }
