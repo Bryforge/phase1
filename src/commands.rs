@@ -243,12 +243,15 @@ pub fn parse_line(line: &str) -> Result<Vec<String>, String> {
 }
 
 pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
-    match cmd {
-        "help" | "commands" => print!("{}", registry::command_map()),
+    let command = registry::canonical_name(cmd).unwrap_or(cmd);
+
+    match command {
+        "help" => print!("{}", registry::command_map()),
         "complete" => print_completions(args.first().map(String::as_str)),
+        "capabilities" => print!("{}", registry::capabilities_report()),
         "version" => println!("phase1 {}", VERSION),
         "clear" => print!("\x1b[2J\x1b[H"),
-        "exit" | "quit" | "shutdown" | "poweroff" => {
+        "exit" => {
             println!("shutdown: phase1 {}", VERSION);
             std::process::exit(0);
         }
@@ -303,10 +306,10 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
         "ping" => one_arg(args, "ping <host>", |host| print!("{}", shell.network.ping(host))),
         "nmcli" => print!("{}", shell.network.nmcli()),
         "browser" => println!("{}", Browser::new().browse(args.first().map(String::as_str).unwrap_or("about"))),
-        "python" | "py" => run_python(shell, args),
-        "gcc" | "cc" => run_c(shell, args),
-        "plugins" | "plugin" => print!("{}", shell.list_plugins()),
-        "ned" | "nano" | "vi" => one_arg(args, "ned <file>", |path| ned::edit(&mut shell.kernel.vfs, path)),
+        "python" => run_python(shell, args),
+        "gcc" => run_c(shell, args),
+        "plugins" => print!("{}", shell.list_plugins()),
+        "ned" => one_arg(args, "ned <file>", |path| ned::edit(&mut shell.kernel.vfs, path)),
         "lspci" => print!("{}", shell.kernel.pcie.lspci()),
         "pcie" => print!("{}", shell.kernel.pcie.pcie_info()),
         "cr3" => println!("CR3=0x{:x}", shell.kernel.scheduler.get_cr3()),
@@ -329,7 +332,7 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
             }
             _ => println!("usage: pcide on|off"),
         },
-        "free" | "mem" => println!("MemTotal: 4194304 kB\nMemFree: 2097152 kB\nMemUsed: 2097152 kB"),
+        "free" => println!("MemTotal: 4194304 kB\nMemFree: 2097152 kB\nMemUsed: 2097152 kB"),
         "df" => println!("Filesystem 1K-blocks Used Available Mounted\nphase1fs   1048576   4    1048572   /"),
         "dmesg" => println!("[0.000000] phase1 {} boot\n[0.012345] vfs mounted\n[0.034567] scheduler online", VERSION),
         "vmstat" => println!("procs memory system\nr=1 b=0 free=2097152 in=10 cs=25"),
@@ -356,7 +359,7 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
                 println!("{:>4} {}", idx + 1, line);
             }
         }
-        "sandbox" | "nsinfo" => println!("sandbox: VFS/processes are simulated; host commands are guarded by validation and timeouts."),
+        "sandbox" => println!("sandbox: VFS/processes are simulated; host commands are guarded by validation and timeouts."),
         "man" => match args.first() {
             Some(topic) => match man::get_man_page(topic) {
                 Some(page) => println!("{}", page),
