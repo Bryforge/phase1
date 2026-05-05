@@ -80,6 +80,7 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("man", &[], "misc", "man <command>", "Show generated command manual page.", "none"),
     cmd!("complete", &[], "misc", "complete [prefix]", "Show registry-backed command completions.", "none"),
     cmd!("capabilities", &["caps"], "misc", "capabilities", "Show command capability metadata and guard status.", "none"),
+    cmd!("dash", &["dashboard"], "misc", "dash [--compact]", "Show a compact operator dashboard snapshot.", "sys.read"),
     cmd!("clear", &[], "misc", "clear", "Clear terminal using an ANSI screen clear sequence.", "none"),
     cmd!("version", &[], "misc", "version", "Show phase1 version.", "none"),
     cmd!("sandbox", &["nsinfo"], "misc", "sandbox", "Show safety model.", "none"),
@@ -105,7 +106,7 @@ pub fn command_map() -> String {
             .join(" ");
         out.push_str(&format!("{:<5}: {}\n", category, names));
     }
-    out.push_str("\nquick : man browser | capabilities | complete p | audit | ps | ls /\n");
+    out.push_str("\nquick : dash --compact | man browser | capabilities | complete p | audit | ps\n");
     out
 }
 
@@ -175,6 +176,7 @@ mod tests {
         assert_eq!(canonical_name("py"), Some("python"));
         assert_eq!(canonical_name("commands"), Some("help"));
         assert_eq!(canonical_name("caps"), Some("capabilities"));
+        assert_eq!(canonical_name("dashboard"), Some("dash"));
     }
 
     #[test]
@@ -183,6 +185,7 @@ mod tests {
         assert!(map.contains("audit"));
         assert!(map.contains("complete"));
         assert!(map.contains("capabilities"));
+        assert!(map.contains("dash"));
     }
 
     #[test]
