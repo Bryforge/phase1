@@ -4,6 +4,7 @@ mod kernel;
 mod man;
 mod ned;
 mod network;
+mod ui;
 
 use commands::{dispatch, parse_line, Phase1Shell};
 use std::io::{self, Write};
@@ -23,7 +24,7 @@ fn compact_path(path: &Path) -> String {
 fn main() {
     let mut shell = Phase1Shell::new();
 
-    Phase1Shell::print_boot();
+    ui::print_boot(kernel::VERSION);
     shell.cmd_cd(Some("/home"));
     println!("phase1 {} ready. Type 'help' for commands.", kernel::VERSION);
 
@@ -55,9 +56,13 @@ fn main() {
         match parse_line(&expanded) {
             Ok(tokens) if tokens.is_empty() => {}
             Ok(tokens) => {
-                let cmd = &tokens[0];
-                let args = &tokens[1..];
-                dispatch(&mut shell, cmd, args);
+                if tokens[0] == "help" {
+                    ui::print_help();
+                } else {
+                    let cmd = &tokens[0];
+                    let args = &tokens[1..];
+                    dispatch(&mut shell, cmd, args);
+                }
             }
             Err(err) => eprintln!("parse error: {}", err),
         }
