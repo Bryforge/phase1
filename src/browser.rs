@@ -12,19 +12,16 @@ impl Browser {
         Self
     }
 
-    pub fn browse(&self, url: &str) -> String {
-        let url = url.trim();
-
+    pub fn browse(&self, raw_url: &str) -> String {
+        let url = raw_url.trim();
         if url.is_empty() || matches!(url, "about" | "about:blank") {
-            return self.internal_about();
+            return self.about();
         }
-
-        if url == "phase1" || url.contains("bryforge/phase1") {
-            return self.internal_phase1();
+        if url == "phase1" || url.contains("Bryforge/phase1") || url.contains("bryforge/phase1") {
+            return self.phase1_page();
         }
-
-        if !is_allowed_url(url) {
-            return "browser: only http:// and https:// URLs are allowed. Refusing local files and unsupported schemes.".to_string();
+        if !allowed_url(url) {
+            return "browser: only http:// and https:// URLs are allowed".to_string();
         }
 
         let mut cmd = Command::new("curl");
@@ -40,50 +37,42 @@ impl Browser {
             "--proto",
             "=http,https",
             "--user-agent",
-            "phase1-browser/3.3.2",
+            "phase1-browser/3.5.0",
             url,
         ]);
 
         match run_with_timeout(cmd, Duration::from_secs(12)) {
             Ok(output) if output.status.success() => {
-                let content = String::from_utf8_lossy(&output.stdout);
-                self.strip_html(&content)
+                let html = String::from_utf8_lossy(&output.stdout);
+                self.render_text(&html)
             }
             Ok(output) => {
                 let stderr = String::from_utf8_lossy(&output.stderr);
-                format!(
-                    "Request failed with status: {}\n{}",
-                    output.status,
-                    stderr.trim()
-                )
+                if stderr.trim().is_empty() {
+                    format!("browser: request failed with status {}", output.status)
+                } else {
+                    format!("browser: {}", stderr.trim())
+                }
             }
-            Err(err) => format!("Failed to fetch URL: {}", err),
+            Err(err) => format!("browser: {}", err),
         }
     }
 
-    fn internal_about(&self) -> String {
+    fn about(&self) -> String {
         format!(
-            "phase1 Terminal Browser v{VERSION}\n\
-             ======================================\n\
-             Usage:\n\
-               browser <https-url>\n\
-               browser phase1\n\
-               browser about\n\n\
-             Fetching is performed through curl with scheme, timeout, and size limits."
+            "phase1 browser v{}\n\ncommands:\n  browser about\n  browser phase1\n  browser https://example.com\n\nsafety:\n  schemes: http, https only\n  timeout: 12s\n  max download: 1 MiB",
+            VERSION
         )
     }
 
-    fn internal_phase1(&self) -> String {
+    fn phase1_page(&self) -> String {
         format!(
-            "phase1 v{VERSION}\n\
-             =================\n\
-             Educational OS simulator with in-memory VFS, process scheduler,\n\
-             PCIe simulation, Python plugins, C compilation, networking, and a browser.\n\
-             Type 'help' or 'man <command>' for details."
+            "phase1 v{}\nTerminal-first virtual OS console.\nUse: help, man browser, ps, audit, ls /",
+            VERSION
         )
     }
 
-    pub fn strip_html(&self, html: &str) -> String {
+    fn render_text(&self, html: &str) -> String {
         let mut text = String::with_capacity(html.len());
         let mut tag = String::new();
         let mut in_tag = false;
@@ -96,76 +85,66 @@ impl Browser {
                 tag.clear();
                 continue;
             }
-
             if in_tag {
                 if ch == '>' {
                     let normalized = tag.trim().to_ascii_lowercase();
-                    let normalized = normalized.trim_start_matches('/').trim();
-
-                    if tag.trim_start().starts_with('/') {
-                        if normalized.starts_with("script") {
-                            in_script = false;
-                        } else if normalized.starts_with("style") {
-                            in_style = false;
-                        }
-                    } else if normalized.starts_with("script") {
-                        in_script = true;
-                    } else if normalized.starts_with("style") {
-                        in_style = true;
-                    } else if matches!(
-                        normalized,
-                        "br" | "hr" | "p" | "div" | "li" | "tr" | "h1" | "h2" | "h3"
-                    ) {
-                        text.push('\n');
+                    let closing = normalized.starts_with('/');
+                    let name = normalized.trim_start_matches('/').split_whitespace().next().unwrap_or("");
+                    match (closing, name) {
+                        (false, "script") => in_script = true,
+                        (true, "script") => in_script = false,
+                        (false, "style") => in_style = true,
+                        (true, "style") => in_style = false,
+                        (_, "br" | "p" | "div" | "li" | "tr" | "h1" | "h2" | "h3") => text.push('\n'),
+                        _ => {}
                     }
-
                     in_tag = false;
                 } else {
                     tag.push(ch);
                 }
                 continue;
             }
-
             if !in_script && !in_style {
                 text.push(ch);
             }
         }
 
-        let decoded = decode_html_entities(&text);
+        let decoded = decode_entities(&text);
         let mut cleaned = String::new();
-        let mut last_blank = false;
-
+        let mut previous_blank = false;
         for line in decoded.lines().map(str::trim) {
             if line.is_empty() {
-                if !last_blank {
+                if !previous_blank {
                     cleaned.push('\n');
                 }
-                last_blank = true;
+                previous_blank = true;
             } else {
                 cleaned.push_str(line);
                 cleaned.push('\n');
-                last_blank = false;
+                previous_blank = false;
             }
         }
-
-        let cleaned = cleaned.trim();
-        if cleaned.is_empty() {
-            format!(
-                "Fetched content from URL, but no readable text was found.\nRaw preview:\n{}",
-                html.chars().take(600).collect::<String>()
-            )
+        let trimmed = cleaned.trim();
+        if trimmed.is_empty() {
+            "browser: fetched page but no readable text was found".to_string()
         } else {
-            cleaned.to_string()
+            trimmed.to_string()
         }
     }
 }
 
-fn is_allowed_url(url: &str) -> bool {
+impl Default for Browser {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+fn allowed_url(url: &str) -> bool {
     let lower = url.to_ascii_lowercase();
     lower.starts_with("http://") || lower.starts_with("https://")
 }
 
-fn decode_html_entities(input: &str) -> String {
+fn decode_entities(input: &str) -> String {
     input
         .replace("&amp;", "&")
         .replace("&lt;", "<")
@@ -177,19 +156,16 @@ fn decode_html_entities(input: &str) -> String {
 
 fn run_with_timeout(mut cmd: Command, timeout: Duration) -> io::Result<Output> {
     let mut child = cmd.stdout(Stdio::piped()).stderr(Stdio::piped()).spawn()?;
-    let started = Instant::now();
-
+    let start = Instant::now();
     loop {
         if child.try_wait()?.is_some() {
             return child.wait_with_output();
         }
-
-        if started.elapsed() >= timeout {
+        if start.elapsed() >= timeout {
             let _ = child.kill();
             let _ = child.wait();
             return Err(io::Error::new(io::ErrorKind::TimedOut, "command timed out"));
         }
-
         thread::sleep(Duration::from_millis(25));
     }
 }
@@ -199,10 +175,10 @@ mod tests {
     use super::Browser;
 
     #[test]
-    fn strips_script_and_style() {
-        let text = Browser::new().strip_html("<style>x</style><h1>Hello</h1><script>bad()</script><p>World &amp; all</p>");
+    fn browser_strips_script_text() {
+        let text = Browser::new().render_text("<h1>Hello</h1><script>bad()</script><p>World &amp; ok</p>");
         assert!(text.contains("Hello"));
-        assert!(text.contains("World & all"));
+        assert!(text.contains("World & ok"));
         assert!(!text.contains("bad"));
     }
 }
