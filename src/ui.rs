@@ -3,11 +3,9 @@ use crate::registry;
 const PANEL_WIDTH: usize = 62;
 const RESET: &str = "\x1b[0m";
 const BOLD: &str = "\x1b[1m";
-const DIM: &str = "\x1b[2m";
 const CYAN: &str = "\x1b[36m";
 const GREEN: &str = "\x1b[32m";
 const BLUE: &str = "\x1b[34m";
-const MAGENTA: &str = "\x1b[35m";
 const GRAY: &str = "\x1b[90m";
 
 pub fn print_boot(version: &str) {
