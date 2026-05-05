@@ -1,53 +1,56 @@
-mod network;
-mod kernel;
 mod browser;
+mod commands;
+mod kernel;
 mod man;
 mod ned;
-mod commands;
+mod network;
 
+use commands::{dispatch, parse_line, Phase1Shell};
 use std::io::{self, Write};
-
-use commands::Phase1Shell;
 
 fn main() {
     let mut shell = Phase1Shell::new();
+
     Phase1Shell::print_boot();
     shell.cmd_cd(Some("/home"));
-    println!("\x1b[32mphase1 v3.3.1 ready. Type 'help' for commands.\x1b[0m");
+    println!("phase1 {} ready. Type 'help' for commands.", kernel::VERSION);
 
+    let stdin = io::stdin();
     let mut input = String::with_capacity(256);
 
     loop {
         let uptime_secs = shell.start_time.elapsed().as_secs();
         shell.kernel.tick(uptime_secs);
 
-        print!("\x1b[36m@phase1\x1b[0m:\x1b[34m{}\x1b[0m$ ", shell.kernel.vfs.cwd.display());
+        print!(
+            "{}@phase1:{}$ ",
+            shell.user(),
+            shell.kernel.vfs.cwd.display()
+        );
         let _ = io::stdout().flush();
 
         input.clear();
-        if io::stdin().read_line(&mut input).is_err() {
+        if stdin.read_line(&mut input).is_err() {
+            println!();
             break;
         }
 
-        let line = input.trim();
-        if line.is_empty() {
+        let line = input.trim_end_matches(['\r', '\n']);
+        if line.trim().is_empty() {
             continue;
         }
 
-        shell.history.push_back(line.to_string());
-        if shell.history.len() > 300 {
-            shell.history.pop_front();
-        }
+        shell.push_history(line);
 
         let expanded = shell.expand_env(line);
-        let parts: Vec<&str> = expanded.split_whitespace().collect();
-        if parts.is_empty() {
-            continue;
+        match parse_line(&expanded) {
+            Ok(tokens) if tokens.is_empty() => {}
+            Ok(tokens) => {
+                let cmd = &tokens[0];
+                let args = &tokens[1..];
+                dispatch(&mut shell, cmd, args);
+            }
+            Err(err) => eprintln!("parse error: {}", err),
         }
-
-        let cmd = parts[0];
-        let args = &parts[1..];
-
-        commands::dispatch(&mut shell, cmd, args);
     }
 }
