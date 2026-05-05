@@ -10,22 +10,16 @@ const AUDIT_LIMIT: usize = 256;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ProcessState {
-    Ready,
     Running,
     RunningBg,
-    Blocked,
-    Zombie,
     Terminated,
 }
 
 impl fmt::Display for ProcessState {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let label = match self {
-            ProcessState::Ready => "ready",
             ProcessState::Running => "run",
             ProcessState::RunningBg => "bg",
-            ProcessState::Blocked => "sleep",
-            ProcessState::Zombie => "zombie",
             ProcessState::Terminated => "term",
         };
         f.write_str(label)
@@ -108,10 +102,10 @@ impl Scheduler {
     }
 
     pub fn ps(&self) -> String {
-        let mut out = String::from("PID   PPID  USER   PRI STATE MEMKB TICKS AGE CR3       CMD\n");
+        let mut out = String::from("PID   PPID  USER   PRI STATE MEMKB TICKS AGE CR3       NAME CMD\n");
         for process in self.live_processes() {
             out.push_str(&format!(
-                "{:<5} {:<5} {:<6} {:>3} {:<5} {:>5} {:>5} {:>3} 0x{:06x} {}\n",
+                "{:<5} {:<5} {:<6} {:>3} {:<5} {:>5} {:>5} {:>3} 0x{:06x} {:<10} {}\n",
                 process.pid,
                 process.ppid,
                 self.current_user,
@@ -121,6 +115,7 @@ impl Scheduler {
                 process.cpu_ticks,
                 process.started.elapsed().as_secs(),
                 process.cr3,
+                process.name,
                 process.cmdline
             ));
         }
@@ -635,6 +630,36 @@ fn draw_tree(node: &VfsNode, prefix: &str, out: &mut String) {
             let next = format!("{}{}", prefix, if last { "    " } else { "|   " });
             draw_tree(&children[name], &next, out);
         }
+    }
+}
+
+impl Default for Scheduler {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl Default for Vfs {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl Default for AuditLog {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl Default for PcieManager {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl Default for Kernel {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
