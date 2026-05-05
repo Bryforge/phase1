@@ -249,6 +249,7 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
         "help" => print!("{}", registry::command_map()),
         "complete" => print_completions(args.first().map(String::as_str)),
         "capabilities" => print!("{}", registry::capabilities_report()),
+        "dash" => print!("{}", dashboard(shell, args)),
         "version" => println!("phase1 {}", VERSION),
         "clear" => print!("\x1b[2J\x1b[H"),
         "exit" => {
@@ -374,6 +375,53 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
         }
     }
     let _ = io::stdout().flush();
+}
+
+fn dashboard(shell: &mut Phase1Shell, args: &[String]) -> String {
+    shell.network.refresh();
+    let compact = args.iter().any(|arg| arg == "--compact");
+    let uptime = shell.kernel.uptime().as_secs();
+    let cwd = shell.kernel.vfs.cwd.display();
+    let ps_output = shell.kernel.scheduler.ps();
+    let process_count = ps_output.lines().skip(1).count();
+    let jobs_output = shell.kernel.scheduler.jobs();
+    let job_count = if jobs_output.trim() == "no background jobs" { 0 } else { jobs_output.lines().count() };
+    let iface_count = shell.network.ifconfig().lines().filter(|line| line.contains(": flags=<")).count();
+    let audit_tail = shell.kernel.audit.dump().lines().last().unwrap_or("audit log empty").to_string();
+    let pcie_count = shell.kernel.pcie.lspci().lines().count();
+    let cr4 = shell.kernel.scheduler.cr4();
+
+    if compact {
+        format!(
+            "PHASE1 DASHBOARD v{}\nCORE  user={} uptime={}s mode=operator\nPROC  tasks={} bg={}\nVFS   cwd={} mounts=/,/proc,/dev,/tmp,/var/log\nNET   interfaces={} safety=guarded\nHW    cr3=0x{:x} {} pcie={}\nAUDIT latest={}\n",
+            VERSION,
+            shell.user(),
+            uptime,
+            process_count,
+            job_count,
+            cwd,
+            iface_count,
+            shell.kernel.scheduler.get_cr3(),
+            cr4,
+            pcie_count,
+            audit_tail
+        )
+    } else {
+        format!(
+            "PHASE1 // OPERATOR DASHBOARD v{}\n\nCORE\n  user      {}\n  uptime    {}s\n  mode      operator\n\nPROC\n  tasks     {}\n  bg jobs   {}\n\nVFS\n  cwd       {}\n  mounts    / /proc /dev /tmp /var/log\n\nNET\n  ifaces    {}\n  safety    guarded host tools\n\nHW\n  cr3       0x{:x}\n  cr4       {}\n  pcie      {} devices\n\nAUDIT\n  latest    {}\n",
+            VERSION,
+            shell.user(),
+            uptime,
+            process_count,
+            job_count,
+            cwd,
+            iface_count,
+            shell.kernel.scheduler.get_cr3(),
+            cr4,
+            pcie_count,
+            audit_tail
+        )
+    }
 }
 
 fn handle_echo(shell: &mut Phase1Shell, args: &[String]) {
