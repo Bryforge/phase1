@@ -412,7 +412,6 @@ fn run_python(shell: &mut Phase1Shell, args: &[String]) {
     }
     shell.kernel.audit.record("host.python".to_string());
     let mut cmd = Command::new("python3");
-    let temp_path;
     if args[0] == "-c" {
         cmd.arg("-c").arg(args[1..].join(" "));
     } else {
@@ -423,7 +422,7 @@ fn run_python(shell: &mut Phase1Shell, args: &[String]) {
                 return;
             }
         };
-        temp_path = std::env::temp_dir().join(format!("phase1_py_{}.py", unique_nonce()));
+        let temp_path = std::env::temp_dir().join(format!("phase1_py_{}.py", unique_nonce()));
         if let Err(err) = fs::write(&temp_path, code) {
             println!("python: {}", err);
             return;
