@@ -35,7 +35,6 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("mv", &[], "fs", "mv <src> <dst>", "Move or rename a VFS node.", "fs.write"),
     cmd!("tree", &[], "fs", "tree", "Display the VFS tree.", "fs.read"),
     cmd!("echo", &[], "fs", "echo <text> [> file | >> file]", "Print text or redirect into the VFS.", "fs.write"),
-
     cmd!("ps", &[], "proc", "ps", "Show simulated process table.", "proc.read"),
     cmd!("top", &[], "proc", "top", "Show scheduler state.", "proc.read"),
     cmd!("spawn", &[], "proc", "spawn <name> [args...] [--background]", "Create a simulated process through sys_spawn.", "proc.spawn"),
@@ -44,27 +43,23 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("bg", &[], "proc", "bg <pid>", "Move a simulated process to background.", "proc.manage"),
     cmd!("kill", &[], "proc", "kill <pid>", "Terminate a simulated process through sys_kill.", "proc.kill"),
     cmd!("nice", &[], "proc", "nice <pid> <priority>", "Set simulated process priority.", "proc.manage"),
-
     cmd!("ifconfig", &[], "net", "ifconfig", "Show discovered host network interfaces.", "net.read"),
     cmd!("iwconfig", &[], "net", "iwconfig", "Show WiFi information where available.", "net.read"),
     cmd!("wifi-scan", &[], "net", "wifi-scan", "List nearby WiFi networks with host tools.", "net.read"),
     cmd!("wifi-connect", &[], "net", "wifi-connect <ssid> [password]", "Dry-run WiFi connection unless host mutation is enabled.", "net.admin"),
     cmd!("ping", &[], "net", "ping <host>", "Run bounded host ping.", "net.read"),
     cmd!("nmcli", &[], "net", "nmcli", "Show NetworkManager state on Linux.", "net.read"),
-
     cmd!("browser", &[], "host", "browser <url|phase1|about>", "Fetch and render HTTP/HTTPS text using guarded curl.", "host.net"),
     cmd!("python", &["py"], "host", "python <file.py> | python -c <code>", "Run Python with a timeout.", "host.exec"),
     cmd!("gcc", &["cc"], "host", "gcc <file.c> | gcc <code>", "Compile and run C with host compiler timeout guards.", "host.exec"),
     cmd!("plugins", &["plugin"], "host", "plugins", "List Python plugins in ./plugins.", "host.exec"),
     cmd!("ned", &["nano", "vi"], "host", "ned <file>", "Edit a VFS file with a small line editor.", "fs.write"),
-
     cmd!("lspci", &[], "arch", "lspci", "List simulated PCIe devices.", "hw.read"),
     cmd!("pcie", &[], "arch", "pcie", "Show PCIe subsystem summary.", "hw.read"),
     cmd!("cr3", &[], "arch", "cr3", "Show simulated CR3 value.", "hw.read"),
     cmd!("loadcr3", &[], "arch", "loadcr3 <hex|decimal>", "Load simulated CR3 with alignment validation.", "hw.write"),
     cmd!("cr4", &[], "arch", "cr4", "Show simulated CR4 flags.", "hw.read"),
     cmd!("pcide", &[], "arch", "pcide on|off", "Toggle simulated CR4.PCIDE.", "hw.write"),
-
     cmd!("free", &["mem"], "sys", "free", "Show simulated memory information.", "sys.read"),
     cmd!("df", &[], "sys", "df", "Show simulated filesystem capacity.", "sys.read"),
     cmd!("dmesg", &[], "sys", "dmesg", "Show simulated boot messages.", "sys.log"),
@@ -74,7 +69,6 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("uptime", &[], "sys", "uptime", "Show simulator uptime.", "sys.read"),
     cmd!("hostname", &[], "sys", "hostname", "Show virtual hostname.", "sys.read"),
     cmd!("audit", &[], "sys", "audit", "Show in-memory kernel audit events.", "sys.audit"),
-
     cmd!("env", &[], "user", "env", "Print shell environment.", "user.read"),
     cmd!("export", &[], "user", "export VAR=value", "Set an environment variable.", "user.env"),
     cmd!("unset", &[], "user", "unset VAR", "Remove an environment variable.", "user.env"),
@@ -82,7 +76,6 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("id", &[], "user", "id", "Print simulated user id.", "user.read"),
     cmd!("su", &[], "user", "su <user>", "Switch simulated user.", "user.switch"),
     cmd!("history", &[], "user", "history", "Show shell command history.", "user.read"),
-
     cmd!("help", &["commands"], "misc", "help", "Show grouped command map.", "none"),
     cmd!("man", &[], "misc", "man <command>", "Show generated command manual page.", "none"),
     cmd!("complete", &[], "misc", "complete [prefix]", "Show registry-backed command completions.", "none"),
@@ -93,9 +86,7 @@ pub const COMMANDS: &[CommandSpec] = &[
 ];
 
 pub fn lookup(name: &str) -> Option<&'static CommandSpec> {
-    COMMANDS
-        .iter()
-        .find(|cmd| cmd.name == name || cmd.aliases.iter().any(|alias| *alias == name))
+    COMMANDS.iter().find(|cmd| cmd.name == name || cmd.aliases.contains(&name))
 }
 
 pub fn command_map() -> String {
@@ -115,11 +106,7 @@ pub fn command_map() -> String {
 
 pub fn man_page(name: &str) -> Option<String> {
     let cmd = lookup(name)?;
-    let aliases = if cmd.aliases.is_empty() {
-        "none".to_string()
-    } else {
-        cmd.aliases.join(", ")
-    };
+    let aliases = if cmd.aliases.is_empty() { "none".to_string() } else { cmd.aliases.join(", ") };
     Some(format!(
         "{}\n\nusage      : {}\ncategory   : {}\naliases    : {}\ncapability : {}\n\n{}",
         cmd.name, cmd.usage, cmd.category, aliases, cmd.capability, cmd.description
