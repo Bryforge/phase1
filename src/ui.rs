@@ -2,6 +2,7 @@ use crate::registry;
 use std::io::{self, Write};
 
 const PANEL_WIDTH: usize = 62;
+const MOBILE_WIDTH: usize = 44;
 const RESET: &str = "\x1b[0m";
 const BOLD: &str = "\x1b[1m";
 const RED: &str = "\x1b[31m";
@@ -107,7 +108,7 @@ pub fn print_boot(version: &str) {
 
 pub fn print_quick_boot(version: &str, config: BootConfig) {
     print_fastfetch_splash(version, config);
-    println!("[quick] boot matrix skipped :: profile={} :: shell armed", config.profile_name());
+    println!("[quick] profile={} :: shell armed", config.profile_name());
     println!();
 }
 
@@ -126,7 +127,8 @@ fn print_preboot(version: &str, config: BootConfig) {
         print!("\x1b[2J\x1b[H{BOLD}");
     }
     print_fastfetch_splash_with_config(version, config);
-    println!("{}", panel_line(config, "BOOT OPTIONS"));
+    let width = preboot_width();
+    println!("{}", panel_line(config, "BOOT", width));
     println!("  1  boot system       {}", value(config, "ready"));
     println!("  2  color output      {}", flag(config, config.color));
     println!("  3  ascii compatible  {}", flag(config, config.ascii_mode));
@@ -134,7 +136,7 @@ fn print_preboot(version: &str, config: BootConfig) {
     println!("  5  quick boot        {}", flag(config, config.quick_boot));
     println!("  0  reset defaults");
     println!();
-    println!("{}", value(config, "Enter=boot  h=help  toggle by number or name"));
+    println!("{}", value(config, "Enter=boot  h=help  number/name"));
 }
 
 fn print_fastfetch_splash(version: &str, config: BootConfig) {
@@ -142,29 +144,59 @@ fn print_fastfetch_splash(version: &str, config: BootConfig) {
 }
 
 fn print_fastfetch_splash_with_config(version: &str, config: BootConfig) {
-    let art = [
-        "        __                 ___ ",
-        "   ___ / /  ___ ____ ___  <  / ",
-        "  / _ \\ _ \\/ _ `(_-</ -_) / /  ",
-        " / .__/_.__/\\_,_/___/\\__/ /_/   ",
-        "/_/                             ",
-    ];
-    let info = [
-        format!("os        phase1 terminal-os-sim v{version}"),
-        format!("profile   {}", config.profile_name()),
-        format!("display   {}", if config.color { "retro rainbow" } else { "mono" }),
-        format!("charset   {}", if config.ascii_mode { "ascii" } else { "unicode" }),
-        format!("guards    {}", if config.safe_mode { "host integrations locked" } else { "standard audited" }),
-    ];
+    let compact = terminal_width() < 72;
+    let art = phase1_art();
+    let info = splash_info(version, config, compact);
 
     println!();
-    for (idx, line) in art.iter().enumerate() {
-        let art_line = rainbow(idx, line, config);
-        let info_line = info.get(idx).map(String::as_str).unwrap_or("");
-        println!("{art_line}  {}", value(config, info_line));
+    if compact {
+        for (idx, line) in art.iter().enumerate() {
+            println!("{}", rainbow(idx, line, config));
+        }
+        println!();
+        for row in info {
+            println!("{}", value(config, &row));
+        }
+        println!("{}", value(config, "fastfetch boot // cyberdeck ready"));
+    } else {
+        for (idx, line) in art.iter().enumerate() {
+            let art_line = rainbow(idx, line, config);
+            let info_line = info.get(idx).map(String::as_str).unwrap_or("");
+            println!("{art_line}  {}", value(config, info_line));
+        }
+        println!("{}", value(config, "      ▀▀ fastfetch boot selector // cyberdeck ready ▀▀"));
     }
-    println!("{}", value(config, "      ▀▀ fastfetch boot selector // cyberdeck ready ▀▀"));
     println!();
+}
+
+fn splash_info(version: &str, config: BootConfig, compact: bool) -> Vec<String> {
+    if compact {
+        vec![
+            format!("os      phase1 v{version}"),
+            format!("profile {}", config.profile_name()),
+            format!("display {}", if config.color { "rainbow" } else { "mono" }),
+            format!("charset {}", if config.ascii_mode { "ascii" } else { "unicode" }),
+            format!("guards  {}", if config.safe_mode { "locked" } else { "audited" }),
+        ]
+    } else {
+        vec![
+            format!("os        phase1 terminal-os-sim v{version}"),
+            format!("profile   {}", config.profile_name()),
+            format!("display   {}", if config.color { "retro rainbow" } else { "mono" }),
+            format!("charset   {}", if config.ascii_mode { "ascii" } else { "unicode" }),
+            format!("guards    {}", if config.safe_mode { "host locked" } else { "audited" }),
+        ]
+    }
+}
+
+fn phase1_art() -> [&'static str; 5] {
+    [
+        "   ___  _                  __",
+        "  / _ \\| |__   __ _ ___  /_ |",
+        " / /_)/| '_ \\ / _` / __|  | |",
+        "/ ___/ | | | | (_| \\__ \\  | |",
+        "\\/     |_| |_|\\__,_|___/  |_|",
+    ]
 }
 
 fn prompt_text(user: &str, path: &str) -> String {
@@ -280,11 +312,12 @@ fn framed(content: &str) {
     }
 }
 
-fn panel_line(config: BootConfig, label: &str) -> String {
+fn panel_line(config: BootConfig, label: &str, width: usize) -> String {
+    let fill = width.saturating_sub(label.chars().count() + 4);
     if config.color && !config.ascii_mode {
-        format!("{CYAN}── {label} {}{RESET}", "─".repeat(42))
+        format!("{CYAN}-- {label} {}{RESET}", "─".repeat(fill))
     } else {
-        format!("-- {label} {}", "-".repeat(42))
+        format!("-- {label} {}", "-".repeat(fill))
     }
 }
 
@@ -323,6 +356,14 @@ fn pause(message: &str) {
     let _ = io::stdin().read_line(&mut ignored);
 }
 
+fn preboot_width() -> usize {
+    terminal_width().clamp(32, MOBILE_WIDTH)
+}
+
+fn terminal_width() -> usize {
+    std::env::var("COLUMNS").ok().and_then(|raw| raw.parse().ok()).unwrap_or(MOBILE_WIDTH)
+}
+
 fn clip(text: &str, width: usize) -> String {
     text.chars().take(width).collect()
 }
@@ -337,7 +378,7 @@ fn ascii_mode() -> bool {
 
 #[cfg(test)]
 mod tests {
-    use super::{clip, prompt_text, BootConfig, PANEL_WIDTH};
+    use super::{clip, phase1_art, prompt_text, BootConfig, PANEL_WIDTH};
 
     #[test]
     fn panel_width_stays_terminal_friendly() {
@@ -360,5 +401,10 @@ mod tests {
     fn boot_profile_names_cover_modes() {
         assert_eq!(BootConfig { color: true, ascii_mode: false, safe_mode: false, quick_boot: false }.profile_name(), "operator");
         assert_eq!(BootConfig { color: true, ascii_mode: false, safe_mode: true, quick_boot: true }.profile_name(), "safe+quick");
+    }
+
+    #[test]
+    fn phase1_art_is_mobile_width() {
+        assert!(phase1_art().iter().all(|line| line.chars().count() <= 32));
     }
 }
