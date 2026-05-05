@@ -1,21 +1,22 @@
 # phase1
 
-**phase1** is a terminal-based educational operating-system simulator written in Rust.
+**phase1** is a terminal-first educational virtual operating-system console written in Rust.
 
-It demonstrates OS concepts in safe userspace: a virtual filesystem, a simulated process table and scheduler, shell commands, `/proc`-style files, PCIe enumeration, plugins, simple editors, host-tool integration, and a terminal browser.
+It runs as a safe userspace simulator while modeling real OS concepts: an in-memory VFS, simulated process scheduler, syscall-style shell operations, `/proc`, `/dev`, `/var/log`, PCIe enumeration, network inspection, guarded host tools, plugins, generated man pages, command completion metadata, and an in-memory audit log.
 
-## What changed in this improvement pass
+Current release: **v3.5.0**
 
-- Reformatted the crate into readable Rust source instead of dense single-line files.
-- Removed the external `chrono` dependency; the simulator now builds with only the Rust standard library.
-- Added quote-aware command parsing, safer environment expansion, and deterministic sorted `ls` output.
-- Made `kill`, `nice`, `jobs`, `fg`, and `bg` mutate simulated process state instead of only printing success.
-- Hardened host integrations:
-  - `browser` allows only `http://` and `https://`, rejects `file://`, and bounds curl time/size.
-  - `ping`, Python plugins, Python execution, and C compilation use timeouts.
-  - `wifi-connect` is dry-run by default. Set `PHASE1_ALLOW_HOST_NETWORK_CHANGES=1` to allow real host network changes.
-- Replaced fake Linux network interface data with best-effort host discovery and honest fallbacks.
-- Added clearer man pages and a code-review report.
+## Highlights
+
+- Mobile-friendly operator console UI.
+- Registry-backed `help`, `man`, and `complete` commands.
+- Syscall-style kernel boundary for read, write, spawn, and kill paths.
+- In-memory audit log exposed through `audit`.
+- Safer host integrations with validation and timeouts.
+- Browser allows only `http://` and `https://` and strips HTML into terminal text.
+- Network commands use best-effort host discovery with honest fallbacks.
+- VFS includes `/home`, `/proc`, `/dev`, `/tmp`, `/var/log`, `/etc`, and `/bin`.
+- CI checks formatting, compilation, Clippy, tests, cargo-audit, and cargo-deny.
 
 ## Quick start
 
@@ -34,17 +35,40 @@ cargo build --release
 
 ```text
 help
+complete p
 man browser
 ls -l /
+cat /proc/version
 spawn worker --background
 jobs
-nice 1002 -5
-kill 1002
+ps
+audit
 echo "hello world" > note.txt
 cat note.txt
+browser phase1
 browser https://example.com
 ```
 
 ## Safety model
 
-phase1 is an educational simulator. Its VFS, processes, and scheduler are simulated in memory. Some features integrate with host tools (`python3`, `gcc`/`clang`, `curl`, `ping`, `nmcli`, `networksetup`). Those integrations are guarded with argument validation, timeouts, and dry-run defaults where the command could mutate host state.
+phase1 simulates the kernel, VFS, process table, and scheduler in memory. Some commands call host tools (`python3`, `cc`/`gcc`/`clang`, `curl`, `ping`, `nmcli`, `networksetup`). Those paths use validation and timeouts. `wifi-connect` is dry-run by default and requires `PHASE1_ALLOW_HOST_NETWORK_CHANGES=1` before it attempts host network mutation.
+
+## Development checks
+
+```bash
+cargo fmt --all -- --check
+cargo check --all-targets
+cargo clippy --all-targets -- -D warnings
+cargo test --all-targets
+cargo audit
+cargo deny check
+```
+
+## Roadmap
+
+- Registry-backed alias dispatch.
+- Persistent shell history.
+- Structured command output and pipelines.
+- Capability enforcement based on command metadata.
+- WASM/WASI plugin runtime.
+- Full-screen TUI dashboard.
