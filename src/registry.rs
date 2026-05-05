@@ -8,74 +8,89 @@ pub struct CommandSpec {
     pub capability: &'static str,
 }
 
-pub const COMMANDS: &[CommandSpec] = &[
-    CommandSpec { name: "ls", aliases: &[], category: "fs", usage: "ls [-l] [path]", description: "List VFS directory contents.", capability: "fs.read" },
-    CommandSpec { name: "cd", aliases: &[], category: "fs", usage: "cd [dir]", description: "Change VFS working directory.", capability: "fs.read" },
-    CommandSpec { name: "pwd", aliases: &[], category: "fs", usage: "pwd", description: "Print the current VFS path.", capability: "fs.read" },
-    CommandSpec { name: "cat", aliases: &[], category: "fs", usage: "cat <file>", description: "Read a VFS file.", capability: "fs.read" },
-    CommandSpec { name: "mkdir", aliases: &[], category: "fs", usage: "mkdir <dir>", description: "Create a VFS directory.", capability: "fs.write" },
-    CommandSpec { name: "touch", aliases: &[], category: "fs", usage: "touch <file>", description: "Create or update a VFS file.", capability: "fs.write" },
-    CommandSpec { name: "rm", aliases: &[], category: "fs", usage: "rm <path>", description: "Remove a VFS node.", capability: "fs.write" },
-    CommandSpec { name: "cp", aliases: &[], category: "fs", usage: "cp <src> <dst>", description: "Copy a VFS file.", capability: "fs.write" },
-    CommandSpec { name: "mv", aliases: &[], category: "fs", usage: "mv <src> <dst>", description: "Move or rename a VFS node.", capability: "fs.write" },
-    CommandSpec { name: "tree", aliases: &[], category: "fs", usage: "tree", description: "Show VFS tree.", capability: "fs.read" },
-    CommandSpec { name: "echo", aliases: &[], category: "fs", usage: "echo <text> [> file | >> file]", description: "Print text or redirect it into the VFS.", capability: "fs.write" },
-
-    CommandSpec { name: "ps", aliases: &[], category: "proc", usage: "ps", description: "Show simulated process table.", capability: "proc.read" },
-    CommandSpec { name: "top", aliases: &[], category: "proc", usage: "top", description: "Show simulated scheduler state.", capability: "proc.read" },
-    CommandSpec { name: "spawn", aliases: &[], category: "proc", usage: "spawn <name> [args...] [--background]", description: "Create a simulated process.", capability: "proc.spawn" },
-    CommandSpec { name: "jobs", aliases: &[], category: "proc", usage: "jobs", description: "List simulated background jobs.", capability: "proc.read" },
-    CommandSpec { name: "fg", aliases: &[], category: "proc", usage: "fg <pid>", description: "Move a simulated job to foreground.", capability: "proc.manage" },
-    CommandSpec { name: "bg", aliases: &[], category: "proc", usage: "bg <pid>", description: "Move a simulated job to background.", capability: "proc.manage" },
-    CommandSpec { name: "kill", aliases: &[], category: "proc", usage: "kill <pid>", description: "Terminate a simulated process.", capability: "proc.kill" },
-    CommandSpec { name: "nice", aliases: &[], category: "proc", usage: "nice <pid> <priority>", description: "Set simulated process priority.", capability: "proc.manage" },
-
-    CommandSpec { name: "ifconfig", aliases: &[], category: "net", usage: "ifconfig", description: "Show discovered host network interfaces.", capability: "net.read" },
-    CommandSpec { name: "iwconfig", aliases: &[], category: "net", usage: "iwconfig", description: "Show WiFi information where available.", capability: "net.read" },
-    CommandSpec { name: "wifi-scan", aliases: &[], category: "net", usage: "wifi-scan", description: "List nearby WiFi networks with host tools.", capability: "net.read" },
-    CommandSpec { name: "wifi-connect", aliases: &[], category: "net", usage: "wifi-connect <ssid> [password]", description: "Dry-run WiFi connection unless host network changes are enabled.", capability: "net.admin" },
-    CommandSpec { name: "ping", aliases: &[], category: "net", usage: "ping <host>", description: "Run bounded host ping.", capability: "net.read" },
-    CommandSpec { name: "nmcli", aliases: &[], category: "net", usage: "nmcli", description: "Show NetworkManager state on Linux.", capability: "net.read" },
-
-    CommandSpec { name: "browser", aliases: &[], category: "host", usage: "browser <url|phase1|about>", description: "Fetch and render HTTP/HTTPS page text using guarded curl.", capability: "host.net" },
-    CommandSpec { name: "python", aliases: &["py"], category: "host", usage: "python <file.py> | python -c <code>", description: "Run Python from VFS or inline code with a timeout.", capability: "host.exec" },
-    CommandSpec { name: "gcc", aliases: &["cc"], category: "host", usage: "gcc <file.c> | gcc <code>", description: "Compile and run C with host compiler using timeouts.", capability: "host.exec" },
-    CommandSpec { name: "plugins", aliases: &["plugin"], category: "host", usage: "plugins", description: "List Python plugins in ./plugins.", capability: "host.exec" },
-    CommandSpec { name: "ned", aliases: &["nano", "vi"], category: "host", usage: "ned <file>", description: "Small VFS-backed line editor.", capability: "fs.write" },
-
-    CommandSpec { name: "lspci", aliases: &[], category: "arch", usage: "lspci", description: "List simulated PCIe devices.", capability: "hw.read" },
-    CommandSpec { name: "pcie", aliases: &[], category: "arch", usage: "pcie", description: "Show PCIe subsystem summary.", capability: "hw.read" },
-    CommandSpec { name: "cr3", aliases: &[], category: "arch", usage: "cr3", description: "Show simulated CR3 value.", capability: "hw.read" },
-    CommandSpec { name: "loadcr3", aliases: &[], category: "arch", usage: "loadcr3 <hex|decimal>", description: "Load simulated CR3 value with validation.", capability: "hw.write" },
-    CommandSpec { name: "cr4", aliases: &[], category: "arch", usage: "cr4", description: "Show simulated CR4 flags.", capability: "hw.read" },
-    CommandSpec { name: "pcide", aliases: &[], category: "arch", usage: "pcide on|off", description: "Toggle simulated CR4.PCIDE.", capability: "hw.write" },
-
-    CommandSpec { name: "free", aliases: &["mem"], category: "sys", usage: "free", description: "Show simulated memory information.", capability: "sys.read" },
-    CommandSpec { name: "df", aliases: &[], category: "sys", usage: "df", description: "Show simulated VFS capacity.", capability: "sys.read" },
-    CommandSpec { name: "dmesg", aliases: &[], category: "sys", usage: "dmesg", description: "Show simulated boot messages.", capability: "sys.log" },
-    CommandSpec { name: "vmstat", aliases: &[], category: "sys", usage: "vmstat", description: "Show simulated process and memory stats.", capability: "sys.read" },
-    CommandSpec { name: "uname", aliases: &[], category: "sys", usage: "uname", description: "Show simulator kernel identity.", capability: "sys.read" },
-    CommandSpec { name: "date", aliases: &[], category: "sys", usage: "date", description: "Show host UNIX timestamp.", capability: "sys.read" },
-    CommandSpec { name: "uptime", aliases: &[], category: "sys", usage: "uptime", description: "Show simulator uptime.", capability: "sys.read" },
-    CommandSpec { name: "hostname", aliases: &[], category: "sys", usage: "hostname", description: "Show virtual hostname.", capability: "sys.read" },
-
-    CommandSpec { name: "env", aliases: &[], category: "user", usage: "env", description: "Print shell environment.", capability: "user.read" },
-    CommandSpec { name: "export", aliases: &[], category: "user", usage: "export VAR=value", description: "Set an environment variable.", capability: "user.env" },
-    CommandSpec { name: "unset", aliases: &[], category: "user", usage: "unset VAR", description: "Remove an environment variable.", capability: "user.env" },
-    CommandSpec { name: "whoami", aliases: &[], category: "user", usage: "whoami", description: "Print current simulated user.", capability: "user.read" },
-    CommandSpec { name: "id", aliases: &[], category: "user", usage: "id", description: "Print simulated user id.", capability: "user.read" },
-    CommandSpec { name: "su", aliases: &[], category: "user", usage: "su <user>", description: "Switch simulated user.", capability: "user.switch" },
-    CommandSpec { name: "history", aliases: &[], category: "user", usage: "history", description: "Show shell command history.", capability: "user.read" },
-
-    CommandSpec { name: "help", aliases: &["commands"], category: "misc", usage: "help", description: "Show grouped command map.", capability: "none" },
-    CommandSpec { name: "man", aliases: &[], category: "misc", usage: "man <command>", description: "Show a manual page.", capability: "none" },
-    CommandSpec { name: "clear", aliases: &[], category: "misc", usage: "clear", description: "Clear terminal.", capability: "none" },
-    CommandSpec { name: "version", aliases: &[], category: "misc", usage: "version", description: "Show phase1 version.", capability: "none" },
-    CommandSpec { name: "sandbox", aliases: &["nsinfo"], category: "misc", usage: "sandbox", description: "Show safety model.", capability: "none" },
-    CommandSpec { name: "exit", aliases: &["quit", "shutdown", "poweroff"], category: "misc", usage: "exit", description: "Terminate simulator.", capability: "none" },
-];
+macro_rules! cmd {
+    ($name:expr, $aliases:expr, $category:expr, $usage:expr, $description:expr, $capability:expr) => {
+        CommandSpec {
+            name: $name,
+            aliases: $aliases,
+            category: $category,
+            usage: $usage,
+            description: $description,
+            capability: $capability,
+        }
+    };
+}
 
 pub const CATEGORIES: &[&str] = &["fs", "proc", "net", "host", "arch", "sys", "user", "misc"];
+
+pub const COMMANDS: &[CommandSpec] = &[
+    cmd!("ls", &[], "fs", "ls [-l] [path]", "List VFS directory contents.", "fs.read"),
+    cmd!("cd", &[], "fs", "cd [dir]", "Change VFS working directory.", "fs.read"),
+    cmd!("pwd", &[], "fs", "pwd", "Print the current VFS path.", "fs.read"),
+    cmd!("cat", &[], "fs", "cat <file>", "Read a VFS file through sys_read.", "fs.read"),
+    cmd!("mkdir", &[], "fs", "mkdir <dir>", "Create a VFS directory.", "fs.write"),
+    cmd!("touch", &[], "fs", "touch <file>", "Create a VFS file.", "fs.write"),
+    cmd!("rm", &[], "fs", "rm <path>", "Remove a VFS node.", "fs.write"),
+    cmd!("cp", &[], "fs", "cp <src> <dst>", "Copy a VFS file.", "fs.write"),
+    cmd!("mv", &[], "fs", "mv <src> <dst>", "Move or rename a VFS node.", "fs.write"),
+    cmd!("tree", &[], "fs", "tree", "Display the VFS tree.", "fs.read"),
+    cmd!("echo", &[], "fs", "echo <text> [> file | >> file]", "Print text or redirect into the VFS.", "fs.write"),
+
+    cmd!("ps", &[], "proc", "ps", "Show simulated process table.", "proc.read"),
+    cmd!("top", &[], "proc", "top", "Show scheduler state.", "proc.read"),
+    cmd!("spawn", &[], "proc", "spawn <name> [args...] [--background]", "Create a simulated process through sys_spawn.", "proc.spawn"),
+    cmd!("jobs", &[], "proc", "jobs", "List simulated background jobs.", "proc.read"),
+    cmd!("fg", &[], "proc", "fg <pid>", "Move a simulated process to foreground.", "proc.manage"),
+    cmd!("bg", &[], "proc", "bg <pid>", "Move a simulated process to background.", "proc.manage"),
+    cmd!("kill", &[], "proc", "kill <pid>", "Terminate a simulated process through sys_kill.", "proc.kill"),
+    cmd!("nice", &[], "proc", "nice <pid> <priority>", "Set simulated process priority.", "proc.manage"),
+
+    cmd!("ifconfig", &[], "net", "ifconfig", "Show discovered host network interfaces.", "net.read"),
+    cmd!("iwconfig", &[], "net", "iwconfig", "Show WiFi information where available.", "net.read"),
+    cmd!("wifi-scan", &[], "net", "wifi-scan", "List nearby WiFi networks with host tools.", "net.read"),
+    cmd!("wifi-connect", &[], "net", "wifi-connect <ssid> [password]", "Dry-run WiFi connection unless host mutation is enabled.", "net.admin"),
+    cmd!("ping", &[], "net", "ping <host>", "Run bounded host ping.", "net.read"),
+    cmd!("nmcli", &[], "net", "nmcli", "Show NetworkManager state on Linux.", "net.read"),
+
+    cmd!("browser", &[], "host", "browser <url|phase1|about>", "Fetch and render HTTP/HTTPS text using guarded curl.", "host.net"),
+    cmd!("python", &["py"], "host", "python <file.py> | python -c <code>", "Run Python with a timeout.", "host.exec"),
+    cmd!("gcc", &["cc"], "host", "gcc <file.c> | gcc <code>", "Compile and run C with host compiler timeout guards.", "host.exec"),
+    cmd!("plugins", &["plugin"], "host", "plugins", "List Python plugins in ./plugins.", "host.exec"),
+    cmd!("ned", &["nano", "vi"], "host", "ned <file>", "Edit a VFS file with a small line editor.", "fs.write"),
+
+    cmd!("lspci", &[], "arch", "lspci", "List simulated PCIe devices.", "hw.read"),
+    cmd!("pcie", &[], "arch", "pcie", "Show PCIe subsystem summary.", "hw.read"),
+    cmd!("cr3", &[], "arch", "cr3", "Show simulated CR3 value.", "hw.read"),
+    cmd!("loadcr3", &[], "arch", "loadcr3 <hex|decimal>", "Load simulated CR3 with alignment validation.", "hw.write"),
+    cmd!("cr4", &[], "arch", "cr4", "Show simulated CR4 flags.", "hw.read"),
+    cmd!("pcide", &[], "arch", "pcide on|off", "Toggle simulated CR4.PCIDE.", "hw.write"),
+
+    cmd!("free", &["mem"], "sys", "free", "Show simulated memory information.", "sys.read"),
+    cmd!("df", &[], "sys", "df", "Show simulated filesystem capacity.", "sys.read"),
+    cmd!("dmesg", &[], "sys", "dmesg", "Show simulated boot messages.", "sys.log"),
+    cmd!("vmstat", &[], "sys", "vmstat", "Show compact virtual system stats.", "sys.read"),
+    cmd!("uname", &[], "sys", "uname", "Show simulator kernel identity.", "sys.read"),
+    cmd!("date", &[], "sys", "date", "Show host UNIX timestamp.", "sys.read"),
+    cmd!("uptime", &[], "sys", "uptime", "Show simulator uptime.", "sys.read"),
+    cmd!("hostname", &[], "sys", "hostname", "Show virtual hostname.", "sys.read"),
+    cmd!("audit", &[], "sys", "audit", "Show in-memory kernel audit events.", "sys.audit"),
+
+    cmd!("env", &[], "user", "env", "Print shell environment.", "user.read"),
+    cmd!("export", &[], "user", "export VAR=value", "Set an environment variable.", "user.env"),
+    cmd!("unset", &[], "user", "unset VAR", "Remove an environment variable.", "user.env"),
+    cmd!("whoami", &[], "user", "whoami", "Print current simulated user.", "user.read"),
+    cmd!("id", &[], "user", "id", "Print simulated user id.", "user.read"),
+    cmd!("su", &[], "user", "su <user>", "Switch simulated user.", "user.switch"),
+    cmd!("history", &[], "user", "history", "Show shell command history.", "user.read"),
+
+    cmd!("help", &["commands"], "misc", "help", "Show grouped command map.", "none"),
+    cmd!("man", &[], "misc", "man <command>", "Show generated command manual page.", "none"),
+    cmd!("complete", &[], "misc", "complete [prefix]", "Show registry-backed command completions.", "none"),
+    cmd!("clear", &[], "misc", "clear", "Clear terminal using newlines.", "none"),
+    cmd!("version", &[], "misc", "version", "Show phase1 version.", "none"),
+    cmd!("sandbox", &["nsinfo"], "misc", "sandbox", "Show safety model.", "none"),
+    cmd!("exit", &["quit", "shutdown", "poweroff"], "misc", "exit", "Terminate simulator.", "none"),
+];
 
 pub fn lookup(name: &str) -> Option<&'static CommandSpec> {
     COMMANDS
@@ -94,7 +109,7 @@ pub fn command_map() -> String {
             .join(" ");
         out.push_str(&format!("{:<5}: {}\n", category, names));
     }
-    out.push_str("\nquick : man browser | browser phase1 | ps | ls /\n");
+    out.push_str("\nquick : man browser | complete p | audit | ps | ls /\n");
     out
 }
 
@@ -139,11 +154,10 @@ mod tests {
     }
 
     #[test]
-    fn map_contains_core_categories() {
+    fn command_map_contains_audit_and_complete() {
         let map = command_map();
-        assert!(map.contains("fs"));
-        assert!(map.contains("proc"));
-        assert!(map.contains("net"));
+        assert!(map.contains("audit"));
+        assert!(map.contains("complete"));
     }
 
     #[test]
