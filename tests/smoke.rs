@@ -112,6 +112,20 @@ fn user_env_browser_and_sandbox_commands_work() {
 }
 
 #[test]
+fn network_commands_have_stable_output() {
+    let output = run_phase1("iwconfig\nwifi-scan\nwifi-connect\nexit\n");
+    assert_contains_all(&output, &["usage: wifi-connect <ssid> [password]"]);
+    assert!(
+        output.contains("no active WiFi interface")
+            || output.contains("wifi-scan:")
+            || output.contains("SSID")
+            || output.contains("Current Wi-Fi Network")
+            || output.contains("Preferred networks"),
+        "network command output did not include expected fallback text:\n{output}"
+    );
+}
+
+#[test]
 fn expected_errors_are_clear() {
     let output = run_phase1("cat missing.txt\ncd missing\nkill abc\nloadcr3 123\nwifi-connect\nunknowncmd\nexit\n");
     assert_contains_all(
