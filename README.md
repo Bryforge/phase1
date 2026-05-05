@@ -9,6 +9,8 @@ Current release: **v3.6.0**
 ## Highlights
 
 - Mobile-friendly advanced operator console UI.
+- Retro fastfetch-style preboot selector with colored `phase1` ASCII art.
+- Configurable boot options for color, ASCII compatibility, safe mode, and quick boot.
 - Compact `dash --compact` dashboard for release/demo screenshots.
 - Registry-backed `help`, `man`, `complete`, aliases, and capability metadata.
 - `capabilities` / `caps` command for command guard and policy visibility.
@@ -31,6 +33,28 @@ or
 ```bash
 cargo build --release
 ./target/release/phase1
+```
+
+## Preboot configuration
+
+On launch, phase1 opens a fastfetch-inspired boot selector before entering the shell. Press Enter to boot immediately, or toggle options by number/name:
+
+```text
+1 / boot        enter the main system
+2 / color       toggle retro rainbow ANSI color
+3 / ascii       toggle ASCII-compatible display mode
+4 / safe        lock host integrations such as browser, ping, WiFi scan/connect, Python, C compiler, and plugins
+5 / quick       skip the full boot matrix after selecting options
+0 / reset       reload default boot settings
+```
+
+The selector also honors environment defaults:
+
+```bash
+PHASE1_ASCII=1 cargo run
+PHASE1_NO_COLOR=1 cargo run
+PHASE1_SAFE_MODE=1 cargo run
+PHASE1_QUICK_BOOT=1 cargo run
 ```
 
 ## Useful commands
@@ -56,7 +80,7 @@ browser https://example.com
 
 ## Safety model
 
-phase1 simulates the kernel, VFS, process table, and scheduler in memory. Some commands call host tools (`python3`, `cc`/`gcc`/`clang`, `curl`, `ping`, `nmcli`, `networksetup`). Those paths use validation and timeouts. `wifi-connect` is dry-run by default and requires `PHASE1_ALLOW_HOST_NETWORK_CHANGES=1` before it attempts host network mutation.
+phase1 simulates the kernel, VFS, process table, and scheduler in memory. Some commands call host tools (`python3`, `cc`/`gcc`/`clang`, `curl`, `ping`, `nmcli`, `networksetup`). Those paths use validation and timeouts. The preboot safe profile disables host execution/network entry points from inside the shell. `wifi-connect` is dry-run by default and requires `PHASE1_ALLOW_HOST_NETWORK_CHANGES=1` before it attempts host network mutation.
 
 ## Roadmap designs
 
