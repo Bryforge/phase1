@@ -175,7 +175,7 @@ impl NetworkStack {
     }
 
     fn refresh_macos(&mut self) {
-        let mut cmd = Command::new("ifconfig");
+        let cmd = Command::new("ifconfig");
         let Ok(output) = run_with_timeout(cmd, Duration::from_secs(3)) else {
             return;
         };
