@@ -4,7 +4,7 @@ use std::path::{Path, PathBuf};
 use std::process;
 use std::time::{Duration, Instant};
 
-pub const VERSION: &str = "3.5.0";
+pub const VERSION: &str = "3.6.0";
 const MAX_PROCESSES: usize = 64;
 const AUDIT_LIMIT: usize = 256;
 
@@ -519,7 +519,7 @@ pub struct Kernel {
 impl Kernel {
     pub fn new() -> Self {
         let mut kernel = Self { vfs: Vfs::new(), scheduler: Scheduler::new(), pcie: PcieManager::new(), audit: AuditLog::new(), booted: Instant::now() };
-        kernel.audit.record("kernel.boot version=3.5.0");
+        kernel.audit.record("kernel.boot version=3.6.0");
         kernel
     }
 
@@ -665,7 +665,7 @@ impl Default for Kernel {
 
 #[cfg(test)]
 mod tests {
-    use super::{Kernel, Vfs};
+    use super::{Kernel, Vfs, VERSION};
 
     #[test]
     fn vfs_write_and_read_round_trip() {
@@ -680,5 +680,10 @@ mod tests {
         kernel.sys_write("/home/a.txt", "hello", false).unwrap();
         let audit = kernel.audit.dump();
         assert!(audit.contains("sys.write"));
+    }
+
+    #[test]
+    fn release_version_is_current() {
+        assert_eq!(VERSION, "3.6.0");
     }
 }
