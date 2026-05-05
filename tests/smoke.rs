@@ -43,14 +43,14 @@ fn boot_help_man_and_completion_work() {
             "python",
             "browser",
             "usage      : browser <url|phase1|about>",
-            "phase1 3.5.0",
+            "phase1 3.6.0",
         ],
     );
 }
 
 #[test]
-fn roadmap_aliases_and_capabilities_work() {
-    let output = run_phase1("commands\ncaps\npy -c \"print('alias-ok')\"\nquit\n");
+fn roadmap_aliases_capabilities_and_dashboard_work() {
+    let output = run_phase1("commands\ncaps\ndash --compact\npy -c \"print('alias-ok')\"\nquit\n");
     assert_contains_all(
         &output,
         &[
@@ -58,10 +58,14 @@ fn roadmap_aliases_and_capabilities_work() {
             "command        category capability",
             "wifi-connect",
             "dry-run by default",
+            "PHASE1 DASHBOARD v3.6.0",
+            "CORE  user=root",
+            "PROC  tasks=",
+            "HW    cr3=0x1000",
             "python",
             "timeout+validation",
             "alias-ok",
-            "shutdown: phase1 3.5.0",
+            "shutdown: phase1 3.6.0",
         ],
     );
 }
@@ -92,7 +96,7 @@ fn proc_sys_audit_and_arch_commands_work() {
     assert_contains_all(
         &output,
         &[
-            "phase1 3.5.0",
+            "phase1 3.6.0",
             "phase1 virtual cpu",
             "phase1-shell",
             "spawned pid",
