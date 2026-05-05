@@ -7,10 +7,11 @@ use std::thread;
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 use crate::browser::Browser;
-use crate::kernel::{Kernel, VfsNode, VERSION};
+use crate::kernel::{Kernel, VERSION, VfsNode};
 use crate::man;
 use crate::ned;
 use crate::network::NetworkStack;
+use crate::registry;
 
 pub struct Phase1Shell {
     pub kernel: Kernel,
@@ -27,9 +28,9 @@ impl Phase1Shell {
             kernel: Kernel::new(),
             network: NetworkStack::new(),
             start_time: Instant::now(),
-            history: VecDeque::with_capacity(300),
+            history: VecDeque::with_capacity(512),
             plugins_dir: PathBuf::from("plugins"),
-            env: HashMap::with_capacity(8),
+            env: HashMap::with_capacity(16),
         };
 
         shell.env.insert("PATH".to_string(), "/bin:/usr/bin:/plugins".to_string());
@@ -41,21 +42,8 @@ impl Phase1Shell {
         if let Err(err) = fs::create_dir_all(&shell.plugins_dir) {
             eprintln!("plugin directory warning: {}", err);
         }
-
+        shell.ensure_example_plugins();
         shell
-    }
-
-    pub fn print_boot() {
-        println!("================================================================================");
-        println!(" phase1 v{} — Terminal OS Simulator", VERSION);
-        println!(" VFS + Scheduler + Editor + Python + C + Networking + Browser + Man Pages");
-        println!("================================================================================");
-        println!("[ 0.000000] phase1 kernel booted");
-        println!("[ 0.012345] in-memory VFS and proc mounted");
-        println!("[ 0.034567] simulated scheduler ready");
-        println!("[ 0.067890] host integrations guarded by timeout/safety checks");
-        println!("[ 0.178901] boot complete — type 'help'");
-        println!();
     }
 
     pub fn user(&self) -> &str {
@@ -64,33 +52,49 @@ impl Phase1Shell {
 
     pub fn push_history(&mut self, line: &str) {
         self.history.push_back(line.to_string());
-        if self.history.len() > 300 {
+        if self.history.len() > 512 {
             self.history.pop_front();
         }
     }
 
     pub fn expand_env(&self, text: &str) -> String {
         let mut out = String::with_capacity(text.len());
-        let chars: Vec<char> = text.chars().collect();
-        let mut i = 0;
+        let mut chars = text.chars().peekable();
 
-        while i < chars.len() {
-            if chars[i] != '$' {
-                out.push(chars[i]);
-                i += 1;
+        while let Some(ch) = chars.next() {
+            if ch != '$' {
+                out.push(ch);
                 continue;
             }
 
-            i += 1;
-            let mut name = String::new();
-            while i < chars.len() && (chars[i].is_ascii_alphanumeric() || chars[i] == '_') {
-                name.push(chars[i]);
-                i += 1;
+            if chars.peek() == Some(&'{') {
+                chars.next();
+                let mut key = String::new();
+                for next in chars.by_ref() {
+                    if next == '}' {
+                        break;
+                    }
+                    key.push(next);
+                }
+                if let Some(value) = self.env.get(&key) {
+                    out.push_str(value);
+                }
+                continue;
             }
 
-            if name.is_empty() {
+            let mut key = String::new();
+            while let Some(&next) = chars.peek() {
+                if next.is_ascii_alphanumeric() || next == '_' {
+                    key.push(next);
+                    chars.next();
+                } else {
+                    break;
+                }
+            }
+
+            if key.is_empty() {
                 out.push('$');
-            } else if let Some(value) = self.env.get(&name) {
+            } else if let Some(value) = self.env.get(&key) {
                 out.push_str(value);
             }
         }
@@ -98,50 +102,74 @@ impl Phase1Shell {
         out
     }
 
-    pub fn cmd_cd(&mut self, path: Option<&str>) {
-        let target = path.unwrap_or_else(|| self.env.get("HOME").map(String::as_str).unwrap_or("/home"));
-        let resolved = self.kernel.vfs.resolve_path(target);
-
-        match self.kernel.vfs.get_node(&resolved) {
-            Some(VfsNode::Dir { .. }) => self.kernel.vfs.cwd = resolved,
+    pub fn cmd_cd(&mut self, dir: Option<&str>) {
+        let target = dir.unwrap_or_else(|| self.env.get("HOME").map(String::as_str).unwrap_or("/home"));
+        let path = self.kernel.vfs.resolve_path(target);
+        match self.kernel.vfs.get_node(&path) {
+            Some(VfsNode::Dir { .. }) => self.kernel.vfs.cwd = path,
             Some(_) => println!("cd: not a directory"),
             None => println!("cd: no such directory"),
         }
     }
 
+    fn ensure_example_plugins(&self) {
+        let example = r#"import sys
+
+data = {}
+for line in sys.stdin:
+    if "=" in line:
+        key, value = line.strip().split("=", 1)
+        data[key] = value
+
+print(f"plugin={data.get('COMMAND', 'unknown')}")
+print(f"user={data.get('USER', 'unknown')}")
+print(f"cwd={data.get('CWD', '/')}")
+print("status=ok")
+"#;
+        for file in ["hello.py", "demo.py"] {
+            let path = self.plugins_dir.join(file);
+            if !path.exists() {
+                let _ = fs::write(path, example);
+            }
+        }
+    }
+
     fn list_plugins(&self) -> String {
-        let mut names = Vec::new();
+        let mut plugins = Vec::new();
         if let Ok(entries) = fs::read_dir(&self.plugins_dir) {
             for entry in entries.flatten() {
                 let path = entry.path();
                 if path.extension().and_then(|ext| ext.to_str()) == Some("py") {
                     if let Some(name) = path.file_stem().and_then(|stem| stem.to_str()) {
-                        names.push(name.to_string());
+                        if is_safe_name(name) {
+                            plugins.push(name.to_string());
+                        }
                     }
                 }
             }
         }
-        names.sort();
-        if names.is_empty() {
-            "No plugins found in ./plugins\n".to_string()
+        plugins.sort();
+        if plugins.is_empty() {
+            "no plugins found\n".to_string()
         } else {
-            format!("{}\n", names.join("\n"))
+            format!("{}\n", plugins.join("\n"))
         }
     }
 
-    fn run_plugin(&self, name: &str) -> bool {
-        if !is_safe_command_name(name) {
+    fn try_plugin(&mut self, name: &str, args: &[String]) -> bool {
+        if !is_safe_name(name) {
             return false;
         }
-
         let path = self.plugins_dir.join(format!("{}.py", name));
         if !path.exists() {
             return false;
         }
 
-        let input = format!(
-            "COMMAND={}\nUSER={}\nCWD={}\nVERSION={}\n",
+        self.kernel.audit.record(format!("plugin.exec name={} argc={}", name, args.len()));
+        let context = format!(
+            "COMMAND={}\nARGS={}\nUSER={}\nCWD={}\nVERSION={}\n",
             name,
+            args.join(" "),
             self.user(),
             self.kernel.vfs.cwd.display(),
             VERSION
@@ -149,25 +177,19 @@ impl Phase1Shell {
 
         let mut cmd = Command::new("python3");
         cmd.arg(path);
-        match run_with_input(cmd, &input, Duration::from_secs(5)) {
-            Ok(output) if output.status.success() => {
-                print!("{}", String::from_utf8_lossy(&output.stdout));
-            }
-            Ok(output) => {
-                eprint!("{}", String::from_utf8_lossy(&output.stderr));
-            }
+        match run_with_input(cmd, &context, Duration::from_secs(5)) {
+            Ok(output) => print_output(output),
             Err(err) => eprintln!("plugin failed: {}", err),
         }
-
         true
     }
 }
 
-pub fn parse_line(input: &str) -> Result<Vec<String>, String> {
+pub fn parse_line(line: &str) -> Result<Vec<String>, String> {
     let mut tokens = Vec::new();
     let mut current = String::new();
+    let mut chars = line.chars().peekable();
     let mut quote: Option<char> = None;
-    let mut chars = input.chars().peekable();
 
     while let Some(ch) = chars.next() {
         match quote {
@@ -179,6 +201,12 @@ pub fn parse_line(input: &str) -> Result<Vec<String>, String> {
             }
             Some(_) => current.push(ch),
             None if ch == '\'' || ch == '"' => quote = Some(ch),
+            None if ch == '#' && current.is_empty() => break,
+            None if ch == '\\' => {
+                if let Some(next) = chars.next() {
+                    current.push(next);
+                }
+            }
             None if ch.is_whitespace() => {
                 if !current.is_empty() {
                     tokens.push(std::mem::take(&mut current));
@@ -195,11 +223,6 @@ pub fn parse_line(input: &str) -> Result<Vec<String>, String> {
                     tokens.push(">".to_string());
                 }
             }
-            None if ch == '\\' => {
-                if let Some(next) = chars.next() {
-                    current.push(next);
-                }
-            }
             None => current.push(ch),
         }
     }
@@ -207,137 +230,61 @@ pub fn parse_line(input: &str) -> Result<Vec<String>, String> {
     if let Some(q) = quote {
         return Err(format!("unterminated quote {}", q));
     }
-
     if !current.is_empty() {
         tokens.push(current);
     }
-
     Ok(tokens)
 }
 
 pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
-    if shell.run_plugin(cmd) {
+    if shell.try_plugin(cmd, args) {
         return;
     }
 
     match cmd {
-        "help" => print_help(),
+        "help" | "commands" => print!("{}", registry::command_map()),
+        "complete" => print_completions(args.first().map(String::as_str)),
         "version" => println!("phase1 {}", VERSION),
+        "clear" => print!("{}", "\n".repeat(40)),
         "exit" | "quit" | "shutdown" | "poweroff" => {
-            println!("Shutting down phase1 v{}... Goodbye!", VERSION);
+            println!("shutdown: phase1 {}", VERSION);
             std::process::exit(0);
         }
-        "clear" => print!("{}", "\n".repeat(40)),
+
         "pwd" => println!("{}", shell.kernel.vfs.cwd.display()),
         "cd" => shell.cmd_cd(args.first().map(String::as_str)),
         "ls" => {
-            let long = args.iter().any(|a| a == "-l" || a == "-la" || a == "-al");
-            let path = args.iter().find(|a| !a.starts_with('-')).map(String::as_str);
+            let long = args.iter().any(|arg| matches!(arg.as_str(), "-l" | "-la" | "-al"));
+            let path = args.iter().find(|arg| !arg.starts_with('-')).map(String::as_str);
             print!("{}", shell.kernel.vfs.ls(path, long));
         }
-        "cat" => {
-            if let Some(path) = args.first() {
-                match shell.kernel.vfs.cat(path) {
-                    Ok(content) => print!("{}", content),
-                    Err(err) => println!("{}", err),
-                }
-            } else {
-                println!("Usage: cat <file>");
-            }
-        }
-        "mkdir" => one_arg(args, "mkdir <dir>", |path| {
-            if let Err(err) = shell.kernel.vfs.mkdir(path) {
-                println!("mkdir failed: {}", err);
-            }
-        }),
-        "touch" => one_arg(args, "touch <file>", |path| {
-            if let Err(err) = shell.kernel.vfs.touch(path) {
-                println!("touch failed: {}", err);
-            }
-        }),
-        "rm" => one_arg(args, "rm <path>", |path| {
-            if let Err(err) = shell.kernel.vfs.rm(path) {
-                println!("rm failed: {}", err);
-            }
-        }),
-        "cp" => {
-            if args.len() < 2 {
-                println!("Usage: cp <src> <dst>");
-            } else if let Err(err) = shell.kernel.vfs.cp(&args[0], &args[1]) {
-                println!("cp failed: {}", err);
-            }
-        }
-        "mv" => {
-            if args.len() < 2 {
-                println!("Usage: mv <src> <dst>");
-            } else if let Err(err) = shell.kernel.vfs.mv(&args[0], &args[1]) {
-                println!("mv failed: {}", err);
-            }
-        }
+        "cat" => match args.first() {
+            Some(path) => match shell.kernel.sys_read(path) {
+                Ok(content) => print!("{}", content),
+                Err(err) => println!("cat: {}", err),
+            },
+            None => println!("usage: cat <file>"),
+        },
+        "mkdir" => one_arg(args, "mkdir <dir>", |path| report(shell.kernel.vfs.mkdir(path))),
+        "touch" => one_arg(args, "touch <file>", |path| report(shell.kernel.vfs.touch(path))),
+        "rm" => one_arg(args, "rm <path>", |path| report(shell.kernel.vfs.rm(path))),
+        "cp" => two_args(args, "cp <src> <dst>", |src, dst| report(shell.kernel.vfs.cp(src, dst))),
+        "mv" => two_args(args, "mv <src> <dst>", |src, dst| report(shell.kernel.vfs.mv(src, dst))),
         "tree" => print!("{}", shell.kernel.vfs.tree()),
         "echo" => handle_echo(shell, args),
-        "history" => {
-            for (idx, line) in shell.history.iter().enumerate() {
-                println!("{:>4}  {}", idx + 1, line);
-            }
-        }
-        "env" => {
-            let mut keys: Vec<_> = shell.env.keys().cloned().collect();
-            keys.sort();
-            for key in keys {
-                println!("{}={}", key, shell.env[&key]);
-            }
-        }
-        "export" => {
-            if let Some(raw) = args.first() {
-                if let Some((key, value)) = raw.split_once('=') {
-                    shell.env.insert(key.to_string(), value.to_string());
-                } else {
-                    println!("Usage: export KEY=value");
-                }
-            } else {
-                println!("Usage: export KEY=value");
-            }
-        }
-        "unset" => one_arg(args, "unset KEY", |key| {
-            shell.env.remove(key);
-        }),
-        "whoami" => println!("{}", shell.user()),
-        "id" => println!("uid={}({}) gid={}({})", shell.kernel.scheduler.current_uid, shell.user(), shell.kernel.scheduler.current_uid, shell.user()),
-        "su" => {
-            let user = args.first().map(String::as_str).unwrap_or("root");
-            shell.kernel.scheduler.current_user = user.to_string();
-            shell.kernel.scheduler.current_uid = if user == "root" { 0 } else { 1000 };
-            shell.env.insert("USER".to_string(), user.to_string());
-        }
+
         "ps" => print!("{}", shell.kernel.scheduler.ps()),
         "top" => print!("{}", shell.kernel.scheduler.top()),
         "jobs" => print!("{}", shell.kernel.scheduler.jobs()),
-        "spawn" => {
-            if args.is_empty() {
-                println!("Usage: spawn <name> [args...] [--background]");
-            } else {
-                let background = args.iter().any(|a| a == "--background" || a == "&");
-                let filtered: Vec<_> = args.iter().filter(|a| *a != "--background" && *a != "&").cloned().collect();
-                let name = filtered.first().cloned().unwrap_or_else(|| "process".to_string());
-                let cmdline = filtered.join(" ");
-                match shell.kernel.scheduler.spawn(&name, process::id(), &cmdline, 4096, background, 0) {
-                    Some(pid) => println!("spawned pid {}", pid),
-                    None => println!("process table full"),
-                }
-            }
-        }
-        "kill" => println!("{}", shell.kernel.scheduler.kill(args.first().map(String::as_str))),
+        "spawn" => spawn(shell, args),
+        "kill" => println!("{}", shell.kernel.sys_kill(args.first().map(String::as_str))),
         "nice" => {
-            let prio = args.get(1).and_then(|p| p.parse::<i32>().ok());
-            println!("{}", shell.kernel.scheduler.nice(args.first().map(String::as_str), prio));
+            let priority = args.get(1).and_then(|p| p.parse::<i32>().ok());
+            println!("{}", shell.kernel.scheduler.nice(args.first().map(String::as_str), priority));
         }
         "fg" => println!("{}", shell.kernel.scheduler.set_background(args.first().map(String::as_str), false)),
         "bg" => println!("{}", shell.kernel.scheduler.set_background(args.first().map(String::as_str), true)),
-        "browser" => {
-            let url = args.first().map(String::as_str).unwrap_or("about");
-            println!("{}", Browser::new().browse(url));
-        }
+
         "ifconfig" => {
             shell.network.refresh();
             print!("{}", shell.network.ifconfig());
@@ -349,26 +296,30 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
         "wifi-scan" => print!("{}", shell.network.wifi_scan()),
         "wifi-connect" => {
             if args.is_empty() {
-                println!("Usage: wifi-connect <ssid> [password]");
+                println!("usage: wifi-connect <ssid> [password]");
             } else {
                 println!("{}", shell.network.wifi_connect(&args[0], args.get(1).map(String::as_str)));
             }
         }
         "ping" => one_arg(args, "ping <host>", |host| print!("{}", shell.network.ping(host))),
         "nmcli" => print!("{}", shell.network.nmcli()),
+
+        "browser" => println!("{}", Browser::new().browse(args.first().map(String::as_str).unwrap_or("about"))),
+        "python" | "py" => run_python(shell, args),
+        "gcc" | "cc" => run_c(shell, args),
+        "plugins" | "plugin" => print!("{}", shell.list_plugins()),
+        "ned" | "nano" | "vi" => one_arg(args, "ned <file>", |path| ned::edit(&mut shell.kernel.vfs, path)),
+
         "lspci" => print!("{}", shell.kernel.pcie.lspci()),
         "pcie" => print!("{}", shell.kernel.pcie.pcie_info()),
         "cr3" => println!("CR3=0x{:x}", shell.kernel.scheduler.get_cr3()),
-        "loadcr3" => {
-            if let Some(value) = args.first().and_then(|v| parse_u64(v)) {
-                match shell.kernel.scheduler.load_cr3(value) {
-                    Ok(_) => println!("CR3 loaded: 0x{:x}", value),
-                    Err(err) => println!("{}", err),
-                }
-            } else {
-                println!("Usage: loadcr3 <hex|decimal>");
-            }
-        }
+        "loadcr3" => match args.first().and_then(|value| parse_u64(value)) {
+            Some(value) => match shell.kernel.scheduler.load_cr3(value) {
+                Ok(()) => println!("CR3 loaded: 0x{:x}", value),
+                Err(err) => println!("loadcr3: {}", err),
+            },
+            None => println!("usage: loadcr3 <hex|decimal>"),
+        },
         "cr4" => println!("{}", shell.kernel.scheduler.cr4()),
         "pcide" => match args.first().map(String::as_str) {
             Some("on") => {
@@ -379,50 +330,52 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
                 shell.kernel.scheduler.set_pcide(false);
                 println!("PCIDE disabled");
             }
-            _ => println!("Usage: pcide on|off"),
+            _ => println!("usage: pcide on|off"),
         },
+
         "free" | "mem" => println!("MemTotal: 4194304 kB\nMemFree: 2097152 kB\nMemUsed: 2097152 kB"),
-        "df" => println!("Filesystem     1K-blocks   Used Available Mounted on\nphase1fs         1048576      4   1048572 /"),
-        "dmesg" => println!("[0.000000] phase1 {}\n[0.012345] VFS mounted\n[0.034567] scheduler online", VERSION),
-        "vmstat" => println!("procs -----------memory---------- ---system--\nr  b   free   buff  cache   in   cs\n1  0 2097152  1024  4096   10   25"),
-        "uname" => println!("phase1 3.3.2 terminal-os-sim rust"),
+        "df" => println!("Filesystem 1K-blocks Used Available Mounted\nphase1fs   1048576   4    1048572   /"),
+        "dmesg" => println!("[0.000000] phase1 {} boot\n[0.012345] vfs mounted\n[0.034567] scheduler online", VERSION),
+        "vmstat" => println!("procs memory system\nr=1 b=0 free=2097152 in=10 cs=25"),
+        "uname" => println!("phase1 {} terminal-os-sim rust", VERSION),
         "date" => println!("{}", now_unix()),
-        "uptime" => println!("up {} seconds", shell.start_time.elapsed().as_secs()),
+        "uptime" => println!("up {} seconds", shell.kernel.uptime().as_secs()),
         "hostname" => println!("phase1"),
-        "sandbox" | "nsinfo" => println!("phase1 uses an in-memory VFS and simulated processes. Host tools are guarded with validation and timeouts."),
-        "man" => {
-            if let Some(topic) = args.first() {
-                match man::get_man_page(topic) {
-                    Some(page) => println!("{}", page),
-                    None => println!("No manual entry for {}", topic),
-                }
-            } else {
-                println!("Usage: man <command>");
+        "audit" => print!("{}", shell.kernel.audit.dump()),
+
+        "env" => print_env(shell),
+        "export" => export_env(shell, args),
+        "unset" => one_arg(args, "unset VAR", |key| {
+            shell.env.remove(key);
+        }),
+        "whoami" => println!("{}", shell.user()),
+        "id" => println!("uid={}({}) gid={}({})", shell.kernel.scheduler.current_uid, shell.user(), shell.kernel.scheduler.current_uid, shell.user()),
+        "su" => {
+            let user = args.first().map(String::as_str).unwrap_or("root");
+            shell.kernel.scheduler.current_user = user.to_string();
+            shell.kernel.scheduler.current_uid = if user == "root" { 0 } else { 1000 };
+            shell.env.insert("USER".to_string(), user.to_string());
+        }
+        "history" => {
+            for (idx, line) in shell.history.iter().enumerate() {
+                println!("{:>4} {}", idx + 1, line);
             }
         }
-        "ned" | "nano" | "vi" => one_arg(args, "ned <file>", |path| ned::edit(&mut shell.kernel.vfs, path)),
-        "plugins" | "plugin" => print!("{}", shell.list_plugins()),
-        "python" | "py" => run_python(shell, args),
-        "gcc" | "cc" => run_c(shell, args),
-        other => println!("command not found: {} (type help)", other),
+        "sandbox" | "nsinfo" => println!("sandbox: VFS/processes are simulated; host commands are guarded by validation and timeouts."),
+        "man" => match args.first() {
+            Some(topic) => match man::get_man_page(topic) {
+                Some(page) => println!("{}", page),
+                None => println!("no manual entry for {}", topic),
+            },
+            None => println!("usage: man <command>"),
+        },
+        other => println!("command not found: {}", other),
     }
-
     let _ = io::stdout().flush();
 }
 
-fn print_help() {
-    println!("phase1 commands:");
-    println!("  help man version clear exit");
-    println!("  ls cd pwd cat mkdir touch rm cp mv tree echo history");
-    println!("  env export unset whoami id su");
-    println!("  ps top spawn jobs fg bg kill nice");
-    println!("  cr3 loadcr3 cr4 pcide lspci pcie free df dmesg vmstat");
-    println!("  browser ifconfig iwconfig wifi-scan wifi-connect ping nmcli");
-    println!("  ned python gcc plugins sandbox uptime date hostname uname");
-}
-
 fn handle_echo(shell: &mut Phase1Shell, args: &[String]) {
-    if let Some(idx) = args.iter().position(|a| a == ">" || a == ">>") {
+    if let Some(idx) = args.iter().position(|arg| arg == ">" || arg == ">>") {
         if idx + 1 >= args.len() {
             println!("echo: missing redirect target");
             return;
@@ -430,179 +383,217 @@ fn handle_echo(shell: &mut Phase1Shell, args: &[String]) {
         let append = args[idx] == ">>";
         let mut text = args[..idx].join(" ");
         text.push('\n');
-        if let Err(err) = shell.kernel.vfs.write_file(&args[idx + 1], &text, append) {
-            println!("Redirect error: {}", err);
+        if let Err(err) = shell.kernel.sys_write(&args[idx + 1], &text, append) {
+            println!("echo: {}", err);
         }
     } else {
         println!("{}", args.join(" "));
     }
 }
 
+fn spawn(shell: &mut Phase1Shell, args: &[String]) {
+    if args.is_empty() {
+        println!("usage: spawn <name> [args...] [--background]");
+        return;
+    }
+    let background = args.iter().any(|arg| arg == "--background" || arg == "&");
+    let filtered: Vec<_> = args.iter().filter(|arg| *arg != "--background" && *arg != "&").cloned().collect();
+    let name = filtered.first().cloned().unwrap_or_else(|| "process".to_string());
+    let cmdline = filtered.join(" ");
+    match shell.kernel.sys_spawn(&name, &cmdline, background) {
+        Ok(pid) => println!("spawned pid {}", pid),
+        Err(err) => println!("spawn: {}", err),
+    }
+}
+
 fn run_python(shell: &mut Phase1Shell, args: &[String]) {
     if args.is_empty() {
-        println!("Usage: python <file.py> | python -c \"code\"");
+        println!("usage: python <file.py> | python -c <code>");
         return;
     }
-
-    let code = if args[0] == "-c" {
-        args[1..].join(" ")
+    shell.kernel.audit.record("host.python".to_string());
+    let mut cmd = Command::new("python3");
+    let temp_path;
+    if args[0] == "-c" {
+        cmd.arg("-c").arg(args[1..].join(" "));
     } else {
-        match shell.kernel.vfs.cat(&args[0]) {
+        let code = match shell.kernel.sys_read(&args[0]) {
             Ok(content) => content,
             Err(err) => {
-                println!("{}", err);
+                println!("python: {}", err);
                 return;
             }
+        };
+        temp_path = std::env::temp_dir().join(format!("phase1_py_{}.py", unique_nonce()));
+        if let Err(err) = fs::write(&temp_path, code) {
+            println!("python: {}", err);
+            return;
         }
-    };
-
-    let path = std::env::temp_dir().join(format!("phase1_{}_{}.py", process::id(), now_unix()));
-    if let Err(err) = fs::write(&path, code) {
-        println!("Failed to write Python script: {}", err);
-        return;
+        cmd.arg(&temp_path);
     }
-
-    let mut cmd = Command::new("python3");
-    cmd.arg(&path);
-    match run_with_timeout(cmd, Duration::from_secs(5)) {
-        Ok(output) => {
-            print!("{}", String::from_utf8_lossy(&output.stdout));
-            eprint!("{}", String::from_utf8_lossy(&output.stderr));
-        }
-        Err(err) => println!("Python failed: {}", err),
+    match run_command(cmd, Duration::from_secs(5)) {
+        Ok(output) => print_output(output),
+        Err(err) => println!("python: {}", err),
     }
-
-    let _ = fs::remove_file(path);
 }
 
 fn run_c(shell: &mut Phase1Shell, args: &[String]) {
     if args.is_empty() {
-        println!("Usage: gcc <file.c> | gcc \"code\"");
+        println!("usage: gcc <file.c> | gcc <code>");
         return;
     }
-
+    shell.kernel.audit.record("host.c".to_string());
     let code = if args.len() == 1 && args[0].ends_with(".c") {
-        match shell.kernel.vfs.cat(&args[0]) {
+        match shell.kernel.sys_read(&args[0]) {
             Ok(content) => content,
             Err(err) => {
-                println!("{}", err);
+                println!("gcc: {}", err);
                 return;
             }
         }
     } else {
         args.join(" ")
     };
-
-    let stem = format!("phase1_{}_{}", process::id(), now_unix());
-    let src = std::env::temp_dir().join(format!("{}.c", stem));
-    let bin = std::env::temp_dir().join(stem);
-
-    if let Err(err) = fs::write(&src, code) {
-        println!("Failed to write temp C file: {}", err);
+    let Some(compiler) = find_compiler() else {
+        println!("gcc: no cc/gcc/clang found on host");
+        return;
+    };
+    let nonce = unique_nonce();
+    let source = std::env::temp_dir().join(format!("phase1_{}.c", nonce));
+    let binary = std::env::temp_dir().join(format!("phase1_{}", nonce));
+    if let Err(err) = fs::write(&source, code) {
+        println!("gcc: {}", err);
         return;
     }
-
-    let compiler = if command_exists("cc") { "cc" } else { "gcc" };
     let mut compile = Command::new(compiler);
-    compile.arg(&src).arg("-O2").arg("-o").arg(&bin);
-
-    match run_with_timeout(compile, Duration::from_secs(8)) {
-        Ok(output) if output.status.success() => {
-            let run = Command::new(&bin);
-            match run_with_timeout(run, Duration::from_secs(5)) {
-                Ok(output) => {
-                    print!("{}", String::from_utf8_lossy(&output.stdout));
-                    eprint!("{}", String::from_utf8_lossy(&output.stderr));
-                }
-                Err(err) => println!("Execution failed: {}", err),
-            }
-        }
-        Ok(output) => {
-            println!("Compilation failed");
-            eprint!("{}", String::from_utf8_lossy(&output.stderr));
-        }
-        Err(err) => println!("Compilation failed: {}", err),
+    compile.arg("-Wall").arg("-Wextra").arg("-O0").arg(&source).arg("-o").arg(&binary);
+    match run_command(compile, Duration::from_secs(10)) {
+        Ok(output) if output.status.success() => match run_command(Command::new(&binary), Duration::from_secs(5)) {
+            Ok(output) => print_output(output),
+            Err(err) => println!("run: {}", err),
+        },
+        Ok(output) => print_output(output),
+        Err(err) => println!("gcc: {}", err),
     }
-
-    let _ = fs::remove_file(src);
-    let _ = fs::remove_file(bin);
+    let _ = fs::remove_file(source);
+    let _ = fs::remove_file(binary);
 }
 
-fn one_arg<F>(args: &[String], usage: &str, mut f: F)
+fn print_completions(prefix: Option<&str>) {
+    let prefix = prefix.unwrap_or("");
+    let matches = registry::completions(prefix);
+    if matches.is_empty() {
+        println!("complete: no matches for '{}'", prefix);
+    } else {
+        println!("{}", matches.join(" "));
+    }
+}
+
+fn print_env(shell: &Phase1Shell) {
+    let mut keys: Vec<_> = shell.env.keys().cloned().collect();
+    keys.sort();
+    for key in keys {
+        println!("{}={}", key, shell.env[&key]);
+    }
+}
+
+fn export_env(shell: &mut Phase1Shell, args: &[String]) {
+    if args.is_empty() {
+        println!("usage: export VAR=value");
+        return;
+    }
+    for raw in args {
+        if let Some((key, value)) = raw.split_once('=') {
+            shell.env.insert(key.to_string(), value.to_string());
+        } else {
+            println!("export: expected VAR=value");
+        }
+    }
+}
+
+fn one_arg<F>(args: &[String], usage: &str, mut action: F)
 where
     F: FnMut(&str),
 {
-    if let Some(value) = args.first() {
-        f(value);
+    match args.first() {
+        Some(value) => action(value),
+        None => println!("usage: {}", usage),
+    }
+}
+
+fn two_args<F>(args: &[String], usage: &str, mut action: F)
+where
+    F: FnMut(&str, &str),
+{
+    if args.len() < 2 {
+        println!("usage: {}", usage);
     } else {
-        println!("Usage: {}", usage);
+        action(&args[0], &args[1]);
+    }
+}
+
+fn report(result: Result<(), String>) {
+    if let Err(err) = result {
+        println!("error: {}", err);
     }
 }
 
 fn parse_u64(raw: &str) -> Option<u64> {
-    if let Some(hex) = raw.strip_prefix("0x") {
-        u64::from_str_radix(hex, 16).ok()
-    } else {
-        raw.parse().ok()
-    }
+    raw.strip_prefix("0x").and_then(|hex| u64::from_str_radix(hex, 16).ok()).or_else(|| raw.parse().ok())
 }
 
-fn is_safe_command_name(name: &str) -> bool {
-    !name.is_empty()
-        && name
-            .chars()
-            .all(|c| c.is_ascii_alphanumeric() || matches!(c, '_' | '-'))
+fn is_safe_name(name: &str) -> bool {
+    !name.is_empty() && name.chars().all(|ch| ch.is_ascii_alphanumeric() || matches!(ch, '_' | '-'))
 }
 
-fn command_exists(name: &str) -> bool {
-    Command::new(name)
-        .arg("--version")
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .status()
-        .is_ok()
+fn unique_nonce() -> u128 {
+    SystemTime::now().duration_since(UNIX_EPOCH).map(|d| d.as_nanos()).unwrap_or(0)
 }
 
-fn now_unix() -> u64 {
-    SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map(|duration| duration.as_secs())
-        .unwrap_or(0)
+fn find_compiler() -> Option<&'static str> {
+    ["cc", "gcc", "clang"].into_iter().find(|name| Command::new(name).arg("--version").stdout(Stdio::null()).stderr(Stdio::null()).status().is_ok())
 }
 
 fn run_with_input(mut cmd: Command, input: &str, timeout: Duration) -> io::Result<Output> {
-    let mut child = cmd
-        .stdin(Stdio::piped())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .spawn()?;
-
+    let mut child = cmd.stdin(Stdio::piped()).stdout(Stdio::piped()).stderr(Stdio::piped()).spawn()?;
     if let Some(stdin) = child.stdin.as_mut() {
         stdin.write_all(input.as_bytes())?;
     }
-
-    wait_with_timeout(child, timeout)
+    drop(child.stdin.take());
+    wait_child(child, timeout)
 }
 
-fn run_with_timeout(mut cmd: Command, timeout: Duration) -> io::Result<Output> {
+fn run_command(mut cmd: Command, timeout: Duration) -> io::Result<Output> {
     let child = cmd.stdout(Stdio::piped()).stderr(Stdio::piped()).spawn()?;
-    wait_with_timeout(child, timeout)
+    wait_child(child, timeout)
 }
 
-fn wait_with_timeout(mut child: std::process::Child, timeout: Duration) -> io::Result<Output> {
-    let started = Instant::now();
-
+fn wait_child(mut child: std::process::Child, timeout: Duration) -> io::Result<Output> {
+    let start = Instant::now();
     loop {
         if child.try_wait()?.is_some() {
             return child.wait_with_output();
         }
-
-        if started.elapsed() >= timeout {
+        if start.elapsed() >= timeout {
             let _ = child.kill();
             let _ = child.wait();
             return Err(io::Error::new(io::ErrorKind::TimedOut, "command timed out"));
         }
-
         thread::sleep(Duration::from_millis(25));
+    }
+}
+
+fn print_output(output: Output) {
+    print!("{}", String::from_utf8_lossy(&output.stdout));
+    eprint!("{}", String::from_utf8_lossy(&output.stderr));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::parse_line;
+
+    #[test]
+    fn parses_quotes_and_redirect() {
+        assert_eq!(parse_line("echo 'hello world' > out").unwrap(), vec!["echo", "hello world", ">", "out"]);
     }
 }
