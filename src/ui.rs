@@ -21,13 +21,17 @@ pub fn print_help() {
 }
 
 pub fn print_prompt(user: &str, path: &str) {
-    if color_enabled() {
-        print!(
+    print!("{}", prompt_text(user, path));
+}
+
+fn prompt_text(user: &str, path: &str) -> String {
+    if ascii_mode() || !color_enabled() {
+        format!("phase1://{} {} > ", user, path)
+    } else {
+        format!(
             "{}phase1{}{}://{}{}{}{} {}{}{} ❯ ",
             BOLD, RESET, GRAY, RESET, CYAN, user, RESET, BLUE, path, RESET
-        );
-    } else {
-        print!("phase1://{} {} > ", user, path);
+        )
     }
 }
 
@@ -147,7 +151,7 @@ fn ascii_mode() -> bool {
 
 #[cfg(test)]
 mod tests {
-    use super::{clip, PANEL_WIDTH};
+    use super::{clip, prompt_text, PANEL_WIDTH};
 
     #[test]
     fn panel_width_stays_terminal_friendly() {
@@ -157,5 +161,12 @@ mod tests {
     #[test]
     fn clip_respects_character_count() {
         assert_eq!(clip("abcdef", 3), "abc");
+    }
+
+    #[test]
+    fn prompt_text_includes_user_and_path() {
+        let prompt = prompt_text("root", "~/work");
+        assert!(prompt.contains("root"));
+        assert!(prompt.contains("~/work"));
     }
 }
