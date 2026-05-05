@@ -1,15 +1,16 @@
 pub fn print_boot(version: &str) {
-    println!("+--[ phase1 // v{} ]------+");
+    println!("+--[ phase1 ]---------------+");
     println!("| terminal os simulator      |");
-    println!("| status: online / sandboxed |");
-    println!("+--[ subsystems ]------------+");
-    println!("| vfs.proc   sched.jobs      |");
-    println!("| net.pcie   mem.cr3         |");
-    println!("| py.c       browser.plugins |");
-    println!("+--[ quickstart ]------------+");
-    println!("| help | man browser | ps    |");
-    println!("| ls / | plugins    | exit   |");
-    println!("+----------------------------+");
+    println!("| version: {}              |", version);
+    println!("| mode: mobile / operator   |");
+    println!("+--[ subsystems ]-----------+");
+    println!("| vfs.proc   sched.jobs     |");
+    println!("| net.pcie   mem.cr3        |");
+    println!("| py.c       browser.plug   |");
+    println!("+--[ quickstart ]-----------+");
+    println!("| help | man browser | ps   |");
+    println!("| ls / | plugins    | exit  |");
+    println!("+---------------------------+");
     println!("[ok] boot nominal");
     println!("[tip] man browser | browser phase1");
     println!();
