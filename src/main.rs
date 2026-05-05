@@ -68,3 +68,16 @@ fn main() {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::compact_path;
+    use std::path::Path;
+
+    #[test]
+    fn compact_path_shortens_home() {
+        assert_eq!(compact_path(Path::new("/home")), "~");
+        assert_eq!(compact_path(Path::new("/home/projects")), "~/projects");
+        assert_eq!(compact_path(Path::new("/proc")), "/proc");
+    }
+}
