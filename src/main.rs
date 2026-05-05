@@ -22,16 +22,6 @@ fn compact_path(path: &Path) -> String {
     }
 }
 
-fn print_completions(prefix: Option<&str>) {
-    let prefix = prefix.unwrap_or("");
-    let matches = registry::completions(prefix);
-    if matches.is_empty() {
-        println!("complete: no matches for '{}'", prefix);
-    } else {
-        println!("{}", matches.join(" "));
-    }
-}
-
 fn main() {
     let mut shell = Phase1Shell::new();
 
@@ -43,11 +33,10 @@ fn main() {
     let mut input = String::with_capacity(256);
 
     loop {
-        let uptime_secs = shell.start_time.elapsed().as_secs();
-        shell.kernel.tick(uptime_secs);
+        shell.kernel.tick();
 
         let path = compact_path(&shell.kernel.vfs.cwd);
-        print!("{}@phase1 {} › ", shell.user(), path);
+        print!("{}@phase1 {} > ", shell.user(), path);
         let _ = io::stdout().flush();
 
         input.clear();
@@ -62,19 +51,14 @@ fn main() {
         }
 
         shell.push_history(line);
-
         let expanded = shell.expand_env(line);
         match parse_line(&expanded) {
             Ok(tokens) if tokens.is_empty() => {}
-            Ok(tokens) => match tokens[0].as_str() {
-                "help" | "commands" => ui::print_help(),
-                "complete" => print_completions(tokens.get(1).map(String::as_str)),
-                _ => {
-                    let cmd = &tokens[0];
-                    let args = &tokens[1..];
-                    dispatch(&mut shell, cmd, args);
-                }
-            },
+            Ok(tokens) => {
+                let cmd = &tokens[0];
+                let args = &tokens[1..];
+                dispatch(&mut shell, cmd, args);
+            }
             Err(err) => eprintln!("parse error: {}", err),
         }
     }
