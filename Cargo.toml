@@ -1,6 +1,6 @@
 [package]
 name = "phase1"
-version = "3.3.2"
+version = "3.4.0"
 edition = "2021"
 authors = ["Chase Bryan"]
 description = "Terminal-based educational OS simulator in Rust."
