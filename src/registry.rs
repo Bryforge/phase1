@@ -79,7 +79,8 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("help", &["commands"], "misc", "help", "Show grouped command map.", "none"),
     cmd!("man", &[], "misc", "man <command>", "Show generated command manual page.", "none"),
     cmd!("complete", &[], "misc", "complete [prefix]", "Show registry-backed command completions.", "none"),
-    cmd!("clear", &[], "misc", "clear", "Clear terminal using newlines.", "none"),
+    cmd!("capabilities", &["caps"], "misc", "capabilities", "Show command capability metadata and guard status.", "none"),
+    cmd!("clear", &[], "misc", "clear", "Clear terminal using an ANSI screen clear sequence.", "none"),
     cmd!("version", &[], "misc", "version", "Show phase1 version.", "none"),
     cmd!("sandbox", &["nsinfo"], "misc", "sandbox", "Show safety model.", "none"),
     cmd!("exit", &["quit", "shutdown", "poweroff"], "misc", "exit", "Terminate simulator.", "none"),
@@ -87,6 +88,10 @@ pub const COMMANDS: &[CommandSpec] = &[
 
 pub fn lookup(name: &str) -> Option<&'static CommandSpec> {
     COMMANDS.iter().find(|cmd| cmd.name == name || cmd.aliases.contains(&name))
+}
+
+pub fn canonical_name(name: &str) -> Option<&'static str> {
+    lookup(name).map(|cmd| cmd.name)
 }
 
 pub fn command_map() -> String {
@@ -100,7 +105,7 @@ pub fn command_map() -> String {
             .join(" ");
         out.push_str(&format!("{:<5}: {}\n", category, names));
     }
-    out.push_str("\nquick : man browser | complete p | audit | ps | ls /\n");
+    out.push_str("\nquick : man browser | capabilities | complete p | audit | ps | ls /\n");
     out
 }
 
@@ -130,9 +135,34 @@ pub fn completions(prefix: &str) -> Vec<&'static str> {
     out
 }
 
+pub fn capabilities_report() -> String {
+    let mut out = String::from("command        category capability  guard\n");
+    for cmd in COMMANDS {
+        out.push_str(&format!(
+            "{:<14} {:<8} {:<11} {}\n",
+            cmd.name,
+            cmd.category,
+            cmd.capability,
+            guard_status(cmd.capability)
+        ));
+    }
+    out
+}
+
+fn guard_status(capability: &str) -> &'static str {
+    match capability {
+        "none" => "open",
+        "host.exec" | "host.net" => "timeout+validation",
+        "net.admin" => "dry-run by default",
+        "hw.write" => "validated",
+        "fs.write" | "proc.kill" | "proc.spawn" | "proc.manage" | "user.switch" | "user.env" => "audited",
+        _ => "read-only/audited",
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{command_map, completions, lookup, man_page};
+    use super::{canonical_name, capabilities_report, command_map, completions, lookup, man_page};
 
     #[test]
     fn lookup_supports_aliases() {
@@ -141,10 +171,18 @@ mod tests {
     }
 
     #[test]
+    fn canonical_name_normalizes_aliases() {
+        assert_eq!(canonical_name("py"), Some("python"));
+        assert_eq!(canonical_name("commands"), Some("help"));
+        assert_eq!(canonical_name("caps"), Some("capabilities"));
+    }
+
+    #[test]
     fn command_map_contains_audit_and_complete() {
         let map = command_map();
         assert!(map.contains("audit"));
         assert!(map.contains("complete"));
+        assert!(map.contains("capabilities"));
     }
 
     #[test]
@@ -158,5 +196,12 @@ mod tests {
     fn completions_include_aliases() {
         assert!(completions("p").contains(&"python"));
         assert!(completions("p").contains(&"py"));
+    }
+
+    #[test]
+    fn capabilities_report_includes_guard_status() {
+        let report = capabilities_report();
+        assert!(report.contains("wifi-connect"));
+        assert!(report.contains("dry-run by default"));
     }
 }
