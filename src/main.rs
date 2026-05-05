@@ -7,6 +7,18 @@ mod network;
 
 use commands::{dispatch, parse_line, Phase1Shell};
 use std::io::{self, Write};
+use std::path::Path;
+
+fn compact_path(path: &Path) -> String {
+    let raw = path.display().to_string();
+    if raw == "/home" {
+        "~".to_string()
+    } else if raw.starts_with("/home/") {
+        raw.replacen("/home", "~", 1)
+    } else {
+        raw
+    }
+}
 
 fn main() {
     let mut shell = Phase1Shell::new();
@@ -22,11 +34,8 @@ fn main() {
         let uptime_secs = shell.start_time.elapsed().as_secs();
         shell.kernel.tick(uptime_secs);
 
-        print!(
-            "{}@phase1:{}$ ",
-            shell.user(),
-            shell.kernel.vfs.cwd.display()
-        );
+        let path = compact_path(&shell.kernel.vfs.cwd);
+        print!("{}@phase1 {} › ", shell.user(), path);
         let _ = io::stdout().flush();
 
         input.clear();
