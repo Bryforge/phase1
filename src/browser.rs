@@ -1,132 +1,208 @@
-// src/browser.rs — Terminal-based browser for phase1 v3.0.0 Codename Blue
+use std::io;
+use std::process::{Command, Output, Stdio};
+use std::thread;
+use std::time::{Duration, Instant};
 
-use std::process::Command;
+use crate::kernel::VERSION;
 
 pub struct Browser;
 
 impl Browser {
     pub fn new() -> Self {
-        Browser
+        Self
     }
 
     pub fn browse(&self, url: &str) -> String {
         let url = url.trim();
 
-        if url.is_empty() || url == "about" || url == "about:blank" {
+        if url.is_empty() || matches!(url, "about" | "about:blank") {
             return self.internal_about();
         }
+
         if url == "phase1" || url.contains("bryforge/phase1") {
             return self.internal_phase1();
         }
 
-        let output = Command::new("curl")
-            .args(&[
-                "-L", "--silent", "--max-time", "10",
-                "--user-agent", "phase1-browser/3.0.0",
-                url
-            ])
-            .output();
+        if !is_allowed_url(url) {
+            return "browser: only http:// and https:// URLs are allowed. Refusing local files and unsupported schemes.".to_string();
+        }
 
-        match output {
-            Ok(o) if o.status.success() => {
-                let content = String::from_utf8_lossy(&o.stdout);
+        let mut cmd = Command::new("curl");
+        cmd.args([
+            "--location",
+            "--fail",
+            "--show-error",
+            "--silent",
+            "--max-time",
+            "10",
+            "--max-filesize",
+            "1048576",
+            "--proto",
+            "=http,https",
+            "--user-agent",
+            "phase1-browser/3.3.2",
+            url,
+        ]);
+
+        match run_with_timeout(cmd, Duration::from_secs(12)) {
+            Ok(output) if output.status.success() => {
+                let content = String::from_utf8_lossy(&output.stdout);
                 self.strip_html(&content)
             }
-            Ok(o) => format!("Request failed with status: {:?}\nTry a different URL or check network.", o.status),
-            Err(e) => format!("Failed to execute curl: {}", e),
+            Ok(output) => {
+                let stderr = String::from_utf8_lossy(&output.stderr);
+                format!(
+                    "Request failed with status: {}\n{}",
+                    output.status,
+                    stderr.trim()
+                )
+            }
+            Err(err) => format!("Failed to fetch URL: {}", err),
         }
     }
 
     fn internal_about(&self) -> String {
-        r#"phase1 Terminal Browser v3.0.0 Codename Blue
-======================================
-
-Lightweight web viewer integrated into the phase1 OS simulator.
-
-Usage:
-  browser <url>
-  browser phase1
-  browser about
-
-HTTP fetching is performed via curl on the host system.
-Content is automatically converted from HTML to readable terminal text.
-All activity stays within the educational simulator environment."#.to_string()
+        format!(
+            "phase1 Terminal Browser v{VERSION}\n\
+             ======================================\n\
+             Usage:\n\
+               browser <https-url>\n\
+               browser phase1\n\
+               browser about\n\n\
+             Fetching is performed through curl with scheme, timeout, and size limits."
+        )
     }
 
     fn internal_phase1(&self) -> String {
-        r#"phase1 v3.0.0 - Codename Blue
-=======================================
-
-Educational OS Simulator
-
-Core demonstrated concepts:
-- In-memory Virtual File System with full POSIX-like operations
-- Preemptive multitasking scheduler with process lifecycle
-- Hardware abstraction (PCIe enumeration, CR3/CR4/PCIDE)
-- Cross-platform networking stack (Linux + macOS)
-- Extensible Python plugin architecture
-- Built-in editors (nano/vi) and C compiler integration
-- Terminal web browser with real HTTP support
-
-Everything runs entirely in memory for safe, portable learning.
-
-Type 'help' for the complete command reference."#.to_string()
+        format!(
+            "phase1 v{VERSION}\n\
+             =================\n\
+             Educational OS simulator with in-memory VFS, process scheduler,\n\
+             PCIe simulation, Python plugins, C compilation, networking, and a browser.\n\
+             Type 'help' or 'man <command>' for details."
+        )
     }
 
-    fn strip_html(&self, html: &str) -> String {
-        let mut result = String::with_capacity(html.len());
-
+    pub fn strip_html(&self, html: &str) -> String {
+        let mut text = String::with_capacity(html.len());
+        let mut tag = String::new();
         let mut in_tag = false;
         let mut in_script = false;
         let mut in_style = false;
 
-        let lower_html = html.to_lowercase();
-
-        for (i, c) in html.chars().enumerate() {
-            let remaining = &lower_html[i..];
-            if remaining.starts_with("<script") {
-                in_script = true;
-            }
-            if remaining.starts_with("</script") {
-                in_script = false;
-            }
-            if remaining.starts_with("<style") {
-                in_style = true;
-            }
-            if remaining.starts_with("</style") {
-                in_style = false;
-            }
-
-            if in_script || in_style {
+        for ch in html.chars() {
+            if ch == '<' {
+                in_tag = true;
+                tag.clear();
                 continue;
             }
 
-            match c {
-                '<' => in_tag = true,
-                '>' if in_tag => in_tag = false,
-                _ if !in_tag => {
-                    result.push(c);
+            if in_tag {
+                if ch == '>' {
+                    let normalized = tag.trim().to_ascii_lowercase();
+                    let normalized = normalized.trim_start_matches('/').trim();
+
+                    if tag.trim_start().starts_with('/') {
+                        if normalized.starts_with("script") {
+                            in_script = false;
+                        } else if normalized.starts_with("style") {
+                            in_style = false;
+                        }
+                    } else if normalized.starts_with("script") {
+                        in_script = true;
+                    } else if normalized.starts_with("style") {
+                        in_style = true;
+                    } else if matches!(
+                        normalized,
+                        "br" | "hr" | "p" | "div" | "li" | "tr" | "h1" | "h2" | "h3"
+                    ) {
+                        text.push('\n');
+                    }
+
+                    in_tag = false;
+                } else {
+                    tag.push(ch);
                 }
-                _ => {}
+                continue;
+            }
+
+            if !in_script && !in_style {
+                text.push(ch);
             }
         }
 
-        let cleaned: String = result
-            .lines()
-            .map(|line| line.trim())
-            .filter(|line| !line.is_empty())
-            .collect::<Vec<_>>()
-            .join("\n");
+        let decoded = decode_html_entities(&text);
+        let mut cleaned = String::new();
+        let mut last_blank = false;
 
-        let final_text = cleaned
-            .replace("  ", " ")
-            .replace(" \n", "\n")
-            .replace("\n\n\n", "\n\n");
-
-        if final_text.trim().is_empty() {
-            format!("Fetched content from URL (raw preview):\n{}", html.chars().take(600).collect::<String>())
-        } else {
-            final_text
+        for line in decoded.lines().map(str::trim) {
+            if line.is_empty() {
+                if !last_blank {
+                    cleaned.push('\n');
+                }
+                last_blank = true;
+            } else {
+                cleaned.push_str(line);
+                cleaned.push('\n');
+                last_blank = false;
+            }
         }
+
+        let cleaned = cleaned.trim();
+        if cleaned.is_empty() {
+            format!(
+                "Fetched content from URL, but no readable text was found.\nRaw preview:\n{}",
+                html.chars().take(600).collect::<String>()
+            )
+        } else {
+            cleaned.to_string()
+        }
+    }
+}
+
+fn is_allowed_url(url: &str) -> bool {
+    let lower = url.to_ascii_lowercase();
+    lower.starts_with("http://") || lower.starts_with("https://")
+}
+
+fn decode_html_entities(input: &str) -> String {
+    input
+        .replace("&amp;", "&")
+        .replace("&lt;", "<")
+        .replace("&gt;", ">")
+        .replace("&quot;", "\"")
+        .replace("&#39;", "'")
+        .replace("&nbsp;", " ")
+}
+
+fn run_with_timeout(mut cmd: Command, timeout: Duration) -> io::Result<Output> {
+    let mut child = cmd.stdout(Stdio::piped()).stderr(Stdio::piped()).spawn()?;
+    let started = Instant::now();
+
+    loop {
+        if child.try_wait()?.is_some() {
+            return child.wait_with_output();
+        }
+
+        if started.elapsed() >= timeout {
+            let _ = child.kill();
+            let _ = child.wait();
+            return Err(io::Error::new(io::ErrorKind::TimedOut, "command timed out"));
+        }
+
+        thread::sleep(Duration::from_millis(25));
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Browser;
+
+    #[test]
+    fn strips_script_and_style() {
+        let text = Browser::new().strip_html("<style>x</style><h1>Hello</h1><script>bad()</script><p>World &amp; all</p>");
+        assert!(text.contains("Hello"));
+        assert!(text.contains("World & all"));
+        assert!(!text.contains("bad"));
     }
 }
