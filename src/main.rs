@@ -22,6 +22,16 @@ fn compact_path(path: &Path) -> String {
     }
 }
 
+fn print_completions(prefix: Option<&str>) {
+    let prefix = prefix.unwrap_or("");
+    let matches = registry::completions(prefix);
+    if matches.is_empty() {
+        println!("complete: no matches for '{}'", prefix);
+    } else {
+        println!("{}", matches.join(" "));
+    }
+}
+
 fn main() {
     let mut shell = Phase1Shell::new();
 
@@ -56,15 +66,15 @@ fn main() {
         let expanded = shell.expand_env(line);
         match parse_line(&expanded) {
             Ok(tokens) if tokens.is_empty() => {}
-            Ok(tokens) => {
-                if tokens[0] == "help" {
-                    ui::print_help();
-                } else {
+            Ok(tokens) => match tokens[0].as_str() {
+                "help" | "commands" => ui::print_help(),
+                "complete" => print_completions(tokens.get(1).map(String::as_str)),
+                _ => {
                     let cmd = &tokens[0];
                     let args = &tokens[1..];
                     dispatch(&mut shell, cmd, args);
                 }
-            }
+            },
             Err(err) => eprintln!("parse error: {}", err),
         }
     }
