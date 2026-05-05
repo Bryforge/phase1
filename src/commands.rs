@@ -2,12 +2,12 @@ use std::collections::{HashMap, VecDeque};
 use std::fs;
 use std::io::{self, Write};
 use std::path::PathBuf;
-use std::process::{self, Command, Output, Stdio};
+use std::process::{Command, Output, Stdio};
 use std::thread;
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 use crate::browser::Browser;
-use crate::kernel::{Kernel, VERSION, VfsNode};
+use crate::kernel::{Kernel, VfsNode, VERSION};
 use crate::man;
 use crate::ned;
 use crate::network::NetworkStack;
@@ -185,6 +185,12 @@ print("status=ok")
     }
 }
 
+impl Default for Phase1Shell {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 pub fn parse_line(line: &str) -> Result<Vec<String>, String> {
     let mut tokens = Vec::new();
     let mut current = String::new();
@@ -250,7 +256,6 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
             println!("shutdown: phase1 {}", VERSION);
             std::process::exit(0);
         }
-
         "pwd" => println!("{}", shell.kernel.vfs.cwd.display()),
         "cd" => shell.cmd_cd(args.first().map(String::as_str)),
         "ls" => {
@@ -272,7 +277,6 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
         "mv" => two_args(args, "mv <src> <dst>", |src, dst| report(shell.kernel.vfs.mv(src, dst))),
         "tree" => print!("{}", shell.kernel.vfs.tree()),
         "echo" => handle_echo(shell, args),
-
         "ps" => print!("{}", shell.kernel.scheduler.ps()),
         "top" => print!("{}", shell.kernel.scheduler.top()),
         "jobs" => print!("{}", shell.kernel.scheduler.jobs()),
@@ -284,7 +288,6 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
         }
         "fg" => println!("{}", shell.kernel.scheduler.set_background(args.first().map(String::as_str), false)),
         "bg" => println!("{}", shell.kernel.scheduler.set_background(args.first().map(String::as_str), true)),
-
         "ifconfig" => {
             shell.network.refresh();
             print!("{}", shell.network.ifconfig());
@@ -303,13 +306,11 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
         }
         "ping" => one_arg(args, "ping <host>", |host| print!("{}", shell.network.ping(host))),
         "nmcli" => print!("{}", shell.network.nmcli()),
-
         "browser" => println!("{}", Browser::new().browse(args.first().map(String::as_str).unwrap_or("about"))),
         "python" | "py" => run_python(shell, args),
         "gcc" | "cc" => run_c(shell, args),
         "plugins" | "plugin" => print!("{}", shell.list_plugins()),
         "ned" | "nano" | "vi" => one_arg(args, "ned <file>", |path| ned::edit(&mut shell.kernel.vfs, path)),
-
         "lspci" => print!("{}", shell.kernel.pcie.lspci()),
         "pcie" => print!("{}", shell.kernel.pcie.pcie_info()),
         "cr3" => println!("CR3=0x{:x}", shell.kernel.scheduler.get_cr3()),
@@ -332,7 +333,6 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
             }
             _ => println!("usage: pcide on|off"),
         },
-
         "free" | "mem" => println!("MemTotal: 4194304 kB\nMemFree: 2097152 kB\nMemUsed: 2097152 kB"),
         "df" => println!("Filesystem 1K-blocks Used Available Mounted\nphase1fs   1048576   4    1048572   /"),
         "dmesg" => println!("[0.000000] phase1 {} boot\n[0.012345] vfs mounted\n[0.034567] scheduler online", VERSION),
@@ -342,7 +342,6 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
         "uptime" => println!("up {} seconds", shell.kernel.uptime().as_secs()),
         "hostname" => println!("phase1"),
         "audit" => print!("{}", shell.kernel.audit.dump()),
-
         "env" => print_env(shell),
         "export" => export_env(shell, args),
         "unset" => one_arg(args, "unset VAR", |key| {
