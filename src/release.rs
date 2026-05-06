@@ -1,7 +1,7 @@
 use crate::kernel::VERSION;
 
 pub const RELEASE_VERSION: &str = "3.6.0";
-pub const BLEEDING_VERSION: &str = "3.8.0-dev";
+pub const BLEEDING_VERSION: &str = "3.8.1-dev";
 pub const CHANNEL: &str = "bleeding-edge";
 pub const UPDATE_PROTOCOL_FILE: &str = "UPDATE_PROTOCOL.md";
 pub const VERSION_SCHEME: &str = "MAJOR.MINOR.PATCH[-dev]";
@@ -15,6 +15,7 @@ const BLEEDING_FEATURES: &[&str] = &[
     "update protocol patch policy hardening",
     "metadata-backed capability enforcement",
     "WASI-lite plugin runtime with phase1-only sandboxing",
+    "selectable UI color palettes with rainbow default",
     "operator sysinfo/theme/banner/tips commands",
 ];
 
@@ -32,6 +33,10 @@ const ROADMAP_STATUS: &[(&str, &str)] = &[
     (
         "WASM/WASI plugin runtime",
         "complete: WASI-lite plugins run in a phase1 sandbox without host shell access",
+    ),
+    (
+        "Configurable UI color palettes",
+        "complete: rainbow remains default; matrix, cyber, amber, ice, synthwave, and crimson are available",
     ),
     (
         "Full-screen TUI dashboard",
@@ -96,6 +101,7 @@ mod tests {
         assert!(out.contains("patch-level SemVer"));
         assert!(out.contains("metadata-backed capability enforcement"));
         assert!(out.contains("WASI-lite plugin runtime"));
+        assert!(out.contains("selectable UI color palettes"));
     }
 
     #[test]
@@ -105,6 +111,7 @@ mod tests {
         assert!(out.contains("Update protocol and semantic patch versioning"));
         assert!(out.contains("Capability enforcement based on command metadata"));
         assert!(out.contains("WASM/WASI plugin runtime"));
+        assert!(out.contains("Configurable UI color palettes"));
         assert!(out.contains("complete"));
     }
 }
