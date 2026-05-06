@@ -8,7 +8,7 @@ const BLEEDING_BRANCH: &str = "master";
 const STABLE_BRANCH: &str = "stable";
 const UPDATE_PROTOCOL_FILE: &str = "UPDATE_PROTOCOL.md";
 const VERSION_SCHEME: &str = "MAJOR.MINOR.PATCH[-dev]";
-const CURRENT_EDGE_VERSION: &str = "3.8.0-dev";
+pub const CURRENT_EDGE_VERSION: &str = "3.8.1-dev";
 const COMMAND_TIMEOUT: Duration = Duration::from_secs(20);
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -388,13 +388,13 @@ fn help() -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{run, sanitize_token};
+    use super::{run, sanitize_token, CURRENT_EDGE_VERSION};
 
     #[test]
     fn update_defaults_to_safe_plan() {
         let out = run(&[]);
         assert!(out.contains("phase1 updater // plan bleeding edge"));
-        assert!(out.contains("3.8.0-dev"));
+        assert!(out.contains(CURRENT_EDGE_VERSION));
         assert!(out.contains("MAJOR.MINOR.PATCH"));
         assert!(out.contains("update protocol"));
         assert!(out.contains("update bleeding --execute"));
@@ -408,7 +408,7 @@ mod tests {
         assert!(out.contains("UPDATE_PROTOCOL.md"));
         assert!(out.contains("third number"));
         assert!(out.contains("PHASE1_ALLOW_HOST_TOOLS"));
-        assert!(out.contains("3.8.0-dev"));
+        assert!(out.contains(CURRENT_EDGE_VERSION));
         assert!(out.contains("README changes"));
     }
 
