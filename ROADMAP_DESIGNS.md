@@ -15,6 +15,8 @@ Core principles:
 - Make mobile terminal output compact but still premium.
 - Build extensibility through policy, packages, and sandboxed plugins.
 - Keep future pipelines internal to the phase1 simulator.
+- Keep developer storage, cloned repositories, generated projects, and build artifacts isolated under a phase1-managed workspace.
+- Grow language runtime support behind the same capability metadata, timeout, redaction, and workspace controls used by existing guarded host tools.
 
 ## Prepared update queue
 
@@ -59,6 +61,26 @@ Primary targets:
 - `where`, `sort`, `get`, `table`, `json`, and `count` pipeline stages
 - secret-conscious `audit --json`
 - smoke tests for structured output and pipeline behavior
+
+### Developer workspace implementation target
+
+```text
+STORAGE_GIT_RUST.md
+```
+
+Theme:
+
+```text
+Guarded Storage + Git Clone + Rust Runner
+```
+
+Primary targets:
+
+- local `phase1.workspace` storage root
+- guarded `git clone`, `git status`, and `git pull` helper paths
+- Rust toolchain checks, single-file compile/run, generated Cargo projects, and Cargo check/build/test/run helpers
+- non-interactive Git prompts and conservative output redaction
+- generated workspace artifact handling
 
 ## Roadmap phases
 
@@ -137,6 +159,20 @@ Targets:
 - VFS browser
 - mobile fallback mode
 
+### Phase R7 — Storage, Git, and language runtime support
+
+Design file: `docs/roadmap/language-runtime-support.md`
+
+User-facing workflow: `STORAGE_GIT_RUST.md`
+
+Targets:
+
+- isolated storage workspace for cloned repositories and generated projects
+- guarded Git clone/status/pull workflows
+- Rust compile/run and Cargo project support
+- staged roadmap for Python, C/C++, JavaScript/TypeScript, Go, Java/Kotlin, .NET, Swift, PHP, Ruby, data/science languages, systems languages, BEAM/JVM/functional ecosystems, Dart, and WASM/WASI
+- consistent runtime controls: safe-mode gate, host-tools opt-in, timeout limits, bounded output, redaction, workspace isolation, docs, and smoke tests
+
 ## Immediate implementation order
 
 1. Implement v3.7.0 secure operator persistence and policy gate.
@@ -144,7 +180,9 @@ Targets:
 3. Promote v3.7.0 only after security behavior is confirmed.
 4. Implement v3.8.0 structured output and internal pipelines.
 5. Validate v3.8.0 locally with fmt, Clippy, unit tests, and smoke tests.
-6. Continue virtual kernel boundary cleanup.
+6. Stabilize `phase1-storage` as the first developer workspace helper.
+7. Add shell-facing wrappers for `storage`, `git`, `rust`, and `lang` after helper behavior is validated.
+8. Continue virtual kernel boundary cleanup and package/plugin runtime work.
 
 ## Definition of done
 
