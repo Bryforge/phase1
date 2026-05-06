@@ -69,6 +69,7 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("uptime", &[], "sys", "uptime", "Show simulator uptime.", "sys.read"),
     cmd!("hostname", &[], "sys", "hostname", "Show virtual hostname.", "sys.read"),
     cmd!("audit", &[], "sys", "audit", "Show in-memory kernel audit events.", "sys.audit"),
+    cmd!("sysinfo", &["fetch", "neofetch"], "sys", "sysinfo", "Show a privacy-safe one-screen phase1 system summary.", "sys.read"),
     cmd!("env", &[], "user", "env", "Print shell environment.", "user.read"),
     cmd!("export", &[], "user", "export VAR=value", "Set an environment variable.", "user.env"),
     cmd!("unset", &[], "user", "unset VAR", "Remove an environment variable.", "user.env"),
@@ -78,6 +79,9 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("accounts", &["users"], "user", "accounts", "Explain and list simulated Unix accounts without real emails or credentials.", "user.read"),
     cmd!("history", &[], "user", "history", "Show shell command history.", "user.read"),
     cmd!("security", &["sec", "policy"], "user", "security", "Show safe mode, host tool gates, persistence, and privacy status.", "user.read"),
+    cmd!("theme", &["style"], "user", "theme [show|list|neon|mono|ascii|reset]", "Switch or inspect the live terminal theme.", "user.env"),
+    cmd!("banner", &["splash"], "user", "banner [mobile|desktop|mono|neon|ascii|safe|host|persist]", "Preview boot splash profile choices without changing saved config.", "user.read"),
+    cmd!("tips", &["hint", "hints"], "user", "tips", "Show rotating operator tips for useful phase1 commands.", "user.read"),
     cmd!("help", &["commands"], "misc", "help", "Show grouped command map.", "none"),
     cmd!("man", &[], "misc", "man <command>", "Show generated command manual page.", "none"),
     cmd!("complete", &[], "misc", "complete [prefix]", "Show registry-backed command completions.", "none"),
@@ -110,7 +114,7 @@ pub fn command_map() -> String {
             .join(" ");
         out.push_str(&format!("{:<5}: {}\n", category, names));
     }
-    out.push_str("\nquick : security | accounts | bootcfg | bootcfg save | bootcfg reset | matrix 0 | matrix --help | dash --compact | audit | ps\n");
+    out.push_str("\nquick : sysinfo | theme list | banner mobile | tips | security | accounts | matrix 0 | dash --compact | audit | ps\n");
     out
 }
 
@@ -182,6 +186,10 @@ mod tests {
         assert_eq!(lookup("users").map(|cmd| cmd.name), Some("accounts"));
         assert_eq!(lookup("sec").map(|cmd| cmd.name), Some("security"));
         assert_eq!(lookup("policy").map(|cmd| cmd.name), Some("security"));
+        assert_eq!(lookup("fetch").map(|cmd| cmd.name), Some("sysinfo"));
+        assert_eq!(lookup("style").map(|cmd| cmd.name), Some("theme"));
+        assert_eq!(lookup("splash").map(|cmd| cmd.name), Some("banner"));
+        assert_eq!(lookup("hint").map(|cmd| cmd.name), Some("tips"));
     }
 
     #[test]
@@ -195,6 +203,8 @@ mod tests {
         assert_eq!(canonical_name("users"), Some("accounts"));
         assert_eq!(canonical_name("sec"), Some("security"));
         assert_eq!(canonical_name("policy"), Some("security"));
+        assert_eq!(canonical_name("neofetch"), Some("sysinfo"));
+        assert_eq!(canonical_name("style"), Some("theme"));
     }
 
     #[test]
@@ -208,12 +218,16 @@ mod tests {
         assert!(map.contains("bootcfg"));
         assert!(map.contains("accounts"));
         assert!(map.contains("security"));
+        assert!(map.contains("sysinfo"));
+        assert!(map.contains("theme"));
+        assert!(map.contains("banner"));
+        assert!(map.contains("tips"));
     }
 
     #[test]
     fn man_pages_are_generated() {
-        let page = man_page("browser").expect("browser man page");
-        assert!(page.contains("HTTP/HTTPS"));
+        let page = man_page("theme").expect("theme man page");
+        assert!(page.contains("terminal theme"));
         assert!(page.contains("capability"));
     }
 
@@ -224,6 +238,8 @@ mod tests {
         assert!(completions("r").contains(&"rain"));
         assert!(completions("boot").contains(&"bootcfg"));
         assert!(completions("sec").contains(&"security"));
+        assert!(completions("the").contains(&"theme"));
+        assert!(completions("f").contains(&"fetch"));
     }
 
     #[test]
@@ -232,5 +248,6 @@ mod tests {
         assert!(report.contains("wifi-connect"));
         assert!(report.contains("network-change opt-in"));
         assert!(report.contains("PHASE1_ALLOW_HOST_TOOLS"));
+        assert!(report.contains("theme"));
     }
 }
