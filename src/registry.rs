@@ -59,7 +59,7 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("python", &["py"], "host", "python <file.py> | python -c <code>", "Run Python with a timeout.", "host.exec"),
     cmd!("gcc", &["cc"], "host", "gcc <file.c> | gcc <code>", "Compile and run C with host compiler timeout guards.", "host.exec"),
     cmd!("plugins", &["plugin"], "host", "plugins", "List Python plugins in ./plugins.", "host.exec"),
-    cmd!("update", &["upgrade"], "host", "update [plan|check|--execute] [bleeding|stable] [--build]", "Safely plan or run a guarded Git update from stable to bleeding edge.", "host.exec"),
+    cmd!("update", &["upgrade"], "host", "update [plan|check|--execute|protocol] [bleeding|stable] [--build]", "Safely plan or run a guarded Git update; protocol prints patch-versioning rules.", "host.exec"),
     cmd!("ned", &["nano", "vi"], "host", "ned <file>", "Edit a VFS file with a small line editor.", "fs.write"),
     cmd!("lspci", &[], "arch", "lspci", "List simulated PCIe devices.", "hw.read"),
     cmd!("pcie", &[], "arch", "pcie", "Show PCIe subsystem summary.", "hw.read"),
@@ -122,7 +122,7 @@ pub fn command_map() -> String {
             .join(" ");
         out.push_str(&format!("{:<5}: {}\n", category, names));
     }
-    out.push_str("\nquick : version --compare | roadmap | pipeline | cat log.txt | grep alpha | wc -l | update bleeding --check | sysinfo\n");
+    out.push_str("\nquick : version --compare | roadmap | pipeline | update protocol | cat log.txt | grep alpha | wc -l | update bleeding --check | sysinfo\n");
     out
 }
 
@@ -240,6 +240,7 @@ mod tests {
         assert!(map.contains("grep"));
         assert!(map.contains("find"));
         assert!(map.contains("update"));
+        assert!(map.contains("update protocol"));
         assert!(map.contains("pipeline"));
         assert!(map.contains("roadmap"));
     }
@@ -247,7 +248,8 @@ mod tests {
     #[test]
     fn man_pages_are_generated() {
         let page = man_page("update").expect("update man page");
-        assert!(page.contains("stable to bleeding edge"));
+        assert!(page.contains("protocol"));
+        assert!(page.contains("patch-versioning"));
         assert!(page.contains("host.exec"));
         let pipeline = man_page("pipeline").expect("pipeline man page");
         assert!(pipeline.contains("structured text pipeline"));
