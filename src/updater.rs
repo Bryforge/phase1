@@ -399,13 +399,6 @@ fn sanitize_token(token: &str) -> String {
     out
 }
 
-fn target_arg(target: Target) -> &'static str {
-    match target {
-        Target::Bleeding => "latest",
-        Target::Stable => "stable",
-    }
-}
-
 fn help() -> String {
     "usage: update [plan|check|--execute|protocol|now|test] [latest|stable] [--build] [--trust-host]\n\nupdate defaults to a safe dry-run plan for the latest bleeding-edge build.\nlatest targets the repository default bleeding-edge branch.\nnow is shorthand for latest --execute --build.\ntest plans or runs developer validation suites.\nprotocol prints the local update and versioning protocol reference.\n--trust-host opts in to host git/cargo tools from inside phase1; safe mode must still be off.\n--execute runs guarded git fetch/checkout/pull and refuses to overwrite tracked local changes.\n--build also runs cargo build --release after a successful update.\n".to_string()
 }
