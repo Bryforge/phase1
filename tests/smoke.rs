@@ -193,6 +193,44 @@ fn preboot_persistent_state_mode_is_toggleable_and_restores_home_files() {
 }
 
 #[test]
+fn persistent_history_restores_and_sanitizes_commands() {
+    let run_dir = unique_run_dir();
+    fresh_run_dir(&run_dir);
+
+    let first = run_phase1_in_dir(
+        &run_dir,
+        "p\n\necho first-history\nexport API_TOKEN=supersecret\nhistory status\nexit\n",
+    );
+    assert_contains_all(
+        &first,
+        &[
+            "persistent state  on",
+            "persistent history  : on",
+            "history file        : phase1.history",
+            "password/token/secret-like commands are redacted",
+        ],
+    );
+    let history_file = run_dir.join("phase1.history");
+    assert!(history_file.exists(), "persistent history file was not saved");
+    let raw = fs::read_to_string(&history_file).expect("read history file");
+    assert!(!raw.contains("supersecret"), "history leaked secret value:\n{raw}");
+    assert!(!raw.contains("API_TOKEN"), "history leaked token variable name:\n{raw}");
+
+    let second = run_phase1_in_dir(&run_dir, "\nhistory status\nhistory 8\nexit\n");
+    assert_contains_all(
+        &second,
+        &[
+            "persistent history: restored",
+            "persistent history  : on",
+            "echo first-history",
+            "[redacted-sensitive-command]",
+        ],
+    );
+
+    let _ = fs::remove_dir_all(&run_dir);
+}
+
+#[test]
 fn roadmap_aliases_capabilities_and_dashboard_work() {
     let output = run_phase1_host_enabled("commands\ncaps\ndash --compact\npy -c \"print('alias-ok')\"\nquit\n");
     assert_contains_all(
