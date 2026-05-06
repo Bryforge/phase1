@@ -30,7 +30,7 @@ impl NetworkStack {
 
     pub fn refresh(&mut self) {
         self.interfaces.clear();
-        if safe_mode_enabled() {
+        if host_tools_blocked() {
             self.interfaces.push(loopback());
             return;
         }
@@ -62,14 +62,14 @@ impl NetworkStack {
             }
             out.push('\n');
         }
-        if safe_mode_enabled() {
+        if host_tools_blocked() {
             out.push_str("safe-mode: host network inspection disabled\n");
         }
         out
     }
 
     pub fn iwconfig(&self) -> String {
-        if safe_mode_enabled() {
+        if host_tools_blocked() {
             return "safe-mode: host WiFi inspection disabled\n".to_string();
         }
         let mut out = String::new();
@@ -92,7 +92,7 @@ impl NetworkStack {
     }
 
     pub fn wifi_scan(&self) -> String {
-        if safe_mode_enabled() {
+        if host_tools_blocked() {
             return "wifi-scan: disabled by safe boot profile\n".to_string();
         }
         if cfg!(target_os = "macos") {
@@ -107,13 +107,13 @@ impl NetworkStack {
     }
 
     pub fn wifi_connect(&mut self, ssid: &str, password: Option<&str>) -> String {
-        if safe_mode_enabled() {
+        if host_tools_blocked() {
             return "wifi-connect: disabled by safe boot profile".to_string();
         }
         if ssid.trim().is_empty() {
             return "usage: wifi-connect <ssid> [password]".to_string();
         }
-        if std::env::var("PHASE1_ALLOW_HOST_NETWORK_CHANGES").ok().as_deref() != Some("1") {
+        if !crate::policy::host_network_changes_enabled() {
             return format!("dry-run: would connect to '{ssid}'. Set PHASE1_ALLOW_HOST_NETWORK_CHANGES=1 to allow host network changes.");
         }
 
@@ -140,7 +140,7 @@ impl NetworkStack {
     }
 
     pub fn ping(&self, host: &str) -> String {
-        if safe_mode_enabled() {
+        if host_tools_blocked() {
             return "ping: disabled by safe boot profile\n".to_string();
         }
         if !safe_host(host) {
@@ -152,7 +152,7 @@ impl NetworkStack {
     }
 
     pub fn nmcli(&self) -> String {
-        if safe_mode_enabled() {
+        if host_tools_blocked() {
             return "safe-mode: host network manager inspection disabled\n".to_string();
         }
         if cfg!(target_os = "linux") {
@@ -254,7 +254,9 @@ fn loopback() -> NetInterface {
 }
 
 fn read_linux_mac(name: &str) -> String {
-    fs::read_to_string(format!("/sys/class/net/{name}/address")).map(|value| value.trim().to_string()).unwrap_or_else(|_| "unknown".to_string())
+    fs::read_to_string(format!("/sys/class/net/{name}/address"))
+        .map(|value| value.trim().to_string())
+        .unwrap_or_else(|_| "unknown".to_string())
 }
 
 fn linux_wifi_ssid() -> Option<String> {
@@ -333,22 +335,34 @@ fn prefix_to_netmask(prefix: u8) -> String {
 }
 
 fn safe_host(host: &str) -> bool {
-    !host.is_empty() && host.len() <= 255 && host.chars().all(|ch| ch.is_ascii_alphanumeric() || matches!(ch, '.' | '-' | ':' | '_'))
+    !host.is_empty()
+        && host.len() <= 255
+        && host
+            .chars()
+            .all(|ch| ch.is_ascii_alphanumeric() || matches!(ch, '.' | '-' | ':' | '_'))
 }
 
-fn safe_mode_enabled() -> bool {
-    !matches!(std::env::var("PHASE1_SAFE_MODE").ok().as_deref(), Some("0" | "false" | "off" | "no"))
+fn host_tools_blocked() -> bool {
+    !crate::policy::host_tools_allowed()
 }
 
 fn command_text(cmd: Command, timeout: Duration, fallback: &str) -> String {
     match run_with_timeout(cmd, timeout) {
         Ok(output) if output.status.success() => {
             let stdout = String::from_utf8_lossy(&output.stdout);
-            if stdout.trim().is_empty() { format!("{fallback}\n") } else { stdout.to_string() }
+            if stdout.trim().is_empty() {
+                format!("{fallback}\n")
+            } else {
+                stdout.to_string()
+            }
         }
         Ok(output) => {
             let stderr = String::from_utf8_lossy(&output.stderr);
-            if stderr.trim().is_empty() { format!("{fallback}\n") } else { stderr.to_string() }
+            if stderr.trim().is_empty() {
+                format!("{fallback}\n")
+            } else {
+                stderr.to_string()
+            }
         }
         Err(err) => format!("{fallback}: {err}\n"),
     }
@@ -389,10 +403,22 @@ mod tests {
     #[test]
     fn safe_mode_uses_loopback_only() {
         std::env::set_var("PHASE1_SAFE_MODE", "1");
+        std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
         let network = NetworkStack::new();
         let output = network.ifconfig();
         assert!(output.contains("lo:"));
         assert!(output.contains("safe-mode: host network inspection disabled"));
+        std::env::remove_var("PHASE1_SAFE_MODE");
+    }
+
+    #[test]
+    fn safe_off_still_requires_host_tools_opt_in() {
+        std::env::set_var("PHASE1_SAFE_MODE", "0");
+        std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
+        let network = NetworkStack::new();
+        let output = network.ifconfig();
+        assert!(output.contains("lo:"));
+        assert!(output.contains("host network inspection disabled"));
         std::env::remove_var("PHASE1_SAFE_MODE");
     }
 }
