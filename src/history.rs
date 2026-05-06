@@ -7,6 +7,8 @@ use std::path::PathBuf;
 pub const HISTORY_LIMIT: usize = 512;
 pub const DEFAULT_HISTORY_PATH: &str = "phase1.history";
 
+const _: fn(&mut Phase1Shell, &str) = Phase1Shell::push_history;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum HistoryStore {
     Disabled,
