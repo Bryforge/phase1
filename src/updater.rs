@@ -129,7 +129,7 @@ fn guarded_execute(target: Target, build: bool) -> String {
     }
 
     for step in update_steps(target) {
-        let (step_out, ok) = run_step(step.0, step.1);
+        let (step_out, ok) = run_step(step.0, &step.1);
         out.push_str(&step_out);
         if !ok {
             return out;
@@ -150,10 +150,7 @@ fn guarded_execute(target: Target, build: bool) -> String {
 
 fn plan(target: Target, build: bool) -> String {
     let branch = target.branch();
-    let mut out = format!(
-        "phase1 updater // plan {}\n\n",
-        target.label()
-    );
+    let mut out = format!("phase1 updater // plan {}\n\n", target.label());
     out.push_str("safe default : this command does not modify files unless --execute is provided\n");
     out.push_str("guard        : --execute requires PHASE1_SAFE_MODE=0 and PHASE1_ALLOW_HOST_TOOLS=1\n");
     out.push_str("privacy      : updater never asks for passwords, tokens, email credentials, cookies, or keys\n");
@@ -248,7 +245,10 @@ fn run_git_summary(args: &[&str], label: &str) -> String {
                 format!("{label:<11}: {}\n", value.lines().next().unwrap_or("ok"))
             }
         }
-        Ok(output) => format!("{label:<11}: unavailable ({})\n", sanitize_combined(&output).trim()),
+        Ok(output) => format!(
+            "{label:<11}: unavailable ({})\n",
+            sanitize_combined(&output).trim()
+        ),
         Err(err) => format!("{label:<11}: unavailable ({err})\n"),
     }
 }
