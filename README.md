@@ -1,7 +1,7 @@
 # phase1
 
 <p align="center">
-  <img src="assets/phase1-splash.svg" alt="phase1 colored boot splash showing rainbow ASCII art, secure safe-mode status, boot options, and terminal prompt" width="900">
+  <img src="assets/phase1-splash.svg?cache=f23405d8" alt="phase1 colored boot splash showing a clean neon Phase1 wordmark, secure safe-mode status, boot options, and terminal prompt" width="900">
 </p>
 
 <p align="center">
