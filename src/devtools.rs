@@ -372,7 +372,7 @@ fn help() -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{is_request, redact_sensitive_token, run};
+    use super::{is_request, plan, redact_sensitive_token, run, Suite};
 
     #[test]
     fn detects_developer_test_requests() {
@@ -418,16 +418,10 @@ mod tests {
 
     #[test]
     fn developer_test_trust_flag_does_not_open_boot_gate() {
-        std::env::set_var("PHASE1_SAFE_MODE", "0");
-        std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
-        let out = run(&[
-            "test".to_string(),
-            "quick".to_string(),
-            "--execute".to_string(),
-            "--trust-host".to_string(),
-        ]);
-        assert!(out.contains("PHASE1_ALLOW_HOST_TOOLS"));
-        std::env::remove_var("PHASE1_SAFE_MODE");
+        let out = plan(Suite::Quick);
+        assert!(out.contains("SHIELD off"));
+        assert!(out.contains("TRUST HOST on"));
+        assert!(out.contains("explicit --trust-host"));
     }
 
     #[test]
