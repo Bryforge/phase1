@@ -270,13 +270,12 @@ fn print_boot_card(version: &str, config: BootConfig, selector: bool) {
     let width = card_width(config);
     println!();
     println!("{}", card_top(config, width));
-    println!("{}", card_line(config, width, &phase1_wordmark(config)));
-    println!("{}", card_line(config, width, "PHASE1 // ADVANCED OPERATOR CONSOLE"));
+    println!("{}", card_line(config, width, &console_title(config)));
     println!("{}", card_rule(config, width));
     for row in splash_info(version, config) {
         println!("{}", card_line(config, width, &row));
     }
-    println!("{}", card_line(config, width, "fastfetch boot // cyberdeck ready"));
+    println!("{}", card_line(config, width, "cyberdeck ready"));
 
     if selector {
         println!("{}", card_section(config, width, "BOOT"));
@@ -296,7 +295,7 @@ fn splash_info(version: &str, config: BootConfig) -> Vec<String> {
     let state_mode = if config.persistent_state { "persistent" } else { "volatile" };
     let security_mode = if config.safe_mode { "safe" } else { "host-enabled" };
     vec![
-        format!("os      phase1 v{version}"),
+        format!("version v{version}"),
         format!("profile {}", config.profile_name()),
         format!("security  {security_mode}"),
         format!("device  {}", if config.mobile_mode { "mobile" } else { "desktop" }),
@@ -320,6 +319,17 @@ fn boot_rows(config: BootConfig) -> Vec<String> {
         "9 save config".to_string(),
         "0 reset saved config".to_string(),
     ]
+}
+
+fn console_title(config: BootConfig) -> String {
+    if !config.color || config.ascii_mode {
+        format!("{} // Advanced Operator Console", phase1_wordmark(config))
+    } else {
+        format!(
+            "{}{} // Advanced Operator Console{}",
+            phase1_wordmark(config), GREEN, RESET
+        )
+    }
 }
 
 fn phase1_wordmark(config: BootConfig) -> String {
@@ -534,7 +544,10 @@ fn phase1_art() -> [&'static str; 5] {
 
 #[cfg(test)]
 mod tests {
-    use super::{clip, parse_bool, phase1_art, prompt_text, strip_ansi, visible_len, BootConfig, PANEL_WIDTH};
+    use super::{
+        clip, console_title, parse_bool, phase1_art, prompt_text, splash_info, strip_ansi,
+        visible_len, BootConfig, PANEL_WIDTH,
+    };
 
     #[test]
     fn panel_width_stays_terminal_friendly() {
@@ -589,6 +602,22 @@ mod tests {
     #[test]
     fn phase1_art_is_mobile_width() {
         assert!(phase1_art().iter().all(|line| line.chars().count() <= 40));
+    }
+
+    #[test]
+    fn boot_branding_uses_one_console_title() {
+        let config = BootConfig {
+            color: false,
+            ascii_mode: true,
+            safe_mode: true,
+            quick_boot: false,
+            mobile_mode: true,
+            persistent_state: false,
+        };
+        assert_eq!(console_title(config), "Phase1 // Advanced Operator Console");
+        let rows = splash_info("3.8.1", config);
+        assert!(rows.contains(&"version v3.8.1".to_string()));
+        assert!(!rows.iter().any(|row| row.contains("os      phase1")));
     }
 
     #[test]
