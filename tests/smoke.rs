@@ -99,6 +99,7 @@ fn assert_contains_all(output: &str, needles: &[&str]) {
 #[test]
 fn boot_help_man_and_completion_work() {
     let output = run_phase1("help\ncomplete p\nman browser\nversion\nexit\n");
+    let package_version = format!("phase1 {}", env!("CARGO_PKG_VERSION"));
     assert_contains_all(
         &output,
         &[
@@ -110,7 +111,7 @@ fn boot_help_man_and_completion_work() {
             "python",
             "browser",
             "usage      : browser <url|phase1|about>",
-            "phase1 3.10.6",
+            &package_version,
         ],
     );
 }
