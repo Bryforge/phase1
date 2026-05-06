@@ -4,7 +4,7 @@ use crate::ui::{BootConfig, ThemePalette};
 const TIPS: &[&str] = &[
     "Run security to verify safe mode, host tools, persistence, and privacy status.",
     "Run matrix 0 for digital rain, then press q to return cleanly.",
-    "Use dash --compact for a fast operator snapshot.",
+    "Use dash for the full-screen operator TUI or dash --compact for a fast snapshot.",
     "Use bootcfg show to inspect the saved preboot profile.",
     "Safe mode blocks host-backed execution by default.",
     "Persistent state only restores phase1-managed /home files.",
@@ -179,6 +179,94 @@ pub fn sysinfo(shell: &mut Phase1Shell, config: BootConfig) -> String {
     )
 }
 
+pub fn dashboard(shell: &mut Phase1Shell, config: BootConfig, args: &[String]) -> String {
+    shell.kernel.tick();
+    shell.network.refresh();
+
+    let compact = args
+        .iter()
+        .any(|arg| matches!(arg.as_str(), "--compact" | "compact" | "-c"));
+    let display_version = crate::ui::display_version(crate::kernel::VERSION, config);
+    let channel = if config.bleeding_edge {
+        "bleeding-edge"
+    } else {
+        "release"
+    };
+    let uptime = shell.kernel.uptime().as_secs();
+    let cwd = shell.kernel.vfs.cwd.display();
+    let ps_output = shell.kernel.scheduler.ps();
+    let process_count = ps_output.lines().skip(1).count();
+    let jobs_output = shell.kernel.scheduler.jobs();
+    let job_count = if jobs_output.trim() == "no background jobs" {
+        0
+    } else {
+        jobs_output.lines().count()
+    };
+    let iface_count = shell
+        .network
+        .ifconfig()
+        .lines()
+        .filter(|line| line.contains(": flags=<"))
+        .count();
+    let audit_tail = shell
+        .kernel
+        .audit
+        .dump()
+        .lines()
+        .last()
+        .unwrap_or("audit log empty")
+        .to_string();
+    let audit_count = shell.kernel.audit.dump().lines().count();
+    let pcie_count = shell.kernel.pcie.lspci().lines().count();
+    let cr4 = shell.kernel.scheduler.cr4();
+    let safety = if crate::policy::host_tools_allowed() {
+        "host-enabled"
+    } else {
+        "safe-mode"
+    };
+
+    if compact {
+        return format!(
+            "PHASE1 DASHBOARD v{}\nCORE  user={} uptime={}s mode=operator channel={}\nPROC  tasks={} bg={}\nVFS   cwd={} mounts=/,/proc,/dev,/tmp,/var/log\nNET   interfaces={} safety={}\nHW    cr3=0x{:x} {} pcie={}\nAUDIT latest={}\n",
+            display_version,
+            shell.user(),
+            uptime,
+            channel,
+            process_count,
+            job_count,
+            cwd,
+            iface_count,
+            safety,
+            shell.kernel.scheduler.get_cr3(),
+            cr4,
+            pcie_count,
+            audit_tail
+        );
+    }
+
+    format!(
+        "PHASE1 FULL-SCREEN TUI DASHBOARD v{}\nchannel : {}\nprofile : {}\nmode    : {}\npanels  : core proc vfs net hw audit\n\n┌ CORE ─────────────────────────────────────┐\n│ user {:<10} uid {:<5} uptime {:>6}s │\n│ state {:<10} cwd {:<20} │\n└───────────────────────────────────────────┘\n┌ PROC ─────────────────────────────────────┐\n│ tasks {:<5} background {:<5} scheduler live │\n└───────────────────────────────────────────┘\n┌ VFS / NET ────────────────────────────────┐\n│ mounts /,/proc,/dev,/tmp,/var/log         │\n│ interfaces {:<5} safety {:<15} │\n└───────────────────────────────────────────┘\n┌ HW / AUDIT ───────────────────────────────┐\n│ cr3 0x{:<12x} cr4 {:<14} │\n│ pcie {:<5} audit events {:<6}             │\n│ latest {:<35} │\n└───────────────────────────────────────────┘\ncontrols: dash --compact | sysinfo | security | reboot\nstatus  : live snapshot, privacy-safe, no host secrets shown\n",
+        display_version,
+        channel,
+        config.profile_name(),
+        if config.safe_mode { "safe" } else { "host-capable" },
+        shell.user(),
+        shell.kernel.scheduler.current_uid,
+        uptime,
+        if config.persistent_state { "persistent" } else { "volatile" },
+        cwd,
+        process_count,
+        job_count,
+        iface_count,
+        safety,
+        shell.kernel.scheduler.get_cr3(),
+        cr4,
+        pcie_count,
+        audit_count,
+        audit_tail.chars().take(35).collect::<String>(),
+    )
+}
+
 pub fn tips(shell: &Phase1Shell) -> String {
     let seed = shell.history.len() + shell.kernel.uptime().as_secs() as usize;
     let mut out = String::from("phase1 tips\n");
@@ -255,7 +343,7 @@ fn theme_list() -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{banner, theme};
+    use super::{banner, dashboard, theme};
     use crate::commands::Phase1Shell;
     use crate::ui::BootConfig;
 
@@ -321,5 +409,18 @@ mod tests {
         let enabled = theme(&mut shell, &["bleeding-edge".to_string()]);
         assert!(enabled.contains("bleeding-edge enabled"));
         std::env::remove_var("PHASE1_BLEEDING_EDGE");
+    }
+
+    #[test]
+    fn dashboard_reports_fullscreen_and_compact_modes() {
+        let mut shell = Phase1Shell::new();
+        let full = dashboard(&mut shell, config(), &[]);
+        assert!(full.contains("PHASE1 FULL-SCREEN TUI DASHBOARD"));
+        assert!(full.contains("panels  : core proc vfs net hw audit"));
+        assert!(full.contains("controls: dash --compact"));
+
+        let compact = dashboard(&mut shell, config(), &["--compact".to_string()]);
+        assert!(compact.contains("PHASE1 DASHBOARD v3.6.0"));
+        assert!(compact.contains("CORE  user=root"));
     }
 }
