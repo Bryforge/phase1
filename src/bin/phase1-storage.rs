@@ -1,5 +1,4 @@
 use std::env;
-use std::ffi::OsStr;
 use std::fs;
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
@@ -136,8 +135,14 @@ fn rust(args: &[String]) -> Result<String, String> {
     match action {
         "version" | "doctor" => {
             require_host_tools("rust version")?;
-            let rustc = run_command(Command::new("rustc").arg("--version"), COMMAND_TIMEOUT)?;
-            let cargo = run_command(Command::new("cargo").arg("--version"), COMMAND_TIMEOUT)?;
+            let mut rustc_cmd = Command::new("rustc");
+            rustc_cmd.arg("--version");
+            let rustc = run_command(rustc_cmd, COMMAND_TIMEOUT)?;
+
+            let mut cargo_cmd = Command::new("cargo");
+            cargo_cmd.arg("--version");
+            let cargo = run_command(cargo_cmd, COMMAND_TIMEOUT)?;
+
             Ok(format!("{}{}", format_output(rustc), format_output(cargo)))
         }
         "run" => {
@@ -440,13 +445,8 @@ fn language_roadmap() -> String {
 }
 
 #[allow(dead_code)]
-fn _flush_stdout() {
+fn flush_stdout() {
     let _ = io::stdout().flush();
-}
-
-#[allow(dead_code)]
-fn _as_os_str(path: &Path) -> &OsStr {
-    path.as_os_str()
 }
 
 #[cfg(test)]
