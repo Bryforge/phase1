@@ -1,3 +1,8 @@
+#[path = "pipeline.rs"]
+mod pipeline;
+#[path = "release.rs"]
+mod release;
+
 use std::collections::{HashMap, VecDeque};
 use std::fs;
 use std::io::{self, Write};
@@ -36,9 +41,7 @@ impl Phase1Shell {
             .insert("PATH".to_string(), "/bin:/usr/bin:/plugins".to_string());
         shell.env.insert("USER".to_string(), "root".to_string());
         shell.env.insert("HOME".to_string(), "/home".to_string());
-        shell
-            .env
-            .insert("SHELL".to_string(), "phase1".to_string());
+        shell.env.insert("SHELL".to_string(), "phase1".to_string());
         shell
             .env
             .insert("TERM".to_string(), "xterm-256color".to_string());
@@ -255,12 +258,24 @@ pub fn parse_line(line: &str) -> Result<Vec<String>, String> {
 pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
     let command = registry::canonical_name(cmd).unwrap_or(cmd);
 
+    if args.iter().any(|arg| arg == "|") {
+        let line = format!("{} {}", command, args.join(" "));
+        match pipeline::run(shell, &line) {
+            Ok(result) => print!("{}", result.output),
+            Err(err) => println!("pipeline: {}", err),
+        }
+        let _ = io::stdout().flush();
+        return;
+    }
+
     match command {
         "help" => print!("{}", registry::command_map()),
         "complete" => print_completions(args.first().map(String::as_str)),
         "capabilities" => print!("{}", registry::capabilities_report()),
         "dash" => print!("{}", dashboard(shell, args)),
-        "version" => println!("phase1 {}", VERSION),
+        "pipeline" => print!("{}", pipeline::help()),
+        "roadmap" => print!("{}", release::roadmap_report()),
+        "version" => print!("{}", release::version_report(args)),
         "clear" => print!("\x1b[2J\x1b[H"),
         "exit" => {
             println!("shutdown: phase1 {}", VERSION);
