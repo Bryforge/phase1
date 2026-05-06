@@ -1,6 +1,4 @@
 use crate::commands::{parse_line, Phase1Shell};
-use crate::kernel::VfsNode;
-use std::path::Path;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PipelineResult {
@@ -45,7 +43,10 @@ pub fn run(shell: &mut Phase1Shell, line: &str) -> Result<PipelineResult, String
         }
     }
 
-    Ok(PipelineResult { output: input, success })
+    Ok(PipelineResult {
+        output: input,
+        success,
+    })
 }
 
 pub fn help() -> String {
@@ -67,7 +68,7 @@ fn run_stage(shell: &mut Phase1Shell, tokens: &[String], input: Option<&str>) ->
         "find" => PipelineResult::ok(crate::text::find(&shell.kernel.vfs, args)),
         "audit" => PipelineResult::ok(shell.kernel.audit.dump()),
         "env" => PipelineResult::ok(env_text(shell)),
-        "version" => PipelineResult::ok(crate::release::version_report(args)),
+        "version" => PipelineResult::ok(super::release::version_report(args)),
         "sysinfo" => PipelineResult::ok(format!(
             "version={}\nuser={}\ncwd={}\nprocesses={}\n",
             crate::kernel::VERSION,
@@ -153,7 +154,10 @@ fn read_files(shell: &mut Phase1Shell, args: &[String]) -> PipelineResult {
             }
         }
     }
-    PipelineResult { output: out, success: ok }
+    PipelineResult {
+        output: out,
+        success: ok,
+    }
 }
 
 fn history_text(shell: &Phase1Shell) -> String {
@@ -361,22 +365,6 @@ fn filter_cut(input: &str, args: &[String]) -> PipelineResult {
     PipelineResult::ok(out)
 }
 
-pub fn describe_vfs(path: &Path, node: &VfsNode, out: &mut String) {
-    match node {
-        VfsNode::File { content, .. } => {
-            out.push_str(&format!("file\t{}\t{}\n", path.display(), content.len()));
-        }
-        VfsNode::Dir { children, .. } => {
-            out.push_str(&format!("dir\t{}\t{}\n", path.display(), children.len()));
-            let mut names: Vec<_> = children.keys().collect();
-            names.sort();
-            for name in names {
-                describe_vfs(&path.join(name), &children[name], out);
-            }
-        }
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::run;
@@ -385,14 +373,18 @@ mod tests {
     #[test]
     fn pipelines_filter_vfs_text() {
         let mut shell = Phase1Shell::new();
-        shell.kernel.vfs.write_file("/home/log.txt", "alpha\nbeta\nalpha beta\n", false).unwrap();
+        shell
+            .kernel
+            .vfs
+            .write_file("/home/log.txt", "alpha\nbeta\nalpha beta\n", false)
+            .unwrap();
         let result = run(&mut shell, "cat /home/log.txt | grep alpha | wc -l").unwrap();
         assert!(result.success);
         assert_eq!(result.output.trim(), "2");
     }
 
     #[test]
-    fn pipelines_support_sort_uniq_tail() {
+    fn pipelines_support_cut() {
         let mut shell = Phase1Shell::new();
         let result = run(&mut shell, "echo b a b | cut -d ' ' -f 1").unwrap();
         assert!(result.success);
