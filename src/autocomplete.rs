@@ -175,6 +175,20 @@ fn argument_matches(command: &str, prefix: &str) -> Vec<String> {
             "edge",
             "stable",
             "release",
+            "test",
+            "tests",
+            "devtest",
+            "validate",
+            "verify",
+            "qa",
+            "quick",
+            "full",
+            "smoke",
+            "game",
+            "fmt",
+            "cargo-check",
+            "clippy",
+            "doctor",
             "--build",
             "--no-build",
             "--trust-host",
@@ -253,6 +267,14 @@ mod tests {
         assert_eq!(
             complete_tab_line("update lat\t"),
             TabCompletion::Completed("update latest".to_string())
+        );
+        assert_eq!(
+            complete_tab_line("update test q\t"),
+            TabCompletion::Completed("update test quick".to_string())
+        );
+        assert_eq!(
+            complete_tab_line("update doct\t"),
+            TabCompletion::Completed("update doctor".to_string())
         );
         assert_eq!(
             complete_tab_line("update --trust\t"),
