@@ -247,9 +247,17 @@ mod tests {
             TabCompletion::Completed("update protocol".to_string())
         );
         assert_eq!(
-            complete_tab_line("arena de\t"),
+            complete_tab_line("arena dem\t"),
             TabCompletion::Completed("arena demo".to_string())
         );
+        match complete_tab_line("arena de\t") {
+            TabCompletion::Suggestions { prefix, matches } => {
+                assert_eq!(prefix, "de");
+                assert!(matches.contains(&"demo".to_string()));
+                assert!(matches.contains(&"dev".to_string()));
+            }
+            other => panic!("expected arena de suggestions, got {other:?}"),
+        }
         assert_eq!(
             complete_tab_line("game test-p\t"),
             TabCompletion::Completed("game test-plan".to_string())
