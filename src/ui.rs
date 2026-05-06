@@ -56,40 +56,15 @@ impl BootConfig {
     }
 
     pub fn apply(self) {
-        if self.ascii_mode {
-            std::env::set_var("PHASE1_ASCII", "1");
-        } else {
-            std::env::remove_var("PHASE1_ASCII");
-        }
-
+        set_bool_env("PHASE1_ASCII", self.ascii_mode);
+        set_bool_env("PHASE1_QUICK_BOOT", self.quick_boot);
+        set_bool_env("PHASE1_MOBILE_MODE", self.mobile_mode);
+        set_bool_env("PHASE1_PERSISTENT_STATE", self.persistent_state);
+        std::env::set_var("PHASE1_SAFE_MODE", if self.safe_mode { "1" } else { "0" });
         if self.color {
             std::env::remove_var("PHASE1_NO_COLOR");
         } else {
             std::env::set_var("PHASE1_NO_COLOR", "1");
-        }
-
-        if self.safe_mode {
-            std::env::set_var("PHASE1_SAFE_MODE", "1");
-        } else {
-            std::env::set_var("PHASE1_SAFE_MODE", "0");
-        }
-
-        if self.quick_boot {
-            std::env::set_var("PHASE1_QUICK_BOOT", "1");
-        } else {
-            std::env::remove_var("PHASE1_QUICK_BOOT");
-        }
-
-        if self.mobile_mode {
-            std::env::set_var("PHASE1_MOBILE_MODE", "1");
-        } else {
-            std::env::remove_var("PHASE1_MOBILE_MODE");
-        }
-
-        if self.persistent_state {
-            std::env::set_var("PHASE1_PERSISTENT_STATE", "1");
-        } else {
-            std::env::remove_var("PHASE1_PERSISTENT_STATE");
         }
     }
 
@@ -121,9 +96,7 @@ impl BootConfig {
     fn load_saved() -> Option<Self> {
         let raw = fs::read_to_string(config_path()).ok()?;
         let mut config = Self::detected_defaults();
-
-        for line in raw.lines() {
-            let line = line.trim();
+        for line in raw.lines().map(str::trim) {
             if line.is_empty() || line.starts_with('#') {
                 continue;
             }
@@ -215,7 +188,9 @@ pub fn configure_boot(version: &str) -> BootSelection {
             "4" | "s" | "safe" | "safe-mode" => config.safe_mode = !config.safe_mode,
             "5" | "q" | "quick" | "quick-boot" => config.quick_boot = !config.quick_boot,
             "6" | "m" | "mobile" | "mobile-mode" => config.mobile_mode = !config.mobile_mode,
-            "p" | "persist" | "persistent" | "persistent-state" => config.persistent_state = !config.persistent_state,
+            "p" | "persist" | "persistent" | "persistent-state" => {
+                config.persistent_state = !config.persistent_state;
+            }
             "7" | "reboot" | "restart" => return BootSelection::Reboot,
             "8" | "x" | "quit" | "exit" | "shutdown" => return BootSelection::Quit,
             "9" | "save" | "write" => match config.save() {
@@ -246,7 +221,7 @@ pub fn print_boot(version: &str) {
 }
 
 pub fn print_quick_boot(version: &str, config: BootConfig) {
-    print_fastfetch_splash(version, config);
+    print_boot_card(version, config, false);
     println!("[quick] profile={} :: shell armed", config.profile_name());
     println!();
 }
@@ -269,93 +244,80 @@ fn print_preboot(version: &str, config: BootConfig) {
     println!("{}", value(config, "Secure default: safe=on  Enter=boot  p=persist  h=help"));
 }
 
-fn print_fastfetch_splash(version: &str, config: BootConfig) {
-    print_boot_card(version, config, false);
+fn print_mobile_boot(version: &str) {
+    println!("\x1b[2J\x1b[H");
+    print_boot_card(version, BootConfig::default(), false);
+    ready_line(false);
 }
 
-fn print_fastfetch_splash_with_config(version: &str, config: BootConfig) {
+fn print_modern_boot(version: &str) {
+    println!("\x1b[2J\x1b[H");
+    print_boot_card(version, BootConfig::default(), false);
+    ready_line(true);
+}
+
+fn print_ascii_boot(version: &str) {
+    let config = BootConfig {
+        color: false,
+        ascii_mode: true,
+        ..BootConfig::default()
+    };
     print_boot_card(version, config, false);
+    ready_line(true);
 }
 
 fn print_boot_card(version: &str, config: BootConfig, selector: bool) {
-    let width = preboot_width();
-    let inner = width.saturating_sub(2);
-    let title = phase1_wordmark(config);
-    let status = splash_info(version, config, true);
-
+    let width = card_width(config);
     println!();
     println!("{}", card_top(config, width));
-    println!("{}", card_line(config, width, &title));
+    println!("{}", card_line(config, width, &phase1_wordmark(config)));
     println!("{}", card_rule(config, width));
-
-    for row in status {
+    for row in splash_info(version, config) {
         println!("{}", card_line(config, width, &row));
     }
     println!("{}", card_line(config, width, "fastfetch boot // cyberdeck ready"));
 
     if selector {
         println!("{}", card_section(config, width, "BOOT"));
-        let rows = [
-            format!("1 boot system       save+start"),
-            format!("2 color output      {}", if config.color { "on" } else { "off" }),
-            format!("3 ascii compatible  {}", if config.ascii_mode { "on" } else { "off" }),
-            format!("4 safe mode         {}", if config.safe_mode { "on" } else { "off" }),
-            format!("5 quick boot        {}", if config.quick_boot { "on" } else { "off" }),
-            format!("6 mobile mode       {}", if config.mobile_mode { "on" } else { "off" }),
-            format!("p persistent state  {}", if config.persistent_state { "on" } else { "off" }),
-            "7 reboot selector".to_string(),
-            "8 quit boot".to_string(),
-            "9 save config".to_string(),
-            "0 reset saved config".to_string(),
-        ];
-        for row in rows {
+        for row in boot_rows(config) {
             println!("{}", card_line(config, width, &row));
         }
     } else {
         println!("{}", card_section(config, width, "QUICK"));
         println!("{}", card_line(config, width, "help  audit  ps  ls /"));
-        println!("{}", card_line(config, width, "matrix  browser phase1  version"));
+        println!("{}", card_line(config, width, "matrix  sysinfo  security  theme"));
     }
-
-    if inner > 0 {
-        println!("{}", card_bottom(config, width));
-    }
+    println!("{}", card_bottom(config, width));
     println!();
 }
 
-fn splash_info(version: &str, config: BootConfig, compact: bool) -> Vec<String> {
+fn splash_info(version: &str, config: BootConfig) -> Vec<String> {
     let state_mode = if config.persistent_state { "persistent" } else { "volatile" };
     let security_mode = if config.safe_mode { "safe" } else { "host-enabled" };
-    if compact {
-        vec![
-            format!("os      phase1 v{version}"),
-            format!("profile {}", config.profile_name()),
-            format!("security {security_mode}"),
-            format!("device  {}", if config.mobile_mode { "mobile" } else { "desktop" }),
-            format!("display {}", if config.color { "rainbow" } else { "mono" }),
-            format!("state   {state_mode}"),
-            format!("config  {}", config_path()),
-        ]
-    } else {
-        vec![
-            format!("os        phase1 terminal-os-sim v{version}"),
-            format!("profile   {}", config.profile_name()),
-            format!("security  {security_mode}"),
-            format!("device    {}", if config.mobile_mode { "mobile" } else { "desktop" }),
-            format!("display   {}", if config.color { "retro rainbow" } else { "mono" }),
-            format!("state     {state_mode}"),
-            format!("config    {}", config_path()),
-        ]
-    }
+    vec![
+        format!("os      phase1 v{version}"),
+        format!("profile {}", config.profile_name()),
+        format!("security {security_mode}"),
+        format!("device  {}", if config.mobile_mode { "mobile" } else { "desktop" }),
+        format!("display {}", if config.color { "rainbow" } else { "mono" }),
+        format!("state   {state_mode}"),
+        format!("config  {}", config_path()),
+    ]
 }
 
-fn phase1_art() -> [&'static str; 5] {
-    [
-        " ____  _                     __ ",
-        "|  _ \\| |__   __ _ ___  ___ /_ |",
-        "| |_) | '_ \\ / _` / __|/ _ \\ | |",
-        "|  __/| | | | (_| \\__ \\  __/ | |",
-        "|_|   |_| |_|\\__,_|___/\\___| |_|",
+fn boot_rows(config: BootConfig) -> Vec<String> {
+    vec![
+        "1 boot system       save+start".to_string(),
+        format!("2 color output      {}", if config.color { "on" } else { "off" }),
+        format!("3 ascii compatible  {}", if config.ascii_mode { "on" } else { "off" }),
+        format!("4 safe mode         {}", if config.safe_mode { "on" } else { "off" }),
+        format!("5 quick boot        {}", if config.quick_boot { "on" } else { "off" }),
+        format!("6 mobile mode       {}", if config.mobile_mode { "on" } else { "off" }),
+        format!("p persistent state  {}", if config.persistent_state { "on" } else { "off" }),
+        "7 reboot selector".to_string(),
+        "8 quit boot".to_string(),
+        "9 save config".to_string(),
+        "0 reset saved config".to_string(),
     ]
 }
 
@@ -384,96 +346,28 @@ fn prompt_text(user: &str, path: &str) -> String {
     }
 }
 
-fn print_mobile_boot(version: &str) {
-    println!("\x1b[2J\x1b[H");
-    let config = BootConfig::default();
-    print_boot_card(version, config, false);
+fn ready_line(desktop: bool) {
     if color_enabled() {
-        println!("{GREEN}[ready]{RESET} all subsystems nominal");
+        if desktop {
+            println!("{GREEN}[ready]{RESET} all subsystems nominal {GRAY}:: operator shell armed{RESET}");
+        } else {
+            println!("{GREEN}[ready]{RESET} all subsystems nominal");
+        }
+    } else if desktop {
+        println!("[ready] all subsystems nominal :: operator shell armed");
     } else {
         println!("[ready] all subsystems nominal");
     }
     println!();
 }
 
-fn print_modern_boot(version: &str) {
-    println!("\x1b[2J\x1b[H");
-    let config = BootConfig::default();
-    print_boot_card(version, config, false);
-    if color_enabled() {
-        println!("{GREEN}[ready]{RESET} all subsystems nominal {GRAY}:: operator shell armed{RESET}");
+fn card_width(config: BootConfig) -> usize {
+    let max = if config.mobile_mode || detect_mobile() {
+        MOBILE_WIDTH
     } else {
-        println!("[ready] all subsystems nominal :: operator shell armed");
-    }
-    println!();
-}
-
-fn print_ascii_boot(version: &str) {
-    let config = BootConfig {
-        color: false,
-        ascii_mode: true,
-        ..BootConfig::default()
+        PANEL_WIDTH
     };
-    print_boot_card(version, config, false);
-    println!("[ready] all subsystems nominal :: operator shell armed");
-    println!();
-}
-
-fn top() {
-    if color_enabled() {
-        println!("{CYAN}╭{}╮{RESET}", "─".repeat(PANEL_WIDTH));
-    } else {
-        println!("+{}+", "-".repeat(PANEL_WIDTH));
-    }
-}
-
-fn bottom() {
-    if color_enabled() {
-        println!("{CYAN}╰{}╯{RESET}", "─".repeat(PANEL_WIDTH));
-    } else {
-        println!("+{}+", "-".repeat(PANEL_WIDTH));
-    }
-}
-
-fn mid(label: &str) {
-    let marker = format!(" {} ", label);
-    let fill = PANEL_WIDTH.saturating_sub(marker.chars().count());
-    if color_enabled() {
-        println!("{CYAN}├{marker}{}┤{RESET}", "─".repeat(fill));
-    } else {
-        println!("+{marker}{}+", "-".repeat(fill));
-    }
-}
-
-fn center(text: &str) {
-    let clipped = clip(text, PANEL_WIDTH);
-    let visible = clipped.chars().count();
-    let left = PANEL_WIDTH.saturating_sub(visible) / 2;
-    let right = PANEL_WIDTH.saturating_sub(visible + left);
-    framed(&format!("{}{}{}", " ".repeat(left), clipped, " ".repeat(right)));
-}
-
-fn line(text: &str) {
-    let clipped = clip(text, PANEL_WIDTH);
-    framed(&format!("{clipped:<width$}", width = PANEL_WIDTH));
-}
-
-fn boot_row(code: &str, name: &str, state: &str) {
-    let content = format!("{code:<5} {name:<38} {state:>12}");
-    if color_enabled() {
-        let clipped = clip(&content, PANEL_WIDTH);
-        println!("{CYAN}│{RESET}{clipped:<width$}{CYAN}│{RESET}", width = PANEL_WIDTH);
-    } else {
-        line(&content);
-    }
-}
-
-fn framed(content: &str) {
-    if color_enabled() {
-        println!("{CYAN}│{RESET}{content}{CYAN}│{RESET}");
-    } else {
-        println!("|{content}|");
-    }
+    terminal_width().clamp(32, max)
 }
 
 fn card_top(config: BootConfig, width: usize) -> String {
@@ -493,9 +387,8 @@ fn card_bottom(config: BootConfig, width: usize) -> String {
 }
 
 fn card_rule(config: BootConfig, width: usize) -> String {
-    let fill = "─".repeat(width);
     if config.color && !config.ascii_mode {
-        format!("{CYAN}├{fill}┤{RESET}")
+        format!("{CYAN}├{}┤{RESET}", "─".repeat(width))
     } else {
         format!("+{}+", "-".repeat(width))
     }
@@ -522,48 +415,11 @@ fn card_line(config: BootConfig, width: usize, text: &str) -> String {
     }
 }
 
-fn panel_line(config: BootConfig, label: &str, width: usize) -> String {
-    let fill = width.saturating_sub(label.chars().count() + 4);
-    if config.color && !config.ascii_mode {
-        format!("{CYAN}-- {label} {}{RESET}", "─".repeat(fill))
-    } else {
-        format!("-- {label} {}", "-".repeat(fill))
-    }
-}
-
-fn rainbow(idx: usize, text: &str, config: BootConfig) -> String {
-    if !config.color || config.ascii_mode {
-        return text.to_string();
-    }
-    let colors = [RED, YELLOW, GREEN, CYAN, BLUE, MAGENTA];
-    format!("{}{}{}{}", BOLD, colors[idx % colors.len()], text, RESET)
-}
-
-fn accent(config: BootConfig, text: &str) -> String {
-    if config.color && !config.ascii_mode {
-        format!("{GREEN}{text}{RESET}")
-    } else {
-        text.to_string()
-    }
-}
-
 fn value(config: BootConfig, text: &str) -> String {
     if config.color && !config.ascii_mode {
         format!("{GRAY}{text}{RESET}")
     } else {
         text.to_string()
-    }
-}
-
-fn flag(config: BootConfig, enabled: bool) -> String {
-    let label = if enabled { "on" } else { "off" };
-    if !config.color || config.ascii_mode {
-        return label.to_string();
-    }
-    if enabled {
-        format!("{GREEN}{label}{RESET}")
-    } else {
-        format!("{GRAY}{label}{RESET}")
     }
 }
 
@@ -574,12 +430,19 @@ fn pause(message: &str) {
     let _ = io::stdin().read_line(&mut ignored);
 }
 
-fn preboot_width() -> usize {
-    terminal_width().clamp(32, MOBILE_WIDTH)
+fn set_bool_env(name: &str, enabled: bool) {
+    if enabled {
+        std::env::set_var(name, "1");
+    } else {
+        std::env::remove_var(name);
+    }
 }
 
 fn terminal_width() -> usize {
-    std::env::var("COLUMNS").ok().and_then(|raw| raw.parse().ok()).unwrap_or(MOBILE_WIDTH)
+    std::env::var("COLUMNS")
+        .ok()
+        .and_then(|raw| raw.parse().ok())
+        .unwrap_or(MOBILE_WIDTH)
 }
 
 fn detect_mobile() -> bool {
@@ -648,11 +511,23 @@ fn clip_visible(text: &str, width: usize) -> String {
 }
 
 fn color_enabled() -> bool {
-    std::env::var_os("NO_COLOR").is_none() && std::env::var("PHASE1_NO_COLOR").ok().as_deref() != Some("1")
+    std::env::var_os("NO_COLOR").is_none()
+        && std::env::var("PHASE1_NO_COLOR").ok().as_deref() != Some("1")
 }
 
 fn ascii_mode() -> bool {
     std::env::var("PHASE1_ASCII").ok().as_deref() == Some("1")
+}
+
+#[cfg(test)]
+fn phase1_art() -> [&'static str; 5] {
+    [
+        " ____  _                     __ ",
+        "|  _ \\| |__   __ _ ___  ___ /_ |",
+        "| |_) | '_ \\ / _` / __|/ _ \\ | |",
+        "|  __/| | | | (_| \\__ \\  __/ | |",
+        "|_|   |_| |_|\\__,_|___/\\___| |_|",
+    ]
 }
 
 #[cfg(test)]
@@ -684,11 +559,27 @@ mod tests {
     #[test]
     fn boot_profile_names_cover_modes() {
         assert_eq!(
-            BootConfig { color: true, ascii_mode: false, safe_mode: false, quick_boot: false, mobile_mode: false, persistent_state: false }.profile_name(),
+            BootConfig {
+                color: true,
+                ascii_mode: false,
+                safe_mode: false,
+                quick_boot: false,
+                mobile_mode: false,
+                persistent_state: false,
+            }
+            .profile_name(),
             "operator"
         );
         assert_eq!(
-            BootConfig { color: true, ascii_mode: false, safe_mode: true, quick_boot: true, mobile_mode: true, persistent_state: true }.profile_name(),
+            BootConfig {
+                color: true,
+                ascii_mode: false,
+                safe_mode: true,
+                quick_boot: true,
+                mobile_mode: true,
+                persistent_state: true,
+            }
+            .profile_name(),
             "mobile-safe+quick"
         );
     }
