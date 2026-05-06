@@ -6,6 +6,9 @@ use std::time::{Duration, Instant};
 const DEFAULT_REMOTE: &str = "origin";
 const BLEEDING_BRANCH: &str = "master";
 const STABLE_BRANCH: &str = "stable";
+const UPDATE_PROTOCOL_FILE: &str = "UPDATE_PROTOCOL.md";
+const VERSION_SCHEME: &str = "MAJOR.MINOR.PATCH[-dev]";
+const CURRENT_EDGE_VERSION: &str = "3.7.1-dev";
 const COMMAND_TIMEOUT: Duration = Duration::from_secs(20);
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -35,6 +38,7 @@ enum Action {
     Plan,
     Check,
     Execute,
+    Protocol,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -65,6 +69,7 @@ pub fn run(args: &[String]) -> String {
         Action::Plan => plan(request.target, request.build),
         Action::Check => guarded_check(request.target),
         Action::Execute => guarded_execute(request.target, request.build),
+        Action::Protocol => protocol_report(),
     }
 }
 
@@ -80,8 +85,14 @@ fn guarded_check(target: Target) -> String {
     let mut out = format!("phase1 updater // check {}\n", target.label());
     out.push_str("host tools : enabled\n");
     out.push_str("privacy    : command output is sanitized; credentials and tokens are redacted\n");
-    out.push_str(&run_git_summary(&["rev-parse", "--is-inside-work-tree"], "git repo"));
-    out.push_str(&run_git_summary(&["rev-parse", "--abbrev-ref", "HEAD"], "branch"));
+    out.push_str(&run_git_summary(
+        &["rev-parse", "--is-inside-work-tree"],
+        "git repo",
+    ));
+    out.push_str(&run_git_summary(
+        &["rev-parse", "--abbrev-ref", "HEAD"],
+        "branch",
+    ));
     out.push_str(&run_git_summary(&["log", "-1", "--oneline"], "head"));
     out.push_str(&run_git_summary(
         &["status", "--short", "--branch", "--untracked-files=no"],
@@ -92,6 +103,7 @@ fn guarded_check(target: Target) -> String {
         DEFAULT_REMOTE,
         target.branch()
     ));
+    out.push_str(&format!("protocol   : {}\n", UPDATE_PROTOCOL_FILE));
     out
 }
 
@@ -106,6 +118,7 @@ fn guarded_execute(target: Target, build: bool) -> String {
 
     let mut out = format!("phase1 updater // execute {}\n", target.label());
     out.push_str("mode       : guarded host git update\n");
+    out.push_str(&format!("protocol   : {}\n", UPDATE_PROTOCOL_FILE));
     out.push_str("privacy    : command output is sanitized; credentials and tokens are redacted\n");
 
     if let Err(err) = ensure_git_repo() {
@@ -151,6 +164,9 @@ fn guarded_execute(target: Target, build: bool) -> String {
 fn plan(target: Target, build: bool) -> String {
     let branch = target.branch();
     let mut out = format!("phase1 updater // plan {}\n\n", target.label());
+    out.push_str(&format!("edge version : {CURRENT_EDGE_VERSION}\n"));
+    out.push_str(&format!("versioning   : {VERSION_SCHEME}\n"));
+    out.push_str(&format!("protocol     : {UPDATE_PROTOCOL_FILE}\n"));
     out.push_str("safe default : this command does not modify files unless --execute is provided\n");
     out.push_str("guard        : --execute requires PHASE1_SAFE_MODE=0 and PHASE1_ALLOW_HOST_TOOLS=1\n");
     out.push_str("privacy      : updater never asks for passwords, tokens, email credentials, cookies, or keys\n");
@@ -164,12 +180,31 @@ fn plan(target: Target, build: bool) -> String {
         out.push_str("  cargo build --release\n");
     }
     out.push_str("\ninside phase1:\n");
+    out.push_str("  update protocol\n");
     out.push_str(&format!("  update {} --check\n", target_arg(target)));
     out.push_str(&format!(
         "  update {} --execute{}\n",
         target_arg(target),
         if build { " --build" } else { "" }
     ));
+    out
+}
+
+fn protocol_report() -> String {
+    let mut out = String::from("phase1 update protocol\n");
+    out.push_str(&format!("reference file : {UPDATE_PROTOCOL_FILE}\n"));
+    out.push_str(&format!("version format : {VERSION_SCHEME}\n"));
+    out.push_str(&format!("edge version   : {CURRENT_EDGE_VERSION}\n"));
+    out.push_str("\nupdate rules\n");
+    out.push_str("  - use PATCH, the third number, for every safe fix, docs, protocol, formatting, and incremental feature update\n");
+    out.push_str("  - use MINOR for meaningful roadmap capability sets\n");
+    out.push_str("  - use MAJOR only for deliberate compatibility-breaking behavior\n");
+    out.push_str("  - keep bleeding-edge builds on -dev until promoted to stable release\n");
+    out.push_str("\nsafety gates\n");
+    out.push_str("  - update without --execute is a dry-run plan\n");
+    out.push_str("  - update --execute requires PHASE1_SAFE_MODE=0 and PHASE1_ALLOW_HOST_TOOLS=1\n");
+    out.push_str("  - tracked local changes block execution instead of being overwritten\n");
+    out.push_str("  - updater output is sanitized before display\n");
     out
 }
 
@@ -181,6 +216,7 @@ fn parse_args(args: &[String]) -> Result<Option<UpdateRequest>, String> {
             "plan" | "--plan" => request.action = Action::Plan,
             "check" | "--check" | "status" => request.action = Action::Check,
             "execute" | "--execute" | "apply" => request.action = Action::Execute,
+            "protocol" | "--protocol" | "update-protocol" => request.action = Action::Protocol,
             "bleeding" | "edge" | "master" | "main" => request.target = Target::Bleeding,
             "stable" | "release" => request.target = Target::Stable,
             "--build" | "build" => request.build = true,
@@ -341,7 +377,7 @@ fn target_arg(target: Target) -> &'static str {
 }
 
 fn help() -> String {
-    "usage: update [plan|check|--execute] [bleeding|stable] [--build]\n\nupdate defaults to a safe dry-run plan.\n--execute runs guarded git fetch/checkout/pull and requires PHASE1_SAFE_MODE=0 plus PHASE1_ALLOW_HOST_TOOLS=1.\n--build also runs cargo build --release after a successful update.\n".to_string()
+    "usage: update [plan|check|--execute|protocol] [bleeding|stable] [--build]\n\nupdate defaults to a safe dry-run plan.\nprotocol prints the local update and versioning protocol reference.\n--execute runs guarded git fetch/checkout/pull and requires PHASE1_SAFE_MODE=0 plus PHASE1_ALLOW_HOST_TOOLS=1.\n--build also runs cargo build --release after a successful update.\n".to_string()
 }
 
 #[cfg(test)]
@@ -354,8 +390,20 @@ mod tests {
         std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
         let out = run(&[]);
         assert!(out.contains("phase1 updater // plan bleeding edge"));
+        assert!(out.contains("3.7.1-dev"));
+        assert!(out.contains("MAJOR.MINOR.PATCH"));
+        assert!(out.contains("update protocol"));
         assert!(out.contains("update bleeding --execute"));
         assert!(out.contains("never asks for passwords"));
+    }
+
+    #[test]
+    fn update_protocol_is_visible() {
+        let out = run(&["protocol".to_string()]);
+        assert!(out.contains("phase1 update protocol"));
+        assert!(out.contains("UPDATE_PROTOCOL.md"));
+        assert!(out.contains("third number"));
+        assert!(out.contains("PHASE1_ALLOW_HOST_TOOLS"));
     }
 
     #[test]
