@@ -74,29 +74,29 @@ pub fn run(args: &[String]) -> String {
         Err(err) => return format!("update: {err}\n{}", help()),
     };
 
-    if request.trust_host {
-        std::env::set_var("PHASE1_ALLOW_HOST_TOOLS", "1");
-    }
-
     match request.action {
         Action::Plan => plan(request.target, request.build),
-        Action::Check => guarded_check(request.target),
-        Action::Execute => guarded_execute(request.target, request.build),
+        Action::Check => guarded_check(request),
+        Action::Execute => guarded_execute(request),
         Action::Protocol => protocol_report(),
     }
 }
 
-fn guarded_check(target: Target) -> String {
+fn guarded_check(request: UpdateRequest) -> String {
+    if !request.trust_host {
+        return format!("update: explicit --trust-host is required for host git checks\n{}", plan(request.target, false));
+    }
     if !crate::policy::host_tools_allowed() {
         return format!(
             "update: {}\n{}",
             crate::policy::host_denial_message("update"),
-            plan(target, false)
+            plan(request.target, false)
         );
     }
 
+    let target = request.target;
     let mut out = format!("phase1 updater // check {}\n", target.label());
-    out.push_str("host tools : enabled\n");
+    out.push_str("host tools : enabled by boot TRUST HOST + --trust-host\n");
     out.push_str("privacy    : command output is sanitized before display\n");
     out.push_str(&run_git_summary(
         &["rev-parse", "--is-inside-work-tree"],
@@ -120,17 +120,22 @@ fn guarded_check(target: Target) -> String {
     out
 }
 
-fn guarded_execute(target: Target, build: bool) -> String {
+fn guarded_execute(request: UpdateRequest) -> String {
+    if !request.trust_host {
+        return format!("update: explicit --trust-host is required for host git execution\n{}", plan(request.target, request.build));
+    }
     if !crate::policy::host_tools_allowed() {
         return format!(
             "update: {}\n{}",
             crate::policy::host_denial_message("update"),
-            plan(target, build)
+            plan(request.target, request.build)
         );
     }
 
+    let target = request.target;
     let mut out = format!("phase1 updater // execute {}\n", target.label());
     out.push_str("mode       : guarded host git update from inside phase1\n");
+    out.push_str("host tools : enabled by boot TRUST HOST + --trust-host\n");
     out.push_str(&format!("protocol   : {}\n", UPDATE_PROTOCOL_FILE));
     out.push_str("privacy    : command output is sanitized before display\n");
 
@@ -162,7 +167,7 @@ fn guarded_execute(target: Target, build: bool) -> String {
         }
     }
 
-    if build {
+    if request.build {
         let (step_out, ok) = run_step("cargo build --release", &["cargo", "build", "--release"]);
         out.push_str(&step_out);
         if !ok {
@@ -188,7 +193,7 @@ fn plan(target: Target, build: bool) -> String {
     out.push_str(
         "safe default : this command does not modify files unless --execute is provided\n",
     );
-    out.push_str("guard        : --execute requires safe mode off and explicit --trust-host\n");
+    out.push_str("guard        : --check/--execute require SHIELD off, TRUST HOST on, and explicit --trust-host\n");
     out.push_str("privacy      : updater never asks for private credentials or keys\n");
     out.push_str(
         "local safety : tracked local changes block the update instead of being overwritten\n\n",
@@ -202,7 +207,7 @@ fn plan(target: Target, build: bool) -> String {
         out.push_str("  cargo build --release\n");
     }
     out.push_str("\ninside phase1:\n");
-    out.push_str("  boot selector: turn safe mode off first\n");
+    out.push_str("  boot selector: turn SHIELD off and TRUST HOST on first\n");
     out.push_str("  update latest --trust-host --check\n");
     out.push_str("  update latest --trust-host --execute --build\n");
     out.push_str("  update now --trust-host\n");
@@ -227,9 +232,10 @@ fn protocol_report() -> String {
     );
     out.push_str("\nsafety gates\n");
     out.push_str("  - update without --execute is a dry-run plan\n");
-    out.push_str("  - update --execute requires safe mode off and explicit --trust-host\n");
+    out.push_str("  - update host checks/execution require boot TRUST HOST plus command-line --trust-host\n");
+    out.push_str("  - SHIELD/safe mode still blocks host commands even when TRUST HOST is on\n");
     out.push_str(
-        "  - update now --trust-host fetches, fast-forwards, and builds latest bleeding edge\n",
+        "  - update now --trust-host fetches, fast-forwards, and builds latest bleeding edge only after the boot trust gate is open\n",
     );
     out.push_str("  - update test defaults to a no-host developer validation plan\n");
     out.push_str("  - tracked local changes block execution instead of being overwritten\n");
@@ -412,7 +418,7 @@ fn sanitize_token(token: &str) -> String {
 }
 
 fn help() -> String {
-    "usage: update [plan|check|--execute|protocol|now|test] [latest|stable] [--build] [--trust-host]\n\nupdate defaults to a safe dry-run plan for the latest bleeding-edge build.\nlatest targets the repository default bleeding-edge branch.\nnow is shorthand for latest --execute --build.\ntest plans or runs developer validation suites.\nprotocol prints the local update and versioning protocol reference.\n--trust-host opts in to host git/cargo tools from inside phase1; safe mode must still be off.\n--execute runs guarded git fetch/checkout/pull and refuses to overwrite tracked local changes.\n--build also runs cargo build --release after a successful update.\n".to_string()
+    "usage: update [plan|check|--execute|protocol|now|test] [latest|stable] [--build] [--trust-host]\n\nupdate defaults to a safe dry-run plan for the latest bleeding-edge build.\nlatest targets the repository default bleeding-edge branch.\nnow is shorthand for latest --execute --build.\ntest plans or runs developer validation suites.\nprotocol prints the local update and versioning protocol reference.\n--trust-host confirms the command may use host git/cargo, but the boot TRUST HOST toggle must already be on and SHIELD must be off.\n--execute runs guarded git fetch/checkout/pull and refuses to overwrite tracked local changes.\n--build also runs cargo build --release after a successful update.\n".to_string()
 }
 
 #[cfg(test)]
@@ -435,7 +441,7 @@ mod tests {
     fn update_latest_plan_is_available_from_inside_phase1() {
         let out = run(&["latest".to_string(), "--build".to_string()]);
         assert!(out.contains("phase1 updater // plan latest bleeding edge"));
-        assert!(out.contains("boot selector: turn safe mode off first"));
+        assert!(out.contains("TRUST HOST"));
         assert!(out.contains("update now --trust-host"));
         assert!(out.contains("cargo build --release"));
     }
@@ -460,6 +466,7 @@ mod tests {
         assert!(out.contains("stable base"));
         assert!(out.contains("README changes"));
         assert!(out.contains("update test"));
+        assert!(out.contains("boot TRUST HOST"));
     }
 
     #[test]
@@ -467,8 +474,8 @@ mod tests {
         std::env::remove_var("PHASE1_SAFE_MODE");
         std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
         let out = run(&["latest".to_string(), "--execute".to_string()]);
-        assert!(out.contains("disabled by safe boot profile"));
-        assert!(out.contains("--trust-host"));
+        assert!(out.contains("explicit --trust-host"));
+        assert!(out.contains("TRUST HOST"));
     }
 
     #[test]
@@ -479,6 +486,15 @@ mod tests {
         assert!(out.contains("disabled by safe boot profile"));
         assert!(out.contains("update latest --trust-host --execute --build"));
         std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
+    }
+
+    #[test]
+    fn trust_flag_alone_does_not_enable_host_tools() {
+        std::env::set_var("PHASE1_SAFE_MODE", "0");
+        std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
+        let out = run(&["latest".to_string(), "--check".to_string(), "--trust-host".to_string()]);
+        assert!(out.contains("PHASE1_ALLOW_HOST_TOOLS"));
+        std::env::remove_var("PHASE1_SAFE_MODE");
     }
 
     #[test]
