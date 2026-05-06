@@ -1,9 +1,11 @@
+use crate::commands::Phase1Shell;
 use std::collections::VecDeque;
 use std::fs;
 use std::io;
 use std::path::PathBuf;
 
 pub const HISTORY_LIMIT: usize = 512;
+pub const DEFAULT_HISTORY_PATH: &str = "phase1.history";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum HistoryStore {
@@ -12,10 +14,11 @@ pub enum HistoryStore {
 }
 
 impl HistoryStore {
-    pub fn from_env(_persistent_state: bool) -> Self {
+    pub fn from_env(persistent_state: bool) -> Self {
         match std::env::var("PHASE1_HISTORY") {
             Ok(value) if value.eq_ignore_ascii_case("off") => Self::Disabled,
             Ok(value) if !value.trim().is_empty() => Self::Disk(PathBuf::from(value)),
+            _ if persistent_state => Self::Disk(PathBuf::from(DEFAULT_HISTORY_PATH)),
             _ => Self::Disabled,
         }
     }
@@ -37,25 +40,40 @@ impl HistoryStore {
         let raw = fs::read_to_string(path)?;
         let mut loaded = 0;
         for line in raw.lines().filter(|line| !line.trim().is_empty()) {
-            push_bounded(history, line);
+            let command = if let Some(encoded) = line.strip_prefix("H\t") {
+                let bytes = decode_hex(encoded)
+                    .map_err(|err| io::Error::new(io::ErrorKind::InvalidData, err))?;
+                String::from_utf8(bytes)
+                    .map_err(|err| io::Error::new(io::ErrorKind::InvalidData, err))?
+            } else if line.starts_with('#') {
+                continue;
+            } else {
+                line.to_string()
+            };
+            push_bounded(history, &command);
             loaded += 1;
         }
         Ok(loaded)
     }
 
-    pub fn save(&self, history: &VecDeque<String>) -> io::Result<()> {
+    pub fn save(&self, history: &VecDeque<String>) -> io::Result<usize> {
         let Self::Disk(path) = self else {
-            return Ok(());
+            return Ok(0);
         };
         if let Some(parent) = path.parent().filter(|parent| !parent.as_os_str().is_empty()) {
             fs::create_dir_all(parent)?;
         }
-        let mut out = String::new();
+        let mut out = String::from("# phase1 persistent history v1\n");
+        out.push_str("# command history is sanitized before write; do not type secrets into commands\n");
+        let mut written = 0;
         for line in history.iter().filter(|line| !line.trim().is_empty()) {
-            out.push_str(line);
+            out.push_str("H\t");
+            out.push_str(&encode_hex(sanitize_line(line).as_bytes()));
             out.push('\n');
+            written += 1;
         }
-        fs::write(path, out)
+        fs::write(path, out)?;
+        Ok(written)
     }
 
     pub fn clear(&self, history: &mut VecDeque<String>) -> io::Result<()> {
@@ -65,6 +83,27 @@ impl HistoryStore {
             Self::Disk(path) if path.exists() => fs::write(path, ""),
             Self::Disk(_) => Ok(()),
         }
+    }
+}
+
+pub fn run(shell: &mut Phase1Shell, store: &HistoryStore, args: &[String]) -> String {
+    match args.first().map(String::as_str) {
+        None | Some("list") => list(shell, args.get(1).and_then(|raw| raw.parse::<usize>().ok())),
+        Some(raw) if raw.chars().all(|ch| ch.is_ascii_digit()) => {
+            list(shell, raw.parse::<usize>().ok())
+        }
+        Some("status") => status(shell, store),
+        Some("path") => format!("{}\n", store.describe()),
+        Some("save") => match store.save(&shell.history) {
+            Ok(count) => format!("history: saved {count} entries to {}\n", store.describe()),
+            Err(err) => format!("history: save failed: {err}\n"),
+        },
+        Some("clear") => match store.clear(&mut shell.history) {
+            Ok(()) => "history: cleared\n".to_string(),
+            Err(err) => format!("history: clear failed: {err}\n"),
+        },
+        Some("help") | Some("-h") | Some("--help") => help(),
+        Some(other) => format!("history: unknown option '{other}'\n{}", help()),
     }
 }
 
@@ -78,10 +117,112 @@ pub fn push_bounded(history: &mut VecDeque<String>, line: &str) {
     }
 }
 
+pub fn status(shell: &Phase1Shell, store: &HistoryStore) -> String {
+    format!(
+        "history entries     : {}\npersistent history  : {}\nhistory file        : {}\nprivacy             : persisted history is sanitized; password/token/secret-like commands are redacted\n",
+        shell.history.len(),
+        if matches!(store, HistoryStore::Disk(_)) { "on" } else { "off" },
+        store.describe()
+    )
+}
+
+pub fn list(shell: &Phase1Shell, limit: Option<usize>) -> String {
+    let limit = limit.unwrap_or(HISTORY_LIMIT).min(HISTORY_LIMIT);
+    let start = shell.history.len().saturating_sub(limit);
+    let mut out = String::new();
+    for (idx, line) in shell.history.iter().enumerate().skip(start) {
+        out.push_str(&format!("{:>4} {}\n", idx + 1, line));
+    }
+    if out.is_empty() {
+        out.push_str("history: empty\n");
+    }
+    out
+}
+
+pub fn sanitize_line(line: &str) -> String {
+    let trimmed = line.trim();
+    let lower = trimmed.to_ascii_lowercase();
+    let risky_words = [
+        "password",
+        "passwd",
+        "token",
+        "secret",
+        "credential",
+        "cookie",
+        "recovery",
+        "apikey",
+        "api_key",
+        "private_key",
+        "github_pat_",
+        "ghp_",
+        "gho_",
+        "ghu_",
+        "ghs_",
+        "ghr_",
+    ];
+    if risky_words.iter().any(|word| lower.contains(word)) {
+        return "[redacted-sensitive-command]".to_string();
+    }
+
+    let mut sanitized = Vec::new();
+    for part in trimmed.split_whitespace() {
+        let lower_part = part.to_ascii_lowercase();
+        if lower_part.contains("authorization:")
+            || lower_part.starts_with("bearer=")
+            || lower_part.starts_with("key=")
+            || lower_part.starts_with("pass=")
+            || lower_part.starts_with("pwd=")
+        {
+            sanitized.push("[redacted]".to_string());
+        } else {
+            sanitized.push(part.to_string());
+        }
+    }
+    sanitized.join(" ")
+}
+
+fn help() -> String {
+    "usage: history [list [n]|n|status|path|save|clear]\n  persistent history is enabled automatically when persistent state mode is on\n  set PHASE1_HISTORY=off to disable or PHASE1_HISTORY=<path> to override the file\n".to_string()
+}
+
+fn encode_hex(bytes: &[u8]) -> String {
+    const HEX: &[u8; 16] = b"0123456789abcdef";
+    let mut out = String::with_capacity(bytes.len() * 2);
+    for byte in bytes {
+        out.push(HEX[(byte >> 4) as usize] as char);
+        out.push(HEX[(byte & 0x0f) as usize] as char);
+    }
+    out
+}
+
+fn decode_hex(raw: &str) -> Result<Vec<u8>, String> {
+    if !raw.len().is_multiple_of(2) {
+        return Err("hex payload has odd length".to_string());
+    }
+    let mut bytes = Vec::with_capacity(raw.len() / 2);
+    let chars: Vec<_> = raw.bytes().collect();
+    for pair in chars.chunks(2) {
+        let high = hex_value(pair[0]).ok_or_else(|| "invalid hex payload".to_string())?;
+        let low = hex_value(pair[1]).ok_or_else(|| "invalid hex payload".to_string())?;
+        bytes.push((high << 4) | low);
+    }
+    Ok(bytes)
+}
+
+fn hex_value(byte: u8) -> Option<u8> {
+    match byte {
+        b'0'..=b'9' => Some(byte - b'0'),
+        b'a'..=b'f' => Some(byte - b'a' + 10),
+        b'A'..=b'F' => Some(byte - b'A' + 10),
+        _ => None,
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{push_bounded, HistoryStore, HISTORY_LIMIT};
+    use super::{push_bounded, sanitize_line, HistoryStore, DEFAULT_HISTORY_PATH, HISTORY_LIMIT};
     use std::collections::VecDeque;
+    use std::path::PathBuf;
 
     #[test]
     fn bounded_history_keeps_recent_entries() {
@@ -99,8 +240,21 @@ mod tests {
     }
 
     #[test]
-    fn persistent_state_does_not_enable_disk_history() {
+    fn persistent_state_enables_default_disk_history() {
         std::env::remove_var("PHASE1_HISTORY");
-        assert_eq!(HistoryStore::from_env(true), HistoryStore::Disabled);
+        assert_eq!(
+            HistoryStore::from_env(true),
+            HistoryStore::Disk(PathBuf::from(DEFAULT_HISTORY_PATH))
+        );
+    }
+
+    #[test]
+    fn sanitizer_redacts_secret_like_commands() {
+        assert_eq!(
+            sanitize_line("wifi-connect home password123"),
+            "[redacted-sensitive-command]"
+        );
+        assert_eq!(sanitize_line("export API_TOKEN=abc"), "[redacted-sensitive-command]");
+        assert_eq!(sanitize_line("echo hello world"), "echo hello world");
     }
 }
