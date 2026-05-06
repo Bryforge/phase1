@@ -1,9 +1,11 @@
 use std::fs;
 use std::io::Write;
-use std::process::{Command, Stdio};
+use std::process::{self, Command, Stdio};
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 const EDGE_VERSION: &str = env!("CARGO_PKG_VERSION");
+static RUN_COUNTER: AtomicU64 = AtomicU64::new(0);
 
 fn run_phase1(script: &str) -> String {
     run_phase1_raw(&format!("\n{script}"))
@@ -14,7 +16,11 @@ fn run_phase1_raw(input: &str) -> String {
         .duration_since(UNIX_EPOCH)
         .map(|duration| duration.as_nanos())
         .unwrap_or(0);
-    let run_dir = std::env::temp_dir().join(format!("phase1-bleeding-{nonce}"));
+    let seq = RUN_COUNTER.fetch_add(1, Ordering::Relaxed);
+    let run_dir = std::env::temp_dir().join(format!(
+        "phase1-bleeding-{}-{nonce}-{seq}",
+        process::id()
+    ));
     let _ = fs::remove_dir_all(&run_dir);
     fs::create_dir_all(&run_dir).expect("create bleeding test dir");
 
