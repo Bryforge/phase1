@@ -43,12 +43,12 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("bg", &[], "proc", "bg <pid>", "Move a simulated process to background.", "proc.manage"),
     cmd!("kill", &[], "proc", "kill <pid>", "Terminate a simulated process through sys_kill.", "proc.kill"),
     cmd!("nice", &[], "proc", "nice <pid> <priority>", "Set simulated process priority.", "proc.manage"),
-    cmd!("ifconfig", &[], "net", "ifconfig", "Show discovered host network interfaces.", "net.read"),
+    cmd!("ifconfig", &[], "net", "ifconfig", "Show network interfaces. Safe mode uses simulated loopback only.", "net.read"),
     cmd!("iwconfig", &[], "net", "iwconfig", "Show WiFi information where available.", "net.read"),
-    cmd!("wifi-scan", &[], "net", "wifi-scan", "List nearby WiFi networks with host tools.", "net.read"),
+    cmd!("wifi-scan", &[], "net", "wifi-scan", "List nearby WiFi networks only when trusted host tools are enabled.", "net.read"),
     cmd!("wifi-connect", &[], "net", "wifi-connect <ssid> [password]", "Dry-run WiFi connection unless host mutation is enabled.", "net.admin"),
-    cmd!("ping", &[], "net", "ping <host>", "Run bounded host ping.", "net.read"),
-    cmd!("nmcli", &[], "net", "nmcli", "Show NetworkManager state on Linux.", "net.read"),
+    cmd!("ping", &[], "net", "ping <host>", "Run bounded host ping only when trusted host tools are enabled.", "net.read"),
+    cmd!("nmcli", &[], "net", "nmcli", "Show NetworkManager state on Linux only when trusted host tools are enabled.", "net.read"),
     cmd!("browser", &[], "host", "browser <url|phase1|about>", "Fetch and render HTTP/HTTPS text using guarded curl.", "host.net"),
     cmd!("python", &["py"], "host", "python <file.py> | python -c <code>", "Run Python with a timeout.", "host.exec"),
     cmd!("gcc", &["cc"], "host", "gcc <file.c> | gcc <code>", "Compile and run C with host compiler timeout guards.", "host.exec"),
@@ -77,6 +77,7 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("su", &[], "user", "su <user>", "Switch simulated user.", "user.switch"),
     cmd!("accounts", &["users"], "user", "accounts", "Explain and list simulated Unix accounts without real emails or credentials.", "user.read"),
     cmd!("history", &[], "user", "history", "Show shell command history.", "user.read"),
+    cmd!("security", &["sec", "policy"], "user", "security", "Show safe mode, host tool gates, persistence, and privacy status.", "user.read"),
     cmd!("help", &["commands"], "misc", "help", "Show grouped command map.", "none"),
     cmd!("man", &[], "misc", "man <command>", "Show generated command manual page.", "none"),
     cmd!("complete", &[], "misc", "complete [prefix]", "Show registry-backed command completions.", "none"),
@@ -109,13 +110,17 @@ pub fn command_map() -> String {
             .join(" ");
         out.push_str(&format!("{:<5}: {}\n", category, names));
     }
-    out.push_str("\nquick : bootcfg | bootcfg save | bootcfg reset | matrix 10 | dash --compact | audit | ps\n");
+    out.push_str("\nquick : security | accounts | bootcfg | bootcfg save | bootcfg reset | matrix 10 | dash --compact | audit | ps\n");
     out
 }
 
 pub fn man_page(name: &str) -> Option<String> {
     let cmd = lookup(name)?;
-    let aliases = if cmd.aliases.is_empty() { "none".to_string() } else { cmd.aliases.join(", ") };
+    let aliases = if cmd.aliases.is_empty() {
+        "none".to_string()
+    } else {
+        cmd.aliases.join(", ")
+    };
     Some(format!(
         "{}\n\nusage      : {}\ncategory   : {}\naliases    : {}\ncapability : {}\n\n{}",
         cmd.name, cmd.usage, cmd.category, aliases, cmd.capability, cmd.description
@@ -156,8 +161,8 @@ pub fn capabilities_report() -> String {
 fn guard_status(capability: &str) -> &'static str {
     match capability {
         "none" => "open",
-        "host.exec" | "host.net" => "timeout+validation",
-        "net.admin" => "dry-run by default",
+        "host.exec" | "host.net" => "safe-mode + PHASE1_ALLOW_HOST_TOOLS",
+        "net.admin" => "safe-mode + host-tools + network-change opt-in",
         "hw.write" => "validated",
         "fs.write" | "proc.kill" | "proc.spawn" | "proc.manage" | "user.switch" | "user.env" => "audited",
         _ => "read-only/audited",
@@ -175,6 +180,8 @@ mod tests {
         assert_eq!(lookup("rain").map(|cmd| cmd.name), Some("matrix"));
         assert_eq!(lookup("bootconfig").map(|cmd| cmd.name), Some("bootcfg"));
         assert_eq!(lookup("users").map(|cmd| cmd.name), Some("accounts"));
+        assert_eq!(lookup("sec").map(|cmd| cmd.name), Some("security"));
+        assert_eq!(lookup("policy").map(|cmd| cmd.name), Some("security"));
     }
 
     #[test]
@@ -186,6 +193,8 @@ mod tests {
         assert_eq!(canonical_name("rain"), Some("matrix"));
         assert_eq!(canonical_name("bootconfig"), Some("bootcfg"));
         assert_eq!(canonical_name("users"), Some("accounts"));
+        assert_eq!(canonical_name("sec"), Some("security"));
+        assert_eq!(canonical_name("policy"), Some("security"));
     }
 
     #[test]
@@ -198,6 +207,7 @@ mod tests {
         assert!(map.contains("matrix"));
         assert!(map.contains("bootcfg"));
         assert!(map.contains("accounts"));
+        assert!(map.contains("security"));
     }
 
     #[test]
@@ -213,12 +223,14 @@ mod tests {
         assert!(completions("p").contains(&"py"));
         assert!(completions("r").contains(&"rain"));
         assert!(completions("boot").contains(&"bootcfg"));
+        assert!(completions("sec").contains(&"security"));
     }
 
     #[test]
     fn capabilities_report_includes_guard_status() {
         let report = capabilities_report();
         assert!(report.contains("wifi-connect"));
-        assert!(report.contains("dry-run by default"));
+        assert!(report.contains("network-change opt-in"));
+        assert!(report.contains("PHASE1_ALLOW_HOST_TOOLS"));
     }
 }
