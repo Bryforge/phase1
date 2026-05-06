@@ -88,7 +88,7 @@ pub fn run(args: &[String]) {
 
     let mut width = terminal_dim("COLUMNS", DEFAULT_WIDTH).clamp(MIN_WIDTH, MAX_WIDTH);
     let mut height = terminal_dim("LINES", DEFAULT_HEIGHT).clamp(MIN_HEIGHT, MAX_HEIGHT);
-    if width % 2 == 0 && width > MIN_WIDTH {
+    if width.is_multiple_of(2) && width > MIN_WIDTH {
         width -= 1;
     }
     if height > 2 {
