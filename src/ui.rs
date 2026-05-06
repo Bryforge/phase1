@@ -265,50 +265,60 @@ fn print_preboot(version: &str, config: BootConfig) {
     } else {
         print!("\x1b[2J\x1b[H{BOLD}");
     }
-    print_fastfetch_splash_with_config(version, config);
-    let width = preboot_width();
-    println!("{}", panel_line(config, "BOOT", width));
-    println!("  1  boot system       {}", value(config, "save+start"));
-    println!("  2  color output      {}", flag(config, config.color));
-    println!("  3  ascii compatible  {}", flag(config, config.ascii_mode));
-    println!("  4  safe mode         {}", flag(config, config.safe_mode));
-    println!("  5  quick boot        {}", flag(config, config.quick_boot));
-    println!("  6  mobile mode       {}", flag(config, config.mobile_mode));
-    println!("  p  persistent state  {}", flag(config, config.persistent_state));
-    println!("  7  reboot selector");
-    println!("  8  quit boot");
-    println!("  9  save config");
-    println!("  0  reset saved config");
-    println!();
-    println!("{}", value(config, "Secure default: safe=on. Enter=save+boot  p=persist  h=help"));
+    print_boot_card(version, config, true);
+    println!("{}", value(config, "Secure default: safe=on  Enter=boot  p=persist  h=help"));
 }
 
 fn print_fastfetch_splash(version: &str, config: BootConfig) {
-    print_fastfetch_splash_with_config(version, config);
+    print_boot_card(version, config, false);
 }
 
 fn print_fastfetch_splash_with_config(version: &str, config: BootConfig) {
-    let compact = config.mobile_mode || terminal_width() < 72;
-    let art = phase1_art();
-    let info = splash_info(version, config, compact);
+    print_boot_card(version, config, false);
+}
+
+fn print_boot_card(version: &str, config: BootConfig, selector: bool) {
+    let width = preboot_width();
+    let inner = width.saturating_sub(2);
+    let title = phase1_wordmark(config);
+    let status = splash_info(version, config, true);
 
     println!();
-    if compact {
-        for (idx, line) in art.iter().enumerate() {
-            println!("{}", rainbow(idx, line, config));
+    println!("{}", card_top(config, width));
+    println!("{}", card_line(config, width, &title));
+    println!("{}", card_rule(config, width));
+
+    for row in status {
+        println!("{}", card_line(config, width, &row));
+    }
+    println!("{}", card_line(config, width, "fastfetch boot // cyberdeck ready"));
+
+    if selector {
+        println!("{}", card_section(config, width, "BOOT"));
+        let rows = [
+            format!("1 boot system       save+start"),
+            format!("2 color output      {}", if config.color { "on" } else { "off" }),
+            format!("3 ascii compatible  {}", if config.ascii_mode { "on" } else { "off" }),
+            format!("4 safe mode         {}", if config.safe_mode { "on" } else { "off" }),
+            format!("5 quick boot        {}", if config.quick_boot { "on" } else { "off" }),
+            format!("6 mobile mode       {}", if config.mobile_mode { "on" } else { "off" }),
+            format!("p persistent state  {}", if config.persistent_state { "on" } else { "off" }),
+            "7 reboot selector".to_string(),
+            "8 quit boot".to_string(),
+            "9 save config".to_string(),
+            "0 reset saved config".to_string(),
+        ];
+        for row in rows {
+            println!("{}", card_line(config, width, &row));
         }
-        println!();
-        for row in info {
-            println!("{}", value(config, &row));
-        }
-        println!("{}", value(config, "fastfetch boot // cyberdeck ready"));
     } else {
-        for (idx, line) in art.iter().enumerate() {
-            let art_line = rainbow(idx, line, config);
-            let info_line = info.get(idx).map(String::as_str).unwrap_or("");
-            println!("{art_line}  {}", value(config, info_line));
-        }
-        println!("{}", value(config, "      ▀▀ fastfetch boot selector // cyberdeck ready ▀▀"));
+        println!("{}", card_section(config, width, "QUICK"));
+        println!("{}", card_line(config, width, "help  audit  ps  ls /"));
+        println!("{}", card_line(config, width, "matrix  browser phase1  version"));
+    }
+
+    if inner > 0 {
+        println!("{}", card_bottom(config, width));
     }
     println!();
 }
@@ -349,6 +359,20 @@ fn phase1_art() -> [&'static str; 5] {
     ]
 }
 
+fn phase1_wordmark(config: BootConfig) -> String {
+    if !config.color || config.ascii_mode {
+        "Phase1".to_string()
+    } else {
+        let colors = [RED, YELLOW, GREEN, CYAN, BLUE, MAGENTA];
+        "Phase1"
+            .chars()
+            .enumerate()
+            .map(|(idx, ch)| format!("{}{}{}", colors[idx % colors.len()], ch, RESET))
+            .collect::<Vec<_>>()
+            .join("")
+    }
+}
+
 fn prompt_text(user: &str, path: &str) -> String {
     if ascii_mode() || !color_enabled() {
         format!("phase1://{} {} > ", user, path)
@@ -363,31 +387,7 @@ fn prompt_text(user: &str, path: &str) -> String {
 fn print_mobile_boot(version: &str) {
     println!("\x1b[2J\x1b[H");
     let config = BootConfig::default();
-    println!("{}", accent(config, &format!("PHASE1 // OPERATOR v{version}")));
-    println!("{}", value(config, "virtual kernel • sandbox • cyberdeck"));
-    println!("{}", panel_line(config, "BOOT MATRIX", preboot_width()));
-
-    for (name, state) in [
-        ("core    kernel", "online"),
-        ("vfs     mounted", "ready"),
-        ("proc    scheduler", "active"),
-        ("net     inspection", "linked"),
-        ("hw      pcie model", "ready"),
-        ("sec     audit log", "tracking"),
-    ] {
-        println!("{}  {}", accent(config, name), value(config, state));
-    }
-
-    println!("{}", panel_line(config, "SESSION", preboot_width()));
-    println!("{}", value(config, "user=root  mode=operator"));
-    println!("{}", value(config, "shell=registry  ui=mobile"));
-    println!("{}", value(config, &format!("security={}", if config.safe_mode { "safe" } else { "host-enabled" })));
-    println!("{}", value(config, &format!("state={}", if config.persistent_state { "persistent" } else { "volatile" })));
-
-    println!("{}", panel_line(config, "QUICK", preboot_width()));
-    println!("{}", value(config, "help  audit  ps  ls /"));
-    println!("{}", value(config, "matrix  browser phase1  version"));
-
+    print_boot_card(version, config, false);
     if color_enabled() {
         println!("{GREEN}[ready]{RESET} all subsystems nominal");
     } else {
@@ -398,23 +398,8 @@ fn print_mobile_boot(version: &str) {
 
 fn print_modern_boot(version: &str) {
     println!("\x1b[2J\x1b[H");
-    top();
-    center(&format!("PHASE1 // ADVANCED OPERATOR CONSOLE  v{version}"));
-    center("virtual kernel • secure sandbox • terminal control deck");
-    mid("BOOT MATRIX");
-    boot_row("CORE", "kernel orchestration", "ONLINE");
-    boot_row("VFS", "virtual filesystem", "MOUNTED");
-    boot_row("PROC", "scheduler + process table", "ACTIVE");
-    boot_row("NET", "network inspection layer", "LINKED");
-    boot_row("HW", "pcie + memory model", "READY");
-    boot_row("SEC", "audit telemetry pipeline", "TRACKING");
-    mid("SESSION");
-    line("user=root  tty=phase1  mode=operator  runtime=std-only");
-    line(&format!("integrity=nominal  security={}  state={}", if env_flag("PHASE1_SAFE_MODE").unwrap_or(true) { "safe" } else { "host-enabled" }, if env_flag("PHASE1_PERSISTENT_STATE").unwrap_or(false) { "persistent" } else { "volatile" }));
-    mid("QUICK ACTIONS");
-    line("help        complete p      audit        ps        ls /");
-    line("matrix      browser phase1  ifconfig     tree      version");
-    bottom();
+    let config = BootConfig::default();
+    print_boot_card(version, config, false);
     if color_enabled() {
         println!("{GREEN}[ready]{RESET} all subsystems nominal {GRAY}:: operator shell armed{RESET}");
     } else {
@@ -424,19 +409,12 @@ fn print_modern_boot(version: &str) {
 }
 
 fn print_ascii_boot(version: &str) {
-    println!("+--------------------------------------------------------------+");
-    println!("| PHASE1 // ADVANCED OPERATOR CONSOLE  v{version:<22}|");
-    println!("| virtual kernel | secure sandbox | terminal control deck      |");
-    println!("+--------------------------- BOOT MATRIX ----------------------+");
-    println!("| CORE kernel orchestration                         ONLINE     |");
-    println!("| VFS  virtual filesystem                           MOUNTED    |");
-    println!("| PROC scheduler + process table                    ACTIVE     |");
-    println!("| NET  network inspection layer                     LINKED     |");
-    println!("| HW   pcie + memory model                          READY      |");
-    println!("| SEC  audit telemetry pipeline                     TRACKING   |");
-    println!("+--------------------------- QUICK ACTIONS --------------------+");
-    println!("| help  complete p  audit  ps  ls /  matrix                    |");
-    println!("+--------------------------------------------------------------+");
+    let config = BootConfig {
+        color: false,
+        ascii_mode: true,
+        ..BootConfig::default()
+    };
+    print_boot_card(version, config, false);
     println!("[ready] all subsystems nominal :: operator shell armed");
     println!();
 }
@@ -495,6 +473,52 @@ fn framed(content: &str) {
         println!("{CYAN}│{RESET}{content}{CYAN}│{RESET}");
     } else {
         println!("|{content}|");
+    }
+}
+
+fn card_top(config: BootConfig, width: usize) -> String {
+    if config.color && !config.ascii_mode {
+        format!("{CYAN}╭{}╮{RESET}", "─".repeat(width))
+    } else {
+        format!("+{}+", "-".repeat(width))
+    }
+}
+
+fn card_bottom(config: BootConfig, width: usize) -> String {
+    if config.color && !config.ascii_mode {
+        format!("{CYAN}╰{}╯{RESET}", "─".repeat(width))
+    } else {
+        format!("+{}+", "-".repeat(width))
+    }
+}
+
+fn card_rule(config: BootConfig, width: usize) -> String {
+    let fill = "─".repeat(width);
+    if config.color && !config.ascii_mode {
+        format!("{CYAN}├{fill}┤{RESET}")
+    } else {
+        format!("+{}+", "-".repeat(width))
+    }
+}
+
+fn card_section(config: BootConfig, width: usize, label: &str) -> String {
+    let marker = format!(" {label} ");
+    let fill = width.saturating_sub(marker.chars().count());
+    if config.color && !config.ascii_mode {
+        format!("{CYAN}├{marker}{}┤{RESET}", "─".repeat(fill))
+    } else {
+        format!("+{marker}{}+", "-".repeat(fill))
+    }
+}
+
+fn card_line(config: BootConfig, width: usize, text: &str) -> String {
+    let clipped = clip_visible(text, width);
+    let visible = visible_len(&clipped);
+    let padded = format!("{clipped}{}", " ".repeat(width.saturating_sub(visible)));
+    if config.color && !config.ascii_mode {
+        format!("{CYAN}│{RESET}{padded}{CYAN}│{RESET}")
+    } else {
+        format!("|{padded}|")
     }
 }
 
@@ -592,6 +616,37 @@ fn clip(text: &str, width: usize) -> String {
     text.chars().take(width).collect()
 }
 
+fn strip_ansi(text: &str) -> String {
+    let mut out = String::with_capacity(text.len());
+    let mut chars = text.chars().peekable();
+    while let Some(ch) = chars.next() {
+        if ch == '\x1b' && chars.peek() == Some(&'[') {
+            chars.next();
+            for code in chars.by_ref() {
+                if code.is_ascii_alphabetic() {
+                    break;
+                }
+            }
+        } else {
+            out.push(ch);
+        }
+    }
+    out
+}
+
+fn visible_len(text: &str) -> usize {
+    strip_ansi(text).chars().count()
+}
+
+fn clip_visible(text: &str, width: usize) -> String {
+    let plain = strip_ansi(text);
+    if plain.chars().count() <= width {
+        text.to_string()
+    } else {
+        plain.chars().take(width).collect()
+    }
+}
+
 fn color_enabled() -> bool {
     std::env::var_os("NO_COLOR").is_none() && std::env::var("PHASE1_NO_COLOR").ok().as_deref() != Some("1")
 }
@@ -602,7 +657,7 @@ fn ascii_mode() -> bool {
 
 #[cfg(test)]
 mod tests {
-    use super::{clip, parse_bool, phase1_art, prompt_text, BootConfig, PANEL_WIDTH};
+    use super::{clip, parse_bool, phase1_art, prompt_text, strip_ansi, visible_len, BootConfig, PANEL_WIDTH};
 
     #[test]
     fn panel_width_stays_terminal_friendly() {
@@ -648,5 +703,11 @@ mod tests {
         assert_eq!(parse_bool("true"), Some(true));
         assert_eq!(parse_bool("off"), Some(false));
         assert_eq!(parse_bool("maybe"), None);
+    }
+
+    #[test]
+    fn visible_len_ignores_ansi_sequences() {
+        assert_eq!(visible_len("\x1b[31mPhase1\x1b[0m"), 6);
+        assert_eq!(strip_ansi("\x1b[32mon\x1b[0m"), "on");
     }
 }
