@@ -7,6 +7,7 @@ mod man;
 mod matrix;
 mod ned;
 mod network;
+mod operator;
 mod policy;
 mod registry;
 mod ui;
@@ -123,6 +124,10 @@ fn run_shell(boot_config: ui::BootConfig) {
                         "{}",
                         policy::security_report(boot_config.persistent_state, "memory-only")
                     ),
+                    "sysinfo" => print!("{}", operator::sysinfo(&mut shell, boot_config)),
+                    "theme" => print!("{}", operator::theme(&mut shell, args)),
+                    "banner" => print!("{}", operator::banner(boot_config, args)),
+                    "tips" => print!("{}", operator::tips(&shell)),
                     "matrix" => matrix::run(args),
                     "bootcfg" => handle_bootcfg(boot_config, args),
                     _ => dispatch(&mut shell, cmd, args),
