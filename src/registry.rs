@@ -58,7 +58,8 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("browser", &[], "host", "browser <url|phase1|about>", "Fetch and render HTTP/HTTPS text using guarded curl.", "host.net"),
     cmd!("python", &["py"], "host", "python <file.py> | python -c <code>", "Run Python with a timeout.", "host.exec"),
     cmd!("gcc", &["cc"], "host", "gcc <file.c> | gcc <code>", "Compile and run C with host compiler timeout guards.", "host.exec"),
-    cmd!("plugins", &["plugin"], "host", "plugins", "List Python plugins in ./plugins.", "host.exec"),
+    cmd!("plugins", &["plugin"], "host", "plugins", "List Python and WASI-lite plugins in ./plugins.", "host.exec"),
+    cmd!("wasm", &["wasi"], "host", "wasm [list|inspect|run|validate] [plugin]", "Run or inspect sandboxed WASI-lite plugins without host shell access.", "wasm.exec"),
     cmd!("update", &["upgrade"], "host", "update [plan|check|--execute|protocol] [bleeding|stable] [--build]", "Safely plan or run a guarded Git update; protocol prints patch-versioning rules.", "host.exec"),
     cmd!("ned", &["nano", "vi"], "host", "ned <file>", "Edit a VFS file with a small line editor.", "fs.write"),
     cmd!("lspci", &[], "arch", "lspci", "List simulated PCIe devices.", "hw.read"),
@@ -104,7 +105,9 @@ pub const COMMANDS: &[CommandSpec] = &[
 ];
 
 pub fn lookup(name: &str) -> Option<&'static CommandSpec> {
-    COMMANDS.iter().find(|cmd| cmd.name == name || cmd.aliases.contains(&name))
+    COMMANDS
+        .iter()
+        .find(|cmd| cmd.name == name || cmd.aliases.contains(&name))
 }
 
 pub fn canonical_name(name: &str) -> Option<&'static str> {
@@ -122,7 +125,7 @@ pub fn command_map() -> String {
             .join(" ");
         out.push_str(&format!("{:<5}: {}\n", category, names));
     }
-    out.push_str("\nquick : version --compare | roadmap | pipeline | update protocol | cat log.txt | grep alpha | wc -l | update bleeding --check | sysinfo\n");
+    out.push_str("\nquick : version --compare | roadmap | pipeline | wasm list | update protocol | cat log.txt | grep alpha | wc -l | update bleeding --check | sysinfo\n");
     out
 }
 
@@ -174,6 +177,7 @@ fn guard_status(capability: &str) -> &'static str {
     match capability {
         "none" => "open",
         "host.exec" | "host.net" => "safe-mode + PHASE1_ALLOW_HOST_TOOLS",
+        "wasm.exec" => "phase1-wasi sandbox",
         "net.admin" => "safe-mode + host-tools + network-change opt-in",
         "hw.write" => "validated",
         "fs.write" | "proc.kill" | "proc.spawn" | "proc.manage" | "user.switch" | "user.env" => "audited",
@@ -201,6 +205,7 @@ mod tests {
         assert_eq!(lookup("upgrade").map(|cmd| cmd.name), Some("update"));
         assert_eq!(lookup("pipes").map(|cmd| cmd.name), Some("pipeline"));
         assert_eq!(lookup("map").map(|cmd| cmd.name), Some("roadmap"));
+        assert_eq!(lookup("wasi").map(|cmd| cmd.name), Some("wasm"));
     }
 
     #[test]
@@ -220,6 +225,7 @@ mod tests {
         assert_eq!(canonical_name("pipes"), Some("pipeline"));
         assert_eq!(canonical_name("ver"), Some("version"));
         assert_eq!(canonical_name("map"), Some("roadmap"));
+        assert_eq!(canonical_name("wasi"), Some("wasm"));
     }
 
     #[test]
@@ -243,6 +249,7 @@ mod tests {
         assert!(map.contains("update protocol"));
         assert!(map.contains("pipeline"));
         assert!(map.contains("roadmap"));
+        assert!(map.contains("wasm"));
     }
 
     #[test]
@@ -253,6 +260,9 @@ mod tests {
         assert!(page.contains("host.exec"));
         let pipeline = man_page("pipeline").expect("pipeline man page");
         assert!(pipeline.contains("structured text pipeline"));
+        let wasm = man_page("wasm").expect("wasm man page");
+        assert!(wasm.contains("WASI-lite"));
+        assert!(wasm.contains("wasm.exec"));
     }
 
     #[test]
@@ -269,6 +279,8 @@ mod tests {
         assert!(completions("g").contains(&"grep"));
         assert!(completions("u").contains(&"update"));
         assert!(completions("u").contains(&"upgrade"));
+        assert!(completions("wa").contains(&"wasm"));
+        assert!(completions("wa").contains(&"wasi"));
     }
 
     #[test]
@@ -281,5 +293,7 @@ mod tests {
         assert!(report.contains("grep"));
         assert!(report.contains("update"));
         assert!(report.contains("pipeline"));
+        assert!(report.contains("wasm"));
+        assert!(report.contains("phase1-wasi sandbox"));
     }
 }
