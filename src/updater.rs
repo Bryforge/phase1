@@ -1,3 +1,6 @@
+#[path = "devtools.rs"]
+mod devtools;
+
 use std::io;
 use std::process::{Command, Output, Stdio};
 use std::thread;
@@ -8,7 +11,7 @@ const BLEEDING_BRANCH: &str = "master";
 const STABLE_BRANCH: &str = "stable";
 const UPDATE_PROTOCOL_FILE: &str = "UPDATE_PROTOCOL.md";
 const VERSION_SCHEME: &str = "MAJOR.MINOR.PATCH[-dev]";
-pub const CURRENT_EDGE_VERSION: &str = "3.10.1-dev";
+pub const CURRENT_EDGE_VERSION: &str = "3.10.2-dev";
 const COMMAND_TIMEOUT: Duration = Duration::from_secs(20);
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -61,6 +64,10 @@ impl Default for UpdateRequest {
 }
 
 pub fn run(args: &[String]) -> String {
+    if devtools::is_request(args) {
+        return devtools::run(args);
+    }
+
     let request = match parse_args(args) {
         Ok(Some(request)) => request,
         Ok(None) => return help(),
@@ -193,6 +200,7 @@ fn plan(target: Target, build: bool) -> String {
     out.push_str("  update latest --trust-host --check\n");
     out.push_str("  update latest --trust-host --execute --build\n");
     out.push_str("  update now --trust-host\n");
+    out.push_str("  update test quick --trust-host --execute\n");
     out
 }
 
@@ -212,6 +220,7 @@ fn protocol_report() -> String {
     out.push_str("  - update without --execute is a dry-run plan\n");
     out.push_str("  - update --execute requires safe mode off and explicit --trust-host\n");
     out.push_str("  - update now --trust-host fetches, fast-forwards, and builds latest bleeding edge\n");
+    out.push_str("  - update test defaults to a no-host developer validation plan\n");
     out.push_str("  - tracked local changes block execution instead of being overwritten\n");
     out.push_str("  - updater output is sanitized before display\n");
     out
@@ -398,7 +407,7 @@ fn target_arg(target: Target) -> &'static str {
 }
 
 fn help() -> String {
-    "usage: update [plan|check|--execute|protocol|now] [latest|stable] [--build] [--trust-host]\n\nupdate defaults to a safe dry-run plan for the latest bleeding-edge build.\nlatest targets the repository default bleeding-edge branch.\nnow is shorthand for latest --execute --build.\nprotocol prints the local update and versioning protocol reference.\n--trust-host opts in to host git/cargo tools from inside phase1; safe mode must still be off.\n--execute runs guarded git fetch/checkout/pull and refuses to overwrite tracked local changes.\n--build also runs cargo build --release after a successful update.\n".to_string()
+    "usage: update [plan|check|--execute|protocol|now|test] [latest|stable] [--build] [--trust-host]\n\nupdate defaults to a safe dry-run plan for the latest bleeding-edge build.\nlatest targets the repository default bleeding-edge branch.\nnow is shorthand for latest --execute --build.\ntest plans or runs developer validation suites.\nprotocol prints the local update and versioning protocol reference.\n--trust-host opts in to host git/cargo tools from inside phase1; safe mode must still be off.\n--execute runs guarded git fetch/checkout/pull and refuses to overwrite tracked local changes.\n--build also runs cargo build --release after a successful update.\n".to_string()
 }
 
 #[cfg(test)]
@@ -426,6 +435,15 @@ mod tests {
     }
 
     #[test]
+    fn update_developer_test_plan_is_available() {
+        let out = run(&["test".to_string(), "quick".to_string()]);
+        assert!(out.contains("phase1 developer test kit"));
+        assert!(out.contains("suite        : quick"));
+        assert!(out.contains("cargo check --all-targets"));
+        assert!(out.contains("update test quick --trust-host --execute"));
+    }
+
+    #[test]
     fn update_protocol_is_visible() {
         let out = run(&["protocol".to_string()]);
         assert!(out.contains("phase1 update protocol"));
@@ -434,6 +452,7 @@ mod tests {
         assert!(out.contains("--trust-host"));
         assert!(out.contains(CURRENT_EDGE_VERSION));
         assert!(out.contains("README changes"));
+        assert!(out.contains("update test"));
     }
 
     #[test]
