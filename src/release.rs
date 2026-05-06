@@ -1,7 +1,7 @@
 use crate::kernel::VERSION;
 
-pub const RELEASE_VERSION: &str = "3.6.0";
-pub const BLEEDING_VERSION: &str = "3.10.2-dev";
+pub const STABLE_VERSION: &str = "3.6.0";
+pub const CURRENT_VERSION: &str = env!("CARGO_PKG_VERSION");
 pub const CHANNEL: &str = "bleeding-edge";
 pub const UPDATE_PROTOCOL_FILE: &str = "UPDATE_PROTOCOL.md";
 pub const VERSION_SCHEME: &str = "MAJOR.MINOR.PATCH[-dev]";
@@ -23,6 +23,9 @@ const BLEEDING_FEATURES: &[&str] = &[
     "raw-mode input editor with redraw-safe backspace handling",
     "full-screen operator TUI dashboard with compact fallback",
     "operator sysinfo/theme/banner/tips commands",
+    "Neo Tokyo advanced operator console HUD",
+    "dynamic command-aware status bar with live clock",
+    "avim live mode HUD with real Escape handling",
 ];
 
 const ROADMAP_STATUS: &[(&str, &str)] = &[
@@ -46,7 +49,7 @@ const ROADMAP_STATUS: &[(&str, &str)] = &[
     ),
     (
         "Configurable UI color palettes",
-        "complete: rainbow remains default; matrix, cyber, amber, ice, synthwave, and crimson are available",
+        "complete: neo-tokyo is the default operator HUD; matrix, cyber, amber, ice, synthwave, crimson, and bleeding-edge are available",
     ),
     (
         "System tab auto-completion",
@@ -68,27 +71,31 @@ const ROADMAP_STATUS: &[(&str, &str)] = &[
         "Developer test kit",
         "complete: update test plans and runs quick/full/smoke/bleeding/game validation suites from inside phase1",
     ),
+    (
+        "Dynamic operator HUD",
+        "complete: command-aware prompt HUD and avim mode HUD show live UTC clock and context controls",
+    ),
 ];
 
 pub fn version_report(args: &[String]) -> String {
     let compare = args.iter().any(|arg| {
         matches!(
             arg.as_str(),
-            "--compare" | "compare" | "--channel" | "channel" | "--bleeding"
+            "--compare" | "compare" | "--channel" | "channel" | "--bleeding" | "--stable"
         )
     });
     if !compare {
-        return format!("phase1 {}\n", VERSION);
+        return format!("phase1 {}\n", current_version());
     }
 
     let mut out = String::from("phase1 version report\n");
-    out.push_str(&format!("runtime version : {}\n", VERSION));
-    out.push_str(&format!("release version : {}\n", RELEASE_VERSION));
-    out.push_str(&format!("bleeding edge   : {}\n", BLEEDING_VERSION));
+    out.push_str(&format!("current version : {}\n", current_version()));
+    out.push_str(&format!("stable version  : {}\n", STABLE_VERSION));
+    out.push_str(&format!("kernel baseline : {}\n", VERSION));
+    out.push_str(&format!("channel         : {}\n", CHANNEL));
     out.push_str(&format!("version scheme  : {}\n", VERSION_SCHEME));
     out.push_str(&format!("protocol file   : {}\n", UPDATE_PROTOCOL_FILE));
-    out.push_str(&format!("channel         : {}\n", CHANNEL));
-    out.push_str("\nbleeding-edge additions over release:\n");
+    out.push_str("\ncurrent bleeding-edge additions over stable:\n");
     for feature in BLEEDING_FEATURES {
         out.push_str("  - ");
         out.push_str(feature);
@@ -99,8 +106,9 @@ pub fn version_report(args: &[String]) -> String {
 
 pub fn roadmap_report() -> String {
     let mut out = String::from("phase1 roadmap status\n");
-    out.push_str(&format!("release : v{}\n", RELEASE_VERSION));
-    out.push_str(&format!("edge    : {}\n", BLEEDING_VERSION));
+    out.push_str(&format!("current : v{}\n", current_version()));
+    out.push_str(&format!("stable  : v{}\n", STABLE_VERSION));
+    out.push_str(&format!("channel : {}\n", CHANNEL));
     out.push_str(&format!("scheme  : {}\n", VERSION_SCHEME));
     out.push_str(&format!("updates : {}\n\n", UPDATE_PROTOCOL_FILE));
     for (track, status) in ROADMAP_STATUS {
@@ -109,18 +117,24 @@ pub fn roadmap_report() -> String {
     out
 }
 
+fn current_version() -> String {
+    std::env::var("PHASE1_DISPLAY_VERSION").unwrap_or_else(|_| CURRENT_VERSION.to_string())
+}
+
 #[cfg(test)]
 mod tests {
     use super::{
-        roadmap_report, version_report, BLEEDING_VERSION, RELEASE_VERSION, UPDATE_PROTOCOL_FILE,
+        roadmap_report, version_report, CURRENT_VERSION, STABLE_VERSION, UPDATE_PROTOCOL_FILE,
         VERSION_SCHEME,
     };
 
     #[test]
-    fn version_compare_reports_release_and_edge() {
+    fn version_compare_reports_stable_and_current() {
         let out = version_report(&["--compare".to_string()]);
-        assert!(out.contains(RELEASE_VERSION));
-        assert!(out.contains(BLEEDING_VERSION));
+        assert!(out.contains(STABLE_VERSION));
+        assert!(out.contains(CURRENT_VERSION));
+        assert!(out.contains("current version"));
+        assert!(out.contains("stable version"));
         assert!(out.contains(VERSION_SCHEME));
         assert!(out.contains(UPDATE_PROTOCOL_FILE));
         assert!(out.contains("structured text pipelines"));
@@ -134,11 +148,21 @@ mod tests {
         assert!(out.contains("full-screen operator TUI dashboard"));
         assert!(out.contains("in-system latest self-update"));
         assert!(out.contains("developer test kit"));
+        assert!(out.contains("dynamic command-aware status bar"));
+    }
+
+    #[test]
+    fn bare_version_uses_current_package_version() {
+        std::env::remove_var("PHASE1_DISPLAY_VERSION");
+        let out = version_report(&[]);
+        assert!(out.contains(CURRENT_VERSION));
     }
 
     #[test]
     fn roadmap_reports_pipeline_complete() {
         let out = roadmap_report();
+        assert!(out.contains("current"));
+        assert!(out.contains("stable"));
         assert!(out.contains("Structured command output and pipelines"));
         assert!(out.contains("Update protocol and semantic patch versioning"));
         assert!(out.contains("Capability enforcement based on command metadata"));
@@ -150,6 +174,7 @@ mod tests {
         assert!(out.contains("Full-screen TUI dashboard"));
         assert!(out.contains("In-system latest updater"));
         assert!(out.contains("Developer test kit"));
+        assert!(out.contains("Dynamic operator HUD"));
         assert!(out.contains("complete"));
     }
 }
