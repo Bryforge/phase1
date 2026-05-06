@@ -8,7 +8,7 @@ const BLEEDING_BRANCH: &str = "master";
 const STABLE_BRANCH: &str = "stable";
 const UPDATE_PROTOCOL_FILE: &str = "UPDATE_PROTOCOL.md";
 const VERSION_SCHEME: &str = "MAJOR.MINOR.PATCH[-dev]";
-const CURRENT_EDGE_VERSION: &str = "3.7.2-dev";
+const CURRENT_EDGE_VERSION: &str = "3.7.3-dev";
 const COMMAND_TIMEOUT: Duration = Duration::from_secs(20);
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -197,6 +197,7 @@ fn protocol_report() -> String {
     out.push_str(&format!("edge version   : {CURRENT_EDGE_VERSION}\n"));
     out.push_str("\nupdate rules\n");
     out.push_str("  - use PATCH, the third number, for every safe fix, docs, protocol, formatting, and incremental feature update\n");
+    out.push_str("  - PATCH updates do not need README changes unless public usage changes\n");
     out.push_str("  - use MINOR for meaningful roadmap capability sets\n");
     out.push_str("  - use MAJOR only for deliberate compatibility-breaking behavior\n");
     out.push_str("  - keep bleeding-edge builds on -dev until promoted to stable release\n");
@@ -391,7 +392,7 @@ mod tests {
         std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
         let out = run(&[]);
         assert!(out.contains("phase1 updater // plan bleeding edge"));
-        assert!(out.contains("3.7.2-dev"));
+        assert!(out.contains("3.7.3-dev"));
         assert!(out.contains("MAJOR.MINOR.PATCH"));
         assert!(out.contains("update protocol"));
         assert!(out.contains("update bleeding --execute"));
@@ -405,7 +406,8 @@ mod tests {
         assert!(out.contains("UPDATE_PROTOCOL.md"));
         assert!(out.contains("third number"));
         assert!(out.contains("PHASE1_ALLOW_HOST_TOOLS"));
-        assert!(out.contains("3.7.2-dev"));
+        assert!(out.contains("3.7.3-dev"));
+        assert!(out.contains("README changes"));
     }
 
     #[test]
