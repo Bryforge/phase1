@@ -116,7 +116,7 @@ fn command_matches(prefix: &str) -> Vec<String> {
         .into_iter()
         .map(str::to_string)
         .collect::<Vec<_>>();
-    for builtin in ["reboot", "opendoom", "doom"] {
+    for builtin in ["reboot", "arena", "game", "doom"] {
         if builtin.starts_with(prefix) {
             matches.push(builtin.to_string());
         }
@@ -175,8 +175,19 @@ fn argument_matches(command: &str, prefix: &str) -> Vec<String> {
             "--build",
             "--no-build",
         ],
-        "wasm" => &["list", "inspect", "run", "validate", "hello-wasi", "opendoom"],
-        "opendoom" | "doom" => &["start", "play", "demo", "script", "help", "quit"],
+        "wasm" => &["list", "inspect", "run", "validate", "hello-wasi", "arena", "game"],
+        "arena" | "doom" => &[
+            "start",
+            "play",
+            "demo",
+            "script",
+            "roadmap",
+            "dev",
+            "test-plan",
+            "help",
+            "quit",
+        ],
+        "game" => &["status", "files", "roadmap", "test-plan", "version", "help", "arena"],
         "history" => &["list", "status", "path", "save", "clear"],
         "bootcfg" => &["show", "save", "reset", "defaults", "path", "state", "help"],
         "matrix" => &["0", "forever", "--speed", "--density", "--chars"],
@@ -220,8 +231,8 @@ mod tests {
             TabCompletion::Completed("reboot".to_string())
         );
         assert_eq!(
-            complete_input_prefix("opend"),
-            TabCompletion::Completed("opendoom".to_string())
+            complete_input_prefix("are"),
+            TabCompletion::Completed("arena".to_string())
         );
     }
 
@@ -236,8 +247,12 @@ mod tests {
             TabCompletion::Completed("update protocol".to_string())
         );
         assert_eq!(
-            complete_tab_line("opendoom de\t"),
-            TabCompletion::Completed("opendoom demo".to_string())
+            complete_tab_line("arena de\t"),
+            TabCompletion::Completed("arena demo".to_string())
+        );
+        assert_eq!(
+            complete_tab_line("game test-p\t"),
+            TabCompletion::Completed("game test-plan".to_string())
         );
     }
 
