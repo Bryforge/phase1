@@ -508,11 +508,11 @@ fn status_row(config: BootConfig, label: &str, value_text: &str, bright: bool) -
 
 fn console_title(config: BootConfig) -> String {
     if !config.color || config.ascii_mode {
-        format!("{} // Neo Tokyo Hacker Console", phase1_wordmark(config))
+        format!("{} // Advanced Operator Console", phase1_wordmark(config))
     } else {
         let colors = palette(active_theme_for_config(config));
         format!(
-            "{}{} // NEO TOKYO HACKER CONSOLE{}",
+            "{}{} // Advanced Operator Console{}",
             phase1_wordmark(config),
             colors.title,
             RESET
@@ -934,7 +934,10 @@ fn ascii_mode() -> bool {
 
 #[cfg(test)]
 mod tests {
-    use super::{display_mode, display_version, parse_bool, strip_ansi, BootConfig, ThemePalette};
+    use super::{
+        console_title, display_mode, display_version, parse_bool, strip_ansi, BootConfig,
+        ThemePalette,
+    };
 
     fn config() -> BootConfig {
         BootConfig {
@@ -953,6 +956,16 @@ mod tests {
         std::env::remove_var("PHASE1_THEME");
         std::env::remove_var("PHASE1_BLEEDING_EDGE");
         assert_eq!(display_mode(config()), "neo-tokyo");
+    }
+
+    #[test]
+    fn console_title_keeps_advanced_operator_branding() {
+        std::env::remove_var("PHASE1_THEME");
+        std::env::remove_var("PHASE1_BLEEDING_EDGE");
+        assert_eq!(
+            strip_ansi(&console_title(config())),
+            "Phase1 // Advanced Operator Console"
+        );
     }
 
     #[test]
