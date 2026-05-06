@@ -30,7 +30,7 @@ impl Default for WasiManifest {
 }
 
 pub fn help() -> String {
-    "phase1 wasm/wasi runtime\nusage: wasm [list|inspect|run|validate|help] [plugin] [args...]\n\nplugins live in ./plugins as .wasm artifacts with optional .wasi manifests.\nruntime is phase1-only: no host shell, no host network, no host filesystem passthrough.\nPhase1 Arena is exposed as a built-in WASI-lite game launcher: `wasm run arena demo` or `arena start` when the plugin marker is present.\n".to_string()
+    "phase1 wasm/wasi runtime\nusage: wasm [list|inspect|run|validate|help] [plugin] [args...]\n\nplugins live in ./plugins as .wasm artifacts with optional .wasi manifests.\nruntime is phase1-only: no host shell, no host network, no host filesystem passthrough.\nPhase1 Arena is exposed as a built-in WASI-lite game launcher: `wasm run arena demo`, `arena start`, or `game status`.\n".to_string()
 }
 
 pub fn run(plugins_dir: &Path, args: &[String]) -> String {
@@ -54,6 +54,9 @@ pub fn run(plugins_dir: &Path, args: &[String]) -> String {
 }
 
 pub fn execute_plugin(plugins_dir: &Path, name: &str, args: &[String]) -> String {
+    if is_game_workspace(name) {
+        return arena::game(args);
+    }
     if is_arena(name) {
         return launch_arena(args);
     }
@@ -116,8 +119,10 @@ fn list_plugins(plugins_dir: &Path) -> String {
             }
         }
     }
-    if !names.iter().any(|name| name == "arena") {
-        names.push("arena".to_string());
+    for built_in in ["arena", "game"] {
+        if !names.iter().any(|name| name == built_in) {
+            names.push(built_in.to_string());
+        }
     }
     names.sort();
     if names.is_empty() {
@@ -128,6 +133,9 @@ fn list_plugins(plugins_dir: &Path) -> String {
 }
 
 fn inspect_plugin(plugins_dir: &Path, name: &str) -> String {
+    if is_game_workspace(name) {
+        return game_inspect();
+    }
     if is_arena(name) {
         return arena_inspect();
     }
@@ -161,6 +169,9 @@ fn inspect_plugin(plugins_dir: &Path, name: &str) -> String {
 }
 
 fn validate_plugin(plugins_dir: &Path, name: &str) -> String {
+    if is_game_workspace(name) {
+        return "wasm: game workspace built-in phase1-wasi-lite launcher\n".to_string();
+    }
     if is_arena(name) {
         return "wasm: arena built-in phase1-wasi-lite game launcher\n".to_string();
     }
@@ -198,8 +209,25 @@ fn arena_inspect() -> String {
     out
 }
 
+fn game_inspect() -> String {
+    let mut out = String::from("phase1 wasm inspect\n");
+    out.push_str("plugin : game\n");
+    out.push_str("module : Phase1 Arena development workspace\n");
+    out.push_str(&format!("runtime: {RUNTIME}\n"));
+    out.push_str("cap    : none\n");
+    out.push_str("usage  : game status | game files | game test-plan | game roadmap\n");
+    out
+}
+
+fn is_game_workspace(name: &str) -> bool {
+    name == "game"
+}
+
 fn is_arena(name: &str) -> bool {
-    matches!(name, "arena" | "phase-arena" | "phasearena" | "game" | "opendoom" | "open-doom" | "doom")
+    matches!(
+        name,
+        "arena" | "phase-arena" | "phasearena" | "opendoom" | "open-doom" | "doom"
+    )
 }
 
 fn plugin_path(plugins_dir: &Path, raw: &str) -> Result<PathBuf, String> {
@@ -315,11 +343,14 @@ mod tests {
         let listed = run(&dir, &["list".to_string()]);
         assert!(listed.contains("demo"));
         assert!(listed.contains("arena"));
+        assert!(listed.contains("game"));
         let inspected = inspect_plugin(&dir, "demo");
         assert!(inspected.contains("valid wasm"));
         let game = inspect_plugin(&dir, "arena");
         assert!(game.contains("built-in phase1 text-mode game"));
         assert!(game.contains("Phase1 Arena"));
+        let workspace = inspect_plugin(&dir, "game");
+        assert!(workspace.contains("development workspace"));
         let _ = fs::remove_dir_all(dir);
     }
 
@@ -340,17 +371,16 @@ mod tests {
         let out = execute_plugin(&dir, "arena", &["demo".to_string()]);
         assert!(out.contains("phase1 arena"));
         assert!(out.contains("original ASCII"));
-        assert!(out.contains("Phase1 Arena").not());
+        assert!(!out.contains("openDoom"));
         let _ = fs::remove_dir_all(dir);
     }
 
-    trait BoolNot {
-        fn not(self) -> bool;
-    }
-
-    impl BoolNot for bool {
-        fn not(self) -> bool {
-            !self
-        }
+    #[test]
+    fn game_workspace_runs_status() {
+        let dir = temp_plugins();
+        let out = execute_plugin(&dir, "game", &["status".to_string()]);
+        assert!(out.contains("phase1 game workspace"));
+        assert!(out.contains("GAME_DEV.md"));
+        let _ = fs::remove_dir_all(dir);
     }
 }
