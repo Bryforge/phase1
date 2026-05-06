@@ -97,6 +97,7 @@ fn boot_help_man_and_completion_work() {
             "security  safe",
             "PHASE1 // ADVANCED OPERATOR CONSOLE",
             "phase1 // command map",
+            "text : grep wc head tail find",
             "proc",
             "python",
             "browser",
@@ -201,6 +202,7 @@ fn roadmap_aliases_capabilities_and_dashboard_work() {
             "phase1 // command map",
             "command        category capability",
             "wifi-connect",
+            "grep",
             "PHASE1 DASHBOARD v3.6.0",
             "CORE  user=root",
             "PROC  tasks=",
@@ -229,6 +231,29 @@ fn filesystem_commands_round_trip() {
         ],
     );
     assert!(!output.contains("command not found"), "unexpected missing command:\n{output}");
+}
+
+#[test]
+fn text_search_and_chain_commands_work() {
+    let output = run_phase1(
+        "echo alpha > log.txt; echo beta >> log.txt; echo alpha beta >> log.txt\ngrep -n alpha log.txt\ngrep -c alpha log.txt\nwc log.txt\nhead -1 log.txt\ntail -1 log.txt\nfind /home -name '*.txt' -type f\nunknowncmd && echo should-not-run || echo fallback-ok\necho chain-one; echo chain-two\nexit\n",
+    );
+    assert_contains_all(
+        &output,
+        &[
+            "1:alpha",
+            "3:alpha beta",
+            "2",
+            "log.txt",
+            "alpha beta",
+            "/home/log.txt",
+            "command not found: unknowncmd",
+            "fallback-ok",
+            "chain-one",
+            "chain-two",
+        ],
+    );
+    assert!(!output.contains("should-not-run"), "&& branch ran after failed command:\n{output}");
 }
 
 #[test]
@@ -293,7 +318,7 @@ fn network_commands_have_stable_safe_output() {
 
 #[test]
 fn expected_errors_are_clear() {
-    let output = run_phase1("cat missing.txt\ncd missing\nkill abc\nloadcr3 123\nwifi-connect\nunknowncmd\nexit\n");
+    let output = run_phase1("cat missing.txt\ncd missing\nkill abc\nloadcr3 123\nwifi-connect\nunknowncmd\ngrep nope missing.txt\nfind /missing\nexit\n");
     assert_contains_all(
         &output,
         &[
@@ -303,6 +328,8 @@ fn expected_errors_are_clear() {
             "loadcr3: CR3 must be 4KiB aligned unless PCIDE is enabled",
             "wifi-connect: disabled by safe boot profile",
             "command not found: unknowncmd",
+            "grep: missing.txt: no such file: missing.txt",
+            "find: /missing: no such file or directory",
         ],
     );
 }
