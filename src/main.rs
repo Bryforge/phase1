@@ -7,6 +7,7 @@ mod man;
 mod matrix;
 mod ned;
 mod network;
+mod policy;
 mod registry;
 mod ui;
 
@@ -118,6 +119,10 @@ fn run_shell(boot_config: ui::BootConfig) {
                 match registry::canonical_name(cmd).unwrap_or(cmd) {
                     "help" => ui::print_help(),
                     "accounts" => print!("{}", accounts_report(&shell)),
+                    "security" => print!(
+                        "{}",
+                        policy::security_report(boot_config.persistent_state, "memory-only")
+                    ),
                     "matrix" => matrix::run(args),
                     "bootcfg" => handle_bootcfg(boot_config, args),
                     _ => dispatch(&mut shell, cmd, args),
