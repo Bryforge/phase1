@@ -117,6 +117,7 @@ fn run_shell(boot_config: ui::BootConfig) {
                 let args = &tokens[1..];
                 match registry::canonical_name(cmd).unwrap_or(cmd) {
                     "help" => ui::print_help(),
+                    "accounts" => print!("{}", accounts_report(&shell)),
                     "matrix" => matrix::run(args),
                     "bootcfg" => handle_bootcfg(boot_config, args),
                     _ => dispatch(&mut shell, cmd, args),
@@ -136,6 +137,29 @@ fn run_shell(boot_config: ui::BootConfig) {
             eprintln!("persistent state save warning: {err}");
         }
     }
+}
+
+fn accounts_report(shell: &Phase1Shell) -> String {
+    let mut out = String::from(
+        "phase1 accounts // simulated Unix account database\nsource : /etc/passwd\nnote   : x means the credential hash is not stored in this file\nsafety : no real emails, tokens, host users, or account secrets are stored here\n\nUSER       UID   GID   HOME       SHELL\n",
+    );
+
+    match shell.kernel.vfs.cat("/etc/passwd") {
+        Ok(raw) => {
+            for line in raw.lines().filter(|line| !line.trim().is_empty()) {
+                let fields: Vec<_> = line.split(':').collect();
+                if fields.len() >= 7 {
+                    out.push_str(&format!(
+                        "{:<10} {:<5} {:<5} {:<10} {}\n",
+                        fields[0], fields[2], fields[3], fields[5], fields[6]
+                    ));
+                }
+            }
+        }
+        Err(err) => out.push_str(&format!("accounts: could not read /etc/passwd: {err}\n")),
+    }
+
+    out
 }
 
 fn handle_bootcfg(config: ui::BootConfig, args: &[String]) {
