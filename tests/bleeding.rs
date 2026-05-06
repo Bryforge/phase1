@@ -46,11 +46,13 @@ fn bleeding_version_and_roadmap_are_visible() {
     let output = run_phase1("version --compare\nroadmap\npipeline\nupdate protocol\nsecurity\nexit\n");
     assert!(output.contains("phase1 version report"));
     assert!(output.contains("release version : 3.6.0"));
-    assert!(output.contains("bleeding edge   : 3.7.4-dev"));
+    assert!(output.contains("bleeding edge   : 3.8.0-dev"));
     assert!(output.contains("version scheme  : MAJOR.MINOR.PATCH[-dev]"));
     assert!(output.contains("protocol file   : UPDATE_PROTOCOL.md"));
     assert!(output.contains("Update protocol and semantic patch versioning"));
     assert!(output.contains("Capability enforcement based on command metadata"));
+    assert!(output.contains("WASM/WASI plugin runtime"));
+    assert!(output.contains("WASI-lite plugin runtime"));
     assert!(output.contains("metadata-backed capability enforcement"));
     assert!(output.contains("capability metadata : enforced"));
     assert!(output.contains("phase1 pipelines"));
@@ -65,4 +67,21 @@ fn bleeding_structured_pipelines_filter_text() {
     );
     assert!(output.contains("    2"), "pipeline count missing:\n{output}");
     assert!(output.contains("b"), "cut pipeline output missing:\n{output}");
+}
+
+#[test]
+fn bleeding_wasi_lite_plugins_are_sandboxed() {
+    let output = run_phase1(
+        "plugins\nwasm list\nwasm inspect hello-wasi\nwasm run hello-wasi token=supersecret\nhello-wasi password=hunter2\ncomplete wa\nexit\n",
+    );
+    assert!(output.contains("wasm plugins:"), "missing wasm plugin list:\n{output}");
+    assert!(output.contains("hello-wasi"), "missing example wasm plugin:\n{output}");
+    assert!(output.contains("phase1 wasm inspect"), "missing inspect output:\n{output}");
+    assert!(output.contains("valid wasm"), "missing validation output:\n{output}");
+    assert!(output.contains("phase1 wasi run"), "missing run output:\n{output}");
+    assert!(output.contains("host=blocked"), "sandbox not reported:\n{output}");
+    assert!(output.contains("hello from phase1 wasi-lite"), "manifest stdout missing:\n{output}");
+    assert!(output.contains("[redacted]"), "secret-looking args were not redacted:\n{output}");
+    assert!(output.contains("wasm"), "wasm completion missing:\n{output}");
+    assert!(output.contains("wasi"), "wasi completion missing:\n{output}");
 }
