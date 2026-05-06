@@ -69,10 +69,23 @@ fn run_shell(boot_config: ui::BootConfig) {
 
     let mut shell = Phase1Shell::new();
     let history_store = history::HistoryStore::from_env(boot_config.persistent_state);
+    let display_version = ui::display_version(kernel::VERSION, boot_config);
+    let channel = if boot_config.bleeding_edge {
+        "bleeding-edge"
+    } else {
+        "release"
+    };
+
     shell.env.insert(
         "PHASE1_BOOT_PROFILE".to_string(),
         boot_config.profile_name().to_string(),
     );
+    shell
+        .env
+        .insert("PHASE1_CHANNEL".to_string(), channel.to_string());
+    shell
+        .env
+        .insert("PHASE1_DISPLAY_VERSION".to_string(), display_version.clone());
     shell.env.insert(
         "PHASE1_SAFE_MODE".to_string(),
         if boot_config.safe_mode { "1" } else { "0" }.to_string(),
@@ -84,6 +97,10 @@ fn run_shell(boot_config: ui::BootConfig) {
     shell.env.insert(
         "PHASE1_PERSISTENT_STATE".to_string(),
         if boot_config.persistent_state { "1" } else { "0" }.to_string(),
+    );
+    shell.env.insert(
+        "PHASE1_BLEEDING_EDGE".to_string(),
+        if boot_config.bleeding_edge { "1" } else { "0" }.to_string(),
     );
     shell
         .env
@@ -116,7 +133,7 @@ fn run_shell(boot_config: ui::BootConfig) {
     }
 
     shell.cmd_cd(Some("/home"));
-    println!("phase1 {} ready. Type 'help' for commands.", kernel::VERSION);
+    println!("phase1 {} ready. Type 'help' for commands.", display_version);
 
     let stdin = io::stdin();
     let mut input = String::with_capacity(256);
@@ -377,6 +394,8 @@ fn handle_bootcfg(config: ui::BootConfig, args: &[String]) {
 
 fn print_boot_config(config: ui::BootConfig) {
     println!("boot profile      : {}", config.profile_name());
+    println!("channel           : {}", if config.bleeding_edge { "bleeding-edge" } else { "release" });
+    println!("display version   : {}", ui::display_version(kernel::VERSION, config));
     println!("config file       : {}", ui::config_path());
     println!("state file        : {}", PERSISTENT_STATE_PATH);
     println!("color             : {}", if config.color { "on" } else { "off" });
@@ -395,6 +414,10 @@ fn print_boot_config(config: ui::BootConfig) {
     println!(
         "mobile mode       : {}",
         if config.mobile_mode { "on" } else { "off" }
+    );
+    println!(
+        "bleeding edge     : {}",
+        if config.bleeding_edge { "on" } else { "off" }
     );
     println!(
         "persistent state  : {}",
