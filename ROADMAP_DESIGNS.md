@@ -11,7 +11,7 @@ Core principles:
 - Keep the simulator fast, understandable, and terminal-native.
 - Prefer explicit kernel boundaries over direct state mutation.
 - Make every command observable and testable.
-- Keep host integrations guarded with validation, dry-runs, and timeouts.
+- Keep host integrations guarded with validation, dry-runs, timeouts, safe mode, and explicit host-tools opt-in.
 - Make mobile terminal output compact but still premium.
 - Build extensibility through policy, packages, and sandboxed plugins.
 
@@ -26,16 +26,17 @@ NEXT_UPDATE_v3.7.0.md
 Theme:
 
 ```text
-R1 Operator Shell Completion + Policy Foundation
+Secure Operator Persistence + Policy Gate
 ```
 
 Primary targets:
 
-- persistent shell history
-- history command extensions
-- command policy check foundation
-- structured audit event formatting
-- smoke tests for history and policy behavior
+- two-key host tools gate with `PHASE1_ALLOW_HOST_TOOLS=1`
+- central command policy module
+- structured policy/syscall audit formatting
+- privacy-first persistent shell history
+- `security` / `sec` / `policy` status command
+- smoke tests for default safe mode, safe-off without host tools, and trusted-user host tools mode
 
 ## Roadmap phases
 
@@ -116,11 +117,13 @@ Targets:
 
 ## Immediate implementation order
 
-1. Add persistent command history with a disable flag for tests.
+1. Add a two-key host tools gate with `PHASE1_ALLOW_HOST_TOOLS=1`.
 2. Add a policy check function and log allow/deny decisions to audit.
-3. Expand smoke tests around history and safe-mode policy behavior.
-4. Start the structured output enum behind command handlers.
-5. Continue virtual kernel boundary cleanup.
+3. Add a `security` command for runtime posture visibility.
+4. Add privacy-first persistent command history with a disable flag for tests and privacy.
+5. Expand smoke tests around history, safe-mode policy behavior, and host-tools opt-in.
+6. Start the structured output enum behind command handlers.
+7. Continue virtual kernel boundary cleanup.
 
 ## Definition of done
 
