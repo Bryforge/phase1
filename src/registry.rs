@@ -87,8 +87,8 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("accounts", &["users"], "user", "accounts", "Explain and list simulated Unix accounts without real emails or credentials.", "user.read"),
     cmd!("history", &[], "user", "history [list|status|path|save|clear]", "Show shell command history and persistent-history status.", "user.read"),
     cmd!("security", &["sec", "policy"], "user", "security", "Show safe mode, host tool gates, persistence, and privacy status.", "user.read"),
-    cmd!("theme", &["style"], "user", "theme [show|list|neon|mono|ascii|reset]", "Switch or inspect the live terminal theme.", "user.env"),
-    cmd!("banner", &["splash"], "user", "banner [mobile|desktop|mono|neon|ascii|safe|host|persist]", "Preview boot splash profile choices without changing saved config.", "user.read"),
+    cmd!("theme", &["style"], "user", "theme [show|list|rainbow|matrix|cyber|amber|ice|synthwave|crimson|mono|ascii|reset]", "Switch or inspect selectable terminal palettes. Rainbow remains the default.", "user.env"),
+    cmd!("banner", &["splash"], "user", "banner [mobile|desktop|mono|rainbow|matrix|cyber|amber|ice|synthwave|crimson|ascii|safe|host|persist]", "Preview boot splash profile and color palette choices without changing saved config.", "user.read"),
     cmd!("tips", &["hint", "hints"], "user", "tips", "Show rotating operator tips for useful phase1 commands.", "user.read"),
     cmd!("help", &["commands"], "misc", "help", "Show grouped command map.", "none"),
     cmd!("man", &[], "misc", "man <command>", "Show generated command manual page.", "none"),
@@ -125,7 +125,7 @@ pub fn command_map() -> String {
             .join(" ");
         out.push_str(&format!("{:<5}: {}\n", category, names));
     }
-    out.push_str("\nquick : version --compare | roadmap | pipeline | wasm list | update protocol | cat log.txt | grep alpha | wc -l | update bleeding --check | sysinfo\n");
+    out.push_str("\nquick : version --compare | roadmap | theme list | theme matrix | banner cyber | pipeline | wasm list | update protocol | sysinfo\n");
     out
 }
 
@@ -241,6 +241,7 @@ mod tests {
         assert!(map.contains("security"));
         assert!(map.contains("sysinfo"));
         assert!(map.contains("theme"));
+        assert!(map.contains("theme list"));
         assert!(map.contains("banner"));
         assert!(map.contains("tips"));
         assert!(map.contains("grep"));
@@ -263,6 +264,9 @@ mod tests {
         let wasm = man_page("wasm").expect("wasm man page");
         assert!(wasm.contains("WASI-lite"));
         assert!(wasm.contains("wasm.exec"));
+        let theme = man_page("theme").expect("theme man page");
+        assert!(theme.contains("matrix"));
+        assert!(theme.contains("Rainbow remains the default"));
     }
 
     #[test]
