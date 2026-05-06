@@ -12,35 +12,40 @@ const MAGENTA: &str = "\x1b[35m";
 const GRAY: &str = "\x1b[90m";
 const WHITE: &str = "\x1b[97m";
 
-const LOGO: &[&str] = &[
-    "       .-==++#%@@%#++==-.       ",
-    "    .+##*-..............-*##+.   ",
-    "   =##+:    .-======-.    :+##=  ",
-    " .##+.   .-+##########+-.   .+##.",
-    " +##:  .+####-.    .-####+.  :##+",
-    " ##+  +####:   P1    :####+  +## ",
-    " ##+  +####.  PHASE1 .####+  +## ",
-    " +##:  .+####-.    .-####+.  :##+",
-    " .##+.   .-+##########+-.   .+##.",
-    "   =##+:    .-======-.    :+##=  ",
-    "    .+##*-..update everything-*+. ",
-    "       '-==++#%@@%#++==- 3.10-dev",
+const DESKTOP_LOGO: &[&str] = &[
+    "      .-==++#%@@%#++==-.      ",
+    "   .+##*-............-*##+.   ",
+    "  =##+:   .-======-.   :+##=  ",
+    " +##:  .+####----####+.  :##+ ",
+    " ##+  +####:  P1  :####+  +## ",
+    " ##+  +####.PHASE1.####+  +## ",
+    " +##:  .+####----####+.  :##+ ",
+    "  =##+:   .-======-.   :+##=  ",
+    "   .+##*-..update..-*##+.     ",
+    "      '-==++#%@@%#++==-'      ",
 ];
 
-const ASCII_LOGO: &[&str] = &[
-    "       .-== PHASE1 ==-.       ",
-    "    .--------------------.    ",
-    "   /        P1 DEVKIT     \\   ",
-    "  |      update everything |  ",
-    "  |      rainbow shell     |  ",
-    "   \\      fastfetch      /   ",
-    "    '--------------------'    ",
+const MOBILE_LOGO: &[&str] = &[
+    "   .-== PHASE1 ==-.",
+    "  /  P1 DEVKIT    \",
+    " | update everything |",
+    " | rainbow shell     |",
+    "  \__ fastfetch ___/",
 ];
 
 pub fn run(shell: &mut Phase1Shell, config: BootConfig) -> String {
     shell.kernel.tick();
     shell.network.refresh();
 
+    let facts = collect_facts(shell, config);
+    if config.mobile_mode {
+        render_mobile(&facts)
+    } else {
+        render_desktop(&facts)
+    }
+}
+
+fn collect_facts(shell: &Phase1Shell, config: BootConfig) -> Vec<(&'static str, String)> {
     let display_version = crate::ui::display_version(crate::kernel::VERSION, config);
     let channel = if config.bleeding_edge { "bleeding-edge" } else { "release" };
     let security = if config.safe_mode { "safe-mode" } else { "host-capable" };
@@ -51,71 +56,92 @@ pub fn run(shell: &mut Phase1Shell, config: BootConfig) -> String {
     let processes = shell.kernel.scheduler.ps().lines().skip(1).count();
     let audit_count = shell.kernel.audit.dump().lines().count();
     let pcie_count = shell.kernel.pcie.lspci().lines().count();
-    let iface_count = shell.network.ifconfig().lines().filter(|line| line.contains(": flags=<")).count();
+    let iface_count = shell
+        .network
+        .ifconfig()
+        .lines()
+        .filter(|line| line.contains(": flags=<"))
+        .count();
     let uptime = shell.kernel.uptime().as_secs();
     let cwd = shell.kernel.vfs.cwd.display().to_string();
 
-    let facts = vec![
-        ("OS", "Phase1 Terminal OS Simulator".to_string()),
-        ("Host", "Bryforge developer cyberdeck".to_string()),
+    vec![
+        ("OS", "Phase1".to_string()),
+        ("Host", "Bryforge cyberdeck".to_string()),
         ("Kernel", format!("phase1 {display_version}")),
         ("Uptime", format!("{uptime}s")),
-        ("Packages", format!("{} built-ins, Python/WASI plugin slots", crate::registry::COMMANDS.len())),
-        ("Shell", "phase1 interactive shell".to_string()),
-        ("Terminal", "ANSI operator console".to_string()),
-        ("Resolution", "responsive TUI".to_string()),
-        ("DE", "phase1 dashboard".to_string()),
-        ("WM", "operator panels".to_string()),
+        ("Pkgs", format!("{} built-ins", crate::registry::COMMANDS.len())),
+        ("Shell", "phase1".to_string()),
+        ("Terminal", "ANSI console".to_string()),
         ("Theme", "rainbow".to_string()),
-        ("CPU", "simulated Rust scheduler".to_string()),
-        ("GPU", "ANSI renderer".to_string()),
-        ("Memory", "2.0 GiB / 4.0 GiB simulated".to_string()),
-        ("Disk", "4 KiB / 1.0 GiB phase1fs".to_string()),
-        ("Battery", "virtual power: online".to_string()),
-        ("Locale", "en_US.UTF-8".to_string()),
-        ("Project", "Phase1".to_string()),
-        ("Version", display_version),
         ("Branch", channel.to_string()),
-        ("Update Engine", "Rust guarded updater".to_string()),
-        ("Core Motto", "update everything".to_string()),
-        ("Developer Kit", "Ready to test code".to_string()),
-        ("Tests", "update test quick | update test full".to_string()),
-        ("Location", cwd),
         ("State", state.to_string()),
         ("Security", security.to_string()),
-        ("Host Tools", host_tools.to_string()),
-        ("Processes", format!("{processes} tasks, {job_count} background")),
-        ("Hardware", format!("{pcie_count} PCIe devices, CR3 0x{:x}", shell.kernel.scheduler.get_cr3())),
-        ("Network", format!("{iface_count} interfaces, privacy-safe summary")),
-        ("Audit", format!("{audit_count} in-memory events")),
-    ];
+        ("HostTools", host_tools.to_string()),
+        ("Proc", format!("{processes} tasks, {job_count} bg")),
+        ("HW", format!("{pcie_count} PCIe, CR3 0x{:x}", shell.kernel.scheduler.get_cr3())),
+        ("Net", format!("{iface_count} iface")),
+        ("Memory", "2.0/4.0 GiB sim".to_string()),
+        ("Disk", "4 KiB/1 GiB phase1fs".to_string()),
+        ("Path", cwd),
+        ("Audit", format!("{audit_count} events")),
+        ("DevKit", "ready to test code".to_string()),
+        ("Tests", "update test quick".to_string()),
+    ]
+}
 
-    let logo = if ascii_mode() { ASCII_LOGO } else { LOGO };
+fn render_mobile(facts: &[(&str, String)]) -> String {
+    let mut out = String::new();
+    out.push_str(&prompt_line());
+    out.push('\n');
+    for (idx, line) in MOBILE_LOGO.iter().enumerate() {
+        out.push_str(&rainbow_logo(line, idx));
+        out.push('\n');
+    }
+    out.push_str(&color_title());
+    out.push('\n');
+    out.push_str(&color_rule("----------------------"));
+    out.push('\n');
+    for (idx, (label, value)) in facts.iter().enumerate() {
+        out.push_str(&compact_fact_line(label, value, idx));
+        out.push('\n');
+    }
+    out.push_str(&color_bars_compact());
+    out.push('\n');
+    out.push_str("privacy: simulated facts only\n");
+    out
+}
+
+fn render_desktop(facts: &[(&str, String)]) -> String {
     let mut right = Vec::new();
     right.push(color_title());
-    right.push(color_rule(&"-".repeat(43)));
+    right.push(color_rule("------------------------------"));
     for (idx, (label, value)) in facts.iter().enumerate() {
         right.push(fact_line(label, value, idx));
     }
     right.push(String::new());
     right.push(color_bars());
 
-    let width = logo.iter().map(|line| line.chars().count()).max().unwrap_or(0);
-    let rows = logo.len().max(right.len());
+    let width = DESKTOP_LOGO
+        .iter()
+        .map(|line| line.chars().count())
+        .max()
+        .unwrap_or(0);
+    let rows = DESKTOP_LOGO.len().max(right.len());
     let mut out = String::new();
     out.push_str(&prompt_line());
     out.push('\n');
     for idx in 0..rows {
-        let plain_left = logo.get(idx).copied().unwrap_or("");
+        let plain_left = DESKTOP_LOGO.get(idx).copied().unwrap_or("");
         let left = rainbow_logo(plain_left, idx);
         let pad = width.saturating_sub(plain_left.chars().count());
         let right = right.get(idx).map(String::as_str).unwrap_or("");
         out.push_str(&left);
-        out.push_str(&" ".repeat(pad + 4));
+        out.push_str(&" ".repeat(pad + 3));
         out.push_str(right);
         out.push('\n');
     }
-    out.push_str("privacy: simulated system facts only; host account details are not shown\n");
+    out.push_str("privacy: simulated facts only\n");
     out
 }
 
@@ -142,10 +168,18 @@ fn color_rule(text: &str) -> String {
 
 fn fact_line(label: &str, value: &str, idx: usize) -> String {
     if !color_enabled() {
-        return format!("{label:<14}: {value}");
+        return format!("{label:<10}: {value}");
     }
     let color = rainbow_color(idx);
-    format!("{color}{BOLD}{label:<14}{RESET} {value}")
+    format!("{color}{BOLD}{label:<10}{RESET} {value}")
+}
+
+fn compact_fact_line(label: &str, value: &str, idx: usize) -> String {
+    if !color_enabled() {
+        return format!("{label:<9}: {value}");
+    }
+    let color = rainbow_color(idx);
+    format!("{color}{BOLD}{label:<9}{RESET} {value}")
 }
 
 fn rainbow_logo(line: &str, idx: usize) -> String {
@@ -159,7 +193,14 @@ fn color_bars() -> String {
     if !color_enabled() {
         return "Colors: black red yellow green cyan blue magenta white".to_string();
     }
-    format!("{GRAY}████{RESET} {RED}████{RESET} {YELLOW}████{RESET} {GREEN}████{RESET} {CYAN}████{RESET} {BLUE}████{RESET} {MAGENTA}████{RESET} {WHITE}████{RESET}")
+    format!("{GRAY}███{RESET} {RED}███{RESET} {YELLOW}███{RESET} {GREEN}███{RESET} {CYAN}███{RESET} {BLUE}███{RESET} {MAGENTA}███{RESET} {WHITE}███{RESET}")
+}
+
+fn color_bars_compact() -> String {
+    if !color_enabled() {
+        return "Colors: blk red yel grn cyn blu mag wht".to_string();
+    }
+    format!("{GRAY}██{RESET} {RED}██{RESET} {YELLOW}██{RESET} {GREEN}██{RESET} {CYAN}██{RESET} {BLUE}██{RESET} {MAGENTA}██{RESET} {WHITE}██{RESET}")
 }
 
 fn rainbow_color(idx: usize) -> &'static str {
@@ -182,13 +223,13 @@ mod tests {
     use crate::commands::Phase1Shell;
     use crate::ui::BootConfig;
 
-    fn config() -> BootConfig {
+    fn config(mobile_mode: bool) -> BootConfig {
         BootConfig {
             color: true,
             ascii_mode: false,
             safe_mode: true,
             quick_boot: false,
-            mobile_mode: false,
+            mobile_mode,
             persistent_state: false,
             bleeding_edge: true,
         }
@@ -199,17 +240,31 @@ mod tests {
         std::env::set_var("PHASE1_ASCII", "1");
         std::env::set_var("PHASE1_NO_COLOR", "1");
         let mut shell = Phase1Shell::new();
-        let out = run(&mut shell, config());
+        let out = run(&mut shell, config(false));
         assert!(out.contains("dev@localhost ~ $ fastfetch"));
-        assert!(out.contains("P1 DEVKIT"));
+        assert!(out.contains("PHASE1"));
         assert!(out.contains("OS"));
         assert!(out.contains("Kernel"));
         assert!(out.contains("Theme"));
         assert!(out.contains("rainbow"));
-        assert!(out.contains("Packages"));
-        assert!(out.contains("Developer Kit"));
-        assert!(out.contains("Ready to test code"));
+        assert!(out.contains("Pkgs"));
+        assert!(out.contains("DevKit"));
+        assert!(out.contains("ready to test code"));
         assert!(out.contains("Colors: black red yellow green cyan blue magenta white"));
+        std::env::remove_var("PHASE1_ASCII");
+        std::env::remove_var("PHASE1_NO_COLOR");
+    }
+
+    #[test]
+    fn mobile_fastfetch_stacks_instead_of_wrapping() {
+        std::env::set_var("PHASE1_ASCII", "1");
+        std::env::set_var("PHASE1_NO_COLOR", "1");
+        let mut shell = Phase1Shell::new();
+        let out = run(&mut shell, config(true));
+        assert!(out.contains("dev@localhost"));
+        assert!(out.contains("update everything"));
+        assert!(out.contains("Colors: blk red yel grn cyn blu mag wht"));
+        assert!(out.lines().all(|line| line.chars().count() <= 44));
         std::env::remove_var("PHASE1_ASCII");
         std::env::remove_var("PHASE1_NO_COLOR");
     }
