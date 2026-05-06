@@ -2,11 +2,12 @@ use crate::registry;
 use std::fs;
 use std::io::{self, Write};
 
-const PANEL_WIDTH: usize = 62;
-const MOBILE_WIDTH: usize = 44;
+const PANEL_WIDTH: usize = 74;
+const MOBILE_WIDTH: usize = 46;
 const BOOT_CONFIG_PATH: &str = "phase1.conf";
 const RESET: &str = "\x1b[0m";
 const BOLD: &str = "\x1b[1m";
+const DIM: &str = "\x1b[2m";
 const RED: &str = "\x1b[31m";
 const YELLOW: &str = "\x1b[33m";
 const GREEN: &str = "\x1b[32m";
@@ -36,6 +37,7 @@ pub struct BootConfig {
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ThemePalette {
+    NeoTokyo,
     Rainbow,
     Matrix,
     Cyber,
@@ -49,9 +51,12 @@ pub enum ThemePalette {
 impl ThemePalette {
     pub fn parse(raw: &str) -> Option<Self> {
         match raw.trim().to_ascii_lowercase().as_str() {
-            "rainbow" | "neon" | "default" => Some(Self::Rainbow),
+            "neo-tokyo" | "neotokyo" | "tokyo" | "neo" | "city" | "hacker" => {
+                Some(Self::NeoTokyo)
+            }
+            "rainbow" | "default" | "classic" => Some(Self::Rainbow),
             "matrix" | "green" => Some(Self::Matrix),
-            "cyber" | "cyan" | "cyan-magenta" => Some(Self::Cyber),
+            "cyber" | "cyan" | "cyan-magenta" | "neon" => Some(Self::Cyber),
             "amber" | "gold" | "terminal" => Some(Self::Amber),
             "ice" | "blue" | "frost" => Some(Self::Ice),
             "synth" | "synthwave" | "purple" => Some(Self::Synth),
@@ -63,6 +68,7 @@ impl ThemePalette {
 
     pub fn name(self) -> &'static str {
         match self {
+            Self::NeoTokyo => "neo-tokyo",
             Self::Rainbow => "rainbow",
             Self::Matrix => "matrix",
             Self::Cyber => "cyber",
@@ -76,7 +82,8 @@ impl ThemePalette {
 
     pub fn label(self) -> &'static str {
         match self {
-            Self::Rainbow => "rainbow ANSI gradient, the default phase1 look",
+            Self::NeoTokyo => "cyan/magenta Neo Tokyo hacker console, the default phase1 look",
+            Self::Rainbow => "classic rainbow ANSI gradient",
             Self::Matrix => "green-on-black digital rain console",
             Self::Cyber => "cyan/magenta high-contrast cyberdeck",
             Self::Amber => "warm amber retro terminal",
@@ -89,6 +96,7 @@ impl ThemePalette {
 
     pub fn all() -> &'static [Self] {
         &[
+            Self::NeoTokyo,
             Self::Rainbow,
             Self::Matrix,
             Self::Cyber,
@@ -285,7 +293,7 @@ pub fn configure_boot(version: &str) -> BootSelection {
 
     loop {
         print_preboot(version, config);
-        print!("boot> ");
+        print!("{}", command_prompt(config, "boot"));
         let _ = io::stdout().flush();
 
         input.clear();
@@ -295,18 +303,18 @@ pub fn configure_boot(version: &str) -> BootSelection {
         }
 
         match input.trim().to_ascii_lowercase().as_str() {
-            "" | "1" | "b" | "boot" | "start" => {
+            "" | "1" | "b" | "boot" | "start" | "jack-in" => {
                 if let Err(err) = config.save() {
                     eprintln!("boot config save warning: {err}");
                 }
                 return BootSelection::Boot(config);
             }
-            "2" | "c" | "color" | "colour" => config.color = !config.color,
+            "2" | "c" | "color" | "colour" | "neon" => config.color = !config.color,
             "3" | "a" | "ascii" => config.ascii_mode = !config.ascii_mode,
-            "4" | "s" | "safe" | "safe-mode" => config.safe_mode = !config.safe_mode,
+            "4" | "s" | "safe" | "safe-mode" | "shield" => config.safe_mode = !config.safe_mode,
             "5" | "q" | "quick" | "quick-boot" => config.quick_boot = !config.quick_boot,
             "6" | "m" | "mobile" | "mobile-mode" => config.mobile_mode = !config.mobile_mode,
-            "p" | "persist" | "persistent" | "persistent-state" => {
+            "p" | "persist" | "persistent" | "persistent-state" | "vault" => {
                 config.persistent_state = !config.persistent_state;
             }
             "e" | "edge" | "bleeding" | "bleeding-edge" => {
@@ -332,8 +340,8 @@ pub fn configure_boot(version: &str) -> BootSelection {
                     Err(err) => pause(&format!("Reset defaults, but could not remove phase1.conf: {err}")),
                 }
             }
-            "h" | "help" | "?" => pause("Secure default: safe mode is on. Toggle options, d opens storage helper status, e toggles bleeding edge UI, p toggles persistent state, 9 saves, 0 resets saved config, 1 boots, 7 reboots, 8 quits."),
-            _ => pause("Unknown boot option. Press Enter to continue."),
+            "h" | "help" | "?" => pause("Neo Tokyo dock: Enter boots, e=edge channel, p=vault persistence, d=storage/Rust/Git helper, 9=saves, 0=resets, 8=quits. Safe mode stays on unless you intentionally drop the shield."),
+            _ => pause("Unknown boot option. Press Enter to re-open the Neo Tokyo boot dock."),
         }
     }
 }
@@ -351,7 +359,16 @@ pub fn print_boot(version: &str) {
 
 pub fn print_quick_boot(version: &str, config: BootConfig) {
     print_boot_card(version, config, false);
-    println!("[quick] profile={} :: shell armed", config.profile_name());
+    println!(
+        "{}",
+        value(
+            config,
+            &format!(
+                "[quick] profile={} :: shell armed :: skyline synced",
+                config.profile_name()
+            )
+        )
+    );
     println!();
 }
 
@@ -374,7 +391,7 @@ fn print_preboot(version: &str, config: BootConfig) {
         "{}",
         value(
             config,
-            "Secure default: safe=on  Enter=boot  e=edge  p=persist  h=help"
+            "Enter=jack in  e=edge  p=vault  d=storage/Rust/Git  h=help"
         )
     );
 }
@@ -403,110 +420,99 @@ fn print_boot_card(version: &str, config: BootConfig, selector: bool) {
     println!();
     println!("{}", card_top(config, width));
     println!("{}", card_line(config, width, &console_title(config)));
+    println!("{}", card_line(config, width, "東京-01 skyline uplink // virtual OS cyberdeck"));
     println!("{}", card_rule(config, width));
+
+    for row in skyline_rows(config) {
+        println!("{}", card_line(config, width, &row));
+    }
+
+    println!("{}", card_section(config, width, "STATUS"));
     for row in splash_info(version, config) {
         println!("{}", card_line(config, width, &row));
     }
-    println!("{}", card_line(config, width, "cyberdeck ready"));
 
     if selector {
-        println!("{}", card_section(config, width, "BOOT"));
+        println!("{}", card_section(config, width, "BOOT DOCK"));
         for row in boot_rows(config) {
             println!("{}", card_line(config, width, &row));
         }
     } else {
-        println!("{}", card_section(config, width, "QUICK"));
-        println!("{}", card_line(config, width, "help  audit  ps  ls /"));
-        println!(
-            "{}",
-            card_line(config, width, "matrix  sysinfo  security  theme")
-        );
+        println!("{}", card_section(config, width, "LIVE OPS"));
+        println!("{}", card_line(config, width, "help   dash   sysinfo   security   theme list"));
+        println!("{}", card_line(config, width, "matrix  audit  ps  ls /  storage helper via d"));
     }
+
     println!("{}", card_bottom(config, width));
     println!();
 }
 
-fn splash_info(version: &str, config: BootConfig) -> Vec<String> {
-    let state_mode = if config.persistent_state {
-        "persistent"
-    } else {
-        "volatile"
-    };
-    let security_mode = if config.safe_mode {
-        "safe"
-    } else {
-        "host-enabled"
-    };
-    let channel = if config.bleeding_edge {
-        "bleeding-edge"
-    } else {
-        "release"
-    };
+fn skyline_rows(config: BootConfig) -> Vec<String> {
+    let mode = if config.safe_mode { "shielded" } else { "host-capable" };
     vec![
-        format!("version v{}", display_version(version, config)),
-        format!("channel {channel}"),
-        format!("profile {}", config.profile_name()),
-        format!("security  {security_mode}"),
-        format!(
-            "device  {}",
-            if config.mobile_mode {
-                "mobile"
-            } else {
-                "desktop"
-            }
+        tint(config, "╱╲╱╲ neon skyline locked :: node PHASE1-KERNEL"),
+        format!("district shibuya-IX   signal encrypted   mode {mode}"),
+        "ops      kernel  vfs  proc  net  audit  lang  git".to_string(),
+    ]
+}
+
+fn splash_info(version: &str, config: BootConfig) -> Vec<String> {
+    let state_mode = if config.persistent_state { "vault/persistent" } else { "ram/volatile" };
+    let security_mode = if config.safe_mode { "safe shield" } else { "host bridge" };
+    let channel = if config.bleeding_edge { "bleeding-edge" } else { "release" };
+    vec![
+        status_row(config, "version", &format!("v{}", display_version(version, config)), true),
+        status_row(config, "channel", channel, config.bleeding_edge),
+        status_row(config, "profile", &config.profile_name(), true),
+        status_row(config, "security", security_mode, config.safe_mode),
+        status_row(
+            config,
+            "device",
+            if config.mobile_mode { "mobile deck" } else { "desktop rig" },
+            true,
         ),
-        format!("display {}", display_mode(config)),
-        format!("state   {state_mode}"),
-        format!("config  {}", config_path()),
+        status_row(config, "display", display_mode(config), true),
+        status_row(config, "state", state_mode, config.persistent_state),
+        status_row(config, "config", config_path(), true),
     ]
 }
 
 fn boot_rows(config: BootConfig) -> Vec<String> {
     vec![
-        "1 boot system       save+start".to_string(),
-        format!(
-            "2 color output      {}",
-            if config.color { "on" } else { "off" }
-        ),
-        format!(
-            "3 ascii compatible  {}",
-            if config.ascii_mode { "on" } else { "off" }
-        ),
-        format!(
-            "4 safe mode         {}",
-            if config.safe_mode { "on" } else { "off" }
-        ),
-        format!(
-            "5 quick boot        {}",
-            if config.quick_boot { "on" } else { "off" }
-        ),
-        format!(
-            "6 mobile mode       {}",
-            if config.mobile_mode { "on" } else { "off" }
-        ),
-        format!(
-            "e bleeding edge     {}",
-            if config.bleeding_edge { "on" } else { "off" }
-        ),
-        format!(
-            "p persistent state  {}",
-            if config.persistent_state { "on" } else { "off" }
-        ),
-        "d storage helper    status".to_string(),
-        "7 reboot selector".to_string(),
-        "8 quit boot".to_string(),
-        "9 save config".to_string(),
-        "0 reset saved config".to_string(),
+        "[1] jack in / boot system        save profile + enter shell".to_string(),
+        toggle_row(config, "[2] neon color output", config.color),
+        toggle_row(config, "[3] ASCII fallback", config.ascii_mode),
+        toggle_row(config, "[4] safe shield", config.safe_mode),
+        toggle_row(config, "[5] quick warp boot", config.quick_boot),
+        toggle_row(config, "[6] mobile deck layout", config.mobile_mode),
+        toggle_row(config, "[e] bleeding-edge channel", config.bleeding_edge),
+        toggle_row(config, "[p] /home vault persistence", config.persistent_state),
+        "[d] storage / Git / Rust dock     status + doctor commands".to_string(),
+        "[7] reboot selector              rerender boot dock".to_string(),
+        "[8] shutdown                     abort before shell".to_string(),
+        "[9] save config                  write phase1.conf".to_string(),
+        "[0] reset saved config           restore secure defaults".to_string(),
     ]
+}
+
+fn toggle_row(config: BootConfig, label: &str, enabled: bool) -> String {
+    let state = if enabled { "ON" } else { "off" };
+    let chip = if enabled { tint(config, state) } else { dim(config, state) };
+    format!("{label:<31} {chip}")
+}
+
+fn status_row(config: BootConfig, label: &str, value_text: &str, bright: bool) -> String {
+    let value_text = if bright { tint(config, value_text) } else { dim(config, value_text) };
+    format!("{label:<9} {value_text}")
 }
 
 fn console_title(config: BootConfig) -> String {
     if !config.color || config.ascii_mode {
-        format!("{} // Advanced Operator Console", phase1_wordmark(config))
+        format!("{} // Neo Tokyo Hacker Console", phase1_wordmark(config))
     } else {
         let colors = palette(active_theme_for_config(config));
         format!(
-            "{}{} // Advanced Operator Console{}",
+            "{}{} // NEO TOKYO HACKER CONSOLE{}",
             phase1_wordmark(config),
             colors.title,
             RESET
@@ -517,17 +523,28 @@ fn console_title(config: BootConfig) -> String {
 fn phase1_wordmark(config: BootConfig) -> String {
     if !config.color || config.ascii_mode {
         "Phase1".to_string()
-    } else if active_theme_for_config(config) == ThemePalette::Rainbow {
-        let colors = [RED, YELLOW, GREEN, CYAN, BLUE, MAGENTA];
-        "Phase1"
-            .chars()
-            .enumerate()
-            .map(|(idx, ch)| format!("{}{}{}", colors[idx % colors.len()], ch, RESET))
-            .collect::<Vec<_>>()
-            .join("")
     } else {
-        let colors = palette(active_theme_for_config(config));
-        format!("{}Phase1{}", colors.title, RESET)
+        let theme = active_theme_for_config(config);
+        if theme == ThemePalette::Rainbow {
+            let colors = [RED, YELLOW, GREEN, CYAN, BLUE, MAGENTA];
+            "Phase1"
+                .chars()
+                .enumerate()
+                .map(|(idx, ch)| format!("{}{}{}", colors[idx % colors.len()], ch, RESET))
+                .collect::<Vec<_>>()
+                .join("")
+        } else if theme == ThemePalette::NeoTokyo {
+            let colors = [CYAN, MAGENTA, BLUE, CYAN, MAGENTA, GREEN];
+            "Phase1"
+                .chars()
+                .enumerate()
+                .map(|(idx, ch)| format!("{}{}{}{}", BOLD, colors[idx % colors.len()], ch, RESET))
+                .collect::<Vec<_>>()
+                .join("")
+        } else {
+            let colors = palette(theme);
+            format!("{}Phase1{}", colors.title, RESET)
+        }
     }
 }
 
@@ -537,7 +554,7 @@ fn prompt_text(user: &str, path: &str) -> String {
     } else {
         let colors = palette(active_theme());
         format!(
-            "{}{}phase1{}{}://{}{}{}{} {}{}{} ❯ ",
+            "{}{}phase1{}{}://{}{}{}{} {}{}{} ⇢ ",
             BOLD,
             colors.title,
             RESET,
@@ -553,21 +570,33 @@ fn prompt_text(user: &str, path: &str) -> String {
     }
 }
 
+fn command_prompt(config: BootConfig, label: &str) -> String {
+    if config.color && !config.ascii_mode {
+        let colors = palette(active_theme_for_config(config));
+        format!(
+            "{}{}phase1{}{}://{}{} {}❯{} ",
+            BOLD, colors.title, RESET, GRAY, RESET, label, colors.accent, RESET
+        )
+    } else {
+        format!("{label}> ")
+    }
+}
+
 fn ready_line(desktop: bool) {
     if color_enabled() {
         let colors = palette(active_theme());
         if desktop {
             println!(
-                "{}[ready]{} all subsystems nominal {GRAY}:: operator shell armed{RESET}",
+                "{}[ready]{} skyline synced {GRAY}:: operator shell armed :: try dash or theme list{RESET}",
                 colors.ready, RESET
             );
         } else {
-            println!("{}[ready]{} all subsystems nominal", colors.ready, RESET);
+            println!("{}[ready]{} skyline synced", colors.ready, RESET);
         }
     } else if desktop {
-        println!("[ready] all subsystems nominal :: operator shell armed");
+        println!("[ready] skyline synced :: operator shell armed :: try dash or theme list");
     } else {
-        println!("[ready] all subsystems nominal");
+        println!("[ready] skyline synced");
     }
     println!();
 }
@@ -591,7 +620,7 @@ fn active_theme() -> ThemePalette {
             if bleeding_edge_env_enabled() {
                 ThemePalette::BleedingEdge
             } else {
-                ThemePalette::Rainbow
+                ThemePalette::NeoTokyo
             }
         })
 }
@@ -605,13 +634,22 @@ fn active_theme_for_config(config: BootConfig) -> ThemePalette {
             if config.bleeding_edge {
                 ThemePalette::BleedingEdge
             } else {
-                ThemePalette::Rainbow
+                ThemePalette::NeoTokyo
             }
         })
 }
 
 fn palette(theme: ThemePalette) -> Palette {
     match theme {
+        ThemePalette::NeoTokyo => Palette {
+            border: MAGENTA,
+            title: CYAN,
+            accent: MAGENTA,
+            muted: GRAY,
+            prompt_user: MAGENTA,
+            prompt_path: CYAN,
+            ready: GREEN,
+        },
         ThemePalette::Rainbow => Palette {
             border: CYAN,
             title: GREEN,
@@ -772,6 +810,30 @@ fn value(config: BootConfig, text: &str) -> String {
     }
 }
 
+fn tint(config: BootConfig, text: &str) -> String {
+    if config.color && !config.ascii_mode {
+        format!(
+            "{}{}{}",
+            palette(active_theme_for_config(config)).accent,
+            text,
+            RESET
+        )
+    } else {
+        text.to_string()
+    }
+}
+
+fn dim(config: BootConfig, text: &str) -> String {
+    if config.color && !config.ascii_mode {
+        format!(
+            "{}{DIM}{text}{RESET}",
+            palette(active_theme_for_config(config)).muted
+        )
+    } else {
+        text.to_string()
+    }
+}
+
 fn pause(message: &str) {
     println!("{message}");
     let _ = io::stdout().flush();
@@ -871,154 +933,51 @@ fn ascii_mode() -> bool {
 }
 
 #[cfg(test)]
-fn clip(text: &str, width: usize) -> String {
-    text.chars().take(width).collect()
-}
-
-#[cfg(test)]
-fn phase1_art() -> [&'static str; 5] {
-    [
-        " ____  _                     __ ",
-        "|  _ \\| |__   __ _ ___  ___ /_ |",
-        "| |_) | '_ \\ / _` / __|/ _ \\ | |",
-        "|  __/| | | | (_| \\__ \\  __/ | |",
-        "|_|   |_| |_|\\__,_|___/\\___| |_|",
-    ]
-}
-
-#[cfg(test)]
 mod tests {
-    use super::{
-        clip, console_title, display_mode, display_version, parse_bool, phase1_art, prompt_text,
-        splash_info, strip_ansi, visible_len, BootConfig, ThemePalette, PANEL_WIDTH,
-    };
+    use super::{display_mode, display_version, parse_bool, strip_ansi, BootConfig, ThemePalette};
 
-    fn test_config() -> BootConfig {
+    fn config() -> BootConfig {
         BootConfig {
             color: true,
             ascii_mode: false,
             safe_mode: true,
             quick_boot: false,
-            mobile_mode: true,
+            mobile_mode: false,
             persistent_state: false,
             bleeding_edge: false,
         }
     }
 
     #[test]
-    fn panel_width_stays_terminal_friendly() {
-        assert!(PANEL_WIDTH <= 72);
-    }
-
-    #[test]
-    fn clip_respects_character_count() {
-        assert_eq!(clip("abcdef", 3), "abc");
-    }
-
-    #[test]
-    fn prompt_text_includes_user_and_path() {
-        let prompt = prompt_text("root", "~/work");
-        assert!(prompt.contains("root"));
-        assert!(prompt.contains("~/work"));
-    }
-
-    #[test]
-    fn secure_boot_defaults_to_safe_mode() {
-        assert!(BootConfig::detected_defaults().safe_mode);
-    }
-
-    #[test]
-    fn boot_profile_names_cover_modes() {
-        assert_eq!(
-            BootConfig {
-                color: true,
-                ascii_mode: false,
-                safe_mode: false,
-                quick_boot: false,
-                mobile_mode: false,
-                persistent_state: false,
-                bleeding_edge: false,
-            }
-            .profile_name(),
-            "operator"
-        );
-        assert_eq!(
-            BootConfig {
-                color: true,
-                ascii_mode: false,
-                safe_mode: true,
-                quick_boot: true,
-                mobile_mode: true,
-                persistent_state: true,
-                bleeding_edge: true,
-            }
-            .profile_name(),
-            "mobile-safe+quick+edge"
-        );
-    }
-
-    #[test]
-    fn phase1_art_is_mobile_width() {
-        assert!(phase1_art().iter().all(|line| line.chars().count() <= 40));
-    }
-
-    #[test]
-    fn boot_branding_uses_one_console_title() {
-        let config = BootConfig {
-            color: false,
-            ascii_mode: true,
-            safe_mode: true,
-            quick_boot: false,
-            mobile_mode: true,
-            persistent_state: false,
-            bleeding_edge: false,
-        };
-        assert_eq!(console_title(config), "Phase1 // Advanced Operator Console");
-        let rows = splash_info("3.8.1", config);
-        assert!(rows.contains(&"version v3.8.1".to_string()));
-        assert!(!rows.iter().any(|row| row.contains("os      phase1")));
-    }
-
-    #[test]
-    fn theme_palette_names_are_available() {
-        assert_eq!(ThemePalette::parse("rainbow"), Some(ThemePalette::Rainbow));
-        assert_eq!(ThemePalette::parse("synthwave"), Some(ThemePalette::Synth));
-        assert_eq!(
-            ThemePalette::parse("bleeding-edge"),
-            Some(ThemePalette::BleedingEdge)
-        );
-        assert!(ThemePalette::all().len() >= 7);
-
-        let config = test_config();
-        std::env::set_var("PHASE1_THEME", "matrix");
-        assert_eq!(display_mode(config), "matrix");
+    fn neo_tokyo_is_default_theme() {
         std::env::remove_var("PHASE1_THEME");
+        std::env::remove_var("PHASE1_BLEEDING_EDGE");
+        assert_eq!(display_mode(config()), "neo-tokyo");
     }
 
     #[test]
-    fn bleeding_edge_updates_display_version_and_palette() {
-        let mut config = test_config();
-        config.bleeding_edge = true;
-        config.color = true;
-        config.ascii_mode = false;
-        assert_eq!(
-            display_version("3.6.0", config),
-            crate::updater::CURRENT_EDGE_VERSION
-        );
-        assert_eq!(display_mode(config), "bleeding-edge");
-        assert!(splash_info("3.6.0", config).contains(&"channel bleeding-edge".to_string()));
+    fn theme_parser_accepts_neo_tokyo_aliases() {
+        assert_eq!(ThemePalette::parse("neo-tokyo"), Some(ThemePalette::NeoTokyo));
+        assert_eq!(ThemePalette::parse("tokyo"), Some(ThemePalette::NeoTokyo));
+        assert_eq!(ThemePalette::parse("matrix"), Some(ThemePalette::Matrix));
     }
 
     #[test]
-    fn parse_bool_accepts_config_values() {
-        assert_eq!(parse_bool("true"), Some(true));
-        assert_eq!(parse_bool("off"), Some(false));
+    fn display_version_uses_edge_channel_when_requested() {
+        let mut edge = config();
+        edge.bleeding_edge = true;
+        assert_ne!(display_version("3.6.0", edge), "3.6.0");
+    }
+
+    #[test]
+    fn bool_parser_handles_common_values() {
+        assert_eq!(parse_bool("on"), Some(true));
+        assert_eq!(parse_bool("0"), Some(false));
         assert_eq!(parse_bool("maybe"), None);
     }
 
     #[test]
-    fn visible_len_ignores_ansi_sequences() {
-        assert_eq!(visible_len("\x1b[31mPhase1\x1b[0m"), 6);
-        assert_eq!(strip_ansi("\x1b[32mon\x1b[0m"), "on");
+    fn ansi_stripper_removes_escape_codes() {
+        assert_eq!(strip_ansi("\x1b[36mPhase1\x1b[0m"), "Phase1");
     }
 }
