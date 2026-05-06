@@ -48,7 +48,7 @@ impl BootConfig {
         Self {
             color: color_enabled(),
             ascii_mode: ascii_mode(),
-            safe_mode: env_flag("PHASE1_SAFE_MODE").unwrap_or(false),
+            safe_mode: env_flag("PHASE1_SAFE_MODE").unwrap_or(true),
             quick_boot: env_flag("PHASE1_QUICK_BOOT").unwrap_or(false),
             mobile_mode: env_flag("PHASE1_MOBILE_MODE").unwrap_or(false) || detect_mobile(),
             persistent_state: env_flag("PHASE1_PERSISTENT_STATE").unwrap_or(false),
@@ -71,7 +71,7 @@ impl BootConfig {
         if self.safe_mode {
             std::env::set_var("PHASE1_SAFE_MODE", "1");
         } else {
-            std::env::remove_var("PHASE1_SAFE_MODE");
+            std::env::set_var("PHASE1_SAFE_MODE", "0");
         }
 
         if self.quick_boot {
@@ -172,7 +172,7 @@ impl BootConfig {
 
     fn to_config_string(self) -> String {
         format!(
-            "# phase1 boot configuration\ncolor={}\nascii={}\nsafe={}\nquick={}\nmobile={}\npersistent={}\n",
+            "# phase1 boot configuration\n# safe=true is the secure default; set safe=false only when intentionally testing host-backed tools.\ncolor={}\nascii={}\nsafe={}\nquick={}\nmobile={}\npersistent={}\n",
             self.color,
             self.ascii_mode,
             self.safe_mode,
@@ -225,11 +225,11 @@ pub fn configure_boot(version: &str) -> BootSelection {
             "0" | "r" | "reset" => {
                 config = BootConfig::detected_defaults();
                 match BootConfig::remove_saved() {
-                    Ok(()) => pause("Reset to detected defaults and removed phase1.conf."),
+                    Ok(()) => pause("Reset to secure detected defaults and removed phase1.conf."),
                     Err(err) => pause(&format!("Reset defaults, but could not remove phase1.conf: {err}")),
                 }
             }
-            "h" | "help" | "?" => pause("Toggle options, p toggles persistent state, 9 saves, 0 resets saved config, 1 boots, 7 reboots, 8 quits."),
+            "h" | "help" | "?" => pause("Secure default: safe mode is on. Toggle options, p toggles persistent state, 9 saves, 0 resets saved config, 1 boots, 7 reboots, 8 quits."),
             _ => pause("Unknown boot option. Press Enter to continue."),
         }
     }
@@ -280,7 +280,7 @@ fn print_preboot(version: &str, config: BootConfig) {
     println!("  9  save config");
     println!("  0  reset saved config");
     println!();
-    println!("{}", value(config, "Enter=save+boot  p=persist  h=help"));
+    println!("{}", value(config, "Secure default: safe=on. Enter=save+boot  p=persist  h=help"));
 }
 
 fn print_fastfetch_splash(version: &str, config: BootConfig) {
@@ -315,10 +315,12 @@ fn print_fastfetch_splash_with_config(version: &str, config: BootConfig) {
 
 fn splash_info(version: &str, config: BootConfig, compact: bool) -> Vec<String> {
     let state_mode = if config.persistent_state { "persistent" } else { "volatile" };
+    let security_mode = if config.safe_mode { "safe" } else { "host-enabled" };
     if compact {
         vec![
             format!("os      phase1 v{version}"),
             format!("profile {}", config.profile_name()),
+            format!("security {security_mode}"),
             format!("device  {}", if config.mobile_mode { "mobile" } else { "desktop" }),
             format!("display {}", if config.color { "rainbow" } else { "mono" }),
             format!("state   {state_mode}"),
@@ -328,6 +330,7 @@ fn splash_info(version: &str, config: BootConfig, compact: bool) -> Vec<String> 
         vec![
             format!("os        phase1 terminal-os-sim v{version}"),
             format!("profile   {}", config.profile_name()),
+            format!("security  {security_mode}"),
             format!("device    {}", if config.mobile_mode { "mobile" } else { "desktop" }),
             format!("display   {}", if config.color { "retro rainbow" } else { "mono" }),
             format!("state     {state_mode}"),
@@ -378,6 +381,7 @@ fn print_mobile_boot(version: &str) {
     println!("{}", panel_line(config, "SESSION", preboot_width()));
     println!("{}", value(config, "user=root  mode=operator"));
     println!("{}", value(config, "shell=registry  ui=mobile"));
+    println!("{}", value(config, &format!("security={}", if config.safe_mode { "safe" } else { "host-enabled" })));
     println!("{}", value(config, &format!("state={}", if config.persistent_state { "persistent" } else { "volatile" })));
 
     println!("{}", panel_line(config, "QUICK", preboot_width()));
@@ -406,7 +410,7 @@ fn print_modern_boot(version: &str) {
     boot_row("SEC", "audit telemetry pipeline", "TRACKING");
     mid("SESSION");
     line("user=root  tty=phase1  mode=operator  runtime=std-only");
-    line(&format!("integrity=nominal  shell=registry-backed  state={}", if env_flag("PHASE1_PERSISTENT_STATE").unwrap_or(false) { "persistent" } else { "volatile" }));
+    line(&format!("integrity=nominal  security={}  state={}", if env_flag("PHASE1_SAFE_MODE").unwrap_or(true) { "safe" } else { "host-enabled" }, if env_flag("PHASE1_PERSISTENT_STATE").unwrap_or(false) { "persistent" } else { "volatile" }));
     mid("QUICK ACTIONS");
     line("help        complete p      audit        ps        ls /");
     line("matrix      browser phase1  ifconfig     tree      version");
@@ -615,6 +619,11 @@ mod tests {
         let prompt = prompt_text("root", "~/work");
         assert!(prompt.contains("root"));
         assert!(prompt.contains("~/work"));
+    }
+
+    #[test]
+    fn secure_boot_defaults_to_safe_mode() {
+        assert!(BootConfig::detected_defaults().safe_mode);
     }
 
     #[test]
