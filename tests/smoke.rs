@@ -1,15 +1,21 @@
 use std::fs;
 use std::io::Write;
+use std::path::Path;
 use std::process::{self, Command, Stdio};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 fn run_phase1(script: &str) -> String {
-    let binary = env!("CARGO_BIN_EXE_phase1");
     let run_dir = unique_run_dir();
     fs::create_dir_all(&run_dir).expect("create phase1 smoke temp directory");
+    let output = run_phase1_in_dir(&run_dir, &format!("\n{script}"));
+    let _ = fs::remove_dir_all(&run_dir);
+    output
+}
 
+fn run_phase1_in_dir(run_dir: &Path, input: &str) -> String {
+    let binary = env!("CARGO_BIN_EXE_phase1");
     let mut child = Command::new(binary)
-        .current_dir(&run_dir)
+        .current_dir(run_dir)
         .env("PHASE1_NO_COLOR", "1")
         .env("PHASE1_ASCII", "1")
         .env("COLUMNS", "100")
@@ -22,12 +28,10 @@ fn run_phase1(script: &str) -> String {
 
     {
         let stdin = child.stdin.as_mut().expect("phase1 stdin");
-        let booted_script = format!("\n{script}");
-        stdin.write_all(booted_script.as_bytes()).expect("write phase1 script");
+        stdin.write_all(input.as_bytes()).expect("write phase1 script");
     }
 
     let output = child.wait_with_output().expect("wait for phase1");
-    let _ = fs::remove_dir_all(&run_dir);
 
     let mut combined = String::new();
     combined.push_str(&String::from_utf8_lossy(&output.stdout));
@@ -65,6 +69,36 @@ fn boot_help_man_and_completion_work() {
             "phase1 3.6.0",
         ],
     );
+}
+
+#[test]
+fn preboot_persistent_state_mode_is_toggleable_and_restores_home_files() {
+    let run_dir = unique_run_dir();
+    fs::create_dir_all(&run_dir).expect("create persistent state smoke directory");
+
+    let first = run_phase1_in_dir(&run_dir, "p\n\necho persisted value > keep.txt\nexit\n");
+    assert_contains_all(
+        &first,
+        &[
+            "persistent state  on",
+            "persistent state: enabled; no saved state found at phase1.state",
+        ],
+    );
+    assert!(run_dir.join("phase1.conf").exists(), "boot config was not saved");
+    assert!(run_dir.join("phase1.state").exists(), "persistent state file was not saved");
+
+    let second = run_phase1_in_dir(&run_dir, "\ncat keep.txt\nbootcfg show\nexit\n");
+    assert_contains_all(
+        &second,
+        &[
+            "persistent state: restored",
+            "persisted value",
+            "persistent state  : on",
+            "state file        : phase1.state",
+        ],
+    );
+
+    let _ = fs::remove_dir_all(&run_dir);
 }
 
 #[test]
