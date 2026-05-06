@@ -47,15 +47,31 @@ fn run_shell(boot_config: ui::BootConfig) {
     boot_config.apply();
 
     let mut shell = Phase1Shell::new();
-    shell.env.insert("PHASE1_BOOT_PROFILE".to_string(), boot_config.profile_name().to_string());
-    shell.env.insert("PHASE1_SAFE_MODE".to_string(), if boot_config.safe_mode { "1" } else { "0" }.to_string());
-    shell.env.insert("PHASE1_MOBILE_MODE".to_string(), if boot_config.mobile_mode { "1" } else { "0" }.to_string());
-    shell.env.insert("PHASE1_PERSISTENT_STATE".to_string(), if boot_config.persistent_state { "1" } else { "0" }.to_string());
+    shell.env.insert(
+        "PHASE1_BOOT_PROFILE".to_string(),
+        boot_config.profile_name().to_string(),
+    );
+    shell.env.insert(
+        "PHASE1_SAFE_MODE".to_string(),
+        if boot_config.safe_mode { "1" } else { "0" }.to_string(),
+    );
+    shell.env.insert(
+        "PHASE1_MOBILE_MODE".to_string(),
+        if boot_config.mobile_mode { "1" } else { "0" }.to_string(),
+    );
+    shell.env.insert(
+        "PHASE1_PERSISTENT_STATE".to_string(),
+        if boot_config.persistent_state { "1" } else { "0" }.to_string(),
+    );
 
     if boot_config.persistent_state {
         match load_persistent_state(&mut shell) {
-            Ok(count) if count > 0 => println!("persistent state: restored {count} entries from {PERSISTENT_STATE_PATH}"),
-            Ok(_) => println!("persistent state: enabled; no saved state found at {PERSISTENT_STATE_PATH}"),
+            Ok(count) if count > 0 => {
+                println!("persistent state: restored {count} entries from {PERSISTENT_STATE_PATH}")
+            }
+            Ok(_) => {
+                println!("persistent state: enabled; no saved state found at {PERSISTENT_STATE_PATH}")
+            }
             Err(err) => println!("persistent state: restore warning: {err}"),
         }
     }
@@ -127,7 +143,10 @@ fn handle_bootcfg(config: ui::BootConfig, args: &[String]) {
             Err(err) => println!("bootcfg: save failed: {err}"),
         },
         Some("reset") | Some("defaults") => match ui::BootConfig::remove_saved() {
-            Ok(()) => println!("bootcfg: removed {}; detected defaults will be used next launch", ui::config_path()),
+            Ok(()) => println!(
+                "bootcfg: removed {}; detected defaults will be used next launch",
+                ui::config_path()
+            ),
             Err(err) => println!("bootcfg: reset failed: {err}"),
         },
         Some("path") => println!("{}", ui::config_path()),
@@ -145,11 +164,26 @@ fn print_boot_config(config: ui::BootConfig) {
     println!("config file       : {}", ui::config_path());
     println!("state file        : {}", PERSISTENT_STATE_PATH);
     println!("color             : {}", if config.color { "on" } else { "off" });
-    println!("ascii             : {}", if config.ascii_mode { "on" } else { "off" });
-    println!("safe mode         : {}", if config.safe_mode { "on" } else { "off" });
-    println!("quick boot        : {}", if config.quick_boot { "on" } else { "off" });
-    println!("mobile mode       : {}", if config.mobile_mode { "on" } else { "off" });
-    println!("persistent state  : {}", if config.persistent_state { "on" } else { "off" });
+    println!(
+        "ascii             : {}",
+        if config.ascii_mode { "on" } else { "off" }
+    );
+    println!(
+        "safe mode         : {}",
+        if config.safe_mode { "on" } else { "off" }
+    );
+    println!(
+        "quick boot        : {}",
+        if config.quick_boot { "on" } else { "off" }
+    );
+    println!(
+        "mobile mode       : {}",
+        if config.mobile_mode { "on" } else { "off" }
+    );
+    println!(
+        "persistent state  : {}",
+        if config.persistent_state { "on" } else { "off" }
+    );
 }
 
 fn print_bootcfg_help() {
@@ -178,9 +212,15 @@ fn load_persistent_state(shell: &mut Phase1Shell) -> io::Result<usize> {
                 restored += 1;
             }
             (Some("F"), Some(path), Some(encoded)) if is_persisted_path(path) => {
-                let bytes = decode_hex(encoded).map_err(|err| io::Error::new(io::ErrorKind::InvalidData, err))?;
-                let content = String::from_utf8(bytes).map_err(|err| io::Error::new(io::ErrorKind::InvalidData, err))?;
-                shell.kernel.vfs.write_file(path, &content, false).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?;
+                let bytes = decode_hex(encoded)
+                    .map_err(|err| io::Error::new(io::ErrorKind::InvalidData, err))?;
+                let content = String::from_utf8(bytes)
+                    .map_err(|err| io::Error::new(io::ErrorKind::InvalidData, err))?;
+                shell
+                    .kernel
+                    .vfs
+                    .write_file(path, &content, false)
+                    .map_err(io::Error::other)?;
                 restored += 1;
             }
             _ => {}
@@ -217,7 +257,10 @@ fn collect_persistent_entries(path: &Path, node: &VfsNode, out: &mut Vec<String>
                 collect_persistent_entries(&path.join(name), &children[name], out);
             }
         }
-        VfsNode::File { content, .. } => out.push(format!("F\t{path_text}\t{}", encode_hex(content.as_bytes()))),
+        VfsNode::File { content, .. } => out.push(format!(
+            "F\t{path_text}\t{}",
+            encode_hex(content.as_bytes())
+        )),
     }
 }
 
@@ -236,7 +279,7 @@ fn encode_hex(bytes: &[u8]) -> String {
 }
 
 fn decode_hex(raw: &str) -> Result<Vec<u8>, String> {
-    if raw.len() % 2 != 0 {
+    if !raw.len().is_multiple_of(2) {
         return Err("hex payload has odd length".to_string());
     }
     let mut bytes = Vec::with_capacity(raw.len() / 2);
