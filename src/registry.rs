@@ -60,7 +60,7 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("gcc", &["cc"], "host", "gcc <file.c> | gcc <code>", "Compile and run C with host compiler timeout guards.", "host.exec"),
     cmd!("plugins", &["plugin"], "host", "plugins", "List Python and WASI-lite plugins in ./plugins.", "host.exec"),
     cmd!("wasm", &["wasi"], "host", "wasm [list|inspect|run|validate] [plugin]", "Run or inspect sandboxed WASI-lite plugins without host shell access.", "wasm.exec"),
-    cmd!("update", &["upgrade"], "host", "update [plan|check|--execute|protocol] [bleeding|stable] [--build]", "Safely plan or run a guarded Git update; protocol prints patch-versioning rules.", "host.exec"),
+    cmd!("update", &["upgrade"], "host", "update [plan|check|--execute|protocol|test] [latest|stable] [--build]", "Safely plan updates or run developer validation suites; protocol prints patch-versioning rules.", "host.exec"),
     cmd!("ned", &["nano", "vi"], "host", "ned <file>", "Edit a VFS file with a small line editor.", "fs.write"),
     cmd!("lspci", &[], "arch", "lspci", "List simulated PCIe devices.", "hw.read"),
     cmd!("pcie", &[], "arch", "pcie", "Show PCIe subsystem summary.", "hw.read"),
@@ -125,7 +125,7 @@ pub fn command_map() -> String {
             .join(" ");
         out.push_str(&format!("{:<5}: {}\n", category, names));
     }
-    out.push_str("\nquick : version --compare | roadmap | theme list | theme matrix | banner cyber | pipeline | wasm list | update protocol | sysinfo\n");
+    out.push_str("\nquick : version --compare | roadmap | update test quick | update test full | theme list | theme matrix | banner cyber | pipeline | wasm list | update protocol | sysinfo\n");
     out
 }
 
@@ -248,6 +248,7 @@ mod tests {
         assert!(map.contains("find"));
         assert!(map.contains("update"));
         assert!(map.contains("update protocol"));
+        assert!(map.contains("update test quick"));
         assert!(map.contains("pipeline"));
         assert!(map.contains("roadmap"));
         assert!(map.contains("wasm"));
@@ -257,7 +258,7 @@ mod tests {
     fn man_pages_are_generated() {
         let page = man_page("update").expect("update man page");
         assert!(page.contains("protocol"));
-        assert!(page.contains("patch-versioning"));
+        assert!(page.contains("validation suites"));
         assert!(page.contains("host.exec"));
         let pipeline = man_page("pipeline").expect("pipeline man page");
         assert!(pipeline.contains("structured text pipeline"));
