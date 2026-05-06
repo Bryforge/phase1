@@ -21,7 +21,7 @@ macro_rules! cmd {
     };
 }
 
-pub const CATEGORIES: &[&str] = &["fs", "proc", "net", "host", "arch", "sys", "user", "misc"];
+pub const CATEGORIES: &[&str] = &["fs", "text", "proc", "net", "host", "arch", "sys", "user", "misc"];
 
 pub const COMMANDS: &[CommandSpec] = &[
     cmd!("ls", &[], "fs", "ls [-l] [path]", "List VFS directory contents.", "fs.read"),
@@ -35,6 +35,11 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("mv", &[], "fs", "mv <src> <dst>", "Move or rename a VFS node.", "fs.write"),
     cmd!("tree", &[], "fs", "tree", "Display the VFS tree.", "fs.read"),
     cmd!("echo", &[], "fs", "echo <text> [> file | >> file]", "Print text or redirect into the VFS.", "fs.write"),
+    cmd!("grep", &[], "text", "grep [-i] [-n] [-c] <pattern> <file>...", "Search VFS text files for a pattern.", "fs.read"),
+    cmd!("wc", &[], "text", "wc [-l] [-w] [-c] <file>...", "Count VFS file lines, words, and bytes.", "fs.read"),
+    cmd!("head", &[], "text", "head [-n count|-count] <file>...", "Show the first lines of VFS text files.", "fs.read"),
+    cmd!("tail", &[], "text", "tail [-n count|-count] <file>...", "Show the last lines of VFS text files.", "fs.read"),
+    cmd!("find", &[], "text", "find [path] [-name pattern] [-type f|d] [-maxdepth n]", "Search the VFS tree by name, type, and depth.", "fs.read"),
     cmd!("ps", &[], "proc", "ps", "Show simulated process table.", "proc.read"),
     cmd!("top", &[], "proc", "top", "Show scheduler state.", "proc.read"),
     cmd!("spawn", &[], "proc", "spawn <name> [args...] [--background]", "Create a simulated process through sys_spawn.", "proc.spawn"),
@@ -114,7 +119,7 @@ pub fn command_map() -> String {
             .join(" ");
         out.push_str(&format!("{:<5}: {}\n", category, names));
     }
-    out.push_str("\nquick : sysinfo | theme list | banner mobile | tips | security | accounts | matrix 0 | dash --compact | audit | ps\n");
+    out.push_str("\nquick : grep phase1 /home/readme.txt | wc /home/readme.txt | find /home -type f | sysinfo | theme list | matrix 0\n");
     out
 }
 
@@ -222,12 +227,14 @@ mod tests {
         assert!(map.contains("theme"));
         assert!(map.contains("banner"));
         assert!(map.contains("tips"));
+        assert!(map.contains("grep"));
+        assert!(map.contains("find"));
     }
 
     #[test]
     fn man_pages_are_generated() {
-        let page = man_page("theme").expect("theme man page");
-        assert!(page.contains("terminal theme"));
+        let page = man_page("grep").expect("grep man page");
+        assert!(page.contains("Search VFS text files"));
         assert!(page.contains("capability"));
     }
 
@@ -239,7 +246,8 @@ mod tests {
         assert!(completions("boot").contains(&"bootcfg"));
         assert!(completions("sec").contains(&"security"));
         assert!(completions("the").contains(&"theme"));
-        assert!(completions("f").contains(&"fetch"));
+        assert!(completions("f").contains(&"find"));
+        assert!(completions("g").contains(&"grep"));
     }
 
     #[test]
@@ -249,5 +257,6 @@ mod tests {
         assert!(report.contains("network-change opt-in"));
         assert!(report.contains("PHASE1_ALLOW_HOST_TOOLS"));
         assert!(report.contains("theme"));
+        assert!(report.contains("grep"));
     }
 }
