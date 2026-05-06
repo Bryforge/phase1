@@ -118,7 +118,7 @@ pub fn roadmap_report() -> String {
 }
 
 fn current_version() -> String {
-    std::env::var("PHASE1_DISPLAY_VERSION").unwrap_or_else(|_| CURRENT_VERSION.to_string())
+    CURRENT_VERSION.to_string()
 }
 
 #[cfg(test)]
