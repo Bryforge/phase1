@@ -43,13 +43,16 @@ fn run_phase1(script: &str) -> String {
 
 #[test]
 fn bleeding_version_and_roadmap_are_visible() {
-    let output = run_phase1("version --compare\nroadmap\npipeline\nupdate protocol\nexit\n");
+    let output = run_phase1("version --compare\nroadmap\npipeline\nupdate protocol\nsecurity\nexit\n");
     assert!(output.contains("phase1 version report"));
     assert!(output.contains("release version : 3.6.0"));
-    assert!(output.contains("bleeding edge   : 3.7.3-dev"));
+    assert!(output.contains("bleeding edge   : 3.7.4-dev"));
     assert!(output.contains("version scheme  : MAJOR.MINOR.PATCH[-dev]"));
     assert!(output.contains("protocol file   : UPDATE_PROTOCOL.md"));
     assert!(output.contains("Update protocol and semantic patch versioning"));
+    assert!(output.contains("Capability enforcement based on command metadata"));
+    assert!(output.contains("metadata-backed capability enforcement"));
+    assert!(output.contains("capability metadata : enforced"));
     assert!(output.contains("phase1 pipelines"));
     assert!(output.contains("phase1 update protocol"));
     assert!(output.contains("third number"));
