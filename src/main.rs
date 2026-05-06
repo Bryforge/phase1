@@ -1,11 +1,13 @@
 #![allow(clippy::assertions_on_constants)]
 
 mod autocomplete;
+mod avim;
 mod browser;
 mod commands;
 mod fastfetch;
 mod history;
 mod kernel;
+mod languages;
 mod line_editor;
 mod man;
 mod matrix;
@@ -270,7 +272,9 @@ fn execute_one(
             let cmd = &tokens[0];
             let args = &tokens[1..];
             let canonical = registry::canonical_name(cmd).unwrap_or(cmd);
-            let known = registry::lookup(cmd).is_some() || plugin_exists(shell, canonical);
+            let known = registry::lookup(cmd).is_some()
+                || plugin_exists(shell, canonical)
+                || matches!(canonical, "avim" | "lang");
             match canonical {
                 "help" => ui::print_help(),
                 "accounts" => print!("{}", accounts_report(shell)),
@@ -292,6 +296,8 @@ fn execute_one(
                 "tail" => print!("{}", text::tail(&shell.kernel.vfs, args)),
                 "find" => print!("{}", text::find(&shell.kernel.vfs, args)),
                 "matrix" => matrix::run(args),
+                "avim" => avim::edit(&mut shell.kernel.vfs, args),
+                "lang" => print!("{}", languages::run(shell, args)),
                 "bootcfg" => handle_bootcfg(boot_config, args),
                 "reboot" => request_reboot(shell),
                 _ => dispatch(shell, cmd, args),

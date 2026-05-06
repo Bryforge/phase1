@@ -22,7 +22,7 @@ macro_rules! cmd {
 }
 
 pub const CATEGORIES: &[&str] = &[
-    "fs", "text", "proc", "net", "host", "arch", "sys", "user", "misc",
+    "fs", "text", "proc", "net", "host", "dev", "arch", "sys", "user", "misc",
 ];
 
 pub const COMMANDS: &[CommandSpec] = &[
@@ -64,6 +64,8 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("wasm", &["wasi"], "host", "wasm [list|inspect|run|validate] [plugin]", "Run or inspect sandboxed WASI-lite plugins without host shell access.", "wasm.exec"),
     cmd!("update", &["upgrade"], "host", "update [plan|check|--execute|protocol|test] [latest|stable] [--build]", "Safely plan updates or run developer validation suites; protocol prints patch-versioning rules.", "host.exec"),
     cmd!("ned", &["nano", "vi"], "host", "ned <file>", "Edit a VFS file with a small line editor.", "fs.write"),
+    cmd!("avim", &["vim", "edit"], "dev", "avim <file>", "Advanced VFS-only modal editor with search, undo, yank/paste, substitute, and a security-focused no-shell-escape design.", "fs.write"),
+    cmd!("lang", &["language", "runlang"], "dev", "lang [list|support|status|doctor|detect|run|security]", "Native guarded multi-language runtime manager for major open-source programming languages.", "host.exec"),
     cmd!("lspci", &[], "arch", "lspci", "List simulated PCIe devices.", "hw.read"),
     cmd!("pcie", &[], "arch", "pcie", "Show PCIe subsystem summary.", "hw.read"),
     cmd!("cr3", &[], "arch", "cr3", "Show simulated CR3 value.", "hw.read"),
@@ -127,7 +129,7 @@ pub fn command_map() -> String {
             .join(" ");
         out.push_str(&format!("{:<5}: {}\n", category, names));
     }
-    out.push_str("\nquick : version --compare | roadmap | update test quick | update test full | theme list | theme matrix | banner cyber | pipeline | wasm list | update protocol | sysinfo\n");
+    out.push_str("\nquick : version --compare | roadmap | lang support | lang security | avim notes.rs | update test quick | update test full | theme list | theme matrix | pipeline | wasm list | update protocol | sysinfo\n");
     out
 }
 
@@ -210,6 +212,8 @@ mod tests {
         assert_eq!(lookup("pipes").map(|cmd| cmd.name), Some("pipeline"));
         assert_eq!(lookup("map").map(|cmd| cmd.name), Some("roadmap"));
         assert_eq!(lookup("wasi").map(|cmd| cmd.name), Some("wasm"));
+        assert_eq!(lookup("vim").map(|cmd| cmd.name), Some("avim"));
+        assert_eq!(lookup("language").map(|cmd| cmd.name), Some("lang"));
     }
 
     #[test]
@@ -230,6 +234,8 @@ mod tests {
         assert_eq!(canonical_name("ver"), Some("version"));
         assert_eq!(canonical_name("map"), Some("roadmap"));
         assert_eq!(canonical_name("wasi"), Some("wasm"));
+        assert_eq!(canonical_name("edit"), Some("avim"));
+        assert_eq!(canonical_name("runlang"), Some("lang"));
     }
 
     #[test]
@@ -256,6 +262,8 @@ mod tests {
         assert!(map.contains("pipeline"));
         assert!(map.contains("roadmap"));
         assert!(map.contains("wasm"));
+        assert!(map.contains("avim"));
+        assert!(map.contains("lang"));
     }
 
     #[test]
@@ -272,6 +280,10 @@ mod tests {
         let theme = man_page("theme").expect("theme man page");
         assert!(theme.contains("matrix"));
         assert!(theme.contains("Rainbow remains the default"));
+        let avim = man_page("avim").expect("avim man page");
+        assert!(avim.contains("modal editor"));
+        let lang = man_page("lang").expect("lang man page");
+        assert!(lang.contains("multi-language"));
     }
 
     #[test]
@@ -290,6 +302,9 @@ mod tests {
         assert!(completions("u").contains(&"upgrade"));
         assert!(completions("wa").contains(&"wasm"));
         assert!(completions("wa").contains(&"wasi"));
+        assert!(completions("a").contains(&"avim"));
+        assert!(completions("v").contains(&"vim"));
+        assert!(completions("la").contains(&"lang"));
     }
 
     #[test]
@@ -304,5 +319,7 @@ mod tests {
         assert!(report.contains("pipeline"));
         assert!(report.contains("wasm"));
         assert!(report.contains("phase1-wasi sandbox"));
+        assert!(report.contains("avim"));
+        assert!(report.contains("lang"));
     }
 }
