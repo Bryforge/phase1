@@ -1,165 +1,373 @@
-# phase1
+# Phase1
 
 <p align="center">
-  <img src="assets/phase1-splash.svg?cache=7c356bd123fc" alt="phase1 colored boot splash showing a clean neon Phase1 wordmark, secure safe-mode status, boot options, and terminal prompt" width="900">
+  <img src="assets/phase1-rainbow-logo.svg" alt="Phase1 rainbow neon logo" width="320">
 </p>
 
 <p align="center">
-  <strong>Terminal-first virtual OS console in Rust.</strong><br>
-  Simulated kernel. VFS. Process table. Audit log. Secure-by-default operator shell.
+  <strong>Terminal-first virtual OS / advanced operator console in Rust.</strong><br>
+  Simulated kernel. VFS. Process table. Audit log. Secure-by-default shell. Futuristic Neo Tokyo UI.
 </p>
 
-**phase1** is a terminal-first educational virtual operating-system console written in Rust.
+**Phase1** is a Rust-built, terminal-first educational virtual operating-system console. It runs as a safe userspace simulator while modeling real OS and cybersecurity concepts: boot profiles, a virtual kernel, a VFS, process scheduling, `/proc`, `/dev`, `/var/log`, PCIe-style hardware views, guarded networking, command capability metadata, shell history, pipelines, runtime management, update tooling, and local operations logging.
 
-It runs as a safe userspace simulator while modeling real OS concepts: a VFS with optional `/home` persistence, simulated process scheduler, syscall-style shell operations, `/proc`, `/dev`, `/var/log`, PCIe enumeration, guarded network views, guarded host tools, plugins, generated man pages, command completion metadata, compact dashboard telemetry, in-memory audit logging, persistent shell history, structured text pipelines, and documented update protocol controls.
+Phase1 is designed to feel like a futuristic hacker/operator console while staying intentionally safe by default.
 
-Current release: **v3.6.0**
+## Current status
 
-Bleeding edge: **v3.7.1-dev** on `master`
+- Current package version on `master`: **v3.10.7**
+- Latest tagged release: **v3.10.6**
+- Virtual kernel baseline: **v3.6.0**
+- Default branch: **master**
+- Language: **Rust**
+- Default security posture: **safe mode on, host tools off**
+- Version scheme: **MAJOR.MINOR.PATCH[-dev]**
 
-Version scheme: **MAJOR.MINOR.PATCH[-dev]**. The third number is the patch number and must move for every safe fix, documentation update, update-protocol improvement, formatting-only update, and incremental bleeding-edge feature.
-
-Update protocol reference: [`UPDATE_PROTOCOL.md`](UPDATE_PROTOCOL.md)
-
-## Highlights
-
-- Secure-by-default boot profile: safe mode is enabled unless intentionally disabled.
-- Mobile-friendly advanced operator console UI with automatic mobile-profile detection.
-- Retro fastfetch-style preboot selector with colored `phase1` ASCII art.
-- Configurable boot options for color, ASCII compatibility, safe mode, quick boot, mobile mode, persistent state, reboot, and quit.
-- Optional persistent state mode saves and restores `/home` VFS content through `phase1.state`.
-- Persistent shell history saves to `phase1.history` only when persistent state is enabled, and redacts password/token/secret-like commands before writing.
-- Structured text pipelines support producer/filter flows such as `cat log.txt | grep alpha | wc -l`.
-- `version --compare` shows release-vs-bleeding-edge feature differences and update protocol metadata.
-- `roadmap` shows roadmap completion status for the current edge build.
-- `update protocol` prints the safe update protocol, patch-versioning rules, and host-tool gates from inside phase1.
-- Safe mode blocks host execution, host network inspection, browser fetches, ping, WiFi scan/connect, Python, C compiler, plugins, and updater execution.
-- In safe mode, network display is limited to a simulated loopback interface.
-- Enhanced `matrix` / `rain` digital-rain terminal effect with clean `q` exit, forever mode, themes, density, tail, and speed controls.
-- Compact `dash --compact` dashboard for release/demo screenshots.
-- Registry-backed `help`, `man`, `complete`, aliases, and capability metadata.
-- `security` / `sec` / `policy` command for safe-mode, host-tool, persistence, and privacy status.
-- `capabilities` / `caps` command for command guard and policy visibility.
-- `accounts` / `users` command for simulated Unix account layout without real emails or credentials.
-- Syscall-style kernel boundary for read, write, spawn, and kill paths.
-- In-memory audit log exposed through `audit`.
-- Browser allows only `http://` and `https://` and strips HTML into terminal text when host mode is intentionally enabled.
-- VFS includes `/home`, `/proc`, `/dev`, `/tmp`, `/var/log`, `/etc`, and `/bin`.
-- CI checks formatting, compilation, Clippy, tests, cargo-audit, and cargo-deny.
+The package/application version tracks the release line. The virtual kernel baseline remains `3.6.0` for compatibility reporting inside the simulated OS.
 
 ## Quick start
 
-Secure default:
+Clone and run:
 
 ```bash
+git clone https://github.com/Bryforge/phase1.git
+cd phase1
 cargo run
 ```
 
-or
+Build a release binary:
 
 ```bash
 cargo build --release
 ./target/release/phase1
 ```
 
-Trusted host-backed testing mode, only when intentional:
+Run the full validation suite:
 
 ```bash
-PHASE1_SAFE_MODE=0 PHASE1_ALLOW_HOST_TOOLS=1 cargo run
+cargo fmt --all -- --check
+cargo check --all-targets
+cargo test --all-targets
 ```
 
-Host network changes require an additional explicit opt-in:
+Run with host-backed language runtimes enabled:
 
 ```bash
-PHASE1_SAFE_MODE=0 PHASE1_ALLOW_HOST_TOOLS=1 PHASE1_ALLOW_HOST_NETWORK_CHANGES=1 cargo run
+chmod +x scripts/phase1-runtimes.sh
+./scripts/phase1-runtimes.sh
 ```
 
-## Preboot configuration
+The runtime launcher starts Phase1 with:
 
-On launch, phase1 opens a fastfetch-inspired boot selector before entering the shell. Press Enter to boot immediately, or toggle options by number/name:
+```bash
+PHASE1_SAFE_MODE=0
+PHASE1_ALLOW_HOST_TOOLS=1
+PHASE1_BLEEDING_EDGE=1
+```
+
+Use it when you want Python, Rust/lang, C, plugins, or other guarded host runtime tools to work without manually toggling boot options.
+
+## First commands to try
+
+Inside Phase1:
 
 ```text
-1 / boot        enter the main system
-2 / color       toggle retro rainbow ANSI color
-3 / ascii       toggle ASCII-compatible display mode
-4 / safe        toggle safe mode; default is on
-5 / quick       skip the full boot matrix after selecting options
-6 / mobile      force mobile-friendly layout defaults
-p / persistent  toggle persistent state before entering the system
-7 / reboot      restart the boot selector without entering the shell
-8 / quit        abort boot and exit before the main system starts
-9 / save        save the active boot profile to phase1.conf
-0 / reset       reload secure default boot settings and remove saved boot config
+help
+version --compare
+roadmap
+sysinfo
+security
+opslog status
+theme list
+theme linux status
+dash
+ls /
+avim hello.py
+lang support
+update protocol
 ```
 
-Safe mode is on by default. Turning safe mode off is not enough to run host-backed tools by itself. Trusted host-backed commands require both safe mode off and `PHASE1_ALLOW_HOST_TOOLS=1`.
+To run Python inside Phase1, use the runtime launcher above or start from boot with host trust enabled:
 
-When persistent state is on, phase1 loads `/home` content from `phase1.state` before the shell starts and saves `/home` changes back to `phase1.state` after shell commands. This keeps user-created VFS files available across runs while leaving system paths such as `/proc`, `/dev`, and `/var/log` freshly simulated each boot. Do not store secrets in persistent state.
+```text
+4    # SHIELD off
+ t   # TRUST HOST on
+1    # BOOT
+```
 
-Persistent history is also enabled automatically when persistent state is on. It writes sanitized commands to `phase1.history`. You can disable it with `PHASE1_HISTORY=off` or override the path with `PHASE1_HISTORY=<path>`.
+Then:
 
-The selector automatically enables mobile mode for narrow terminals and common mobile terminal environments. It also honors environment defaults:
+```text
+py hello.py
+lang run python hello.py
+lang run rust main.rs
+```
+
+## Major features
+
+### Advanced Operator Console UI
+
+- Neo Tokyo / futuristic terminal interface
+- Rainbow logo asset in `assets/phase1-rainbow-logo.svg`
+- Static boot timestamp to avoid redraw glitches on older/narrow terminals
+- Host-aware boot defaults for laptop, desktop, mobile, ASCII, and color terminals
+- Laptop and desktop UI modes
+- Boot configuration menu with clear SHIELD, TRUST HOST, EDGE, VAULT, device, storage, and runtime-related controls
+- Command-aware HUD and AVIM mode HUD
+- Linux color pack support for truecolor, 256-color, ANSI, and mono fallback
+
+### Secure-by-default boot model
+
+Phase1 starts with safe mode on and host tools disabled.
+
+Host-backed commands are guarded by two gates:
+
+1. **SHIELD off**: safe mode disabled
+2. **TRUST HOST on**: explicit permission to run host tools
+
+This prevents accidental execution of Python, compilers, plugins, updater execution, browser fetches, and other host-backed paths.
+
+Fast host-runtime paths:
+
+```bash
+./scripts/phase1-runtimes.sh
+```
+
+or from the boot selector:
+
+```text
+4
+t
+1
+```
+
+Host network mutation remains separately guarded with:
+
+```bash
+PHASE1_ALLOW_HOST_NETWORK_CHANGES=1
+```
+
+### Virtual OS simulation
+
+Phase1 includes:
+
+- Virtual filesystem with `/home`, `/proc`, `/dev`, `/tmp`, `/var/log`, `/etc`, and `/bin`
+- Optional `/home` persistence through `phase1.state`
+- Simulated process table and scheduler
+- Background process commands
+- Syscall-style read/write/spawn/kill boundaries
+- Audit log exposed through `audit`
+- PCIe / CR3 / CR4 / PCIDE educational hardware commands
+- Privacy-safe simulated accounts model
+
+### Shell and developer tools
+
+- Registry-backed `help`, `man`, `complete`, aliases, and capability metadata
+- Tab completion for commands and common arguments
+- Up-arrow history recall and raw input editing
+- Structured command chains with `;`, `&&`, and `||`
+- Structured text pipelines
+- Persistent shell history with secret redaction
+- `avim` modal VFS editor
+- `lang` runtime manager
+- `update` and `update test` workflows
+
+### Local operations logging
+
+Phase1 writes local operations to:
+
+```text
+phase1.log
+```
+
+Useful commands:
+
+```text
+opslog status
+opslog tail
+opslog path
+opslog clear
+```
+
+The logger is intended to help diagnose boot issues, terminal glitches, crashes, policy denials, and local operations without collecting private credentials.
+
+### Storage / Git / Rust helper
+
+The boot dock includes a guarded storage helper for project workspace checks, Git-oriented workflows, Rust support, and the language roadmap.
+
+Useful examples:
+
+```text
+storage helper via d
+lang support
+lang security
+update protocol
+update test quick
+update test full
+```
+
+The storage helper and host-backed Git/Rust operations stay guarded by the same SHIELD/TRUST HOST model.
+
+### Phase1 Arena
+
+Phase1 includes a clean-room text arena/game workspace:
+
+```text
+game workspace
+arena start
+```
+
+Validation includes focused game integration tests.
+
+### WASI-lite plugins
+
+Phase1 includes WASI-lite plugin/runtime support designed around a Phase1 sandbox rather than direct host shell access by default.
+
+Useful commands:
+
+```text
+wasm list
+wasm inspect
+wasm run
+```
+
+## Boot configuration
+
+On launch, Phase1 opens a boot configuration screen.
+
+Common controls:
+
+```text
+1 / Enter   boot into the shell
+2           toggle color / neon output
+3           toggle ASCII-compatible display
+4           toggle SHIELD / safe mode
+5           toggle quick boot
+6           cycle device mode
+l           laptop UI
+w           desktop UI
+t           TRUST HOST toggle
+ e          EDGE / bleeding-edge channel toggle
+p           VAULT / persistent state toggle
+d           storage / Git / Rust dock
+7           reboot selector
+8           shutdown / abort boot
+9           save phase1.conf
+0           reset saved config
+h           help
+```
+
+Persistent state saves `/home` VFS files to `phase1.state`. Persistent command history writes sanitized entries to `phase1.history`. Do not store secrets in persistent state.
+
+Environment defaults:
 
 ```bash
 PHASE1_ASCII=1 cargo run
 PHASE1_NO_COLOR=1 cargo run
 PHASE1_SAFE_MODE=1 cargo run
-PHASE1_SAFE_MODE=0 cargo run   # safe mode off, host tools still blocked without PHASE1_ALLOW_HOST_TOOLS=1
+PHASE1_SAFE_MODE=0 cargo run
 PHASE1_SAFE_MODE=0 PHASE1_ALLOW_HOST_TOOLS=1 cargo run
+PHASE1_ALLOW_HOST_NETWORK_CHANGES=1 cargo run
 PHASE1_QUICK_BOOT=1 cargo run
+PHASE1_DEVICE_MODE=laptop cargo run
+PHASE1_DEVICE_MODE=desktop cargo run
 PHASE1_MOBILE_MODE=1 cargo run
 PHASE1_PERSISTENT_STATE=1 cargo run
 PHASE1_HISTORY=off cargo run
-PHASE1_DEVICE=mobile cargo run
+PHASE1_THEME=matrix cargo run
 ```
 
-## Useful commands
+## Command examples
+
+Filesystem and text:
 
 ```text
-help
-commands
-complete p
-version
-version --compare
-roadmap
-pipeline
-security
-accounts
-history status
-history path
-history save
-history clear
-capabilities
-bootcfg
-bootcfg show
-bootcfg state
-dash --compact
-matrix 0
-matrix --help
-matrix 20 --speed 25 --density 40 --chars hex
-rain 5
-man matrix
-man browser
-ls -l /
-cat /proc/version
-spawn worker --background
-jobs
-ps
-audit
-echo "hello world" > note.txt
+pwd
+ls /
+mkdir lab
+cd lab
+echo hello world > note.txt
 cat note.txt
 cat note.txt | grep hello | wc -l
 find /home -type f | sort
-browser phase1
+```
+
+System and security:
+
+```text
+sysinfo
+security
+capabilities
+audit
+accounts
+history status
+bootcfg show
+opslog status
+```
+
+Processes and hardware simulation:
+
+```text
+ps
+spawn worker --background
+jobs
+kill 2
+cr3
+loadcr3 0x2000
+pcide on
+cr4
+lspci
+pcie
+```
+
+Networking, browser, and host-backed tools:
+
+```text
+ifconfig
+iwconfig
+wifi-scan
+ping example.com
 browser https://example.com
+py hello.py
+lang run python hello.py
+```
+
+The host-backed commands above require SHIELD off and TRUST HOST on.
+
+Update and validation:
+
+```text
+version --compare
+roadmap
 update
 update protocol
-update bleeding --check
+update latest --trust-host --check
+update latest --trust-host --execute --build
+update now --trust-host
+update test quick
+update test full
+update test quick --trust-host --execute
+```
+
+AVIM editor:
+
+```text
+avim hello.py
+```
+
+Inside AVIM:
+
+```text
+i        enter INSERT mode
+Esc      return to NORMAL mode
+:wq      save and quit
+:q!      quit without saving
+:help    show editor help
 ```
 
 ## Structured pipelines
 
-Bleeding edge builds include lightweight structured text pipelines for VFS and simulator output:
+Phase1 supports lightweight structured shell pipelines:
 
 ```text
 cat log.txt | grep alpha | wc -l
@@ -169,85 +377,117 @@ find /home -type f | sort | uniq
 version --compare | grep bleeding
 ```
 
-Supported producers include `cat`, `echo`, `history`, `ps`, `ls`, `find`, `audit`, `env`, `version`, and `sysinfo`. Supported filters include `grep`, `wc`, `head`, `tail`, `sort`, `uniq`, and `cut`.
+Supported producers include `cat`, `echo`, `history`, `ps`, `ls`, `find`, `audit`, `env`, `version`, and `sysinfo`.
+
+Supported filters include `grep`, `wc`, `head`, `tail`, `sort`, `uniq`, and `cut`.
+
+## Themes and Linux color pack
+
+Theme commands:
+
+```text
+theme list
+theme status
+theme matrix
+theme cyber
+theme amber
+theme ice
+theme synthwave
+theme crimson
+theme bleeding-edge
+theme linux status
+theme linux truecolor
+theme linux 256
+theme linux ansi
+theme linux mono
+theme linux preview
+```
+
+Linux hosts can use truecolor or fallback color modes to better match the Phase1 UI across terminals.
 
 ## Update protocol
 
-The canonical update protocol is stored in `UPDATE_PROTOCOL.md`. The in-app updater mirrors that file with `update protocol`.
+The canonical protocol is documented in:
 
 ```text
-update                         print the dry-run plan only
-update protocol                 show versioning and safety reference
-update bleeding --check         inspect local Git state only
-update bleeding --execute       run guarded fetch/checkout/pull
-update bleeding --execute --build
+UPDATE_PROTOCOL.md
 ```
 
-The updater remains safe by default: no file mutation happens without `--execute`; execution requires safe mode off plus `PHASE1_ALLOW_HOST_TOOLS=1`; tracked local changes block execution; and command output is sanitized before display.
-
-## Matrix controls
-
-`matrix` now exits cleanly without Ctrl+C in an interactive terminal.
+The in-app reference is:
 
 ```text
-matrix 10                              run for 10 seconds
-matrix 0                               run until q
-matrix forever                         run until q
-matrix --help                          show all options
-matrix 20 --speed 25 --density 40      faster and denser rain
-matrix 0 --chars symbols --tail 24     longer operator-style streams
-matrix 15 --mono --no-hud              plain terminal mode
+update protocol
 ```
 
-Press `q` to return to the phase1 shell.
+Safety rules:
 
-## Safety model
-
-phase1 simulates the kernel, VFS, process table, and scheduler in memory. Optional persistent state only writes phase1-managed `/home` VFS content to the local `phase1.state` file. Persistent history writes sanitized shell commands to `phase1.history` only when persistent state is enabled. Runtime state files and common credential files are ignored by Git.
-
-Safe mode is the default and blocks host-backed command paths. When safe mode is disabled, host-backed command paths still require `PHASE1_ALLOW_HOST_TOOLS=1`. Some commands can call host tools (`python3`, `cc`/`gcc`/`clang`, `curl`, `ping`, `nmcli`, `networksetup`, and `git` for guarded updater execution) only after that explicit opt-in. Those paths use validation and timeouts. `wifi-connect` is dry-run by default and requires `PHASE1_ALLOW_HOST_NETWORK_CHANGES=1` before it attempts host network mutation.
-
-phase1 should never need your GitHub password, personal access token, SSH private key, browser cookies, Apple ID, email password, or recovery codes. The repository examples and simulated account model do not include real emails, passwords, tokens, or account secrets. See `SECURITY.md` and `SECURITY_REVIEW.md` before publishing releases or sharing runtime files.
-
-## Roadmap designs
-
-The roadmap design index is in `ROADMAP_DESIGNS.md`.
-
-Detailed design tracks:
-
-- `docs/roadmap/operator-shell.md`
-- `docs/roadmap/virtual-kernel.md`
-- `docs/roadmap/security-capabilities.md`
-- `docs/roadmap/structured-pipelines.md`
-- `docs/roadmap/package-plugin-runtime.md`
-- `docs/roadmap/tui-dashboard.md`
-
-## Release notes
-
-Current release notes are in `RELEASE_NOTES_v3.6.0.md`.
+- `update` defaults to a dry-run plan
+- `--execute` is required for file mutation
+- host update checks/execution require SHIELD off, TRUST HOST on, and `--trust-host`
+- tracked local changes block execution instead of being overwritten
+- updater output is sanitized before display
 
 ## Development checks
+
+Recommended before every push:
 
 ```bash
 cargo fmt --all -- --check
 cargo check --all-targets
-cargo clippy --all-targets -- -D warnings
 cargo test --all-targets
-cargo audit
-cargo deny check
 ```
 
-For the end-to-end command smoke suite:
+Optional deeper checks:
 
 ```bash
+cargo clippy --all-targets -- -D warnings
 cargo test --test smoke -- --nocapture
+cargo test --test bleeding -- --nocapture
+cargo test --test game -- --nocapture
 ```
 
-## Roadmap
+Current validation coverage includes unit tests, storage binary tests, bleeding-edge behavior tests, game tests, and end-to-end smoke tests.
 
-- Persistent shell history: complete in bleeding edge.
-- Structured command output and pipelines: complete in bleeding edge.
-- Update protocol and semantic patch versioning: complete in bleeding edge.
-- Capability enforcement based on command metadata: partial, with host-tool and host-network gates enforced.
-- WASM/WASI plugin runtime: planned.
-- Full-screen TUI dashboard: planned; compact dashboard and sysinfo are available now.
+## Release workflow
+
+After tests pass:
+
+```bash
+git status
+git log -1 --oneline
+git tag v3.10.7
+git push origin v3.10.7
+```
+
+For the previous release line:
+
+```text
+RELEASE_NOTES_3.10.6.md
+```
+
+## Safety and privacy
+
+Phase1 is an educational simulator. It should never need your GitHub password, personal access token, SSH private key, browser cookies, Apple ID, email password, or recovery codes.
+
+Host-backed commands are explicit and guarded. Runtime state files such as `phase1.state`, `phase1.history`, and `phase1.log` are local operational artifacts. Do not publish them if they include sensitive local activity.
+
+See:
+
+```text
+SECURITY.md
+SECURITY_REVIEW.md
+```
+
+## Project assets
+
+Logo:
+
+```text
+assets/phase1-rainbow-logo.svg
+```
+
+Splash / UI assets may also live in `assets/`.
+
+## License
+
+GPL-3.0
