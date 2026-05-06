@@ -8,9 +8,10 @@ Current release: **v3.6.0**
 
 ## Highlights
 
-- Mobile-friendly advanced operator console UI.
+- Mobile-friendly advanced operator console UI with automatic mobile-profile detection.
 - Retro fastfetch-style preboot selector with colored `phase1` ASCII art.
-- Configurable boot options for color, ASCII compatibility, safe mode, and quick boot.
+- Configurable boot options for color, ASCII compatibility, safe mode, quick boot, mobile mode, reboot, and quit.
+- Built-in `matrix` / `rain` digital-rain terminal effect.
 - Compact `dash --compact` dashboard for release/demo screenshots.
 - Registry-backed `help`, `man`, `complete`, aliases, and capability metadata.
 - `capabilities` / `caps` command for command guard and policy visibility.
@@ -45,16 +46,21 @@ On launch, phase1 opens a fastfetch-inspired boot selector before entering the s
 3 / ascii       toggle ASCII-compatible display mode
 4 / safe        lock host integrations such as browser, ping, WiFi scan/connect, Python, C compiler, and plugins
 5 / quick       skip the full boot matrix after selecting options
+6 / mobile      force mobile-friendly layout defaults
+7 / reboot      restart the boot selector without entering the shell
+8 / quit        abort boot and exit before the main system starts
 0 / reset       reload default boot settings
 ```
 
-The selector also honors environment defaults:
+The selector automatically enables mobile mode for narrow terminals and common mobile terminal environments. It also honors environment defaults:
 
 ```bash
 PHASE1_ASCII=1 cargo run
 PHASE1_NO_COLOR=1 cargo run
 PHASE1_SAFE_MODE=1 cargo run
 PHASE1_QUICK_BOOT=1 cargo run
+PHASE1_MOBILE_MODE=1 cargo run
+PHASE1_DEVICE=mobile cargo run
 ```
 
 ## Useful commands
@@ -64,7 +70,11 @@ help
 commands
 complete p
 capabilities
+bootcfg
 dash --compact
+matrix 10
+rain 5
+man matrix
 man browser
 ls -l /
 cat /proc/version
