@@ -75,6 +75,7 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("whoami", &[], "user", "whoami", "Print current simulated user.", "user.read"),
     cmd!("id", &[], "user", "id", "Print simulated user id.", "user.read"),
     cmd!("su", &[], "user", "su <user>", "Switch simulated user.", "user.switch"),
+    cmd!("accounts", &["users"], "user", "accounts", "Explain and list simulated Unix accounts without real emails or credentials.", "user.read"),
     cmd!("history", &[], "user", "history", "Show shell command history.", "user.read"),
     cmd!("help", &["commands"], "misc", "help", "Show grouped command map.", "none"),
     cmd!("man", &[], "misc", "man <command>", "Show generated command manual page.", "none"),
@@ -173,6 +174,7 @@ mod tests {
         assert_eq!(lookup("quit").map(|cmd| cmd.name), Some("exit"));
         assert_eq!(lookup("rain").map(|cmd| cmd.name), Some("matrix"));
         assert_eq!(lookup("bootconfig").map(|cmd| cmd.name), Some("bootcfg"));
+        assert_eq!(lookup("users").map(|cmd| cmd.name), Some("accounts"));
     }
 
     #[test]
@@ -183,6 +185,7 @@ mod tests {
         assert_eq!(canonical_name("dashboard"), Some("dash"));
         assert_eq!(canonical_name("rain"), Some("matrix"));
         assert_eq!(canonical_name("bootconfig"), Some("bootcfg"));
+        assert_eq!(canonical_name("users"), Some("accounts"));
     }
 
     #[test]
@@ -194,6 +197,7 @@ mod tests {
         assert!(map.contains("dash"));
         assert!(map.contains("matrix"));
         assert!(map.contains("bootcfg"));
+        assert!(map.contains("accounts"));
     }
 
     #[test]
