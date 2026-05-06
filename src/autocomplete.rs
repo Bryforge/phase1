@@ -116,8 +116,10 @@ fn command_matches(prefix: &str) -> Vec<String> {
         .into_iter()
         .map(str::to_string)
         .collect::<Vec<_>>();
-    if "reboot".starts_with(prefix) {
-        matches.push("reboot".to_string());
+    for builtin in ["reboot", "opendoom", "doom"] {
+        if builtin.starts_with(prefix) {
+            matches.push(builtin.to_string());
+        }
     }
     matches.sort();
     matches.dedup();
@@ -173,7 +175,8 @@ fn argument_matches(command: &str, prefix: &str) -> Vec<String> {
             "--build",
             "--no-build",
         ],
-        "wasm" => &["list", "inspect", "run", "validate", "hello-wasi"],
+        "wasm" => &["list", "inspect", "run", "validate", "hello-wasi", "opendoom"],
+        "opendoom" | "doom" => &["start", "play", "demo", "script", "help", "quit"],
         "history" => &["list", "status", "path", "save", "clear"],
         "bootcfg" => &["show", "save", "reset", "defaults", "path", "state", "help"],
         "matrix" => &["0", "forever", "--speed", "--density", "--chars"],
@@ -216,6 +219,10 @@ mod tests {
             complete_input_prefix("rebo"),
             TabCompletion::Completed("reboot".to_string())
         );
+        assert_eq!(
+            complete_input_prefix("opend"),
+            TabCompletion::Completed("opendoom".to_string())
+        );
     }
 
     #[test]
@@ -227,6 +234,10 @@ mod tests {
         assert_eq!(
             complete_tab_line("update pr\t"),
             TabCompletion::Completed("update protocol".to_string())
+        );
+        assert_eq!(
+            complete_tab_line("opendoom de\t"),
+            TabCompletion::Completed("opendoom demo".to_string())
         );
     }
 
