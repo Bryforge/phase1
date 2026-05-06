@@ -1,6 +1,6 @@
 # phase1 update protocol
 
-This file is the canonical update reference for phase1. Use it before changing update behavior, release metadata, README release notes, or roadmap status.
+This file is the canonical update reference for phase1. Use it before changing update behavior, release metadata, release notes, or roadmap status.
 
 ## Version format
 
@@ -17,6 +17,7 @@ Examples:
 3.7.0-dev   first bleeding-edge build after v3.6.0
 3.7.1-dev   next bleeding-edge patch or incremental feature update
 3.7.2-dev   patch-level protocol hardening or follow-up bleeding-edge update
+3.7.3-dev   patch-level protocol clarification without README churn
 ```
 
 ## Version bump rules
@@ -32,7 +33,7 @@ Examples:
 
 ```text
 release        3.6.0
-bleeding edge  3.7.2-dev
+bleeding edge  3.7.3-dev
 branch         master
 stable branch  stable
 ```
@@ -72,15 +73,16 @@ cargo test --test bleeding -- --nocapture
 
 ## Files to update together
 
-When version metadata or update behavior changes, update these files together:
+Patch-only bleeding-edge updates should avoid README churn. For PATCH updates, update only the files that carry the actual behavior, metadata, protocol, or tests:
 
 ```text
 UPDATE_PROTOCOL.md
-README.md
 src/release.rs
 src/updater.rs
 tests/bleeding.rs
 ```
+
+Update README.md only for MINOR or MAJOR releases, stable promotions, user-facing command changes that need public docs, or major roadmap wording changes.
 
 Also update these if runtime release behavior changes:
 
