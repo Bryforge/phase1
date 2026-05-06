@@ -15,10 +15,11 @@ mod matrix;
 mod ned;
 mod network;
 mod operator;
+mod ops_log;
 mod policy;
 mod registry;
 mod text;
-#[path = "boot_ui_fixed.rs"]
+#[path = "boot_ui_static.rs"]
 mod ui;
 mod updater;
 mod wasm;
@@ -72,6 +73,8 @@ fn compact_path(path: &Path) -> String {
 }
 
 fn main() {
+    ops_log::install_panic_hook();
+    ops_log::log_event("process.start", &format!("phase1 {}", env!("CARGO_PKG_VERSION")));
     loop {
         match ui::configure_boot(kernel::VERSION) {
             ui::BootSelection::Boot(config) => match run_shell(config) {
@@ -84,15 +87,18 @@ fn main() {
             }
             ui::BootSelection::Reboot => continue,
             ui::BootSelection::Quit => {
+                ops_log::log_event("boot.abort", "phase1 did not enter main system");
                 println!("boot aborted: phase1 did not enter the main system");
                 return;
             }
         }
     }
+    ops_log::log_event("process.stop", "phase1 exited");
 }
 
 fn run_storage_boot_option(boot_config: ui::BootConfig) {
     boot_config.apply();
+    ops_log::log_event("storage.boot_option", "opened read-only storage helper status");
 
     println!("phase1 storage helper // boot option");
     println!("mode      : read-only status");
@@ -121,13 +127,18 @@ fn run_storage_boot_option(boot_config: ui::BootConfig) {
                     print!("{}", String::from_utf8_lossy(&output.stdout));
                     let stderr = String::from_utf8_lossy(&output.stderr);
                     if !stderr.trim().is_empty() {
+                        ops_log::log_error("storage.stderr", stderr.trim());
                         eprintln!("{stderr}");
                     }
                 }
-                Err(err) => println!("storage helper could not run: {err}"),
+                Err(err) => {
+                    ops_log::log_error("storage.run", &err.to_string());
+                    println!("storage helper could not run: {err}");
+                }
             }
         }
         _ => {
+            ops_log::log_event("storage.helper", "binary not built");
             println!("storage helper binary is not built yet.");
             println!("build/check it with: cargo check --all-targets");
         }
@@ -153,6 +164,7 @@ fn run_shell(boot_config: ui::BootConfig) -> ShellExit {
     let history_store = history::HistoryStore::from_env(boot_config.persistent_state);
     let display_version = ui::display_version(kernel::VERSION, boot_config);
     let channel = if boot_config.bleeding_edge { "bleeding-edge" } else { "release" };
+    ops_log::log_event("shell.start", &format!("version={display_version} channel={channel} profile={}", boot_config.profile_name()));
 
     shell.env.insert("PHASE1_BOOT_PROFILE".to_string(), boot_config.profile_name().to_string());
     shell.env.insert("PHASE1_CHANNEL".to_string(), channel.to_string());
@@ -171,14 +183,20 @@ fn run_shell(boot_config: ui::BootConfig) -> ShellExit {
         match load_persistent_state(&mut shell) {
             Ok(count) if count > 0 => println!("persistent state: restored {count} entries from {PERSISTENT_STATE_PATH}"),
             Ok(_) => println!("persistent state: enabled; no saved state found at {PERSISTENT_STATE_PATH}"),
-            Err(err) => println!("persistent state: restore warning: {err}"),
+            Err(err) => {
+                ops_log::log_error("state.restore", &err.to_string());
+                println!("persistent state: restore warning: {err}");
+            }
         }
     }
 
     match history_store.load(&mut shell.history) {
         Ok(count) if count > 0 => println!("persistent history: restored {count} entries from {}", history_store.describe()),
         Ok(_) => {}
-        Err(err) => println!("persistent history: restore warning: {err}"),
+        Err(err) => {
+            ops_log::log_error("history.restore", &err.to_string());
+            println!("persistent history: restore warning: {err}");
+        }
     }
 
     if boot_config.quick_boot {
@@ -206,6 +224,7 @@ fn run_shell(boot_config: ui::BootConfig) -> ShellExit {
                 break;
             }
             Err(err) => {
+                ops_log::log_error("input", &err.to_string());
                 eprintln!("input error: {err}");
                 break;
             }
@@ -214,19 +233,25 @@ fn run_shell(boot_config: ui::BootConfig) -> ShellExit {
             continue;
         }
 
+        ops_log::log_command(&line);
         history::push_bounded(&mut shell.history, &line);
         match execute_chain(&mut shell, boot_config, &history_store, &line) {
             Ok(_) => {
                 if boot_config.persistent_state {
                     if let Err(err) = save_persistent_state(&shell) {
+                        ops_log::log_error("state.save", &err.to_string());
                         eprintln!("persistent state save warning: {err}");
                     }
                 }
                 if let Err(err) = history_store.save(&shell.history) {
+                    ops_log::log_error("history.save", &err.to_string());
                     eprintln!("persistent history save warning: {err}");
                 }
             }
-            Err(err) => eprintln!("parse error: {err}"),
+            Err(err) => {
+                ops_log::log_error("parse", &err);
+                eprintln!("parse error: {err}");
+            }
         }
 
         if shell.env.get("PHASE1_REBOOT_REQUESTED").is_some_and(|value| value == "1") {
@@ -237,12 +262,15 @@ fn run_shell(boot_config: ui::BootConfig) -> ShellExit {
 
     if boot_config.persistent_state {
         if let Err(err) = save_persistent_state(&shell) {
+            ops_log::log_error("state.save", &err.to_string());
             eprintln!("persistent state save warning: {err}");
         }
     }
     if let Err(err) = history_store.save(&shell.history) {
+        ops_log::log_error("history.save", &err.to_string());
         eprintln!("persistent history save warning: {err}");
     }
+    ops_log::log_event("shell.stop", match shell_exit { ShellExit::Shutdown => "shutdown", ShellExit::Reboot => "reboot" });
     shell_exit
 }
 
@@ -275,7 +303,7 @@ fn execute_one(shell: &mut Phase1Shell, boot_config: ui::BootConfig, history_sto
             let cmd = &tokens[0];
             let args = &tokens[1..];
             let canonical = registry::canonical_name(cmd).unwrap_or(cmd);
-            let known = registry::lookup(cmd).is_some() || plugin_exists(shell, canonical) || matches!(canonical, "avim" | "lang");
+            let known = registry::lookup(cmd).is_some() || plugin_exists(shell, canonical) || matches!(canonical, "avim" | "lang" | "opslog");
             match canonical {
                 "help" => ui::print_help(),
                 "accounts" => print!("{}", accounts_report(shell)),
@@ -296,6 +324,7 @@ fn execute_one(shell: &mut Phase1Shell, boot_config: ui::BootConfig, history_sto
                 "matrix" => matrix::run(args),
                 "avim" => avim::edit(&mut shell.kernel.vfs, args),
                 "lang" => print!("{}", languages::run(shell, args)),
+                "opslog" => print!("{}", ops_log::run(args)),
                 "bootcfg" => handle_bootcfg(boot_config, args),
                 "reboot" => request_reboot(shell),
                 _ => dispatch(shell, cmd, args),
@@ -323,6 +352,7 @@ fn theme_command(shell: &mut Phase1Shell, args: &[String]) -> String {
 }
 
 fn request_reboot(shell: &mut Phase1Shell) {
+    ops_log::log_event("shell.reboot", "returning to boot selector");
     shell.env.insert("PHASE1_REBOOT_REQUESTED".to_string(), "1".to_string());
     println!("reboot: returning to boot configuration screen");
 }
@@ -490,6 +520,7 @@ fn print_boot_config(config: ui::BootConfig) {
     println!("display version   : {}", ui::display_version(kernel::VERSION, config));
     println!("config file       : {}", ui::config_path());
     println!("state file        : {}", PERSISTENT_STATE_PATH);
+    println!("ops log           : {}", ops_log::LOG_PATH);
     println!("color             : {}", if config.color { "on" } else { "off" });
     println!("ascii             : {}", if config.ascii_mode { "on" } else { "off" });
     println!("safe mode         : {}", if config.safe_mode { "on" } else { "off" });
