@@ -14,10 +14,11 @@ Core principles:
 - Keep host integrations guarded with validation, dry-runs, timeouts, safe mode, and explicit host-tools opt-in.
 - Make mobile terminal output compact but still premium.
 - Build extensibility through policy, packages, and sandboxed plugins.
+- Keep future pipelines internal to the phase1 simulator.
 
-## Next update
+## Prepared update queue
 
-Prepared next feature set:
+### Next implementation target
 
 ```text
 NEXT_UPDATE_v3.7.0.md
@@ -37,6 +38,27 @@ Primary targets:
 - privacy-first persistent shell history
 - `security` / `sec` / `policy` status command
 - smoke tests for default safe mode, safe-off without host tools, and trusted-user host tools mode
+
+### Follow-up implementation target
+
+```text
+NEXT_UPDATE_v3.8.0.md
+```
+
+Theme:
+
+```text
+Structured Output + Pipeline Foundation
+```
+
+Primary targets:
+
+- `CommandOutput` and `TableOutput` models
+- `--text`, `--table`, and `--json` output flags
+- phase1-only internal pipeline parsing
+- `where`, `sort`, `get`, `table`, `json`, and `count` pipeline stages
+- secret-conscious `audit --json`
+- smoke tests for structured output and pipeline behavior
 
 ## Roadmap phases
 
@@ -117,13 +139,12 @@ Targets:
 
 ## Immediate implementation order
 
-1. Add a two-key host tools gate with `PHASE1_ALLOW_HOST_TOOLS=1`.
-2. Add a policy check function and log allow/deny decisions to audit.
-3. Add a `security` command for runtime posture visibility.
-4. Add privacy-first persistent command history with a disable flag for tests and privacy.
-5. Expand smoke tests around history, safe-mode policy behavior, and host-tools opt-in.
-6. Start the structured output enum behind command handlers.
-7. Continue virtual kernel boundary cleanup.
+1. Implement v3.7.0 secure operator persistence and policy gate.
+2. Validate v3.7.0 locally with fmt, Clippy, unit tests, and smoke tests.
+3. Promote v3.7.0 only after security behavior is confirmed.
+4. Implement v3.8.0 structured output and internal pipelines.
+5. Validate v3.8.0 locally with fmt, Clippy, unit tests, and smoke tests.
+6. Continue virtual kernel boundary cleanup.
 
 ## Definition of done
 
