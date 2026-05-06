@@ -66,7 +66,23 @@ pub fn is_request(args: &[String]) -> bool {
     args.iter().any(|arg| {
         matches!(
             arg.as_str(),
-            "test" | "tests" | "devtest" | "validate" | "verify" | "qa"
+            "test"
+                | "tests"
+                | "devtest"
+                | "validate"
+                | "verify"
+                | "qa"
+                | "quick"
+                | "full"
+                | "smoke"
+                | "game"
+                | "arena"
+                | "fmt"
+                | "format"
+                | "cargo-check"
+                | "clippy"
+                | "lint"
+                | "doctor"
         )
     })
 }
@@ -328,6 +344,8 @@ mod tests {
     fn detects_developer_test_requests() {
         assert!(is_request(&["test".to_string()]));
         assert!(is_request(&["validate".to_string(), "full".to_string()]));
+        assert!(is_request(&["quick".to_string(), "--execute".to_string()]));
+        assert!(is_request(&["doctor".to_string()]));
         assert!(!is_request(&["latest".to_string()]));
     }
 
@@ -345,7 +363,7 @@ mod tests {
 
     #[test]
     fn quick_plan_keeps_feedback_loop_small() {
-        let out = run(&["test".to_string(), "quick".to_string()]);
+        let out = run(&["quick".to_string()]);
         assert!(out.contains("suite        : quick"));
         assert!(out.contains("cargo check --all-targets"));
         assert!(!out.contains("cargo test --test game"));
