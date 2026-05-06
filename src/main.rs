@@ -9,6 +9,7 @@ mod history;
 mod kernel;
 mod languages;
 mod line_editor;
+mod linux_colors;
 mod man;
 mod matrix;
 mod ned;
@@ -102,11 +103,7 @@ fn run_storage_boot_option(boot_config: ui::BootConfig) {
     println!("hint      : mutating Git/Rust actions still require safe mode off and PHASE1_ALLOW_HOST_TOOLS=1");
     println!();
 
-    let helper_name = if cfg!(windows) {
-        "phase1-storage.exe"
-    } else {
-        "phase1-storage"
-    };
+    let helper_name = if cfg!(windows) { "phase1-storage.exe" } else { "phase1-storage" };
 
     let helper_path = std::env::current_exe()
         .ok()
@@ -155,38 +152,19 @@ fn run_shell(boot_config: ui::BootConfig) -> ShellExit {
     let mut shell = Phase1Shell::new();
     let history_store = history::HistoryStore::from_env(boot_config.persistent_state);
     let display_version = ui::display_version(kernel::VERSION, boot_config);
-    let channel = if boot_config.bleeding_edge {
-        "bleeding-edge"
-    } else {
-        "release"
-    };
+    let channel = if boot_config.bleeding_edge { "bleeding-edge" } else { "release" };
 
-    shell.env.insert(
-        "PHASE1_BOOT_PROFILE".to_string(),
-        boot_config.profile_name().to_string(),
-    );
+    shell.env.insert("PHASE1_BOOT_PROFILE".to_string(), boot_config.profile_name().to_string());
     shell.env.insert("PHASE1_CHANNEL".to_string(), channel.to_string());
     shell.env.insert("PHASE1_DISPLAY_VERSION".to_string(), display_version.clone());
-    shell.env.insert(
-        "PHASE1_SAFE_MODE".to_string(),
-        if boot_config.safe_mode { "1" } else { "0" }.to_string(),
-    );
-    shell.env.insert(
-        "PHASE1_MOBILE_MODE".to_string(),
-        if boot_config.mobile_mode { "1" } else { "0" }.to_string(),
-    );
+    shell.env.insert("PHASE1_SAFE_MODE".to_string(), if boot_config.safe_mode { "1" } else { "0" }.to_string());
+    shell.env.insert("PHASE1_MOBILE_MODE".to_string(), if boot_config.mobile_mode { "1" } else { "0" }.to_string());
     shell.env.insert(
         "PHASE1_DEVICE_MODE".to_string(),
         std::env::var("PHASE1_DEVICE_MODE").unwrap_or_else(|_| if boot_config.mobile_mode { "mobile" } else { "desktop" }.to_string()),
     );
-    shell.env.insert(
-        "PHASE1_PERSISTENT_STATE".to_string(),
-        if boot_config.persistent_state { "1" } else { "0" }.to_string(),
-    );
-    shell.env.insert(
-        "PHASE1_BLEEDING_EDGE".to_string(),
-        if boot_config.bleeding_edge { "1" } else { "0" }.to_string(),
-    );
+    shell.env.insert("PHASE1_PERSISTENT_STATE".to_string(), if boot_config.persistent_state { "1" } else { "0" }.to_string());
+    shell.env.insert("PHASE1_BLEEDING_EDGE".to_string(), if boot_config.bleeding_edge { "1" } else { "0" }.to_string());
     shell.env.insert("PHASE1_HISTORY".to_string(), history_store.describe());
 
     if boot_config.persistent_state {
@@ -305,7 +283,7 @@ fn execute_one(shell: &mut Phase1Shell, boot_config: ui::BootConfig, history_sto
                 "sysinfo" => print!("{}", operator::sysinfo(shell, boot_config)),
                 "fastfetch" => print!("{}", fastfetch::run(shell, boot_config)),
                 "dash" => print!("{}", operator::dashboard(shell, boot_config, args)),
-                "theme" => print!("{}", operator::theme(shell, args)),
+                "theme" => print!("{}", theme_command(shell, args)),
                 "banner" => print!("{}", operator::banner(boot_config, args)),
                 "tips" => print!("{}", operator::tips(shell)),
                 "update" => print!("{}", updater::run(args)),
@@ -326,6 +304,22 @@ fn execute_one(shell: &mut Phase1Shell, boot_config: ui::BootConfig, history_sto
         }
         Err(err) => Err(err),
     }
+}
+
+fn theme_command(shell: &mut Phase1Shell, args: &[String]) -> String {
+    if args.first().is_some_and(|arg| linux_colors::is_linux_alias(arg)) {
+        return linux_colors::theme(shell, &args[1..]);
+    }
+    let mut out = operator::theme(shell, args);
+    if matches!(args.first().map(String::as_str), Some("list" | "ls")) {
+        out.push_str("- linux        Linux host color pack with truecolor/256/ANSI fallback\n");
+        out.push_str("- linux apply  detect and apply the best Linux-safe color depth\n");
+        out.push_str("- linux preview show RGB/xterm/ANSI swatches without changing settings\n");
+    }
+    if matches!(args.first().map(String::as_str), None | Some("show")) {
+        out.push_str(&format!("pack   : {}\n", linux_colors::summary(shell)));
+    }
+    out
 }
 
 fn request_reboot(shell: &mut Phase1Shell) {
