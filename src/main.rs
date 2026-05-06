@@ -10,6 +10,7 @@ mod network;
 mod operator;
 mod policy;
 mod registry;
+mod text;
 mod ui;
 
 use commands::{dispatch, parse_line, Phase1Shell};
@@ -19,6 +20,19 @@ use std::io::{self, Write};
 use std::path::Path;
 
 const PERSISTENT_STATE_PATH: &str = "phase1.state";
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum ChainOp {
+    Always,
+    And,
+    Or,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct ChainSegment {
+    op: ChainOp,
+    command: String,
+}
 
 fn compact_path(path: &Path) -> String {
     let raw = path.display().to_string();
@@ -111,34 +125,15 @@ fn run_shell(boot_config: ui::BootConfig) {
         }
 
         shell.push_history(line);
-        let expanded = shell.expand_env(line);
-        match parse_line(&expanded) {
-            Ok(tokens) if tokens.is_empty() => {}
-            Ok(tokens) => {
-                let cmd = &tokens[0];
-                let args = &tokens[1..];
-                match registry::canonical_name(cmd).unwrap_or(cmd) {
-                    "help" => ui::print_help(),
-                    "accounts" => print!("{}", accounts_report(&shell)),
-                    "security" => print!(
-                        "{}",
-                        policy::security_report(boot_config.persistent_state, "memory-only")
-                    ),
-                    "sysinfo" => print!("{}", operator::sysinfo(&mut shell, boot_config)),
-                    "theme" => print!("{}", operator::theme(&mut shell, args)),
-                    "banner" => print!("{}", operator::banner(boot_config, args)),
-                    "tips" => print!("{}", operator::tips(&shell)),
-                    "matrix" => matrix::run(args),
-                    "bootcfg" => handle_bootcfg(boot_config, args),
-                    _ => dispatch(&mut shell, cmd, args),
-                }
+        match execute_chain(&mut shell, boot_config, line) {
+            Ok(_) => {
                 if boot_config.persistent_state {
                     if let Err(err) = save_persistent_state(&shell) {
                         eprintln!("persistent state save warning: {err}");
                     }
                 }
             }
-            Err(err) => eprintln!("parse error: {}", err),
+            Err(err) => eprintln!("parse error: {err}"),
         }
     }
 
@@ -147,6 +142,161 @@ fn run_shell(boot_config: ui::BootConfig) {
             eprintln!("persistent state save warning: {err}");
         }
     }
+}
+
+fn execute_chain(
+    shell: &mut Phase1Shell,
+    boot_config: ui::BootConfig,
+    line: &str,
+) -> Result<bool, String> {
+    let chain = parse_chain(line)?;
+    let mut last_status = true;
+
+    for segment in chain {
+        let should_run = match segment.op {
+            ChainOp::Always => true,
+            ChainOp::And => last_status,
+            ChainOp::Or => !last_status,
+        };
+        if should_run {
+            last_status = execute_one(shell, boot_config, &segment.command)?;
+        }
+    }
+
+    Ok(last_status)
+}
+
+fn execute_one(
+    shell: &mut Phase1Shell,
+    boot_config: ui::BootConfig,
+    line: &str,
+) -> Result<bool, String> {
+    let expanded = shell.expand_env(line);
+    match parse_line(&expanded) {
+        Ok(tokens) if tokens.is_empty() => Ok(true),
+        Ok(tokens) => {
+            let cmd = &tokens[0];
+            let args = &tokens[1..];
+            let canonical = registry::canonical_name(cmd).unwrap_or(cmd);
+            let known = registry::lookup(cmd).is_some() || plugin_exists(shell, canonical);
+            match canonical {
+                "help" => ui::print_help(),
+                "accounts" => print!("{}", accounts_report(shell)),
+                "security" => print!(
+                    "{}",
+                    policy::security_report(boot_config.persistent_state, "memory-only")
+                ),
+                "sysinfo" => print!("{}", operator::sysinfo(shell, boot_config)),
+                "theme" => print!("{}", operator::theme(shell, args)),
+                "banner" => print!("{}", operator::banner(boot_config, args)),
+                "tips" => print!("{}", operator::tips(shell)),
+                "grep" => print!("{}", text::grep(&shell.kernel.vfs, args)),
+                "wc" => print!("{}", text::wc(&shell.kernel.vfs, args)),
+                "head" => print!("{}", text::head(&shell.kernel.vfs, args)),
+                "tail" => print!("{}", text::tail(&shell.kernel.vfs, args)),
+                "find" => print!("{}", text::find(&shell.kernel.vfs, args)),
+                "matrix" => matrix::run(args),
+                "bootcfg" => handle_bootcfg(boot_config, args),
+                _ => dispatch(shell, cmd, args),
+            }
+            Ok(known)
+        }
+        Err(err) => Err(err),
+    }
+}
+
+fn parse_chain(line: &str) -> Result<Vec<ChainSegment>, String> {
+    let mut segments = Vec::new();
+    let mut current = String::new();
+    let mut quote: Option<char> = None;
+    let mut escaped = false;
+    let mut op = ChainOp::Always;
+    let chars: Vec<char> = line.chars().collect();
+    let mut idx = 0;
+
+    while idx < chars.len() {
+        let ch = chars[idx];
+        if escaped {
+            current.push(ch);
+            escaped = false;
+            idx += 1;
+            continue;
+        }
+        if ch == '\\' {
+            current.push(ch);
+            escaped = true;
+            idx += 1;
+            continue;
+        }
+        if let Some(q) = quote {
+            current.push(ch);
+            if ch == q {
+                quote = None;
+            }
+            idx += 1;
+            continue;
+        }
+        if ch == '\'' || ch == '"' {
+            quote = Some(ch);
+            current.push(ch);
+            idx += 1;
+            continue;
+        }
+
+        let next = chars.get(idx + 1).copied();
+        match (ch, next) {
+            ('&', Some('&')) => {
+                push_segment(&mut segments, op, &mut current)?;
+                op = ChainOp::And;
+                idx += 2;
+            }
+            ('|', Some('|')) => {
+                push_segment(&mut segments, op, &mut current)?;
+                op = ChainOp::Or;
+                idx += 2;
+            }
+            (';', _) => {
+                push_segment(&mut segments, op, &mut current)?;
+                op = ChainOp::Always;
+                idx += 1;
+            }
+            _ => {
+                current.push(ch);
+                idx += 1;
+            }
+        }
+    }
+
+    if quote.is_some() {
+        return Err("unterminated quote in command chain".to_string());
+    }
+    push_segment(&mut segments, op, &mut current)?;
+    Ok(segments)
+}
+
+fn push_segment(
+    segments: &mut Vec<ChainSegment>,
+    op: ChainOp,
+    current: &mut String,
+) -> Result<(), String> {
+    let command = current.trim();
+    if command.is_empty() {
+        return Err("empty command in chain".to_string());
+    }
+    segments.push(ChainSegment {
+        op,
+        command: command.to_string(),
+    });
+    current.clear();
+    Ok(())
+}
+
+fn plugin_exists(shell: &Phase1Shell, name: &str) -> bool {
+    !name.is_empty()
+        && name
+            .chars()
+            .all(|ch| ch.is_ascii_alphanumeric() || matches!(ch, '_' | '-'))
+        && shell.plugins_dir.join(format!("{name}.py")).exists()
 }
 
 fn accounts_report(shell: &Phase1Shell) -> String {
@@ -340,7 +490,7 @@ fn hex_value(byte: u8) -> Option<u8> {
 
 #[cfg(test)]
 mod tests {
-    use super::{compact_path, decode_hex, encode_hex};
+    use super::{compact_path, decode_hex, encode_hex, parse_chain, ChainOp};
     use std::path::Path;
 
     #[test]
@@ -354,5 +504,15 @@ mod tests {
     fn state_hex_round_trip() {
         let encoded = encode_hex("hello phase1".as_bytes());
         assert_eq!(decode_hex(&encoded).unwrap(), b"hello phase1");
+    }
+
+    #[test]
+    fn command_chain_respects_quotes_and_operators() {
+        let chain = parse_chain("echo 'a;b' ; unknown && echo no || echo yes").unwrap();
+        assert_eq!(chain.len(), 4);
+        assert_eq!(chain[0].command, "echo 'a;b'");
+        assert_eq!(chain[1].op, ChainOp::Always);
+        assert_eq!(chain[2].op, ChainOp::And);
+        assert_eq!(chain[3].op, ChainOp::Or);
     }
 }
