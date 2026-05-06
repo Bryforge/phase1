@@ -30,7 +30,7 @@ fn complete_at(before: &str, after: &str) -> TabCompletion {
         command_matches(prefix)
     } else {
         let command = command_for_context(before, token_start).unwrap_or("");
-        argument_matches(command, prefix)
+        argument_matches(command, prefix, &before[..token_start])
     };
 
     completion_result(before, after, token_start, prefix, matches)
@@ -126,7 +126,7 @@ fn command_matches(prefix: &str) -> Vec<String> {
     matches
 }
 
-fn argument_matches(command: &str, prefix: &str) -> Vec<String> {
+fn argument_matches(command: &str, prefix: &str, before_token: &str) -> Vec<String> {
     let canonical = registry::canonical_name(command).unwrap_or(command);
     let options: &[&str] = match canonical {
         "theme" => &[
@@ -160,6 +160,20 @@ fn argument_matches(command: &str, prefix: &str) -> Vec<String> {
             "persist",
             "edge",
             "bleeding-edge",
+        ],
+        "update" if update_suite_context(before_token) => &[
+            "quick",
+            "full",
+            "smoke",
+            "game",
+            "fmt",
+            "cargo-check",
+            "clippy",
+            "doctor",
+            "--build",
+            "--no-build",
+            "--trust-host",
+            "--execute",
         ],
         "update" => &[
             "plan",
@@ -216,6 +230,14 @@ fn argument_matches(command: &str, prefix: &str) -> Vec<String> {
         _ => &[],
     };
     matches_from(options, prefix)
+}
+
+fn update_suite_context(before_token: &str) -> bool {
+    let start = segment_start(before_token);
+    before_token[start..]
+        .split_whitespace()
+        .skip(1)
+        .any(|token| matches!(token, "test" | "tests" | "devtest" | "validate" | "verify" | "qa"))
 }
 
 fn matches_from(options: &[&str], prefix: &str) -> Vec<String> {
