@@ -168,12 +168,16 @@ fn argument_matches(command: &str, prefix: &str) -> Vec<String> {
             "execute",
             "--execute",
             "protocol",
+            "latest",
+            "now",
+            "self-update",
             "bleeding",
             "edge",
             "stable",
             "release",
             "--build",
             "--no-build",
+            "--trust-host",
         ],
         "wasm" => &["list", "inspect", "run", "validate", "hello-wasi", "arena", "game"],
         "arena" | "doom" => &[
@@ -245,6 +249,14 @@ mod tests {
         assert_eq!(
             complete_tab_line("update pr\t"),
             TabCompletion::Completed("update protocol".to_string())
+        );
+        assert_eq!(
+            complete_tab_line("update lat\t"),
+            TabCompletion::Completed("update latest".to_string())
+        );
+        assert_eq!(
+            complete_tab_line("update --trust\t"),
+            TabCompletion::Completed("update --trust-host".to_string())
         );
         assert_eq!(
             complete_tab_line("arena dem\t"),
