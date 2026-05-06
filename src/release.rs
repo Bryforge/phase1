@@ -1,7 +1,7 @@
 use crate::kernel::VERSION;
 
 pub const RELEASE_VERSION: &str = "3.6.0";
-pub const BLEEDING_VERSION: &str = "3.9.0-dev";
+pub const BLEEDING_VERSION: &str = "3.10.0-dev";
 pub const CHANNEL: &str = "bleeding-edge";
 pub const UPDATE_PROTOCOL_FILE: &str = "UPDATE_PROTOCOL.md";
 pub const VERSION_SCHEME: &str = "MAJOR.MINOR.PATCH[-dev]";
@@ -19,6 +19,7 @@ const BLEEDING_FEATURES: &[&str] = &[
     "selectable UI color palettes with rainbow default",
     "live system tab auto-completion for commands and common arguments",
     "raw-mode input editor with redraw-safe backspace handling",
+    "full-screen operator TUI dashboard with compact fallback",
     "operator sysinfo/theme/banner/tips commands",
 ];
 
@@ -55,7 +56,7 @@ const ROADMAP_STATUS: &[(&str, &str)] = &[
     ),
     (
         "Full-screen TUI dashboard",
-        "planned: compact dashboard and sysinfo are available now",
+        "complete: dash renders a full-screen operator panel set; dash --compact keeps the quick snapshot",
     ),
 ];
 
@@ -120,6 +121,7 @@ mod tests {
         assert!(out.contains("selectable UI color palettes"));
         assert!(out.contains("live system tab auto-completion"));
         assert!(out.contains("raw-mode input editor"));
+        assert!(out.contains("full-screen operator TUI dashboard"));
     }
 
     #[test]
@@ -133,6 +135,7 @@ mod tests {
         assert!(out.contains("Configurable UI color palettes"));
         assert!(out.contains("System tab auto-completion"));
         assert!(out.contains("Raw input editing"));
+        assert!(out.contains("Full-screen TUI dashboard"));
         assert!(out.contains("complete"));
     }
 }
