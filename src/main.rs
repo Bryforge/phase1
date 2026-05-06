@@ -641,7 +641,7 @@ mod tests {
 
     #[test]
     fn compact_path_shortens_home() {
-        assert_eq!(compact_path(Path::new("/home"), "~");
+        assert_eq!(compact_path(Path::new("/home")), "~");
         assert_eq!(compact_path(Path::new("/home/projects")), "~/projects");
         assert_eq!(compact_path(Path::new("/proc")), "/proc");
     }
