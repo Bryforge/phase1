@@ -5,11 +5,11 @@ use crate::autocomplete::{self, TabCompletion};
 
 pub fn read_shell_line(prompt: &str) -> io::Result<Option<String>> {
     if std::env::var_os("PHASE1_COOKED_INPUT").is_some() {
-        return read_cooked_line();
+        return read_cooked_line(prompt);
     }
 
     let Some(_guard) = RawModeGuard::enter() else {
-        return read_cooked_line();
+        return read_cooked_line(prompt);
     };
 
     let mut stdout = io::stdout();
@@ -51,7 +51,7 @@ pub fn read_shell_line(prompt: &str) -> io::Result<Option<String>> {
                     return Ok(None);
                 }
             }
-            0x1b => drain_escape(&mut stdin),
+            0x1b => {}
             byte if byte.is_ascii_control() => {}
             byte => {
                 line.push(byte as char);
@@ -62,12 +62,40 @@ pub fn read_shell_line(prompt: &str) -> io::Result<Option<String>> {
     }
 }
 
-fn read_cooked_line() -> io::Result<Option<String>> {
+fn read_cooked_line(prompt: &str) -> io::Result<Option<String>> {
     let mut input = String::new();
     match io::stdin().read_line(&mut input) {
         Ok(0) => Ok(None),
-        Ok(_) => Ok(Some(input.trim_end_matches(['\r', '\n']).to_string())),
+        Ok(_) => {
+            let line = input.trim_end_matches(['\r', '\n']);
+            if line.contains('\t') {
+                return Ok(Some(complete_cooked_line(line, prompt)?));
+            }
+            Ok(Some(line.to_string()))
+        }
         Err(err) => Err(err),
+    }
+}
+
+fn complete_cooked_line(line: &str, prompt: &str) -> io::Result<String> {
+    match autocomplete::complete_tab_line(line) {
+        TabCompletion::Unchanged(line) => Ok(line),
+        TabCompletion::Completed(line) => {
+            println!("tab complete: {line}");
+            Ok(line)
+        }
+        TabCompletion::Suggestions { prefix, matches } => {
+            println!("tab matches for '{prefix}': {}", matches.join(" "));
+            print!("{prompt}");
+            io::stdout().flush()?;
+            Ok(String::new())
+        }
+        TabCompletion::NoMatch { prefix } => {
+            println!("tab complete: no matches for '{prefix}'");
+            print!("{prompt}");
+            io::stdout().flush()?;
+            Ok(String::new())
+        }
     }
 }
 
@@ -97,11 +125,6 @@ fn handle_tab(prompt: &str, line: &mut String, stdout: &mut io::Stdout) -> io::R
 fn redraw(prompt: &str, line: &str, stdout: &mut io::Stdout) -> io::Result<()> {
     write!(stdout, "\r\x1b[2K{prompt}{line}")?;
     stdout.flush()
-}
-
-fn drain_escape<R: Read>(stdin: &mut R) {
-    let mut buf = [0_u8; 8];
-    let _ = stdin.read(&mut buf);
 }
 
 struct RawModeGuard {
