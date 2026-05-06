@@ -131,7 +131,10 @@ impl Scheduler {
     pub fn jobs(&self) -> String {
         let mut out = String::new();
         for process in self.live_processes().filter(|p| p.background) {
-            out.push_str(&format!("[{}] {:<5} {}\n", process.pid, process.state, process.cmdline));
+            out.push_str(&format!(
+                "[{}] {:<5} {}\n",
+                process.pid, process.state, process.cmdline
+            ));
         }
         if out.is_empty() {
             "no background jobs\n".to_string()
@@ -174,8 +177,16 @@ impl Scheduler {
         };
         if let Some(process) = self.processes.iter_mut().find(|p| p.pid == pid) {
             process.background = background;
-            process.state = if background { ProcessState::RunningBg } else { ProcessState::Running };
-            return format!("process {} moved to {}", pid, if background { "background" } else { "foreground" });
+            process.state = if background {
+                ProcessState::RunningBg
+            } else {
+                ProcessState::Running
+            };
+            return format!(
+                "process {} moved to {}",
+                pid,
+                if background { "background" } else { "foreground" }
+            );
         }
         format!("no such process: {}", pid)
     }
@@ -185,7 +196,7 @@ impl Scheduler {
     }
 
     pub fn load_cr3(&mut self, value: u64) -> Result<(), String> {
-        if !self.cr4_pcide && value % 4096 != 0 {
+        if !self.cr4_pcide && !value.is_multiple_of(4096) {
             return Err("CR3 must be 4KiB aligned unless PCIDE is enabled".to_string());
         }
         self.current_cr3 = value;
@@ -209,18 +220,24 @@ impl Scheduler {
     }
 
     fn live_processes(&self) -> impl Iterator<Item = &SimProcess> {
-        self.processes.iter().filter(|p| p.state != ProcessState::Terminated)
+        self.processes
+            .iter()
+            .filter(|p| p.state != ProcessState::Terminated)
     }
 
     fn reap_terminated(&mut self) {
-        self.processes.retain(|p| p.state != ProcessState::Terminated);
+        self.processes
+            .retain(|p| p.state != ProcessState::Terminated);
     }
 }
 
 #[derive(Clone, Debug)]
 pub enum VfsNode {
     File { content: String, perm: u16 },
-    Dir { children: HashMap<String, VfsNode>, perm: u16 },
+    Dir {
+        children: HashMap<String, VfsNode>,
+        perm: u16,
+    },
 }
 
 impl VfsNode {
@@ -257,11 +274,18 @@ impl Vfs {
         root.insert("proc".to_string(), procfs(0));
         root.insert("tmp".to_string(), dir(HashMap::new(), 0o777));
         root.insert("var".to_string(), varfs());
-        Self { root: dir(root, 0o755), cwd: PathBuf::from("/") }
+        Self {
+            root: dir(root, 0o755),
+            cwd: PathBuf::from("/"),
+        }
     }
 
     pub fn resolve_path(&self, raw: &str) -> PathBuf {
-        let mut stack = if raw.starts_with('/') { Vec::new() } else { path_parts(&self.cwd) };
+        let mut stack = if raw.starts_with('/') {
+            Vec::new()
+        } else {
+            path_parts(&self.cwd)
+        };
         for part in raw.split('/') {
             match part {
                 "" | "." => {}
@@ -325,7 +349,10 @@ impl Vfs {
         let resolved = self.resolve_path(path);
         if let Some(node) = self.get_node_mut(&resolved) {
             match node {
-                VfsNode::File { content: existing, perm } => {
+                VfsNode::File {
+                    content: existing,
+                    perm,
+                } => {
                     if *perm & 0o200 == 0 {
                         return Err("permission denied".to_string());
                     }
@@ -347,13 +374,24 @@ impl Vfs {
         let resolved = self.resolve_path(target);
         match self.get_node(&resolved) {
             Some(node @ VfsNode::File { .. }) => {
-                let name = resolved.file_name().and_then(|s| s.to_str()).unwrap_or(target);
-                if long { format_entry(name, node) } else { format!("{}\n", name) }
+                let name = resolved
+                    .file_name()
+                    .and_then(|s| s.to_str())
+                    .unwrap_or(target);
+                if long {
+                    format_entry(name, node)
+                } else {
+                    format!("{}\n", name)
+                }
             }
             Some(VfsNode::Dir { children, .. }) => {
                 let mut names: Vec<_> = children.keys().cloned().collect();
                 names.sort();
-                let mut out = if long { "total 0\n".to_string() } else { String::new() };
+                let mut out = if long {
+                    "total 0\n".to_string()
+                } else {
+                    String::new()
+                };
                 for name in names {
                     let node = &children[&name];
                     if long {
@@ -376,7 +414,10 @@ impl Vfs {
                 if *perm & 0o200 == 0 {
                     return Err("permission denied".to_string());
                 }
-                children.remove(&name).map(|_| ()).ok_or_else(|| "no such file".to_string())
+                children
+                    .remove(&name)
+                    .map(|_| ())
+                    .ok_or_else(|| "no such file".to_string())
             }
             _ => Err("parent is not a directory".to_string()),
         }
@@ -384,7 +425,10 @@ impl Vfs {
 
     pub fn cp(&mut self, src: &str, dst: &str) -> Result<(), String> {
         let src_path = self.resolve_path(src);
-        let src_node = self.get_node(&src_path).cloned().ok_or_else(|| "source not found".to_string())?;
+        let src_node = self
+            .get_node(&src_path)
+            .cloned()
+            .ok_or_else(|| "source not found".to_string())?;
         if src_node.is_dir() {
             return Err("cp currently supports files only".to_string());
         }
@@ -394,7 +438,10 @@ impl Vfs {
 
     pub fn mv(&mut self, src: &str, dst: &str) -> Result<(), String> {
         let src_path = self.resolve_path(src);
-        let node = self.get_node(&src_path).cloned().ok_or_else(|| "source not found".to_string())?;
+        let node = self
+            .get_node(&src_path)
+            .cloned()
+            .ok_or_else(|| "source not found".to_string())?;
         let dst_path = self.destination_path(dst, &src_path)?;
         self.insert_at(dst_path, node, true)?;
         self.rm(src)
@@ -408,8 +455,14 @@ impl Vfs {
 
     pub fn update_proc(&mut self, uptime_secs: u64) {
         if let Some(VfsNode::Dir { children, .. }) = self.get_node_mut(Path::new("/proc")) {
-            children.insert("uptime".to_string(), file(format!("{} seconds\n", uptime_secs), 0o444));
-            children.insert("version".to_string(), file(format!("phase1 {}\n", VERSION), 0o444));
+            children.insert(
+                "uptime".to_string(),
+                file(format!("{} seconds\n", uptime_secs), 0o444),
+            );
+            children.insert(
+                "version".to_string(),
+                file(format!("phase1 {}\n", VERSION), 0o444),
+            );
         }
     }
 
@@ -417,7 +470,10 @@ impl Vfs {
         let dst_path = self.resolve_path(dst);
         match self.get_node(&dst_path) {
             Some(VfsNode::Dir { .. }) => {
-                let name = src_path.file_name().and_then(|s| s.to_str()).ok_or_else(|| "invalid source".to_string())?;
+                let name = src_path
+                    .file_name()
+                    .and_then(|s| s.to_str())
+                    .ok_or_else(|| "invalid source".to_string())?;
                 Ok(dst_path.join(name))
             }
             _ => Ok(dst_path),
@@ -453,7 +509,9 @@ pub struct AuditLog {
 
 impl AuditLog {
     pub fn new() -> Self {
-        Self { events: VecDeque::with_capacity(AUDIT_LIMIT) }
+        Self {
+            events: VecDeque::with_capacity(AUDIT_LIMIT),
+        }
     }
 
     pub fn record(&mut self, event: impl Into<String>) {
@@ -467,7 +525,11 @@ impl AuditLog {
         if self.events.is_empty() {
             return "audit log empty\n".to_string();
         }
-        self.events.iter().enumerate().map(|(idx, event)| format!("{:04} {}\n", idx, event)).collect()
+        self.events
+            .iter()
+            .enumerate()
+            .map(|(idx, event)| format!("{:04} {}\n", idx, event))
+            .collect()
     }
 }
 
@@ -489,8 +551,22 @@ impl PcieManager {
     pub fn new() -> Self {
         Self {
             devices: vec![
-                PcieDevice { bus: 0, device: 0, function: 0, vendor_id: 0x8086, device_id: 0x1237, name: "Intel 440FX host bridge".to_string() },
-                PcieDevice { bus: 0, device: 3, function: 0, vendor_id: 0x8086, device_id: 0x100e, name: "Intel 82540EM network adapter".to_string() },
+                PcieDevice {
+                    bus: 0,
+                    device: 0,
+                    function: 0,
+                    vendor_id: 0x8086,
+                    device_id: 0x1237,
+                    name: "Intel 440FX host bridge".to_string(),
+                },
+                PcieDevice {
+                    bus: 0,
+                    device: 3,
+                    function: 0,
+                    vendor_id: 0x8086,
+                    device_id: 0x100e,
+                    name: "Intel 82540EM network adapter".to_string(),
+                },
             ],
         }
     }
@@ -498,7 +574,10 @@ impl PcieManager {
     pub fn lspci(&self) -> String {
         let mut out = String::new();
         for dev in &self.devices {
-            out.push_str(&format!("{:02x}:{:02x}.{} {} [{:04x}:{:04x}]\n", dev.bus, dev.device, dev.function, dev.name, dev.vendor_id, dev.device_id));
+            out.push_str(&format!(
+                "{:02x}:{:02x}.{} {} [{:04x}:{:04x}]\n",
+                dev.bus, dev.device, dev.function, dev.name, dev.vendor_id, dev.device_id
+            ));
         }
         out
     }
@@ -518,7 +597,13 @@ pub struct Kernel {
 
 impl Kernel {
     pub fn new() -> Self {
-        let mut kernel = Self { vfs: Vfs::new(), scheduler: Scheduler::new(), pcie: PcieManager::new(), audit: AuditLog::new(), booted: Instant::now() };
+        let mut kernel = Self {
+            vfs: Vfs::new(),
+            scheduler: Scheduler::new(),
+            pcie: PcieManager::new(),
+            audit: AuditLog::new(),
+            booted: Instant::now(),
+        };
         kernel.audit.record("kernel.boot version=3.6.0");
         kernel
     }
@@ -538,17 +623,27 @@ impl Kernel {
     }
 
     pub fn sys_write(&mut self, path: &str, content: &str, append: bool) -> Result<(), String> {
-        self.audit.record(format!("sys.write path={} append={}", path, append));
+        self.audit
+            .record(format!("sys.write path={} append={}", path, append));
         self.vfs.write_file(path, content, append)
     }
 
-    pub fn sys_spawn(&mut self, name: &str, cmdline: &str, background: bool) -> Result<u32, String> {
-        self.audit.record(format!("sys.spawn name={} bg={}", name, background));
-        self.scheduler.spawn(name, process::id(), cmdline, 4096, background, 0).ok_or_else(|| "process table full".to_string())
+    pub fn sys_spawn(
+        &mut self,
+        name: &str,
+        cmdline: &str,
+        background: bool,
+    ) -> Result<u32, String> {
+        self.audit
+            .record(format!("sys.spawn name={} bg={}", name, background));
+        self.scheduler
+            .spawn(name, process::id(), cmdline, 4096, background, 0)
+            .ok_or_else(|| "process table full".to_string())
     }
 
     pub fn sys_kill(&mut self, pid: Option<&str>) -> String {
-        self.audit.record(format!("sys.kill pid={}", pid.unwrap_or("?")));
+        self.audit
+            .record(format!("sys.kill pid={}", pid.unwrap_or("?")));
         self.scheduler.kill(pid)
     }
 }
@@ -563,22 +658,43 @@ fn dir(children: HashMap<String, VfsNode>, perm: u16) -> VfsNode {
 
 fn procfs(uptime: u64) -> VfsNode {
     let mut children = HashMap::new();
-    children.insert("cpuinfo".to_string(), file("processor: 0\nmodel: phase1 virtual cpu\n".to_string(), 0o444));
-    children.insert("meminfo".to_string(), file("MemTotal: 4194304 kB\nMemFree: 2097152 kB\n".to_string(), 0o444));
-    children.insert("uptime".to_string(), file(format!("{} seconds\n", uptime), 0o444));
-    children.insert("version".to_string(), file(format!("phase1 {}\n", VERSION), 0o444));
+    children.insert(
+        "cpuinfo".to_string(),
+        file("processor: 0\nmodel: phase1 virtual cpu\n".to_string(), 0o444),
+    );
+    children.insert(
+        "meminfo".to_string(),
+        file("MemTotal: 4194304 kB\nMemFree: 2097152 kB\n".to_string(), 0o444),
+    );
+    children.insert(
+        "uptime".to_string(),
+        file(format!("{} seconds\n", uptime), 0o444),
+    );
+    children.insert(
+        "version".to_string(),
+        file(format!("phase1 {}\n", VERSION), 0o444),
+    );
     dir(children, 0o555)
 }
 
 fn homefs() -> VfsNode {
     let mut children = HashMap::new();
-    children.insert("readme.txt".to_string(), file(format!("phase1 {}\nType help to begin.\n", VERSION), 0o644));
+    children.insert(
+        "readme.txt".to_string(),
+        file(format!("phase1 {}\nType help to begin.\n", VERSION), 0o644),
+    );
     dir(children, 0o777)
 }
 
 fn etcfs() -> VfsNode {
     let mut children = HashMap::new();
-    children.insert("passwd".to_string(), file("root:x:0:0:root:/root:/bin/sh\nuser:x:1000:1000:user:/home:/bin/sh\n".to_string(), 0o444));
+    children.insert(
+        "passwd".to_string(),
+        file(
+            "root:x:0:0:root:/root:/bin/sh\nuser:x:1000:1000:user:/home:/bin/sh\n".to_string(),
+            0o444,
+        ),
+    );
     dir(children, 0o555)
 }
 
@@ -591,30 +707,59 @@ fn devfs() -> VfsNode {
 
 fn varfs() -> VfsNode {
     let mut log = HashMap::new();
-    log.insert("boot.log".to_string(), file("phase1 boot nominal\n".to_string(), 0o644));
+    log.insert(
+        "boot.log".to_string(),
+        file("phase1 boot nominal\n".to_string(), 0o644),
+    );
     let mut var = HashMap::new();
     var.insert("log".to_string(), dir(log, 0o755));
     dir(var, 0o755)
 }
 
 fn path_parts(path: &Path) -> Vec<String> {
-    path.iter().filter_map(|part| part.to_str()).filter(|part| !part.is_empty() && *part != "/").map(ToOwned::to_owned).collect()
+    path.iter()
+        .filter_map(|part| part.to_str())
+        .filter(|part| !part.is_empty() && *part != "/")
+        .map(ToOwned::to_owned)
+        .collect()
 }
 
 fn parent_and_name(path: &Path) -> Result<(PathBuf, String), String> {
     let parent = path.parent().unwrap_or_else(|| Path::new("/")).to_path_buf();
-    let name = path.file_name().and_then(|part| part.to_str()).ok_or_else(|| "invalid path".to_string())?.to_string();
+    let name = path
+        .file_name()
+        .and_then(|part| part.to_str())
+        .ok_or_else(|| "invalid path".to_string())?
+        .to_string();
     Ok((parent, name))
 }
 
 fn format_entry(name: &str, node: &VfsNode) -> String {
     let kind = if node.is_dir() { 'd' } else { '-' };
-    format!("{}{} root root {:>5} {}\n", kind, perm_string(node.perm()), node.len(), name)
+    format!(
+        "{}{} root root {:>5} {}\n",
+        kind,
+        perm_string(node.perm()),
+        node.len(),
+        name
+    )
 }
 
 fn perm_string(perm: u16) -> String {
-    let bits = [(0o400, 'r'), (0o200, 'w'), (0o100, 'x'), (0o040, 'r'), (0o020, 'w'), (0o010, 'x'), (0o004, 'r'), (0o002, 'w'), (0o001, 'x')];
-    bits.iter().map(|(bit, ch)| if perm & bit != 0 { *ch } else { '-' }).collect()
+    let bits = [
+        (0o400, 'r'),
+        (0o200, 'w'),
+        (0o100, 'x'),
+        (0o040, 'r'),
+        (0o020, 'w'),
+        (0o010, 'x'),
+        (0o004, 'r'),
+        (0o002, 'w'),
+        (0o001, 'x'),
+    ];
+    bits.iter()
+        .map(|(bit, ch)| if perm & bit != 0 { *ch } else { '-' })
+        .collect()
 }
 
 fn draw_tree(node: &VfsNode, prefix: &str, out: &mut String) {
