@@ -68,7 +68,7 @@ fn boot_help_man_and_completion_work() {
     assert_contains_all(
         &output,
         &[
-            "security safe",
+            "security  safe",
             "PHASE1 // ADVANCED OPERATOR CONSOLE",
             "phase1 // command map",
             "proc",
@@ -86,7 +86,7 @@ fn secure_default_blocks_host_backed_commands() {
     assert_contains_all(
         &output,
         &[
-            "security safe",
+            "security  safe",
             "safe-mode: host network inspection disabled",
             "safe-mode: host WiFi inspection disabled",
             "wifi-scan: disabled by safe boot profile",
