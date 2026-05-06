@@ -11,7 +11,7 @@ const BLEEDING_BRANCH: &str = "master";
 const STABLE_BRANCH: &str = "stable";
 const UPDATE_PROTOCOL_FILE: &str = "UPDATE_PROTOCOL.md";
 const VERSION_SCHEME: &str = "MAJOR.MINOR.PATCH[-dev]";
-pub const CURRENT_EDGE_VERSION: &str = "3.10.2-dev";
+pub const CURRENT_EDGE_VERSION: &str = env!("CARGO_PKG_VERSION");
 const COMMAND_TIMEOUT: Duration = Duration::from_secs(20);
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -180,7 +180,8 @@ fn guarded_execute(target: Target, build: bool) -> String {
 fn plan(target: Target, build: bool) -> String {
     let branch = target.branch();
     let mut out = format!("phase1 updater // plan {}\n\n", target.label());
-    out.push_str(&format!("edge version : {CURRENT_EDGE_VERSION}\n"));
+    out.push_str(&format!("current edge : {CURRENT_EDGE_VERSION}\n"));
+    out.push_str("stable base  : 3.6.0\n");
     out.push_str(&format!("versioning   : {VERSION_SCHEME}\n"));
     out.push_str(&format!("protocol     : {UPDATE_PROTOCOL_FILE}\n"));
     out.push_str("hint         : run update protocol to view the versioning rules\n");
@@ -213,7 +214,8 @@ fn protocol_report() -> String {
     let mut out = String::from("phase1 update protocol\n");
     out.push_str(&format!("reference file : {UPDATE_PROTOCOL_FILE}\n"));
     out.push_str(&format!("version format : {VERSION_SCHEME}\n"));
-    out.push_str(&format!("edge version   : {CURRENT_EDGE_VERSION}\n"));
+    out.push_str(&format!("current edge   : {CURRENT_EDGE_VERSION}\n"));
+    out.push_str("stable base    : 3.6.0\n");
     out.push_str("\nupdate rules\n");
     out.push_str("  - use PATCH, the third number, for every safe fix, docs, protocol, formatting, and incremental feature update\n");
     out.push_str("  - PATCH updates do not need README changes unless public usage changes\n");
@@ -422,6 +424,7 @@ mod tests {
         let out = run(&[]);
         assert!(out.contains("phase1 updater // plan latest bleeding edge"));
         assert!(out.contains(CURRENT_EDGE_VERSION));
+        assert!(out.contains("stable base"));
         assert!(out.contains("MAJOR.MINOR.PATCH"));
         assert!(out.contains("update protocol"));
         assert!(out.contains("update latest --trust-host --execute --build"));
@@ -454,6 +457,7 @@ mod tests {
         assert!(out.contains("third number"));
         assert!(out.contains("--trust-host"));
         assert!(out.contains(CURRENT_EDGE_VERSION));
+        assert!(out.contains("stable base"));
         assert!(out.contains("README changes"));
         assert!(out.contains("update test"));
     }
