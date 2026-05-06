@@ -147,7 +147,7 @@ pub fn run(args: &[String]) {
 fn build_columns(width: usize, height: usize, rng: &mut Lcg, config: MatrixConfig) -> Vec<Column> {
     (0..width)
         .map(|_| Column {
-            head: -rng.range(height.max(1) as u64) as isize,
+            head: -(rng.range(height.max(1) as u64) as isize),
             speed: 1 + rng.range(4),
             tail: config.tail_min + rng.range((config.tail_max - config.tail_min + 1) as u64) as usize,
             glitch: rng.range(100) as u8,
@@ -192,8 +192,9 @@ fn render_frame(
         }
 
         column.head += 1;
-        if column.head - trail > height as isize + rng.range(height as u64).max(1) as isize {
-            column.head = -rng.range(height as u64).max(1) as isize;
+        let reset_after = height as isize + rng.range(height as u64).max(1) as isize;
+        if column.head - trail > reset_after {
+            column.head = -(rng.range(height as u64).max(1) as isize);
             column.speed = 1 + rng.range(4);
             column.tail = config.tail_min + rng.range((config.tail_max - config.tail_min + 1) as u64) as usize;
             column.glitch = rng.range(100) as u8;
