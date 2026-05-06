@@ -16,7 +16,6 @@ use crate::registry;
 pub struct Phase1Shell {
     pub kernel: Kernel,
     pub network: NetworkStack,
-    pub start_time: Instant,
     pub history: VecDeque<String>,
     pub plugins_dir: PathBuf,
     pub env: HashMap<String, String>,
@@ -27,17 +26,22 @@ impl Phase1Shell {
         let mut shell = Self {
             kernel: Kernel::new(),
             network: NetworkStack::new(),
-            start_time: Instant::now(),
             history: VecDeque::with_capacity(512),
             plugins_dir: PathBuf::from("plugins"),
             env: HashMap::with_capacity(16),
         };
 
-        shell.env.insert("PATH".to_string(), "/bin:/usr/bin:/plugins".to_string());
+        shell
+            .env
+            .insert("PATH".to_string(), "/bin:/usr/bin:/plugins".to_string());
         shell.env.insert("USER".to_string(), "root".to_string());
         shell.env.insert("HOME".to_string(), "/home".to_string());
-        shell.env.insert("SHELL".to_string(), "phase1".to_string());
-        shell.env.insert("TERM".to_string(), "xterm-256color".to_string());
+        shell
+            .env
+            .insert("SHELL".to_string(), "phase1".to_string());
+        shell
+            .env
+            .insert("TERM".to_string(), "xterm-256color".to_string());
 
         if let Err(err) = fs::create_dir_all(&shell.plugins_dir) {
             eprintln!("plugin directory warning: {}", err);
@@ -169,7 +173,9 @@ print("status=ok")
             return true;
         }
 
-        self.kernel.audit.record(format!("plugin.exec name={} argc={}", name, args.len()));
+        self.kernel
+            .audit
+            .record(format!("plugin.exec name={} argc={}", name, args.len()));
         let context = format!(
             "COMMAND={}\nARGS={}\nUSER={}\nCWD={}\nVERSION={}\n",
             name,
@@ -263,8 +269,13 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
         "pwd" => println!("{}", shell.kernel.vfs.cwd.display()),
         "cd" => shell.cmd_cd(args.first().map(String::as_str)),
         "ls" => {
-            let long = args.iter().any(|arg| matches!(arg.as_str(), "-l" | "-la" | "-al"));
-            let path = args.iter().find(|arg| !arg.starts_with('-')).map(String::as_str);
+            let long = args
+                .iter()
+                .any(|arg| matches!(arg.as_str(), "-l" | "-la" | "-al"));
+            let path = args
+                .iter()
+                .find(|arg| !arg.starts_with('-'))
+                .map(String::as_str);
             print!("{}", shell.kernel.vfs.ls(path, long));
         }
         "cat" => match args.first() {
@@ -274,11 +285,21 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
             },
             None => println!("usage: cat <file>"),
         },
-        "mkdir" => one_arg(args, "mkdir <dir>", |path| report(shell.kernel.vfs.mkdir(path))),
-        "touch" => one_arg(args, "touch <file>", |path| report(shell.kernel.vfs.touch(path))),
-        "rm" => one_arg(args, "rm <path>", |path| report(shell.kernel.vfs.rm(path))),
-        "cp" => two_args(args, "cp <src> <dst>", |src, dst| report(shell.kernel.vfs.cp(src, dst))),
-        "mv" => two_args(args, "mv <src> <dst>", |src, dst| report(shell.kernel.vfs.mv(src, dst))),
+        "mkdir" => one_arg(args, "mkdir <dir>", |path| {
+            report(shell.kernel.vfs.mkdir(path));
+        }),
+        "touch" => one_arg(args, "touch <file>", |path| {
+            report(shell.kernel.vfs.touch(path));
+        }),
+        "rm" => one_arg(args, "rm <path>", |path| {
+            report(shell.kernel.vfs.rm(path));
+        }),
+        "cp" => two_args(args, "cp <src> <dst>", |src, dst| {
+            report(shell.kernel.vfs.cp(src, dst));
+        }),
+        "mv" => two_args(args, "mv <src> <dst>", |src, dst| {
+            report(shell.kernel.vfs.mv(src, dst));
+        }),
         "tree" => print!("{}", shell.kernel.vfs.tree()),
         "echo" => handle_echo(shell, args),
         "ps" => print!("{}", shell.kernel.scheduler.ps()),
@@ -288,10 +309,28 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
         "kill" => println!("{}", shell.kernel.sys_kill(args.first().map(String::as_str))),
         "nice" => {
             let priority = args.get(1).and_then(|p| p.parse::<i32>().ok());
-            println!("{}", shell.kernel.scheduler.nice(args.first().map(String::as_str), priority));
+            println!(
+                "{}",
+                shell
+                    .kernel
+                    .scheduler
+                    .nice(args.first().map(String::as_str), priority)
+            );
         }
-        "fg" => println!("{}", shell.kernel.scheduler.set_background(args.first().map(String::as_str), false)),
-        "bg" => println!("{}", shell.kernel.scheduler.set_background(args.first().map(String::as_str), true)),
+        "fg" => println!(
+            "{}",
+            shell
+                .kernel
+                .scheduler
+                .set_background(args.first().map(String::as_str), false)
+        ),
+        "bg" => println!(
+            "{}",
+            shell
+                .kernel
+                .scheduler
+                .set_background(args.first().map(String::as_str), true)
+        ),
         "ifconfig" => {
             shell.network.refresh();
             print!("{}", shell.network.ifconfig());
@@ -305,22 +344,35 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
             if args.is_empty() && !safe_mode_enabled() {
                 println!("usage: wifi-connect <ssid> [password]");
             } else {
-                println!("{}", shell.network.wifi_connect(args.first().map(String::as_str).unwrap_or(""), args.get(1).map(String::as_str)));
+                println!(
+                    "{}",
+                    shell.network.wifi_connect(
+                        args.first().map(String::as_str).unwrap_or(""),
+                        args.get(1).map(String::as_str)
+                    )
+                );
             }
         }
-        "ping" => one_arg(args, "ping <host>", |host| print!("{}", shell.network.ping(host))),
+        "ping" => one_arg(args, "ping <host>", |host| {
+            print!("{}", shell.network.ping(host));
+        }),
         "nmcli" => print!("{}", shell.network.nmcli()),
         "browser" => {
             if safe_mode_enabled() {
                 println!("browser: disabled by safe boot profile");
             } else {
-                println!("{}", Browser::new().browse(args.first().map(String::as_str).unwrap_or("about")));
+                println!(
+                    "{}",
+                    Browser::new().browse(args.first().map(String::as_str).unwrap_or("about"))
+                );
             }
         }
         "python" => run_python(shell, args),
         "gcc" => run_c(shell, args),
         "plugins" => print!("{}", shell.list_plugins()),
-        "ned" => one_arg(args, "ned <file>", |path| ned::edit(&mut shell.kernel.vfs, path)),
+        "ned" => one_arg(args, "ned <file>", |path| {
+            ned::edit(&mut shell.kernel.vfs, path);
+        }),
         "lspci" => print!("{}", shell.kernel.pcie.lspci()),
         "pcie" => print!("{}", shell.kernel.pcie.pcie_info()),
         "cr3" => println!("CR3=0x{:x}", shell.kernel.scheduler.get_cr3()),
@@ -345,7 +397,10 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
         },
         "free" => println!("MemTotal: 4194304 kB\nMemFree: 2097152 kB\nMemUsed: 2097152 kB"),
         "df" => println!("Filesystem 1K-blocks Used Available Mounted\nphase1fs   1048576   4    1048572   /"),
-        "dmesg" => println!("[0.000000] phase1 {} boot\n[0.012345] vfs mounted\n[0.034567] scheduler online", VERSION),
+        "dmesg" => println!(
+            "[0.000000] phase1 {} boot\n[0.012345] vfs mounted\n[0.034567] scheduler online",
+            VERSION
+        ),
         "vmstat" => println!("procs memory system\nr=1 b=0 free=2097152 in=10 cs=25"),
         "uname" => println!("phase1 {} terminal-os-sim rust", VERSION),
         "date" => println!("{}", now_unix()),
@@ -358,7 +413,13 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
             shell.env.remove(key);
         }),
         "whoami" => println!("{}", shell.user()),
-        "id" => println!("uid={}({}) gid={}({})", shell.kernel.scheduler.current_uid, shell.user(), shell.kernel.scheduler.current_uid, shell.user()),
+        "id" => println!(
+            "uid={}({}) gid={}({})",
+            shell.kernel.scheduler.current_uid,
+            shell.user(),
+            shell.kernel.scheduler.current_uid,
+            shell.user()
+        ),
         "su" => {
             let user = args.first().map(String::as_str).unwrap_or("root");
             shell.kernel.scheduler.current_user = user.to_string();
@@ -395,9 +456,25 @@ fn dashboard(shell: &mut Phase1Shell, args: &[String]) -> String {
     let ps_output = shell.kernel.scheduler.ps();
     let process_count = ps_output.lines().skip(1).count();
     let jobs_output = shell.kernel.scheduler.jobs();
-    let job_count = if jobs_output.trim() == "no background jobs" { 0 } else { jobs_output.lines().count() };
-    let iface_count = shell.network.ifconfig().lines().filter(|line| line.contains(": flags=<")).count();
-    let audit_tail = shell.kernel.audit.dump().lines().last().unwrap_or("audit log empty").to_string();
+    let job_count = if jobs_output.trim() == "no background jobs" {
+        0
+    } else {
+        jobs_output.lines().count()
+    };
+    let iface_count = shell
+        .network
+        .ifconfig()
+        .lines()
+        .filter(|line| line.contains(": flags=<"))
+        .count();
+    let audit_tail = shell
+        .kernel
+        .audit
+        .dump()
+        .lines()
+        .last()
+        .unwrap_or("audit log empty")
+        .to_string();
     let pcie_count = shell.kernel.pcie.lspci().lines().count();
     let cr4 = shell.kernel.scheduler.cr4();
 
@@ -411,7 +488,11 @@ fn dashboard(shell: &mut Phase1Shell, args: &[String]) -> String {
             job_count,
             cwd,
             iface_count,
-            if safe_mode_enabled() { "safe-mode" } else { "host-enabled" },
+            if safe_mode_enabled() {
+                "safe-mode"
+            } else {
+                "host-enabled"
+            },
             shell.kernel.scheduler.get_cr3(),
             cr4,
             pcie_count,
@@ -427,7 +508,11 @@ fn dashboard(shell: &mut Phase1Shell, args: &[String]) -> String {
             job_count,
             cwd,
             iface_count,
-            if safe_mode_enabled() { "safe-mode" } else { "host-enabled" },
+            if safe_mode_enabled() {
+                "safe-mode"
+            } else {
+                "host-enabled"
+            },
             shell.kernel.scheduler.get_cr3(),
             cr4,
             pcie_count,
@@ -459,8 +544,15 @@ fn spawn(shell: &mut Phase1Shell, args: &[String]) {
         return;
     }
     let background = args.iter().any(|arg| arg == "--background" || arg == "&");
-    let filtered: Vec<_> = args.iter().filter(|arg| *arg != "--background" && *arg != "&").cloned().collect();
-    let name = filtered.first().cloned().unwrap_or_else(|| "process".to_string());
+    let filtered: Vec<_> = args
+        .iter()
+        .filter(|arg| *arg != "--background" && *arg != "&")
+        .cloned()
+        .collect();
+    let name = filtered
+        .first()
+        .cloned()
+        .unwrap_or_else(|| "process".to_string());
     let cmdline = filtered.join(" ");
     match shell.kernel.sys_spawn(&name, &cmdline, background) {
         Ok(pid) => println!("spawned pid {}", pid),
@@ -530,12 +622,20 @@ fn run_c(shell: &mut Phase1Shell, args: &[String]) {
         return;
     }
     let mut compile = Command::new(compiler);
-    compile.arg("-Wall").arg("-Wextra").arg("-O0").arg(&source).arg("-o").arg(&binary);
+    compile
+        .arg("-Wall")
+        .arg("-Wextra")
+        .arg("-O0")
+        .arg(&source)
+        .arg("-o")
+        .arg(&binary);
     match run_command(compile, Duration::from_secs(10)) {
-        Ok(output) if output.status.success() => match run_command(Command::new(&binary), Duration::from_secs(5)) {
-            Ok(output) => print_output(output),
-            Err(err) => println!("run: {}", err),
-        },
+        Ok(output) if output.status.success() => {
+            match run_command(Command::new(&binary), Duration::from_secs(5)) {
+                Ok(output) => print_output(output),
+                Err(err) => println!("run: {}", err),
+            }
+        }
         Ok(output) => print_output(output),
         Err(err) => println!("gcc: {}", err),
     }
@@ -603,31 +703,56 @@ fn report(result: Result<(), String>) {
 }
 
 fn parse_u64(raw: &str) -> Option<u64> {
-    raw.strip_prefix("0x").and_then(|hex| u64::from_str_radix(hex, 16).ok()).or_else(|| raw.parse().ok())
+    raw.strip_prefix("0x")
+        .and_then(|hex| u64::from_str_radix(hex, 16).ok())
+        .or_else(|| raw.parse().ok())
 }
 
 fn is_safe_name(name: &str) -> bool {
-    !name.is_empty() && name.chars().all(|ch| ch.is_ascii_alphanumeric() || matches!(ch, '_' | '-'))
+    !name.is_empty()
+        && name
+            .chars()
+            .all(|ch| ch.is_ascii_alphanumeric() || matches!(ch, '_' | '-'))
 }
 
 fn safe_mode_enabled() -> bool {
-    !matches!(std::env::var("PHASE1_SAFE_MODE").ok().as_deref(), Some("0" | "false" | "off" | "no"))
+    !matches!(
+        std::env::var("PHASE1_SAFE_MODE").ok().as_deref(),
+        Some("0" | "false" | "off" | "no")
+    )
 }
 
 fn now_unix() -> u64 {
-    SystemTime::now().duration_since(UNIX_EPOCH).map(|duration| duration.as_secs()).unwrap_or(0)
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|duration| duration.as_secs())
+        .unwrap_or(0)
 }
 
 fn unique_nonce() -> u128 {
-    SystemTime::now().duration_since(UNIX_EPOCH).map(|d| d.as_nanos()).unwrap_or(0)
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|d| d.as_nanos())
+        .unwrap_or(0)
 }
 
 fn find_compiler() -> Option<&'static str> {
-    ["cc", "gcc", "clang"].into_iter().find(|name| Command::new(name).arg("--version").stdout(Stdio::null()).stderr(Stdio::null()).status().is_ok())
+    ["cc", "gcc", "clang"].into_iter().find(|name| {
+        Command::new(name)
+            .arg("--version")
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .status()
+            .is_ok()
+    })
 }
 
 fn run_with_input(mut cmd: Command, input: &str, timeout: Duration) -> io::Result<Output> {
-    let mut child = cmd.stdin(Stdio::piped()).stdout(Stdio::piped()).stderr(Stdio::piped()).spawn()?;
+    let mut child = cmd
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()?;
     if let Some(stdin) = child.stdin.as_mut() {
         stdin.write_all(input.as_bytes())?;
     }
@@ -666,7 +791,12 @@ mod tests {
 
     #[test]
     fn parses_quotes_and_redirect() {
-        let expected = vec!["echo".to_string(), "hello world".to_string(), ">".to_string(), "out".to_string()];
+        let expected = vec![
+            "echo".to_string(),
+            "hello world".to_string(),
+            ">".to_string(),
+            "out".to_string(),
+        ];
         assert_eq!(parse_line("echo 'hello world' > out").unwrap(), expected);
     }
 
