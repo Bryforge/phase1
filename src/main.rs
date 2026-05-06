@@ -1,3 +1,5 @@
+#![allow(clippy::assertions_on_constants)]
+
 mod browser;
 mod commands;
 mod kernel;
@@ -114,6 +116,7 @@ fn run_shell(boot_config: ui::BootConfig) {
                 let cmd = &tokens[0];
                 let args = &tokens[1..];
                 match registry::canonical_name(cmd).unwrap_or(cmd) {
+                    "help" => ui::print_help(),
                     "matrix" => matrix::run(args),
                     "bootcfg" => handle_bootcfg(boot_config, args),
                     _ => dispatch(&mut shell, cmd, args),
