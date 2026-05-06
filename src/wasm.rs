@@ -1,5 +1,5 @@
-#[path = "opendoom.rs"]
-mod opendoom;
+#[path = "arena.rs"]
+mod arena;
 
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -30,7 +30,7 @@ impl Default for WasiManifest {
 }
 
 pub fn help() -> String {
-    "phase1 wasm/wasi runtime\nusage: wasm [list|inspect|run|validate|help] [plugin] [args...]\n\nplugins live in ./plugins as .wasm artifacts with optional .wasi manifests.\nruntime is phase1-only: no host shell, no host network, no host filesystem passthrough.\nopenDoom is exposed as a built-in WASI-lite game launcher: `opendoom start` or `wasm run opendoom start`.\n".to_string()
+    "phase1 wasm/wasi runtime\nusage: wasm [list|inspect|run|validate|help] [plugin] [args...]\n\nplugins live in ./plugins as .wasm artifacts with optional .wasi manifests.\nruntime is phase1-only: no host shell, no host network, no host filesystem passthrough.\nPhase1 Arena is exposed as a built-in WASI-lite game launcher: `wasm run arena demo` or `arena start` when the plugin marker is present.\n".to_string()
 }
 
 pub fn run(plugins_dir: &Path, args: &[String]) -> String {
@@ -54,8 +54,8 @@ pub fn run(plugins_dir: &Path, args: &[String]) -> String {
 }
 
 pub fn execute_plugin(plugins_dir: &Path, name: &str, args: &[String]) -> String {
-    if is_opendoom(name) {
-        return launch_opendoom(args);
+    if is_arena(name) {
+        return launch_arena(args);
     }
 
     let path = match plugin_path(plugins_dir, name) {
@@ -109,15 +109,15 @@ fn list_plugins(plugins_dir: &Path) -> String {
             let path = entry.path();
             if path.extension().and_then(|ext| ext.to_str()) == Some("wasm") {
                 if let Some(name) = path.file_stem().and_then(|stem| stem.to_str()) {
-                    if is_safe_name(name) {
+                    if is_safe_name(name) && name != "opendoom" {
                         names.push(name.to_string());
                     }
                 }
             }
         }
     }
-    if !names.iter().any(|name| name == "opendoom") {
-        names.push("opendoom".to_string());
+    if !names.iter().any(|name| name == "arena") {
+        names.push("arena".to_string());
     }
     names.sort();
     if names.is_empty() {
@@ -128,8 +128,8 @@ fn list_plugins(plugins_dir: &Path) -> String {
 }
 
 fn inspect_plugin(plugins_dir: &Path, name: &str) -> String {
-    if is_opendoom(name) {
-        return opendoom_inspect();
+    if is_arena(name) {
+        return arena_inspect();
     }
 
     let path = match plugin_path(plugins_dir, name) {
@@ -145,7 +145,11 @@ fn inspect_plugin(plugins_dir: &Path, name: &str) -> String {
     out.push_str(&format!("bytes  : {size}\n"));
     out.push_str(&format!(
         "module : {}\n",
-        if validation.is_ok() { "valid wasm" } else { "invalid" }
+        if validation.is_ok() {
+            "valid wasm"
+        } else {
+            "invalid"
+        }
     ));
     if let Err(err) = validation {
         out.push_str(&format!("error  : {err}\n"));
@@ -157,8 +161,8 @@ fn inspect_plugin(plugins_dir: &Path, name: &str) -> String {
 }
 
 fn validate_plugin(plugins_dir: &Path, name: &str) -> String {
-    if is_opendoom(name) {
-        return "wasm: opendoom built-in phase1-wasi-lite game launcher\n".to_string();
+    if is_arena(name) {
+        return "wasm: arena built-in phase1-wasi-lite game launcher\n".to_string();
     }
 
     let path = match plugin_path(plugins_dir, name) {
@@ -171,29 +175,31 @@ fn validate_plugin(plugins_dir: &Path, name: &str) -> String {
     }
 }
 
-fn launch_opendoom(args: &[String]) -> String {
+fn launch_arena(args: &[String]) -> String {
     match args.first().map(String::as_str) {
         Some("start" | "play") => {
-            opendoom::play();
+            arena::play();
             String::new()
         }
-        _ => opendoom::run(args),
+        _ => arena::run(args),
     }
 }
 
-fn opendoom_inspect() -> String {
+fn arena_inspect() -> String {
     let mut out = String::from("phase1 wasm inspect\n");
-    out.push_str("plugin : opendoom\n");
+    out.push_str("plugin : arena\n");
+    out.push_str("name   : Phase1 Arena\n");
     out.push_str("module : built-in phase1 text-mode game\n");
     out.push_str(&format!("runtime: {RUNTIME}\n"));
     out.push_str("wasi   : sandboxed, no host shell, no host network\n");
     out.push_str("cap    : none\n");
-    out.push_str("play   : opendoom start\n");
+    out.push_str("play   : arena start\n");
+    out.push_str("dev    : GAME_DEV.md and scripts/test-game.sh\n");
     out
 }
 
-fn is_opendoom(name: &str) -> bool {
-    matches!(name, "opendoom" | "open-doom" | "doom")
+fn is_arena(name: &str) -> bool {
+    matches!(name, "arena" | "phase-arena" | "phasearena" | "game" | "opendoom" | "open-doom" | "doom")
 }
 
 fn plugin_path(plugins_dir: &Path, raw: &str) -> Result<PathBuf, String> {
@@ -308,11 +314,12 @@ mod tests {
         let dir = temp_plugins();
         let listed = run(&dir, &["list".to_string()]);
         assert!(listed.contains("demo"));
-        assert!(listed.contains("opendoom"));
+        assert!(listed.contains("arena"));
         let inspected = inspect_plugin(&dir, "demo");
         assert!(inspected.contains("valid wasm"));
-        let doom = inspect_plugin(&dir, "opendoom");
-        assert!(doom.contains("built-in phase1 text-mode game"));
+        let game = inspect_plugin(&dir, "arena");
+        assert!(game.contains("built-in phase1 text-mode game"));
+        assert!(game.contains("Phase1 Arena"));
         let _ = fs::remove_dir_all(dir);
     }
 
@@ -328,11 +335,22 @@ mod tests {
     }
 
     #[test]
-    fn opendoom_builtin_runs_demo() {
+    fn arena_builtin_runs_demo() {
         let dir = temp_plugins();
-        let out = execute_plugin(&dir, "opendoom", &["demo".to_string()]);
-        assert!(out.contains("phase1 openDoom"));
-        assert!(out.contains("clean-room ASCII"));
+        let out = execute_plugin(&dir, "arena", &["demo".to_string()]);
+        assert!(out.contains("phase1 arena"));
+        assert!(out.contains("original ASCII"));
+        assert!(out.contains("Phase1 Arena").not());
         let _ = fs::remove_dir_all(dir);
+    }
+
+    trait BoolNot {
+        fn not(self) -> bool;
+    }
+
+    impl BoolNot for bool {
+        fn not(self) -> bool {
+            !self
+        }
     }
 }
