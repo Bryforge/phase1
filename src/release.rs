@@ -1,27 +1,40 @@
 use crate::kernel::VERSION;
 
 pub const RELEASE_VERSION: &str = "3.6.0";
-pub const BLEEDING_VERSION: &str = "3.7.1-dev";
+pub const BLEEDING_VERSION: &str = "3.7.2-dev";
 pub const CHANNEL: &str = "bleeding-edge";
 pub const UPDATE_PROTOCOL_FILE: &str = "UPDATE_PROTOCOL.md";
 pub const VERSION_SCHEME: &str = "MAJOR.MINOR.PATCH[-dev]";
 
 const BLEEDING_FEATURES: &[&str] = &[
-    "persistent shell history with secret redaction",
+    "persistent shell history with private-value redaction",
     "structured shell command chains",
     "structured text pipelines",
     "guarded stable-to-bleeding updater",
     "documented update protocol with patch-level SemVer",
+    "update protocol patch policy hardening",
     "operator sysinfo/theme/banner/tips commands",
 ];
 
 const ROADMAP_STATUS: &[(&str, &str)] = &[
     ("Persistent shell history", "complete"),
     ("Structured command output and pipelines", "complete"),
-    ("Update protocol and semantic patch versioning", "complete: UPDATE_PROTOCOL.md is the canonical reference"),
-    ("Capability enforcement based on command metadata", "partial: enforced for host tools and network mutation gates"),
-    ("WASM/WASI plugin runtime", "planned: Python plugin runtime remains guarded behind host-tool opt-in"),
-    ("Full-screen TUI dashboard", "planned: compact dashboard and sysinfo are available now"),
+    (
+        "Update protocol and semantic patch versioning",
+        "complete: UPDATE_PROTOCOL.md is the canonical patch-level reference",
+    ),
+    (
+        "Capability enforcement based on command metadata",
+        "partial: enforced for host tools and network mutation gates",
+    ),
+    (
+        "WASM/WASI plugin runtime",
+        "planned: Python plugin runtime remains guarded behind host-tool opt-in",
+    ),
+    (
+        "Full-screen TUI dashboard",
+        "planned: compact dashboard and sysinfo are available now",
+    ),
 ];
 
 pub fn version_report(args: &[String]) -> String {
