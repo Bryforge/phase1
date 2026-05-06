@@ -112,10 +112,16 @@ fn command_for_context(before: &str, token_start: usize) -> Option<&str> {
 }
 
 fn command_matches(prefix: &str) -> Vec<String> {
-    registry::completions(prefix)
+    let mut matches = registry::completions(prefix)
         .into_iter()
         .map(str::to_string)
-        .collect()
+        .collect::<Vec<_>>();
+    if "reboot".starts_with(prefix) {
+        matches.push("reboot".to_string());
+    }
+    matches.sort();
+    matches.dedup();
+    matches
 }
 
 fn argument_matches(command: &str, prefix: &str) -> Vec<String> {
@@ -205,6 +211,10 @@ mod tests {
         assert_eq!(
             complete_input_prefix("spa"),
             TabCompletion::Completed("spawn".to_string())
+        );
+        assert_eq!(
+            complete_input_prefix("rebo"),
+            TabCompletion::Completed("reboot".to_string())
         );
     }
 
