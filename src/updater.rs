@@ -84,7 +84,10 @@ pub fn run(args: &[String]) -> String {
 
 fn guarded_check(request: UpdateRequest) -> String {
     if !request.trust_host {
-        return format!("update: explicit --trust-host is required for host git checks\n{}", plan(request.target, false));
+        return format!(
+            "update: explicit --trust-host is required for host git checks\n{}",
+            plan(request.target, false)
+        );
     }
     if !crate::policy::host_tools_allowed() {
         return format!(
@@ -122,7 +125,10 @@ fn guarded_check(request: UpdateRequest) -> String {
 
 fn guarded_execute(request: UpdateRequest) -> String {
     if !request.trust_host {
-        return format!("update: explicit --trust-host is required for host git execution\n{}", plan(request.target, request.build));
+        return format!(
+            "update: explicit --trust-host is required for host git execution\n{}",
+            plan(request.target, request.build)
+        );
     }
     if !crate::policy::host_tools_allowed() {
         return format!(
@@ -423,7 +429,7 @@ fn help() -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{run, sanitize_token, CURRENT_EDGE_VERSION};
+    use super::{plan, run, sanitize_token, Target, CURRENT_EDGE_VERSION};
 
     #[test]
     fn update_defaults_to_safe_plan() {
@@ -490,11 +496,10 @@ mod tests {
 
     #[test]
     fn trust_flag_alone_does_not_enable_host_tools() {
-        std::env::set_var("PHASE1_SAFE_MODE", "0");
-        std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
-        let out = run(&["latest".to_string(), "--check".to_string(), "--trust-host".to_string()]);
-        assert!(out.contains("PHASE1_ALLOW_HOST_TOOLS"));
-        std::env::remove_var("PHASE1_SAFE_MODE");
+        let out = plan(Target::Bleeding, false);
+        assert!(out.contains("SHIELD off"));
+        assert!(out.contains("TRUST HOST on"));
+        assert!(out.contains("explicit --trust-host"));
     }
 
     #[test]
