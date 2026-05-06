@@ -9,8 +9,12 @@ mod registry;
 mod ui;
 
 use commands::{dispatch, parse_line, Phase1Shell};
+use kernel::VfsNode;
+use std::fs;
 use std::io::{self, Write};
 use std::path::Path;
+
+const PERSISTENT_STATE_PATH: &str = "phase1.state";
 
 fn compact_path(path: &Path) -> String {
     let raw = path.display().to_string();
@@ -46,6 +50,15 @@ fn run_shell(boot_config: ui::BootConfig) {
     shell.env.insert("PHASE1_BOOT_PROFILE".to_string(), boot_config.profile_name().to_string());
     shell.env.insert("PHASE1_SAFE_MODE".to_string(), if boot_config.safe_mode { "1" } else { "0" }.to_string());
     shell.env.insert("PHASE1_MOBILE_MODE".to_string(), if boot_config.mobile_mode { "1" } else { "0" }.to_string());
+    shell.env.insert("PHASE1_PERSISTENT_STATE".to_string(), if boot_config.persistent_state { "1" } else { "0" }.to_string());
+
+    if boot_config.persistent_state {
+        match load_persistent_state(&mut shell) {
+            Ok(count) if count > 0 => println!("persistent state: restored {count} entries from {PERSISTENT_STATE_PATH}"),
+            Ok(_) => println!("persistent state: enabled; no saved state found at {PERSISTENT_STATE_PATH}"),
+            Err(err) => println!("persistent state: restore warning: {err}"),
+        }
+    }
 
     if boot_config.quick_boot {
         ui::print_quick_boot(kernel::VERSION, boot_config);
@@ -89,8 +102,19 @@ fn run_shell(boot_config: ui::BootConfig) {
                     "bootcfg" => handle_bootcfg(boot_config, args),
                     _ => dispatch(&mut shell, cmd, args),
                 }
+                if boot_config.persistent_state {
+                    if let Err(err) = save_persistent_state(&shell) {
+                        eprintln!("persistent state save warning: {err}");
+                    }
+                }
             }
             Err(err) => eprintln!("parse error: {}", err),
+        }
+    }
+
+    if boot_config.persistent_state {
+        if let Err(err) = save_persistent_state(&shell) {
+            eprintln!("persistent state save warning: {err}");
         }
     }
 }
@@ -107,6 +131,7 @@ fn handle_bootcfg(config: ui::BootConfig, args: &[String]) {
             Err(err) => println!("bootcfg: reset failed: {err}"),
         },
         Some("path") => println!("{}", ui::config_path()),
+        Some("state") => println!("{}", PERSISTENT_STATE_PATH),
         Some("help") | Some("-h") | Some("--help") => print_bootcfg_help(),
         Some(other) => {
             println!("bootcfg: unknown option '{other}'");
@@ -116,26 +141,126 @@ fn handle_bootcfg(config: ui::BootConfig, args: &[String]) {
 }
 
 fn print_boot_config(config: ui::BootConfig) {
-    println!("boot profile : {}", config.profile_name());
-    println!("config file  : {}", ui::config_path());
-    println!("color        : {}", if config.color { "on" } else { "off" });
-    println!("ascii        : {}", if config.ascii_mode { "on" } else { "off" });
-    println!("safe mode    : {}", if config.safe_mode { "on" } else { "off" });
-    println!("quick boot   : {}", if config.quick_boot { "on" } else { "off" });
-    println!("mobile mode  : {}", if config.mobile_mode { "on" } else { "off" });
+    println!("boot profile      : {}", config.profile_name());
+    println!("config file       : {}", ui::config_path());
+    println!("state file        : {}", PERSISTENT_STATE_PATH);
+    println!("color             : {}", if config.color { "on" } else { "off" });
+    println!("ascii             : {}", if config.ascii_mode { "on" } else { "off" });
+    println!("safe mode         : {}", if config.safe_mode { "on" } else { "off" });
+    println!("quick boot        : {}", if config.quick_boot { "on" } else { "off" });
+    println!("mobile mode       : {}", if config.mobile_mode { "on" } else { "off" });
+    println!("persistent state  : {}", if config.persistent_state { "on" } else { "off" });
 }
 
 fn print_bootcfg_help() {
-    println!("usage: bootcfg [show|save|reset|path]");
+    println!("usage: bootcfg [show|save|reset|path|state]");
     println!("  show   display the active boot profile");
     println!("  save   write the active profile to phase1.conf");
     println!("  reset  remove phase1.conf so detected defaults are used next launch");
     println!("  path   print the config file path");
+    println!("  state  print the persistent state file path");
+}
+
+fn load_persistent_state(shell: &mut Phase1Shell) -> io::Result<usize> {
+    let Ok(raw) = fs::read_to_string(PERSISTENT_STATE_PATH) else {
+        return Ok(0);
+    };
+
+    let mut restored = 0;
+    for line in raw.lines() {
+        if line.is_empty() || line.starts_with('#') {
+            continue;
+        }
+        let mut parts = line.splitn(3, '\t');
+        match (parts.next(), parts.next(), parts.next()) {
+            (Some("D"), Some(path), _) if is_persisted_path(path) => {
+                let _ = shell.kernel.vfs.mkdir(path);
+                restored += 1;
+            }
+            (Some("F"), Some(path), Some(encoded)) if is_persisted_path(path) => {
+                let bytes = decode_hex(encoded).map_err(|err| io::Error::new(io::ErrorKind::InvalidData, err))?;
+                let content = String::from_utf8(bytes).map_err(|err| io::Error::new(io::ErrorKind::InvalidData, err))?;
+                shell.kernel.vfs.write_file(path, &content, false).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?;
+                restored += 1;
+            }
+            _ => {}
+        }
+    }
+    Ok(restored)
+}
+
+fn save_persistent_state(shell: &Phase1Shell) -> io::Result<usize> {
+    let mut entries = Vec::new();
+    if let Some(node) = shell.kernel.vfs.get_node(Path::new("/home")) {
+        collect_persistent_entries(Path::new("/home"), node, &mut entries);
+    }
+
+    let mut out = String::from("# phase1 persistent state v1\n");
+    for entry in &entries {
+        out.push_str(entry);
+        out.push('\n');
+    }
+    fs::write(PERSISTENT_STATE_PATH, out)?;
+    Ok(entries.len())
+}
+
+fn collect_persistent_entries(path: &Path, node: &VfsNode, out: &mut Vec<String>) {
+    let path_text = path.display().to_string();
+    match node {
+        VfsNode::Dir { children, .. } => {
+            if path_text != "/home" {
+                out.push(format!("D\t{path_text}"));
+            }
+            let mut names: Vec<_> = children.keys().collect();
+            names.sort();
+            for name in names {
+                collect_persistent_entries(&path.join(name), &children[name], out);
+            }
+        }
+        VfsNode::File { content, .. } => out.push(format!("F\t{path_text}\t{}", encode_hex(content.as_bytes()))),
+    }
+}
+
+fn is_persisted_path(path: &str) -> bool {
+    path == "/home" || path.starts_with("/home/")
+}
+
+fn encode_hex(bytes: &[u8]) -> String {
+    const HEX: &[u8; 16] = b"0123456789abcdef";
+    let mut out = String::with_capacity(bytes.len() * 2);
+    for byte in bytes {
+        out.push(HEX[(byte >> 4) as usize] as char);
+        out.push(HEX[(byte & 0x0f) as usize] as char);
+    }
+    out
+}
+
+fn decode_hex(raw: &str) -> Result<Vec<u8>, String> {
+    if raw.len() % 2 != 0 {
+        return Err("hex payload has odd length".to_string());
+    }
+    let mut bytes = Vec::with_capacity(raw.len() / 2);
+    let chars: Vec<_> = raw.bytes().collect();
+    for pair in chars.chunks(2) {
+        let high = hex_value(pair[0]).ok_or_else(|| "invalid hex payload".to_string())?;
+        let low = hex_value(pair[1]).ok_or_else(|| "invalid hex payload".to_string())?;
+        bytes.push((high << 4) | low);
+    }
+    Ok(bytes)
+}
+
+fn hex_value(byte: u8) -> Option<u8> {
+    match byte {
+        b'0'..=b'9' => Some(byte - b'0'),
+        b'a'..=b'f' => Some(byte - b'a' + 10),
+        b'A'..=b'F' => Some(byte - b'A' + 10),
+        _ => None,
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::compact_path;
+    use super::{compact_path, decode_hex, encode_hex};
     use std::path::Path;
 
     #[test]
@@ -143,5 +268,11 @@ mod tests {
         assert_eq!(compact_path(Path::new("/home")), "~");
         assert_eq!(compact_path(Path::new("/home/projects")), "~/projects");
         assert_eq!(compact_path(Path::new("/proc")), "/proc");
+    }
+
+    #[test]
+    fn state_hex_round_trip() {
+        let encoded = encode_hex("hello phase1".as_bytes());
+        assert_eq!(decode_hex(&encoded).unwrap(), b"hello phase1");
     }
 }
