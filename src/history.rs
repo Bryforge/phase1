@@ -12,11 +12,10 @@ pub enum HistoryStore {
 }
 
 impl HistoryStore {
-    pub fn from_env(persistent_state: bool) -> Self {
+    pub fn from_env(_persistent_state: bool) -> Self {
         match std::env::var("PHASE1_HISTORY") {
             Ok(value) if value.eq_ignore_ascii_case("off") => Self::Disabled,
             Ok(value) if !value.trim().is_empty() => Self::Disk(PathBuf::from(value)),
-            _ if persistent_state => Self::Disk(PathBuf::from(".phase1_history")),
             _ => Self::Disabled,
         }
     }
@@ -97,5 +96,11 @@ mod tests {
     #[test]
     fn disabled_history_describes_as_off() {
         assert_eq!(HistoryStore::Disabled.describe(), "off");
+    }
+
+    #[test]
+    fn persistent_state_does_not_enable_disk_history() {
+        std::env::remove_var("PHASE1_HISTORY");
+        assert_eq!(HistoryStore::from_env(true), HistoryStore::Disabled);
     }
 }
