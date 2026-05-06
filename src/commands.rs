@@ -17,6 +17,7 @@ use crate::man;
 use crate::ned;
 use crate::network::NetworkStack;
 use crate::registry;
+use crate::wasm;
 
 pub struct Phase1Shell {
     pub kernel: Kernel,
@@ -139,27 +140,62 @@ print("status=ok")
                 let _ = fs::write(path, example);
             }
         }
+
+        let wasm_path = self.plugins_dir.join("hello-wasi.wasm");
+        if !wasm_path.exists() {
+            let _ = fs::write(&wasm_path, b"\0asm\x01\0\0\0");
+        }
+        let manifest_path = self.plugins_dir.join("hello-wasi.wasi");
+        if !manifest_path.exists() {
+            let _ = fs::write(
+                manifest_path,
+                "name=hello-wasi\ncapability=none\nstdout=hello from phase1 wasi-lite\n",
+            );
+        }
     }
 
     fn list_plugins(&self) -> String {
-        let mut plugins = Vec::new();
+        let mut python_plugins = Vec::new();
+        let mut wasm_plugins = Vec::new();
         if let Ok(entries) = fs::read_dir(&self.plugins_dir) {
             for entry in entries.flatten() {
                 let path = entry.path();
-                if path.extension().and_then(|ext| ext.to_str()) == Some("py") {
-                    if let Some(name) = path.file_stem().and_then(|stem| stem.to_str()) {
-                        if is_safe_name(name) {
-                            plugins.push(name.to_string());
+                match path.extension().and_then(|ext| ext.to_str()) {
+                    Some("py") => {
+                        if let Some(name) = path.file_stem().and_then(|stem| stem.to_str()) {
+                            if is_safe_name(name) {
+                                python_plugins.push(name.to_string());
+                            }
                         }
                     }
+                    Some("wasm") => {
+                        if let Some(name) = path.file_stem().and_then(|stem| stem.to_str()) {
+                            if is_safe_name(name) {
+                                wasm_plugins.push(name.to_string());
+                            }
+                        }
+                    }
+                    _ => {}
                 }
             }
         }
-        plugins.sort();
-        if plugins.is_empty() {
+        python_plugins.sort();
+        wasm_plugins.sort();
+        if python_plugins.is_empty() && wasm_plugins.is_empty() {
             "no plugins found\n".to_string()
         } else {
-            format!("{}\n", plugins.join("\n"))
+            let mut out = String::new();
+            if !python_plugins.is_empty() {
+                out.push_str("python plugins:\n");
+                out.push_str(&python_plugins.join("\n"));
+                out.push('\n');
+            }
+            if !wasm_plugins.is_empty() {
+                out.push_str("wasm plugins:\n");
+                out.push_str(&wasm_plugins.join("\n"));
+                out.push('\n');
+            }
+            out
         }
     }
 
@@ -167,34 +203,44 @@ print("status=ok")
         if !is_safe_name(name) {
             return false;
         }
-        let path = self.plugins_dir.join(format!("{}.py", name));
-        if !path.exists() {
-            return false;
-        }
-        if host_tools_blocked() {
-            println!("{}", crate::policy::host_denial_message("plugin"));
+        let py_path = self.plugins_dir.join(format!("{}.py", name));
+        if py_path.exists() {
+            if host_tools_blocked() {
+                println!("{}", crate::policy::host_denial_message("plugin"));
+                return true;
+            }
+
+            self.kernel
+                .audit
+                .record(format!("plugin.exec name={} argc={}", name, args.len()));
+            let context = format!(
+                "COMMAND={}\nARGS={}\nUSER={}\nCWD={}\nVERSION={}\n",
+                name,
+                args.join(" "),
+                self.user(),
+                self.kernel.vfs.cwd.display(),
+                VERSION
+            );
+
+            let mut cmd = Command::new("python3");
+            cmd.arg(py_path);
+            match run_with_input(cmd, &context, Duration::from_secs(5)) {
+                Ok(output) => print_output(output),
+                Err(err) => eprintln!("plugin failed: {}", err),
+            }
             return true;
         }
 
-        self.kernel
-            .audit
-            .record(format!("plugin.exec name={} argc={}", name, args.len()));
-        let context = format!(
-            "COMMAND={}\nARGS={}\nUSER={}\nCWD={}\nVERSION={}\n",
-            name,
-            args.join(" "),
-            self.user(),
-            self.kernel.vfs.cwd.display(),
-            VERSION
-        );
-
-        let mut cmd = Command::new("python3");
-        cmd.arg(path);
-        match run_with_input(cmd, &context, Duration::from_secs(5)) {
-            Ok(output) => print_output(output),
-            Err(err) => eprintln!("plugin failed: {}", err),
+        let wasm_path = self.plugins_dir.join(format!("{}.wasm", name));
+        if wasm_path.exists() {
+            self.kernel
+                .audit
+                .record(format!("wasm.exec name={} argc={}", name, args.len()));
+            print!("{}", wasm::execute_plugin(&self.plugins_dir, name, args));
+            return true;
         }
-        true
+
+        false
     }
 }
 
@@ -274,6 +320,7 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
         "capabilities" => print!("{}", registry::capabilities_report()),
         "dash" => print!("{}", dashboard(shell, args)),
         "pipeline" => print!("{}", pipeline::help()),
+        "wasm" => print!("{}", wasm::run(&shell.plugins_dir, args)),
         "roadmap" => print!("{}", release::roadmap_report()),
         "version" => print!("{}", release::version_report(args)),
         "clear" => print!("\x1b[2J\x1b[H"),
