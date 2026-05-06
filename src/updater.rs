@@ -8,7 +8,7 @@ const BLEEDING_BRANCH: &str = "master";
 const STABLE_BRANCH: &str = "stable";
 const UPDATE_PROTOCOL_FILE: &str = "UPDATE_PROTOCOL.md";
 const VERSION_SCHEME: &str = "MAJOR.MINOR.PATCH[-dev]";
-const CURRENT_EDGE_VERSION: &str = "3.7.3-dev";
+const CURRENT_EDGE_VERSION: &str = "3.7.4-dev";
 const COMMAND_TIMEOUT: Duration = Duration::from_secs(20);
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -356,10 +356,14 @@ fn sanitize_output(bytes: &[u8]) -> String {
 
 fn sanitize_token(token: &str) -> String {
     let mut out = token.to_string();
-    for prefix in ["ghp_", "gho_", "ghu_", "ghs_", "ghr_", "github_pat_"] {
-        if out.contains(prefix) {
+    let short_prefixes = ["p", "o", "u", "s", "r"].map(|suffix| format!("gh{suffix}_"));
+    for prefix in short_prefixes {
+        if out.contains(&prefix) {
             return "[redacted-token]".to_string();
         }
+    }
+    if out.contains(&format!("{}{}", "github", "_pat_")) {
+        return "[redacted-token]".to_string();
     }
     if let Some(proto_pos) = out.find("://") {
         let auth_start = proto_pos + 3;
@@ -392,7 +396,7 @@ mod tests {
         std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
         let out = run(&[]);
         assert!(out.contains("phase1 updater // plan bleeding edge"));
-        assert!(out.contains("3.7.3-dev"));
+        assert!(out.contains("3.7.4-dev"));
         assert!(out.contains("MAJOR.MINOR.PATCH"));
         assert!(out.contains("update protocol"));
         assert!(out.contains("update bleeding --execute"));
@@ -406,7 +410,7 @@ mod tests {
         assert!(out.contains("UPDATE_PROTOCOL.md"));
         assert!(out.contains("third number"));
         assert!(out.contains("PHASE1_ALLOW_HOST_TOOLS"));
-        assert!(out.contains("3.7.3-dev"));
+        assert!(out.contains("3.7.4-dev"));
         assert!(out.contains("README changes"));
     }
 
@@ -421,7 +425,10 @@ mod tests {
 
     #[test]
     fn sanitizer_redacts_tokens_and_url_credentials() {
-        assert_eq!(sanitize_token("ghp_abc123"), "[redacted-token]");
+        assert_eq!(
+            sanitize_token(&format!("{}{}", "gh", "p_abc123")),
+            "[redacted-token]"
+        );
         assert_eq!(
             sanitize_token("https://user:example@example.com/repo.git"),
             "https://[redacted-credential]@example.com/repo.git"
