@@ -94,14 +94,10 @@ pub fn run(args: &[String]) -> String {
         Err(err) => return format!("update test: {err}\n{}", help()),
     };
 
-    if request.trust_host {
-        std::env::set_var("PHASE1_ALLOW_HOST_TOOLS", "1");
-    }
-
     match request.action {
         Action::Plan => plan(request.suite),
-        Action::Run => run_suite(request.suite),
-        Action::Doctor => doctor(),
+        Action::Run => run_suite(request),
+        Action::Doctor => doctor(request),
     }
 }
 
@@ -134,7 +130,7 @@ fn plan(suite: Suite) -> String {
     let mut out = String::from("phase1 developer test kit\n");
     out.push_str(&format!("suite        : {}\n", suite.label()));
     out.push_str("safe default : plan only; no host commands run without --execute\n");
-    out.push_str("host guard   : execution requires safe mode off and explicit --trust-host\n");
+    out.push_str("host guard   : execution requires SHIELD off, boot TRUST HOST on, and explicit --trust-host\n");
     out.push_str("purpose      : fast Rust/code validation from inside phase1\n\n");
     out.push_str("planned commands:\n");
     for step in suite_steps(suite) {
@@ -143,26 +139,32 @@ fn plan(suite: Suite) -> String {
         out.push('\n');
     }
     out.push_str("\ninside phase1:\n");
-    out.push_str("  boot selector: turn safe mode off first\n");
+    out.push_str("  boot selector: turn SHIELD off and TRUST HOST on first\n");
     out.push_str("  update test quick --trust-host --execute\n");
     out.push_str("  update test full --trust-host --execute\n");
     out.push_str("  update test doctor --trust-host\n");
     out
 }
 
-fn run_suite(suite: Suite) -> String {
+fn run_suite(request: Request) -> String {
+    if !request.trust_host {
+        return format!(
+            "update test: explicit --trust-host is required for host test execution\n{}",
+            plan(request.suite)
+        );
+    }
     if !crate::policy::host_tools_allowed() {
         return format!(
             "update test: {}\n{}",
             crate::policy::host_denial_message("update test"),
-            plan(suite)
+            plan(request.suite)
         );
     }
 
-    let mut out = format!("phase1 developer test kit // run {}\n", suite.label());
-    out.push_str("host tools : enabled\n");
+    let mut out = format!("phase1 developer test kit // run {}\n", request.suite.label());
+    out.push_str("host tools : enabled by boot TRUST HOST + --trust-host\n");
     let mut all_ok = true;
-    for step in suite_steps(suite) {
+    for step in suite_steps(request.suite) {
         let (step_out, ok) = run_step(&step);
         out.push_str(&step_out);
         all_ok &= ok;
@@ -178,7 +180,13 @@ fn run_suite(suite: Suite) -> String {
     out
 }
 
-fn doctor() -> String {
+fn doctor(request: Request) -> String {
+    if !request.trust_host {
+        return format!(
+            "update test: explicit --trust-host is required for host doctor checks\n{}",
+            plan(Suite::Quick)
+        );
+    }
     if !crate::policy::host_tools_allowed() {
         return format!(
             "update test: {}\n{}",
@@ -188,6 +196,7 @@ fn doctor() -> String {
     }
 
     let mut out = String::from("phase1 developer test kit // doctor\n");
+    out.push_str("host tools : enabled by boot TRUST HOST + --trust-host\n");
     for step in [
         TestStep {
             label: "cargo version",
@@ -329,16 +338,41 @@ fn sanitized_output(output: &Output) -> String {
     let mut raw = String::new();
     raw.push_str(&String::from_utf8_lossy(&output.stdout));
     raw.push_str(&String::from_utf8_lossy(&output.stderr));
-    raw.split_whitespace().collect::<Vec<_>>().join(" ")
+    raw.split_whitespace()
+        .map(redact_sensitive_token)
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
+fn redact_sensitive_token(token: &str) -> String {
+    if token.contains("ghp_")
+        || token.contains("gho_")
+        || token.contains("ghu_")
+        || token.contains("ghs_")
+        || token.contains("ghr_")
+        || token.contains("github_pat_")
+    {
+        return "[redacted-token]".to_string();
+    }
+    if let Some(proto_pos) = token.find("://") {
+        let auth_start = proto_pos + 3;
+        if let Some(at_offset) = token[auth_start..].find('@') {
+            let at = auth_start + at_offset;
+            let mut out = token.to_string();
+            out.replace_range(auth_start..at, "[redacted-credential]");
+            return out;
+        }
+    }
+    token.to_string()
 }
 
 fn help() -> String {
-    "usage: update test [plan|quick|full|smoke|bleeding|game|fmt|cargo-check|clippy|doctor] [--execute] [--trust-host]\n\nRuns or plans developer validation suites from inside phase1.\nDefault suite is full and default action is a safe plan.\nExecution requires safe mode off plus --trust-host.\n".to_string()
+    "usage: update test [plan|quick|full|smoke|bleeding|game|fmt|cargo-check|clippy|doctor] [--execute] [--trust-host]\n\nRuns or plans developer validation suites from inside phase1.\nDefault suite is full and default action is a safe plan.\nExecution requires SHIELD off, boot TRUST HOST on, plus --trust-host.\n".to_string()
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{is_request, run};
+    use super::{is_request, redact_sensitive_token, run};
 
     #[test]
     fn detects_developer_test_requests() {
@@ -378,7 +412,40 @@ mod tests {
             "quick".to_string(),
             "--execute".to_string(),
         ]);
-        assert!(out.contains("disabled by safe boot profile"));
-        assert!(out.contains("safe mode off"));
+        assert!(out.contains("explicit --trust-host"));
+        assert!(out.contains("TRUST HOST"));
+    }
+
+    #[test]
+    fn developer_test_trust_flag_does_not_open_boot_gate() {
+        std::env::set_var("PHASE1_SAFE_MODE", "0");
+        std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
+        let out = run(&[
+            "test".to_string(),
+            "quick".to_string(),
+            "--execute".to_string(),
+            "--trust-host".to_string(),
+        ]);
+        assert!(out.contains("PHASE1_ALLOW_HOST_TOOLS"));
+        std::env::remove_var("PHASE1_SAFE_MODE");
+    }
+
+    #[test]
+    fn doctor_requires_explicit_command_trust() {
+        std::env::set_var("PHASE1_SAFE_MODE", "0");
+        std::env::set_var("PHASE1_ALLOW_HOST_TOOLS", "1");
+        let out = run(&["doctor".to_string()]);
+        assert!(out.contains("explicit --trust-host"));
+        std::env::remove_var("PHASE1_SAFE_MODE");
+        std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
+    }
+
+    #[test]
+    fn sanitizer_redacts_tokens_and_url_credentials() {
+        assert_eq!(redact_sensitive_token("ghp_secret"), "[redacted-token]");
+        assert_eq!(
+            redact_sensitive_token("https://user:pass@example.com/repo.git"),
+            "https://[redacted-credential]@example.com/repo.git"
+        );
     }
 }
