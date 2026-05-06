@@ -81,6 +81,7 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("complete", &[], "misc", "complete [prefix]", "Show registry-backed command completions.", "none"),
     cmd!("capabilities", &["caps"], "misc", "capabilities", "Show command capability metadata and guard status.", "none"),
     cmd!("dash", &["dashboard"], "misc", "dash [--compact]", "Show a compact operator dashboard snapshot.", "sys.read"),
+    cmd!("matrix", &["rain"], "misc", "matrix [seconds]", "Run Matrix-style terminal digital rain for 1-60 seconds.", "none"),
     cmd!("clear", &[], "misc", "clear", "Clear terminal using an ANSI screen clear sequence.", "none"),
     cmd!("version", &[], "misc", "version", "Show phase1 version.", "none"),
     cmd!("sandbox", &["nsinfo"], "misc", "sandbox", "Show safety model.", "none"),
@@ -106,7 +107,7 @@ pub fn command_map() -> String {
             .join(" ");
         out.push_str(&format!("{:<5}: {}\n", category, names));
     }
-    out.push_str("\nquick : dash --compact | man browser | capabilities | complete p | audit | ps\n");
+    out.push_str("\nquick : dash --compact | matrix 10 | man browser | capabilities | complete p | audit | ps\n");
     out
 }
 
@@ -169,6 +170,7 @@ mod tests {
     fn lookup_supports_aliases() {
         assert_eq!(lookup("py").map(|cmd| cmd.name), Some("python"));
         assert_eq!(lookup("quit").map(|cmd| cmd.name), Some("exit"));
+        assert_eq!(lookup("rain").map(|cmd| cmd.name), Some("matrix"));
     }
 
     #[test]
@@ -177,6 +179,7 @@ mod tests {
         assert_eq!(canonical_name("commands"), Some("help"));
         assert_eq!(canonical_name("caps"), Some("capabilities"));
         assert_eq!(canonical_name("dashboard"), Some("dash"));
+        assert_eq!(canonical_name("rain"), Some("matrix"));
     }
 
     #[test]
@@ -186,6 +189,7 @@ mod tests {
         assert!(map.contains("complete"));
         assert!(map.contains("capabilities"));
         assert!(map.contains("dash"));
+        assert!(map.contains("matrix"));
     }
 
     #[test]
@@ -199,6 +203,7 @@ mod tests {
     fn completions_include_aliases() {
         assert!(completions("p").contains(&"python"));
         assert!(completions("p").contains(&"py"));
+        assert!(completions("r").contains(&"rain"));
     }
 
     #[test]
