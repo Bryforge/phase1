@@ -300,29 +300,15 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
             shell.network.refresh();
             print!("{}", shell.network.iwconfig());
         }
-        "wifi-scan" => {
-            if safe_mode_enabled() {
-                println!("wifi-scan: disabled by safe boot profile");
-            } else {
-                print!("{}", shell.network.wifi_scan());
-            }
-        }
+        "wifi-scan" => print!("{}", shell.network.wifi_scan()),
         "wifi-connect" => {
-            if safe_mode_enabled() {
-                println!("wifi-connect: disabled by safe boot profile");
-            } else if args.is_empty() {
+            if args.is_empty() && !safe_mode_enabled() {
                 println!("usage: wifi-connect <ssid> [password]");
             } else {
-                println!("{}", shell.network.wifi_connect(&args[0], args.get(1).map(String::as_str)));
+                println!("{}", shell.network.wifi_connect(args.first().map(String::as_str).unwrap_or(""), args.get(1).map(String::as_str)));
             }
         }
-        "ping" => {
-            if safe_mode_enabled() {
-                println!("ping: disabled by safe boot profile");
-            } else {
-                one_arg(args, "ping <host>", |host| print!("{}", shell.network.ping(host)));
-            }
-        }
+        "ping" => one_arg(args, "ping <host>", |host| print!("{}", shell.network.ping(host))),
         "nmcli" => print!("{}", shell.network.nmcli()),
         "browser" => {
             if safe_mode_enabled() {
@@ -384,7 +370,7 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
                 println!("{:>4} {}", idx + 1, line);
             }
         }
-        "sandbox" => println!("sandbox: VFS/processes are simulated; host commands are guarded by validation and timeouts."),
+        "sandbox" => println!("sandbox: VFS/processes are simulated; host commands are guarded by validation and timeouts. Safe mode is the default and blocks host execution/network inspection."),
         "man" => match args.first() {
             Some(topic) => match man::get_man_page(topic) {
                 Some(page) => println!("{}", page),
@@ -417,7 +403,7 @@ fn dashboard(shell: &mut Phase1Shell, args: &[String]) -> String {
 
     if compact {
         format!(
-            "PHASE1 DASHBOARD v{}\nCORE  user={} uptime={}s mode=operator\nPROC  tasks={} bg={}\nVFS   cwd={} mounts=/,/proc,/dev,/tmp,/var/log\nNET   interfaces={} safety=guarded\nHW    cr3=0x{:x} {} pcie={}\nAUDIT latest={}\n",
+            "PHASE1 DASHBOARD v{}\nCORE  user={} uptime={}s mode=operator\nPROC  tasks={} bg={}\nVFS   cwd={} mounts=/,/proc,/dev,/tmp,/var/log\nNET   interfaces={} safety={}\nHW    cr3=0x{:x} {} pcie={}\nAUDIT latest={}\n",
             VERSION,
             shell.user(),
             uptime,
@@ -425,6 +411,7 @@ fn dashboard(shell: &mut Phase1Shell, args: &[String]) -> String {
             job_count,
             cwd,
             iface_count,
+            if safe_mode_enabled() { "safe-mode" } else { "host-enabled" },
             shell.kernel.scheduler.get_cr3(),
             cr4,
             pcie_count,
@@ -432,7 +419,7 @@ fn dashboard(shell: &mut Phase1Shell, args: &[String]) -> String {
         )
     } else {
         format!(
-            "PHASE1 // OPERATOR DASHBOARD v{}\n\nCORE\n  user      {}\n  uptime    {}s\n  mode      operator\n\nPROC\n  tasks     {}\n  bg jobs   {}\n\nVFS\n  cwd       {}\n  mounts    / /proc /dev /tmp /var/log\n\nNET\n  ifaces    {}\n  safety    guarded host tools\n\nHW\n  cr3       0x{:x}\n  cr4       {}\n  pcie      {} devices\n\nAUDIT\n  latest    {}\n",
+            "PHASE1 // OPERATOR DASHBOARD v{}\n\nCORE\n  user      {}\n  uptime    {}s\n  mode      operator\n\nPROC\n  tasks     {}\n  bg jobs   {}\n\nVFS\n  cwd       {}\n  mounts    / /proc /dev /tmp /var/log\n\nNET\n  ifaces    {}\n  safety    {}\n\nHW\n  cr3       0x{:x}\n  cr4       {}\n  pcie      {} devices\n\nAUDIT\n  latest    {}\n",
             VERSION,
             shell.user(),
             uptime,
@@ -440,6 +427,7 @@ fn dashboard(shell: &mut Phase1Shell, args: &[String]) -> String {
             job_count,
             cwd,
             iface_count,
+            if safe_mode_enabled() { "safe-mode" } else { "host-enabled" },
             shell.kernel.scheduler.get_cr3(),
             cr4,
             pcie_count,
@@ -623,7 +611,7 @@ fn is_safe_name(name: &str) -> bool {
 }
 
 fn safe_mode_enabled() -> bool {
-    std::env::var("PHASE1_SAFE_MODE").ok().as_deref() == Some("1")
+    !matches!(std::env::var("PHASE1_SAFE_MODE").ok().as_deref(), Some("0" | "false" | "off" | "no"))
 }
 
 fn now_unix() -> u64 {
@@ -674,11 +662,20 @@ fn print_output(output: Output) {
 
 #[cfg(test)]
 mod tests {
-    use super::parse_line;
+    use super::{parse_line, safe_mode_enabled};
 
     #[test]
     fn parses_quotes_and_redirect() {
         let expected = vec!["echo".to_string(), "hello world".to_string(), ">".to_string(), "out".to_string()];
         assert_eq!(parse_line("echo 'hello world' > out").unwrap(), expected);
+    }
+
+    #[test]
+    fn command_security_defaults_to_safe_mode() {
+        std::env::remove_var("PHASE1_SAFE_MODE");
+        assert!(safe_mode_enabled());
+        std::env::set_var("PHASE1_SAFE_MODE", "0");
+        assert!(!safe_mode_enabled());
+        std::env::remove_var("PHASE1_SAFE_MODE");
     }
 }
