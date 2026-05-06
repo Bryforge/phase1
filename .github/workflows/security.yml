@@ -1,0 +1,54 @@
+name: security
+
+on:
+  push:
+    branches: [master, "release/**"]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  security-and-tests:
+    name: security scan and Rust checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check for committed runtime or credential files
+        shell: bash
+        run: |
+          set -euo pipefail
+          forbidden='(^|/)(phase1\.conf|phase1\.state|\.phase1_history|\.env(\..*)?|id_rsa.*|id_ed25519.*|.*\.pem|.*\.key|.*\.p12|.*\.pfx)$'
+          if git ls-files | grep -E "$forbidden"; then
+            echo "Forbidden runtime/credential-looking file is tracked. Remove it from Git history before release."
+            exit 1
+          fi
+
+      - name: Scan for high-confidence secret patterns
+        shell: bash
+        run: |
+          set -euo pipefail
+          pattern='ghp_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{80,}|-----BEGIN (RSA |OPENSSH |EC |DSA )?PRIVATE KEY-----|AKIA[0-9A-Z]{16}|xox[baprs]-[A-Za-z0-9-]{20,}'
+          if git grep -n -I -E "$pattern" -- . ':!SECURITY.md' ':!SECURITY_REVIEW.md'; then
+            echo "High-confidence secret pattern found. Rotate the credential and remove it before release."
+            exit 1
+          fi
+
+      - name: Rust format check
+        run: cargo fmt --all -- --check
+
+      - name: Rust compile check
+        run: cargo check --all-targets
+
+      - name: Clippy
+        run: cargo clippy --all-targets -- -D warnings
+
+      - name: Tests
+        run: cargo test --all-targets
+
+      - name: Smoke tests
+        run: cargo test --test smoke -- --nocapture
