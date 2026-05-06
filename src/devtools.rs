@@ -161,7 +161,10 @@ fn run_suite(request: Request) -> String {
         );
     }
 
-    let mut out = format!("phase1 developer test kit // run {}\n", request.suite.label());
+    let mut out = format!(
+        "phase1 developer test kit // run {}\n",
+        request.suite.label()
+    );
     out.push_str("host tools : enabled by boot TRUST HOST + --trust-host\n");
     let mut all_ok = true;
     for step in suite_steps(request.suite) {

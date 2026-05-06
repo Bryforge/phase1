@@ -1,0 +1,3 @@
+name=hello-wasi
+capability=none
+stdout=hello from phase1 wasi-lite

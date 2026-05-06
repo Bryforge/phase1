@@ -107,7 +107,10 @@ fn tail(count: usize) -> String {
     };
     let lines = raw.lines().collect::<Vec<_>>();
     let start = lines.len().saturating_sub(count);
-    let mut out = format!("phase1 ops log tail // last {} lines\n", lines.len() - start);
+    let mut out = format!(
+        "phase1 ops log tail // last {} lines\n",
+        lines.len() - start
+    );
     for line in &lines[start..] {
         out.push_str(line);
         out.push('\n');
@@ -154,7 +157,10 @@ fn sanitize_token(token: &str) -> String {
         return "[redacted-secret]".to_string();
     }
     let blocked_prefixes = ["ghp_", "gho_", "ghu_", "ghs_", "ghr_", "github_pat_"];
-    if blocked_prefixes.iter().any(|prefix| lower.starts_with(prefix)) {
+    if blocked_prefixes
+        .iter()
+        .any(|prefix| lower.starts_with(prefix))
+    {
         return "[redacted-token]".to_string();
     }
     if let Some(proto_pos) = token.find("://") {

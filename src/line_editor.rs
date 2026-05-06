@@ -198,11 +198,7 @@ fn complete_cooked_line(line: &str, prompt: &str) -> io::Result<String> {
     }
 }
 
-fn handle_tab(
-    prompt: &str,
-    editor: &mut EditorState,
-    stdout: &mut io::Stdout,
-) -> io::Result<()> {
+fn handle_tab(prompt: &str, editor: &mut EditorState, stdout: &mut io::Stdout) -> io::Result<()> {
     match autocomplete::complete_input_prefix(&editor.line) {
         TabCompletion::Unchanged(_) => {}
         TabCompletion::Completed(completed) => {
@@ -243,11 +239,7 @@ fn redraw_frame(prompt: &str, editor: &EditorState, stdout: &mut io::Stdout) -> 
 }
 
 fn finish_frame(prompt: &str, editor: &EditorState, stdout: &mut io::Stdout) -> io::Result<()> {
-    write!(
-        stdout,
-        "\r\x1b[2K{}{}\x1b[1B\r\x1b[2K",
-        prompt, editor.line
-    )?;
+    write!(stdout, "\r\x1b[2K{}{}\x1b[1B\r\x1b[2K", prompt, editor.line)?;
     stdout.flush()
 }
 
@@ -444,7 +436,10 @@ fn command_status_line(input: &str) -> String {
     let width = terminal_width().clamp(32, 72);
     let raw = format!("HUD {} | {}", short_clock_utc(), command_hint(input));
     let clipped = clip(&raw, width);
-    let padded = format!("{clipped}{}", " ".repeat(width.saturating_sub(clipped.len())));
+    let padded = format!(
+        "{clipped}{}",
+        " ".repeat(width.saturating_sub(clipped.len()))
+    );
 
     if color_enabled() {
         let color = match first_word(input) {
@@ -493,7 +488,9 @@ fn command_hint(input: &str) -> String {
         "history" => "history | sanitized command log".to_string(),
         "fastfetch" | "sysinfo" => "sysinfo | simulated machine report".to_string(),
         "clear" => "clear | redraw terminal".to_string(),
-        "help" | "man" | "complete" | "capabilities" => "help | docs/completion/capabilities".to_string(),
+        "help" | "man" | "complete" | "capabilities" => {
+            "help | docs/completion/capabilities".to_string()
+        }
         "exit" | "shutdown" => "exit | shutdown Phase1 shell".to_string(),
         "reboot" => "reboot | return to boot dock".to_string(),
         other => format!("{other} | Enter runs | Tab completes | ↑ history"),

@@ -19,17 +19,29 @@ pub fn theme(shell: &mut Phase1Shell, args: &[String]) -> String {
         Some("mono") | Some("plain") => {
             std::env::set_var("PHASE1_NO_COLOR", "1");
             std::env::remove_var("PHASE1_ASCII");
-            shell.env.insert("PHASE1_THEME".to_string(), "mono".to_string());
-            shell.env.insert("PHASE1_NO_COLOR".to_string(), "1".to_string());
-            shell.env.insert("PHASE1_ASCII".to_string(), "0".to_string());
+            shell
+                .env
+                .insert("PHASE1_THEME".to_string(), "mono".to_string());
+            shell
+                .env
+                .insert("PHASE1_NO_COLOR".to_string(), "1".to_string());
+            shell
+                .env
+                .insert("PHASE1_ASCII".to_string(), "0".to_string());
             "theme: mono terminal enabled\n".to_string()
         }
         Some("ascii") => {
             std::env::set_var("PHASE1_ASCII", "1");
             std::env::set_var("PHASE1_NO_COLOR", "1");
-            shell.env.insert("PHASE1_THEME".to_string(), "ascii".to_string());
-            shell.env.insert("PHASE1_NO_COLOR".to_string(), "1".to_string());
-            shell.env.insert("PHASE1_ASCII".to_string(), "1".to_string());
+            shell
+                .env
+                .insert("PHASE1_THEME".to_string(), "ascii".to_string());
+            shell
+                .env
+                .insert("PHASE1_NO_COLOR".to_string(), "1".to_string());
+            shell
+                .env
+                .insert("PHASE1_ASCII".to_string(), "1".to_string());
             "theme: ascii compatibility enabled\n".to_string()
         }
         Some("reset") => {
@@ -118,7 +130,9 @@ pub fn banner(config: BootConfig, args: &[String]) -> String {
             } else {
                 std::env::var("PHASE1_THEME")
                     .ok()
-                    .and_then(|raw| ThemePalette::parse(&raw).map(|palette| palette.name().to_string()))
+                    .and_then(|raw| {
+                        ThemePalette::parse(&raw).map(|palette| palette.name().to_string())
+                    })
                     .unwrap_or_else(|| "rainbow".to_string())
             }
         } else {
@@ -142,7 +156,11 @@ pub fn sysinfo(shell: &mut Phase1Shell, config: BootConfig) -> String {
     shell.kernel.tick();
     let processes = shell.kernel.scheduler.ps().lines().skip(1).count();
     let jobs = shell.kernel.scheduler.jobs();
-    let job_count = if jobs.trim() == "no background jobs" { 0 } else { jobs.lines().count() };
+    let job_count = if jobs.trim() == "no background jobs" {
+        0
+    } else {
+        jobs.lines().count()
+    };
     let audit_count = shell.kernel.audit.dump().lines().count();
     let pcie_count = shell.kernel.pcie.lspci().lines().count();
 
@@ -173,7 +191,11 @@ pub fn dashboard(shell: &mut Phase1Shell, config: BootConfig, args: &[String]) -
         .iter()
         .any(|arg| matches!(arg.as_str(), "--compact" | "compact" | "-c"));
     let display_version = crate::ui::display_version(crate::kernel::VERSION, config);
-    let channel = if config.bleeding_edge { "bleeding-edge" } else { "release" };
+    let channel = if config.bleeding_edge {
+        "bleeding-edge"
+    } else {
+        "release"
+    };
     let uptime = shell.kernel.uptime().as_secs();
     let cwd = shell.kernel.vfs.cwd.display();
     let ps_output = shell.kernel.scheduler.ps();
@@ -201,7 +223,11 @@ pub fn dashboard(shell: &mut Phase1Shell, config: BootConfig, args: &[String]) -
     let audit_count = shell.kernel.audit.dump().lines().count();
     let pcie_count = shell.kernel.pcie.lspci().lines().count();
     let cr4 = shell.kernel.scheduler.cr4();
-    let safety = if crate::policy::host_tools_allowed() { "host-enabled" } else { "safe-mode" };
+    let safety = if crate::policy::host_tools_allowed() {
+        "host-enabled"
+    } else {
+        "safe-mode"
+    };
 
     if compact {
         return format!(
@@ -259,9 +285,15 @@ fn set_palette(shell: &mut Phase1Shell, palette: ThemePalette) {
     std::env::remove_var("PHASE1_NO_COLOR");
     std::env::remove_var("PHASE1_ASCII");
     std::env::set_var("PHASE1_THEME", palette.name());
-    shell.env.insert("PHASE1_THEME".to_string(), palette.name().to_string());
-    shell.env.insert("PHASE1_NO_COLOR".to_string(), "0".to_string());
-    shell.env.insert("PHASE1_ASCII".to_string(), "0".to_string());
+    shell
+        .env
+        .insert("PHASE1_THEME".to_string(), palette.name().to_string());
+    shell
+        .env
+        .insert("PHASE1_NO_COLOR".to_string(), "0".to_string());
+    shell
+        .env
+        .insert("PHASE1_ASCII".to_string(), "0".to_string());
 }
 
 fn bleeding_edge_active() -> bool {
@@ -296,7 +328,11 @@ fn theme_status(shell: &Phase1Shell) -> String {
 
     format!(
         "theme status\nactive : {active}\nchannel: {}\ncolor  : {}\nascii  : {}\n",
-        if bleeding_edge_active() { "bleeding-edge" } else { "release" },
+        if bleeding_edge_active() {
+            "bleeding-edge"
+        } else {
+            "release"
+        },
         if color { "on" } else { "off" },
         if ascii { "on" } else { "off" }
     )
@@ -370,7 +406,10 @@ mod tests {
         let mut shell = Phase1Shell::new();
         let out = theme(&mut shell, &["matrix".to_string()]);
         assert!(out.contains("matrix enabled"));
-        assert_eq!(shell.env.get("PHASE1_THEME").map(String::as_str), Some("matrix"));
+        assert_eq!(
+            shell.env.get("PHASE1_THEME").map(String::as_str),
+            Some("matrix")
+        );
         let status = theme(&mut shell, &[]);
         assert!(status.contains("active : matrix"));
     }

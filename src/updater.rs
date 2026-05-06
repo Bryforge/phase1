@@ -238,7 +238,9 @@ fn protocol_report() -> String {
     );
     out.push_str("\nsafety gates\n");
     out.push_str("  - update without --execute is a dry-run plan\n");
-    out.push_str("  - update host checks/execution require boot TRUST HOST plus command-line --trust-host\n");
+    out.push_str(
+        "  - update host checks/execution require boot TRUST HOST plus command-line --trust-host\n",
+    );
     out.push_str("  - SHIELD/safe mode still blocks host commands even when TRUST HOST is on\n");
     out.push_str(
         "  - update now --trust-host fetches, fast-forwards, and builds latest bleeding edge only after the boot trust gate is open\n",

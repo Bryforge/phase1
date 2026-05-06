@@ -41,7 +41,10 @@ impl LinuxColorDepth {
 }
 
 pub fn is_linux_alias(raw: &str) -> bool {
-    matches!(raw, "linux" | "linux-pack" | "linux-color" | "colors" | "colorpack")
+    matches!(
+        raw,
+        "linux" | "linux-pack" | "linux-color" | "colors" | "colorpack"
+    )
 }
 
 pub fn theme(shell: &mut Phase1Shell, args: &[String]) -> String {
@@ -61,7 +64,10 @@ pub fn theme(shell: &mut Phase1Shell, args: &[String]) -> String {
 }
 
 pub fn summary(shell: &Phase1Shell) -> String {
-    match (value(shell, "PHASE1_COLOR_PACK"), value(shell, "PHASE1_COLOR_DEPTH")) {
+    match (
+        value(shell, "PHASE1_COLOR_PACK"),
+        value(shell, "PHASE1_COLOR_DEPTH"),
+    ) {
         (Some(pack), Some(depth)) => format!("{pack}/{depth}"),
         (Some(pack), None) => pack,
         _ => "default".to_string(),
@@ -71,7 +77,8 @@ pub fn summary(shell: &Phase1Shell) -> String {
 pub fn status(shell: &Phase1Shell) -> String {
     let detected = detect();
     let configured_pack = value(shell, "PHASE1_COLOR_PACK").unwrap_or_else(|| "none".to_string());
-    let configured_depth = value(shell, "PHASE1_COLOR_DEPTH").unwrap_or_else(|| detected.name().to_string());
+    let configured_depth =
+        value(shell, "PHASE1_COLOR_DEPTH").unwrap_or_else(|| detected.name().to_string());
     let term = std::env::var("TERM").unwrap_or_else(|_| "unknown".to_string());
     let colorterm = std::env::var("COLORTERM").unwrap_or_else(|_| "unset".to_string());
     format!(
@@ -88,28 +95,49 @@ pub fn status(shell: &Phase1Shell) -> String {
 fn apply(shell: &mut Phase1Shell, depth: LinuxColorDepth) -> String {
     std::env::set_var("PHASE1_COLOR_PACK", "linux");
     std::env::set_var("PHASE1_COLOR_DEPTH", depth.name());
-    shell.env.insert("PHASE1_COLOR_PACK".to_string(), "linux".to_string());
-    shell.env.insert("PHASE1_COLOR_DEPTH".to_string(), depth.name().to_string());
+    shell
+        .env
+        .insert("PHASE1_COLOR_PACK".to_string(), "linux".to_string());
+    shell
+        .env
+        .insert("PHASE1_COLOR_DEPTH".to_string(), depth.name().to_string());
 
     match depth {
         LinuxColorDepth::Mono => {
             std::env::set_var("PHASE1_NO_COLOR", "1");
             std::env::remove_var("PHASE1_ASCII");
-            shell.env.insert("PHASE1_THEME".to_string(), "mono".to_string());
-            shell.env.insert("PHASE1_NO_COLOR".to_string(), "1".to_string());
-            shell.env.insert("PHASE1_ASCII".to_string(), "0".to_string());
+            shell
+                .env
+                .insert("PHASE1_THEME".to_string(), "mono".to_string());
+            shell
+                .env
+                .insert("PHASE1_NO_COLOR".to_string(), "1".to_string());
+            shell
+                .env
+                .insert("PHASE1_ASCII".to_string(), "0".to_string());
         }
         _ => {
             std::env::remove_var("PHASE1_NO_COLOR");
             std::env::remove_var("PHASE1_ASCII");
             std::env::set_var("PHASE1_THEME", depth.palette_name());
-            shell.env.insert("PHASE1_THEME".to_string(), depth.palette_name().to_string());
-            shell.env.insert("PHASE1_NO_COLOR".to_string(), "0".to_string());
-            shell.env.insert("PHASE1_ASCII".to_string(), "0".to_string());
+            shell
+                .env
+                .insert("PHASE1_THEME".to_string(), depth.palette_name().to_string());
+            shell
+                .env
+                .insert("PHASE1_NO_COLOR".to_string(), "0".to_string());
+            shell
+                .env
+                .insert("PHASE1_ASCII".to_string(), "0".to_string());
         }
     }
 
-    format!("theme linux: {} color pack enabled using base palette {}\n{}", depth.name(), depth.palette_name(), preview(depth))
+    format!(
+        "theme linux: {} color pack enabled using base palette {}\n{}",
+        depth.name(),
+        depth.palette_name(),
+        preview(depth)
+    )
 }
 
 fn clear(shell: &mut Phase1Shell) {
@@ -131,11 +159,15 @@ fn detect() -> LinuxColorDepth {
             return depth;
         }
     }
-    let colorterm = std::env::var("COLORTERM").unwrap_or_default().to_ascii_lowercase();
+    let colorterm = std::env::var("COLORTERM")
+        .unwrap_or_default()
+        .to_ascii_lowercase();
     if colorterm.contains("truecolor") || colorterm.contains("24bit") {
         return LinuxColorDepth::TrueColor;
     }
-    let term = std::env::var("TERM").unwrap_or_default().to_ascii_lowercase();
+    let term = std::env::var("TERM")
+        .unwrap_or_default()
+        .to_ascii_lowercase();
     if term.contains("256color") {
         return LinuxColorDepth::Color256;
     }
@@ -197,7 +229,11 @@ fn ansi_code(name: &str) -> &'static str {
 }
 
 fn value(shell: &Phase1Shell, key: &str) -> Option<String> {
-    shell.env.get(key).cloned().or_else(|| std::env::var(key).ok())
+    shell
+        .env
+        .get(key)
+        .cloned()
+        .or_else(|| std::env::var(key).ok())
 }
 
 #[cfg(test)]
@@ -211,7 +247,10 @@ mod tests {
         let out = theme(&mut shell, &["truecolor".to_string()]);
         assert!(out.contains("truecolor color pack enabled"));
         assert!(out.contains("\x1b[38;2;"));
-        assert_eq!(shell.env.get("PHASE1_COLOR_PACK").map(String::as_str), Some("linux"));
+        assert_eq!(
+            shell.env.get("PHASE1_COLOR_PACK").map(String::as_str),
+            Some("linux")
+        );
         assert_eq!(summary(&shell), "linux/truecolor");
         std::env::remove_var("PHASE1_COLOR_PACK");
         std::env::remove_var("PHASE1_COLOR_DEPTH");

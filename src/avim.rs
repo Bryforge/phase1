@@ -110,11 +110,17 @@ fn handle_normal(vfs: &mut Vfs, state: &mut AvimState, input: &str) -> bool {
         raw if is_escape_input(raw) => render_status(state, "already in NORMAL mode"),
         "i" => {
             state.mode = Mode::Insert;
-            render_status(state, "INSERT mode: type a line, Enter commits, Esc returns to NORMAL");
+            render_status(
+                state,
+                "INSERT mode: type a line, Enter commits, Esc returns to NORMAL",
+            );
         }
         "a" => {
             state.mode = Mode::Insert;
-            render_status(state, "INSERT mode: type a line, Enter commits, Esc returns to NORMAL");
+            render_status(
+                state,
+                "INSERT mode: type a line, Enter commits, Esc returns to NORMAL",
+            );
         }
         "o" => {
             push_undo(state);
@@ -163,7 +169,10 @@ fn handle_normal(vfs: &mut Vfs, state: &mut AvimState, input: &str) -> bool {
         raw if raw.starts_with(':') => return handle_command(vfs, state, &raw[1..]),
         raw if raw.starts_with('/') => search(state, raw.trim_start_matches('/')),
         raw if raw.starts_with("set ") => set_option(state, raw.trim_start_matches("set ")),
-        other => render_status(state, &format!("unknown NORMAL command: {other}; use i for INSERT or :help")),
+        other => render_status(
+            state,
+            &format!("unknown NORMAL command: {other}; use i for INSERT or :help"),
+        ),
     }
     false
 }
@@ -629,7 +638,10 @@ fn avim_status_line(state: &AvimState) -> String {
         mode_hint(state.mode)
     );
     let clipped: String = raw.chars().take(width).collect();
-    let padded = format!("{clipped}{}", " ".repeat(width.saturating_sub(clipped.len())));
+    let padded = format!(
+        "{clipped}{}",
+        " ".repeat(width.saturating_sub(clipped.len()))
+    );
 
     if color_enabled() {
         let color = match state.mode {
@@ -661,7 +673,10 @@ fn mode_hint(mode: Mode) -> &'static str {
 
 fn escape_to_normal(state: &mut AvimState) {
     state.mode = Mode::Normal;
-    render_status(state, "NORMAL mode; use i for INSERT, :wq to save+quit, :help for keys");
+    render_status(
+        state,
+        "NORMAL mode; use i for INSERT, :wq to save+quit, :help for keys",
+    );
 }
 
 fn is_escape_input(input: &str) -> bool {

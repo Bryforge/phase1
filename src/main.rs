@@ -74,7 +74,10 @@ fn compact_path(path: &Path) -> String {
 
 fn main() {
     ops_log::install_panic_hook();
-    ops_log::log_event("process.start", &format!("phase1 {}", env!("CARGO_PKG_VERSION")));
+    ops_log::log_event(
+        "process.start",
+        &format!("phase1 {}", env!("CARGO_PKG_VERSION")),
+    );
     loop {
         match ui::configure_boot(kernel::VERSION) {
             ui::BootSelection::Boot(config) => match run_shell(config) {
@@ -98,7 +101,10 @@ fn main() {
 
 fn run_storage_boot_option(boot_config: ui::BootConfig) {
     boot_config.apply();
-    ops_log::log_event("storage.boot_option", "opened read-only storage helper status");
+    ops_log::log_event(
+        "storage.boot_option",
+        "opened read-only storage helper status",
+    );
 
     println!("phase1 storage helper // boot option");
     println!("mode      : read-only status");
@@ -109,7 +115,11 @@ fn run_storage_boot_option(boot_config: ui::BootConfig) {
     println!("hint      : mutating Git/Rust actions still require safe mode off and PHASE1_ALLOW_HOST_TOOLS=1");
     println!();
 
-    let helper_name = if cfg!(windows) { "phase1-storage.exe" } else { "phase1-storage" };
+    let helper_name = if cfg!(windows) {
+        "phase1-storage.exe"
+    } else {
+        "phase1-storage"
+    };
 
     let helper_path = std::env::current_exe()
         .ok()
@@ -163,26 +173,74 @@ fn run_shell(boot_config: ui::BootConfig) -> ShellExit {
     let mut shell = Phase1Shell::new();
     let history_store = history::HistoryStore::from_env(boot_config.persistent_state);
     let display_version = ui::display_version(kernel::VERSION, boot_config);
-    let channel = if boot_config.bleeding_edge { "bleeding-edge" } else { "release" };
-    ops_log::log_event("shell.start", &format!("version={display_version} channel={channel} profile={}", boot_config.profile_name()));
+    let channel = if boot_config.bleeding_edge {
+        "bleeding-edge"
+    } else {
+        "release"
+    };
+    ops_log::log_event(
+        "shell.start",
+        &format!(
+            "version={display_version} channel={channel} profile={}",
+            boot_config.profile_name()
+        ),
+    );
 
-    shell.env.insert("PHASE1_BOOT_PROFILE".to_string(), boot_config.profile_name().to_string());
-    shell.env.insert("PHASE1_CHANNEL".to_string(), channel.to_string());
-    shell.env.insert("PHASE1_DISPLAY_VERSION".to_string(), display_version.clone());
-    shell.env.insert("PHASE1_SAFE_MODE".to_string(), if boot_config.safe_mode { "1" } else { "0" }.to_string());
-    shell.env.insert("PHASE1_MOBILE_MODE".to_string(), if boot_config.mobile_mode { "1" } else { "0" }.to_string());
+    shell.env.insert(
+        "PHASE1_BOOT_PROFILE".to_string(),
+        boot_config.profile_name().to_string(),
+    );
+    shell
+        .env
+        .insert("PHASE1_CHANNEL".to_string(), channel.to_string());
+    shell.env.insert(
+        "PHASE1_DISPLAY_VERSION".to_string(),
+        display_version.clone(),
+    );
+    shell.env.insert(
+        "PHASE1_SAFE_MODE".to_string(),
+        if boot_config.safe_mode { "1" } else { "0" }.to_string(),
+    );
+    shell.env.insert(
+        "PHASE1_MOBILE_MODE".to_string(),
+        if boot_config.mobile_mode { "1" } else { "0" }.to_string(),
+    );
     shell.env.insert(
         "PHASE1_DEVICE_MODE".to_string(),
-        std::env::var("PHASE1_DEVICE_MODE").unwrap_or_else(|_| if boot_config.mobile_mode { "mobile" } else { "desktop" }.to_string()),
+        std::env::var("PHASE1_DEVICE_MODE").unwrap_or_else(|_| {
+            if boot_config.mobile_mode {
+                "mobile"
+            } else {
+                "desktop"
+            }
+            .to_string()
+        }),
     );
-    shell.env.insert("PHASE1_PERSISTENT_STATE".to_string(), if boot_config.persistent_state { "1" } else { "0" }.to_string());
-    shell.env.insert("PHASE1_BLEEDING_EDGE".to_string(), if boot_config.bleeding_edge { "1" } else { "0" }.to_string());
-    shell.env.insert("PHASE1_HISTORY".to_string(), history_store.describe());
+    shell.env.insert(
+        "PHASE1_PERSISTENT_STATE".to_string(),
+        if boot_config.persistent_state {
+            "1"
+        } else {
+            "0"
+        }
+        .to_string(),
+    );
+    shell.env.insert(
+        "PHASE1_BLEEDING_EDGE".to_string(),
+        if boot_config.bleeding_edge { "1" } else { "0" }.to_string(),
+    );
+    shell
+        .env
+        .insert("PHASE1_HISTORY".to_string(), history_store.describe());
 
     if boot_config.persistent_state {
         match load_persistent_state(&mut shell) {
-            Ok(count) if count > 0 => println!("persistent state: restored {count} entries from {PERSISTENT_STATE_PATH}"),
-            Ok(_) => println!("persistent state: enabled; no saved state found at {PERSISTENT_STATE_PATH}"),
+            Ok(count) if count > 0 => {
+                println!("persistent state: restored {count} entries from {PERSISTENT_STATE_PATH}")
+            }
+            Ok(_) => println!(
+                "persistent state: enabled; no saved state found at {PERSISTENT_STATE_PATH}"
+            ),
             Err(err) => {
                 ops_log::log_error("state.restore", &err.to_string());
                 println!("persistent state: restore warning: {err}");
@@ -191,7 +249,10 @@ fn run_shell(boot_config: ui::BootConfig) -> ShellExit {
     }
 
     match history_store.load(&mut shell.history) {
-        Ok(count) if count > 0 => println!("persistent history: restored {count} entries from {}", history_store.describe()),
+        Ok(count) if count > 0 => println!(
+            "persistent history: restored {count} entries from {}",
+            history_store.describe()
+        ),
         Ok(_) => {}
         Err(err) => {
             ops_log::log_error("history.restore", &err.to_string());
@@ -206,7 +267,10 @@ fn run_shell(boot_config: ui::BootConfig) -> ShellExit {
     }
 
     shell.cmd_cd(Some("/home"));
-    println!("phase1 {} ready. Type 'help' for commands.", display_version);
+    println!(
+        "phase1 {} ready. Type 'help' for commands.",
+        display_version
+    );
 
     let mut shell_exit = ShellExit::Shutdown;
     loop {
@@ -254,7 +318,11 @@ fn run_shell(boot_config: ui::BootConfig) -> ShellExit {
             }
         }
 
-        if shell.env.get("PHASE1_REBOOT_REQUESTED").is_some_and(|value| value == "1") {
+        if shell
+            .env
+            .get("PHASE1_REBOOT_REQUESTED")
+            .is_some_and(|value| value == "1")
+        {
             shell_exit = ShellExit::Reboot;
             break;
         }
@@ -270,11 +338,22 @@ fn run_shell(boot_config: ui::BootConfig) -> ShellExit {
         ops_log::log_error("history.save", &err.to_string());
         eprintln!("persistent history save warning: {err}");
     }
-    ops_log::log_event("shell.stop", match shell_exit { ShellExit::Shutdown => "shutdown", ShellExit::Reboot => "reboot" });
+    ops_log::log_event(
+        "shell.stop",
+        match shell_exit {
+            ShellExit::Shutdown => "shutdown",
+            ShellExit::Reboot => "reboot",
+        },
+    );
     shell_exit
 }
 
-fn execute_chain(shell: &mut Phase1Shell, boot_config: ui::BootConfig, history_store: &history::HistoryStore, line: &str) -> Result<bool, String> {
+fn execute_chain(
+    shell: &mut Phase1Shell,
+    boot_config: ui::BootConfig,
+    history_store: &history::HistoryStore,
+    line: &str,
+) -> Result<bool, String> {
     let chain = parse_chain(line)?;
     let mut last_status = true;
 
@@ -287,7 +366,11 @@ fn execute_chain(shell: &mut Phase1Shell, boot_config: ui::BootConfig, history_s
         if should_run {
             last_status = execute_one(shell, boot_config, history_store, &segment.command)?;
         }
-        if shell.env.get("PHASE1_REBOOT_REQUESTED").is_some_and(|value| value == "1") {
+        if shell
+            .env
+            .get("PHASE1_REBOOT_REQUESTED")
+            .is_some_and(|value| value == "1")
+        {
             break;
         }
     }
@@ -295,7 +378,12 @@ fn execute_chain(shell: &mut Phase1Shell, boot_config: ui::BootConfig, history_s
     Ok(last_status)
 }
 
-fn execute_one(shell: &mut Phase1Shell, boot_config: ui::BootConfig, history_store: &history::HistoryStore, line: &str) -> Result<bool, String> {
+fn execute_one(
+    shell: &mut Phase1Shell,
+    boot_config: ui::BootConfig,
+    history_store: &history::HistoryStore,
+    line: &str,
+) -> Result<bool, String> {
     let expanded = shell.expand_env(line);
     match parse_line(&expanded) {
         Ok(tokens) if tokens.is_empty() => Ok(true),
@@ -303,11 +391,16 @@ fn execute_one(shell: &mut Phase1Shell, boot_config: ui::BootConfig, history_sto
             let cmd = &tokens[0];
             let args = &tokens[1..];
             let canonical = registry::canonical_name(cmd).unwrap_or(cmd);
-            let known = registry::lookup(cmd).is_some() || plugin_exists(shell, canonical) || matches!(canonical, "avim" | "lang" | "opslog");
+            let known = registry::lookup(cmd).is_some()
+                || plugin_exists(shell, canonical)
+                || matches!(canonical, "avim" | "lang" | "opslog");
             match canonical {
                 "help" => ui::print_help(),
                 "accounts" => print!("{}", accounts_report(shell)),
-                "security" => print!("{}", policy::security_report(boot_config.persistent_state, "memory-only")),
+                "security" => print!(
+                    "{}",
+                    policy::security_report(boot_config.persistent_state, "memory-only")
+                ),
                 "sysinfo" => print!("{}", operator::sysinfo(shell, boot_config)),
                 "fastfetch" => print!("{}", fastfetch::run(shell, boot_config)),
                 "dash" => print!("{}", operator::dashboard(shell, boot_config, args)),
@@ -336,7 +429,10 @@ fn execute_one(shell: &mut Phase1Shell, boot_config: ui::BootConfig, history_sto
 }
 
 fn theme_command(shell: &mut Phase1Shell, args: &[String]) -> String {
-    if args.first().is_some_and(|arg| linux_colors::is_linux_alias(arg)) {
+    if args
+        .first()
+        .is_some_and(|arg| linux_colors::is_linux_alias(arg))
+    {
         return linux_colors::theme(shell, &args[1..]);
     }
     let mut out = operator::theme(shell, args);
@@ -353,7 +449,9 @@ fn theme_command(shell: &mut Phase1Shell, args: &[String]) -> String {
 
 fn request_reboot(shell: &mut Phase1Shell) {
     ops_log::log_event("shell.reboot", "returning to boot selector");
-    shell.env.insert("PHASE1_REBOOT_REQUESTED".to_string(), "1".to_string());
+    shell
+        .env
+        .insert("PHASE1_REBOOT_REQUESTED".to_string(), "1".to_string());
     println!("reboot: returning to boot configuration screen");
 }
 
@@ -376,7 +474,10 @@ fn editor_prompt_text(user: &str, path: &str) -> String {
         _ => (GREEN, CYAN, BLUE),
     };
 
-    format!("{}{}phase1{}{}://{}{}{}{} {}{}{} ❯ ", BOLD, title, RESET, GRAY, RESET, user_color, user, RESET, path_color, path, RESET)
+    format!(
+        "{}{}phase1{}{}://{}{}{}{} {}{}{} ❯ ",
+        BOLD, title, RESET, GRAY, RESET, user_color, user, RESET, path_color, path, RESET
+    )
 }
 
 fn active_theme_name() -> String {
@@ -458,21 +559,33 @@ fn parse_chain(line: &str) -> Result<Vec<ChainSegment>, String> {
     Ok(segments)
 }
 
-fn push_segment(segments: &mut Vec<ChainSegment>, op: ChainOp, current: &mut String) -> Result<(), String> {
+fn push_segment(
+    segments: &mut Vec<ChainSegment>,
+    op: ChainOp,
+    current: &mut String,
+) -> Result<(), String> {
     let command = current.trim();
     if command.is_empty() {
         return Err("empty command in chain".to_string());
     }
-    segments.push(ChainSegment { op, command: command.to_string() });
+    segments.push(ChainSegment {
+        op,
+        command: command.to_string(),
+    });
     current.clear();
     Ok(())
 }
 
 fn plugin_exists(shell: &Phase1Shell, name: &str) -> bool {
-    if name.is_empty() || !name.chars().all(|ch| ch.is_ascii_alphanumeric() || matches!(ch, '_' | '-')) {
+    if name.is_empty()
+        || !name
+            .chars()
+            .all(|ch| ch.is_ascii_alphanumeric() || matches!(ch, '_' | '-'))
+    {
         return false;
     }
-    shell.plugins_dir.join(format!("{name}.py")).exists() || shell.plugins_dir.join(format!("{name}.wasm")).exists()
+    shell.plugins_dir.join(format!("{name}.py")).exists()
+        || shell.plugins_dir.join(format!("{name}.wasm")).exists()
 }
 
 fn accounts_report(shell: &Phase1Shell) -> String {
@@ -483,7 +596,10 @@ fn accounts_report(shell: &Phase1Shell) -> String {
             for line in raw.lines().filter(|line| !line.trim().is_empty()) {
                 let fields: Vec<_> = line.split(':').collect();
                 if fields.len() >= 7 {
-                    out.push_str(&format!("{:<10} {:<5} {:<5} {:<10} {}\n", fields[0], fields[2], fields[3], fields[5], fields[6]));
+                    out.push_str(&format!(
+                        "{:<10} {:<5} {:<5} {:<10} {}\n",
+                        fields[0], fields[2], fields[3], fields[5], fields[6]
+                    ));
                 }
             }
         }
@@ -501,7 +617,10 @@ fn handle_bootcfg(config: ui::BootConfig, args: &[String]) {
             Err(err) => println!("bootcfg: save failed: {err}"),
         },
         Some("reset") | Some("defaults") => match ui::BootConfig::remove_saved() {
-            Ok(()) => println!("bootcfg: removed {}; detected defaults will be used next launch", ui::config_path()),
+            Ok(()) => println!(
+                "bootcfg: removed {}; detected defaults will be used next launch",
+                ui::config_path()
+            ),
             Err(err) => println!("bootcfg: reset failed: {err}"),
         },
         Some("path") => println!("{}", ui::config_path()),
@@ -516,20 +635,62 @@ fn handle_bootcfg(config: ui::BootConfig, args: &[String]) {
 
 fn print_boot_config(config: ui::BootConfig) {
     println!("boot profile      : {}", config.profile_name());
-    println!("channel           : {}", if config.bleeding_edge { "bleeding-edge" } else { "release" });
-    println!("display version   : {}", ui::display_version(kernel::VERSION, config));
+    println!(
+        "channel           : {}",
+        if config.bleeding_edge {
+            "bleeding-edge"
+        } else {
+            "release"
+        }
+    );
+    println!(
+        "display version   : {}",
+        ui::display_version(kernel::VERSION, config)
+    );
     println!("config file       : {}", ui::config_path());
     println!("state file        : {}", PERSISTENT_STATE_PATH);
     println!("ops log           : {}", ops_log::LOG_PATH);
-    println!("color             : {}", if config.color { "on" } else { "off" });
-    println!("ascii             : {}", if config.ascii_mode { "on" } else { "off" });
-    println!("safe mode         : {}", if config.safe_mode { "on" } else { "off" });
-    println!("quick boot        : {}", if config.quick_boot { "on" } else { "off" });
-    println!("mobile mode       : {}", if config.mobile_mode { "on" } else { "off" });
-    println!("device mode       : {}", std::env::var("PHASE1_DEVICE_MODE").unwrap_or_else(|_| if config.mobile_mode { "mobile" } else { "desktop" }.to_string()));
-    println!("host tools        : {}", if config.host_tools { "trusted" } else { "off" });
-    println!("bleeding edge     : {}", if config.bleeding_edge { "on" } else { "off" });
-    println!("persistent state  : {}", if config.persistent_state { "on" } else { "off" });
+    println!(
+        "color             : {}",
+        if config.color { "on" } else { "off" }
+    );
+    println!(
+        "ascii             : {}",
+        if config.ascii_mode { "on" } else { "off" }
+    );
+    println!(
+        "safe mode         : {}",
+        if config.safe_mode { "on" } else { "off" }
+    );
+    println!(
+        "quick boot        : {}",
+        if config.quick_boot { "on" } else { "off" }
+    );
+    println!(
+        "mobile mode       : {}",
+        if config.mobile_mode { "on" } else { "off" }
+    );
+    println!(
+        "device mode       : {}",
+        std::env::var("PHASE1_DEVICE_MODE").unwrap_or_else(|_| if config.mobile_mode {
+            "mobile"
+        } else {
+            "desktop"
+        }
+        .to_string())
+    );
+    println!(
+        "host tools        : {}",
+        if config.host_tools { "trusted" } else { "off" }
+    );
+    println!(
+        "bleeding edge     : {}",
+        if config.bleeding_edge { "on" } else { "off" }
+    );
+    println!(
+        "persistent state  : {}",
+        if config.persistent_state { "on" } else { "off" }
+    );
 }
 
 fn print_bootcfg_help() {
@@ -558,9 +719,15 @@ fn load_persistent_state(shell: &mut Phase1Shell) -> io::Result<usize> {
                 restored += 1;
             }
             (Some("F"), Some(path), Some(encoded)) if is_persisted_path(path) => {
-                let bytes = decode_hex(encoded).map_err(|err| io::Error::new(io::ErrorKind::InvalidData, err))?;
-                let content = String::from_utf8(bytes).map_err(|err| io::Error::new(io::ErrorKind::InvalidData, err))?;
-                shell.kernel.vfs.write_file(path, &content, false).map_err(io::Error::other)?;
+                let bytes = decode_hex(encoded)
+                    .map_err(|err| io::Error::new(io::ErrorKind::InvalidData, err))?;
+                let content = String::from_utf8(bytes)
+                    .map_err(|err| io::Error::new(io::ErrorKind::InvalidData, err))?;
+                shell
+                    .kernel
+                    .vfs
+                    .write_file(path, &content, false)
+                    .map_err(io::Error::other)?;
                 restored += 1;
             }
             _ => {}
@@ -597,7 +764,10 @@ fn collect_persistent_entries(path: &Path, node: &VfsNode, out: &mut Vec<String>
                 collect_persistent_entries(&path.join(name), &children[name], out);
             }
         }
-        VfsNode::File { content, .. } => out.push(format!("F\t{path_text}\t{}", encode_hex(content.as_bytes()))),
+        VfsNode::File { content, .. } => out.push(format!(
+            "F\t{path_text}\t{}",
+            encode_hex(content.as_bytes())
+        )),
     }
 }
 
