@@ -15,6 +15,28 @@ Core principles:
 - Make mobile terminal output compact but still premium.
 - Build extensibility through policy, packages, and sandboxed plugins.
 
+## Next update
+
+Prepared next feature set:
+
+```text
+NEXT_UPDATE_v3.7.0.md
+```
+
+Theme:
+
+```text
+R1 Operator Shell Completion + Policy Foundation
+```
+
+Primary targets:
+
+- persistent shell history
+- history command extensions
+- command policy check foundation
+- structured audit event formatting
+- smoke tests for history and policy behavior
+
 ## Roadmap phases
 
 ### Phase R1 — Operator shell foundation
@@ -94,12 +116,11 @@ Targets:
 
 ## Immediate implementation order
 
-1. Add registry-backed alias normalization before dispatch.
-2. Add persistent command history with a disable flag for tests.
-3. Add `capabilities` command that reports command policy metadata.
-4. Add a policy check function and log allow/deny decisions to audit.
-5. Expand smoke tests around aliases, history, and capabilities.
-6. Start the structured output enum behind command handlers.
+1. Add persistent command history with a disable flag for tests.
+2. Add a policy check function and log allow/deny decisions to audit.
+3. Expand smoke tests around history and safe-mode policy behavior.
+4. Start the structured output enum behind command handlers.
+5. Continue virtual kernel boundary cleanup.
 
 ## Definition of done
 
