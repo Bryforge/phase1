@@ -1,6 +1,6 @@
 [package]
 name = "phase1"
-version = "3.6.0"
+version = "3.7.0"
 edition = "2021"
 authors = ["Chase Bryan"]
 description = "Terminal-first educational virtual OS console in Rust."
