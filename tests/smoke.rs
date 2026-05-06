@@ -15,14 +15,27 @@ fn run_phase1(script: &str) -> String {
 fn run_phase1_host_enabled(script: &str) -> String {
     let run_dir = unique_run_dir();
     fs::create_dir_all(&run_dir).expect("create phase1 smoke temp directory");
-    let output = run_phase1_in_dir(&run_dir, &format!("4\n\n{script}"));
+    let output = run_phase1_in_dir_with_host_tools(&run_dir, &format!("4\n\n{script}"), true);
+    let _ = fs::remove_dir_all(&run_dir);
+    output
+}
+
+fn run_phase1_safe_off_without_host_tools(script: &str) -> String {
+    let run_dir = unique_run_dir();
+    fs::create_dir_all(&run_dir).expect("create phase1 smoke temp directory");
+    let output = run_phase1_in_dir_with_host_tools(&run_dir, &format!("4\n\n{script}"), false);
     let _ = fs::remove_dir_all(&run_dir);
     output
 }
 
 fn run_phase1_in_dir(run_dir: &Path, input: &str) -> String {
+    run_phase1_in_dir_with_host_tools(run_dir, input, false)
+}
+
+fn run_phase1_in_dir_with_host_tools(run_dir: &Path, input: &str, host_tools: bool) -> String {
     let binary = env!("CARGO_BIN_EXE_phase1");
-    let mut child = Command::new(binary)
+    let mut command = Command::new(binary);
+    command
         .current_dir(run_dir)
         .env("PHASE1_NO_COLOR", "1")
         .env("PHASE1_ASCII", "1")
@@ -30,9 +43,13 @@ fn run_phase1_in_dir(run_dir: &Path, input: &str) -> String {
         .env("LINES", "30")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .spawn()
-        .expect("spawn phase1 binary");
+        .stderr(Stdio::piped());
+
+    if host_tools {
+        command.env("PHASE1_ALLOW_HOST_TOOLS", "1");
+    }
+
+    let mut child = command.spawn().expect("spawn phase1 binary");
 
     {
         let stdin = child.stdin.as_mut().expect("phase1 stdin");
@@ -100,6 +117,42 @@ fn secure_default_blocks_host_backed_commands() {
 }
 
 #[test]
+fn safe_off_without_host_tools_still_blocks_host_commands() {
+    let output = run_phase1_safe_off_without_host_tools(
+        "security\npy -c \"print('blocked')\"\nbrowser phase1\nexit\n",
+    );
+    assert_contains_all(
+        &output,
+        &[
+            "safe mode         off",
+            "security mode       : host-capable",
+            "host tools          : disabled",
+            "python: disabled; set PHASE1_ALLOW_HOST_TOOLS=1 to enable trusted host tools",
+            "browser: disabled; set PHASE1_ALLOW_HOST_TOOLS=1 to enable trusted host tools",
+        ],
+    );
+    assert!(!output.contains("blocked"), "host tools ran without explicit opt-in:\n{output}");
+}
+
+#[test]
+fn security_and_accounts_reports_are_privacy_safe() {
+    let output = run_phase1("security\naccounts\nexit\n");
+    assert_contains_all(
+        &output,
+        &[
+            "security mode       : safe",
+            "host tools          : disabled",
+            "privacy             : no real emails, passwords, tokens, or account secrets are stored by phase1",
+            "phase1 accounts // simulated Unix account database",
+            "safety : no real emails, tokens, host users, or account secrets are stored here",
+            "root",
+            "user",
+        ],
+    );
+    assert!(!output.contains('@'), "privacy-safe account output should not include email-like data:\n{output}");
+}
+
+#[test]
 fn preboot_persistent_state_mode_is_toggleable_and_restores_home_files() {
     let run_dir = unique_run_dir();
     fs::create_dir_all(&run_dir).expect("create persistent state smoke directory");
@@ -139,13 +192,12 @@ fn roadmap_aliases_capabilities_and_dashboard_work() {
             "phase1 // command map",
             "command        category capability",
             "wifi-connect",
-            "dry-run by default",
             "PHASE1 DASHBOARD v3.6.0",
             "CORE  user=root",
             "PROC  tasks=",
             "HW    cr3=0x1000",
             "python",
-            "timeout+validation",
+            "PHASE1_ALLOW_HOST_TOOLS",
             "alias-ok",
             "shutdown: phase1 3.6.0",
         ],
