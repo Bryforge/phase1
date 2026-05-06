@@ -1,29 +1,36 @@
 use crate::kernel::VERSION;
 
 pub const RELEASE_VERSION: &str = "3.6.0";
-pub const BLEEDING_VERSION: &str = "3.7.0-dev";
+pub const BLEEDING_VERSION: &str = "3.7.1-dev";
 pub const CHANNEL: &str = "bleeding-edge";
+pub const UPDATE_PROTOCOL_FILE: &str = "UPDATE_PROTOCOL.md";
+pub const VERSION_SCHEME: &str = "MAJOR.MINOR.PATCH[-dev]";
 
 const BLEEDING_FEATURES: &[&str] = &[
     "persistent shell history with secret redaction",
     "structured shell command chains",
     "structured text pipelines",
     "guarded stable-to-bleeding updater",
+    "documented update protocol with patch-level SemVer",
     "operator sysinfo/theme/banner/tips commands",
 ];
 
 const ROADMAP_STATUS: &[(&str, &str)] = &[
     ("Persistent shell history", "complete"),
     ("Structured command output and pipelines", "complete"),
+    ("Update protocol and semantic patch versioning", "complete: UPDATE_PROTOCOL.md is the canonical reference"),
     ("Capability enforcement based on command metadata", "partial: enforced for host tools and network mutation gates"),
     ("WASM/WASI plugin runtime", "planned: Python plugin runtime remains guarded behind host-tool opt-in"),
     ("Full-screen TUI dashboard", "planned: compact dashboard and sysinfo are available now"),
 ];
 
 pub fn version_report(args: &[String]) -> String {
-    let compare = args
-        .iter()
-        .any(|arg| matches!(arg.as_str(), "--compare" | "compare" | "--channel" | "channel" | "--bleeding"));
+    let compare = args.iter().any(|arg| {
+        matches!(
+            arg.as_str(),
+            "--compare" | "compare" | "--channel" | "channel" | "--bleeding"
+        )
+    });
     if !compare {
         return format!("phase1 {}\n", VERSION);
     }
@@ -32,6 +39,8 @@ pub fn version_report(args: &[String]) -> String {
     out.push_str(&format!("runtime version : {}\n", VERSION));
     out.push_str(&format!("release version : {}\n", RELEASE_VERSION));
     out.push_str(&format!("bleeding edge   : {}\n", BLEEDING_VERSION));
+    out.push_str(&format!("version scheme  : {}\n", VERSION_SCHEME));
+    out.push_str(&format!("protocol file   : {}\n", UPDATE_PROTOCOL_FILE));
     out.push_str(&format!("channel         : {}\n", CHANNEL));
     out.push_str("\nbleeding-edge additions over release:\n");
     for feature in BLEEDING_FEATURES {
@@ -45,7 +54,9 @@ pub fn version_report(args: &[String]) -> String {
 pub fn roadmap_report() -> String {
     let mut out = String::from("phase1 roadmap status\n");
     out.push_str(&format!("release : v{}\n", RELEASE_VERSION));
-    out.push_str(&format!("edge    : {}\n\n", BLEEDING_VERSION));
+    out.push_str(&format!("edge    : {}\n", BLEEDING_VERSION));
+    out.push_str(&format!("scheme  : {}\n", VERSION_SCHEME));
+    out.push_str(&format!("updates : {}\n\n", UPDATE_PROTOCOL_FILE));
     for (track, status) in ROADMAP_STATUS {
         out.push_str(&format!("{track:<48} {status}\n"));
     }
@@ -54,20 +65,27 @@ pub fn roadmap_report() -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{roadmap_report, version_report, BLEEDING_VERSION, RELEASE_VERSION};
+    use super::{
+        roadmap_report, version_report, BLEEDING_VERSION, RELEASE_VERSION, UPDATE_PROTOCOL_FILE,
+        VERSION_SCHEME,
+    };
 
     #[test]
     fn version_compare_reports_release_and_edge() {
         let out = version_report(&["--compare".to_string()]);
         assert!(out.contains(RELEASE_VERSION));
         assert!(out.contains(BLEEDING_VERSION));
+        assert!(out.contains(VERSION_SCHEME));
+        assert!(out.contains(UPDATE_PROTOCOL_FILE));
         assert!(out.contains("structured text pipelines"));
+        assert!(out.contains("patch-level SemVer"));
     }
 
     #[test]
     fn roadmap_reports_pipeline_complete() {
         let out = roadmap_report();
         assert!(out.contains("Structured command output and pipelines"));
+        assert!(out.contains("Update protocol and semantic patch versioning"));
         assert!(out.contains("complete"));
     }
 }
