@@ -2,6 +2,7 @@
 # Local runtime files
 /plugins/*.local.py
 phase1.conf
+phase1.state
 *.tmp
 *.log
 
