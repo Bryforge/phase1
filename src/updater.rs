@@ -183,6 +183,7 @@ fn plan(target: Target, build: bool) -> String {
     out.push_str(&format!("edge version : {CURRENT_EDGE_VERSION}\n"));
     out.push_str(&format!("versioning   : {VERSION_SCHEME}\n"));
     out.push_str(&format!("protocol     : {UPDATE_PROTOCOL_FILE}\n"));
+    out.push_str("hint         : run update protocol to view the versioning rules\n");
     out.push_str("safe default : this command does not modify files unless --execute is provided\n");
     out.push_str("guard        : --execute requires safe mode off and explicit --trust-host\n");
     out.push_str("privacy      : updater never asks for private credentials or keys\n");
