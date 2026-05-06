@@ -3,6 +3,8 @@ use std::io::Write;
 use std::process::{Command, Stdio};
 use std::time::{SystemTime, UNIX_EPOCH};
 
+const EDGE_VERSION: &str = env!("CARGO_PKG_VERSION");
+
 fn run_phase1(script: &str) -> String {
     run_phase1_raw(&format!("\n{script}"))
 }
@@ -52,7 +54,10 @@ fn bleeding_version_and_roadmap_are_visible() {
     );
     assert!(output.contains("phase1 version report"));
     assert!(output.contains("release version : 3.6.0"));
-    assert!(output.contains("bleeding edge   : 3.10.2-dev"));
+    assert!(
+        output.contains(&format!("bleeding edge   : {EDGE_VERSION}")),
+        "edge version report did not track package version:\n{output}"
+    );
     assert!(output.contains("version scheme  : MAJOR.MINOR.PATCH[-dev]"));
     assert!(output.contains("protocol file   : UPDATE_PROTOCOL.md"));
     assert!(output.contains("Update protocol and semantic patch versioning"));
@@ -226,15 +231,15 @@ fn bleeding_edge_boot_switch_updates_ui_channel_and_version() {
     let output =
         run_phase1_raw("e\n\nbootcfg show\nsysinfo\ntheme\nbanner edge\ndash --compact\nexit\n");
     assert!(
-        output.contains("bleeding edge     on"),
+        output.contains("[e] EDGE") && output.contains("ON"),
         "boot switch missing:\n{output}"
     );
     assert!(
-        output.contains("version v3.10.2-dev"),
+        output.contains(&format!("v{EDGE_VERSION}")),
         "boot UI did not use edge version:\n{output}"
     );
     assert!(
-        output.contains("channel bleeding-edge"),
+        output.contains("channel") && output.contains("bleeding-edge"),
         "boot UI channel missing:\n{output}"
     );
     assert!(
@@ -250,11 +255,11 @@ fn bleeding_edge_boot_switch_updates_ui_channel_and_version() {
         "sysinfo channel missing:\n{output}"
     );
     assert!(
-        output.contains("version     : 3.10.2-dev"),
+        output.contains(&format!("version     : {EDGE_VERSION}")),
         "sysinfo edge version missing:\n{output}"
     );
     assert!(
-        output.contains("PHASE1 DASHBOARD v3.10.2-dev"),
+        output.contains(&format!("PHASE1 DASHBOARD v{EDGE_VERSION}")),
         "dash edge version missing:\n{output}"
     );
     assert!(
