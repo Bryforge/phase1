@@ -5,6 +5,7 @@ mod browser;
 mod commands;
 mod history;
 mod kernel;
+mod line_editor;
 mod man;
 mod matrix;
 mod ned;
@@ -139,36 +140,23 @@ fn run_shell(boot_config: ui::BootConfig) {
     shell.cmd_cd(Some("/home"));
     println!("phase1 {} ready. Type 'help' for commands.", display_version);
 
-    let stdin = io::stdin();
-    let mut input = String::with_capacity(256);
-
     loop {
         shell.kernel.tick();
 
         let path = compact_path(&shell.kernel.vfs.cwd);
         ui::print_prompt(shell.user(), &path);
         let _ = io::stdout().flush();
+        let editor_prompt = format!("phase1://{} {} > ", shell.user(), path);
 
-        input.clear();
-        if stdin.read_line(&mut input).is_err() {
-            println!();
-            break;
-        }
-
-        let line = input.trim_end_matches(['\r', '\n']);
-        let line = match autocomplete::complete_tab_line(line) {
-            autocomplete::TabCompletion::Unchanged(line) => line,
-            autocomplete::TabCompletion::Completed(line) => {
-                println!("tab complete: {line}");
-                line
+        let line = match line_editor::read_shell_line(&editor_prompt) {
+            Ok(Some(line)) => line,
+            Ok(None) => {
+                println!();
+                break;
             }
-            autocomplete::TabCompletion::Suggestions { prefix, matches } => {
-                println!("tab matches for '{prefix}': {}", matches.join(" "));
-                continue;
-            }
-            autocomplete::TabCompletion::NoMatch { prefix } => {
-                println!("tab complete: no matches for '{prefix}'");
-                continue;
+            Err(err) => {
+                eprintln!("input error: {err}");
+                break;
             }
         };
         if line.trim().is_empty() {
