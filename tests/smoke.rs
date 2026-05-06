@@ -12,6 +12,14 @@ fn run_phase1(script: &str) -> String {
     output
 }
 
+fn run_phase1_host_enabled(script: &str) -> String {
+    let run_dir = unique_run_dir();
+    fs::create_dir_all(&run_dir).expect("create phase1 smoke temp directory");
+    let output = run_phase1_in_dir(&run_dir, &format!("4\n\n{script}"));
+    let _ = fs::remove_dir_all(&run_dir);
+    output
+}
+
 fn run_phase1_in_dir(run_dir: &Path, input: &str) -> String {
     let binary = env!("CARGO_BIN_EXE_phase1");
     let mut child = Command::new(binary)
@@ -60,6 +68,7 @@ fn boot_help_man_and_completion_work() {
     assert_contains_all(
         &output,
         &[
+            "security safe",
             "PHASE1 // ADVANCED OPERATOR CONSOLE",
             "phase1 // command map",
             "proc",
@@ -69,6 +78,25 @@ fn boot_help_man_and_completion_work() {
             "phase1 3.6.0",
         ],
     );
+}
+
+#[test]
+fn secure_default_blocks_host_backed_commands() {
+    let output = run_phase1("ifconfig\niwconfig\nwifi-scan\nwifi-connect demo\nping example.com\nbrowser phase1\npy -c \"print('blocked')\"\nexit\n");
+    assert_contains_all(
+        &output,
+        &[
+            "security safe",
+            "safe-mode: host network inspection disabled",
+            "safe-mode: host WiFi inspection disabled",
+            "wifi-scan: disabled by safe boot profile",
+            "wifi-connect: disabled by safe boot profile",
+            "ping: disabled by safe boot profile",
+            "browser: disabled by safe boot profile",
+            "python: disabled by safe boot profile",
+        ],
+    );
+    assert!(!output.contains("blocked"), "safe mode executed Python unexpectedly:\n{output}");
 }
 
 #[test]
@@ -103,10 +131,11 @@ fn preboot_persistent_state_mode_is_toggleable_and_restores_home_files() {
 
 #[test]
 fn roadmap_aliases_capabilities_and_dashboard_work() {
-    let output = run_phase1("commands\ncaps\ndash --compact\npy -c \"print('alias-ok')\"\nquit\n");
+    let output = run_phase1_host_enabled("commands\ncaps\ndash --compact\npy -c \"print('alias-ok')\"\nquit\n");
     assert_contains_all(
         &output,
         &[
+            "safe mode         off",
             "phase1 // command map",
             "command        category capability",
             "wifi-connect",
@@ -179,7 +208,7 @@ fn user_env_browser_and_sandbox_commands_work() {
             "uid=0(root)",
             "phase1",
             "PHASE1",
-            "Terminal-first virtual OS console",
+            "browser: disabled by safe boot profile",
             "sandbox: VFS/processes are simulated",
             "up ",
         ],
@@ -187,16 +216,17 @@ fn user_env_browser_and_sandbox_commands_work() {
 }
 
 #[test]
-fn network_commands_have_stable_output() {
-    let output = run_phase1("iwconfig\nwifi-scan\nwifi-connect\nexit\n");
-    assert_contains_all(&output, &["usage: wifi-connect <ssid> [password]"]);
-    assert!(
-        output.contains("no active WiFi interface")
-            || output.contains("wifi-scan:")
-            || output.contains("SSID")
-            || output.contains("Current Wi-Fi Network")
-            || output.contains("Preferred networks"),
-        "network command output did not include expected fallback text:\n{output}"
+fn network_commands_have_stable_safe_output() {
+    let output = run_phase1("ifconfig\niwconfig\nwifi-scan\nwifi-connect\nexit\n");
+    assert_contains_all(
+        &output,
+        &[
+            "lo: flags=<UP>",
+            "safe-mode: host network inspection disabled",
+            "safe-mode: host WiFi inspection disabled",
+            "wifi-scan: disabled by safe boot profile",
+            "wifi-connect: disabled by safe boot profile",
+        ],
     );
 }
 
@@ -210,7 +240,7 @@ fn expected_errors_are_clear() {
             "cd: no such directory",
             "usage: kill <pid>",
             "loadcr3: CR3 must be 4KiB aligned unless PCIDE is enabled",
-            "usage: wifi-connect <ssid> [password]",
+            "wifi-connect: disabled by safe boot profile",
             "command not found: unknowncmd",
         ],
     );
