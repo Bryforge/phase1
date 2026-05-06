@@ -42,89 +42,60 @@ pub fn run(shell: &mut Phase1Shell, config: BootConfig) -> String {
     shell.network.refresh();
 
     let display_version = crate::ui::display_version(crate::kernel::VERSION, config);
-    let channel = if config.bleeding_edge {
-        "bleeding-edge"
-    } else {
-        "release"
-    };
-    let security = if config.safe_mode {
-        "safe-mode"
-    } else {
-        "host-capable"
-    };
-    let state = if config.persistent_state {
-        "persistent"
-    } else {
-        "volatile"
-    };
-    let host_tools = if crate::policy::host_tools_allowed() {
-        "enabled"
-    } else {
-        "disabled"
-    };
+    let channel = if config.bleeding_edge { "bleeding-edge" } else { "release" };
+    let security = if config.safe_mode { "safe-mode" } else { "host-capable" };
+    let state = if config.persistent_state { "persistent" } else { "volatile" };
+    let host_tools = if crate::policy::host_tools_allowed() { "enabled" } else { "disabled" };
     let jobs = shell.kernel.scheduler.jobs();
-    let job_count = if jobs.trim() == "no background jobs" {
-        0
-    } else {
-        jobs.lines().count()
-    };
+    let job_count = if jobs.trim() == "no background jobs" { 0 } else { jobs.lines().count() };
     let processes = shell.kernel.scheduler.ps().lines().skip(1).count();
     let audit_count = shell.kernel.audit.dump().lines().count();
     let pcie_count = shell.kernel.pcie.lspci().lines().count();
-    let iface_count = shell
-        .network
-        .ifconfig()
-        .lines()
-        .filter(|line| line.contains(": flags=<"))
-        .count();
+    let iface_count = shell.network.ifconfig().lines().filter(|line| line.contains(": flags=<")).count();
     let uptime = shell.kernel.uptime().as_secs();
     let cwd = shell.kernel.vfs.cwd.display().to_string();
 
     let facts = vec![
-        ("◧", "OS", "Phase1 Terminal OS Simulator".to_string()),
-        ("▣", "Host", "Bryforge developer cyberdeck".to_string()),
-        ("⚙", "Kernel", format!("phase1 {display_version}")),
-        ("◷", "Uptime", format!("{uptime}s")),
-        (
-            "⬢",
-            "Packages",
-            format!("{} built-ins, Python/WASI plugin slots", crate::registry::COMMANDS.len()),
-        ),
-        ("❯", "Shell", "phase1 interactive shell".to_string()),
-        ("▭", "Terminal", "ANSI operator console".to_string()),
-        ("▤", "Resolution", "responsive TUI".to_string()),
-        ("▥", "DE", "phase1 dashboard".to_string()),
-        ("▦", "WM", "operator panels".to_string()),
-        ("▸", "Theme", "rainbow".to_string()),
-        ("▧", "CPU", "simulated Rust scheduler".to_string()),
-        ("▨", "GPU", "ANSI renderer".to_string()),
-        ("▩", "Memory", "2.0 GiB / 4.0 GiB simulated".to_string()),
-        ("▰", "Disk", "4 KiB / 1.0 GiB phase1fs".to_string()),
-        ("◉", "Battery", "virtual power: online".to_string()),
-        ("◎", "Locale", "en_US.UTF-8".to_string()),
-        ("☆", "Project", "Phase1".to_string()),
-        ("◇", "Version", display_version.clone()),
-        ("⑂", "Branch", channel.to_string()),
-        ("◌", "Update Engine", "Rust guarded updater".to_string()),
-        ("⌁", "Core Motto", "update everything".to_string()),
-        ("</>", "Developer Kit", "Ready to test code".to_string()),
-        ("⚗", "Tests", "update test quick | update test full".to_string()),
-        ("⌂", "Location", cwd),
-        ("◈", "State", state.to_string()),
-        ("◬", "Security", security.to_string()),
-        ("◫", "Host Tools", host_tools.to_string()),
-        ("☰", "Processes", format!("{processes} tasks, {job_count} background")),
-        ("⌬", "Hardware", format!("{pcie_count} PCIe devices, CR3 0x{:x}", shell.kernel.scheduler.get_cr3())),
-        ("◍", "Network", format!("{iface_count} interfaces, privacy-safe summary")),
-        ("☑", "Audit", format!("{audit_count} in-memory events")),
+        ("OS", "Phase1 Terminal OS Simulator".to_string()),
+        ("Host", "Bryforge developer cyberdeck".to_string()),
+        ("Kernel", format!("phase1 {display_version}")),
+        ("Uptime", format!("{uptime}s")),
+        ("Packages", format!("{} built-ins, Python/WASI plugin slots", crate::registry::COMMANDS.len())),
+        ("Shell", "phase1 interactive shell".to_string()),
+        ("Terminal", "ANSI operator console".to_string()),
+        ("Resolution", "responsive TUI".to_string()),
+        ("DE", "phase1 dashboard".to_string()),
+        ("WM", "operator panels".to_string()),
+        ("Theme", "rainbow".to_string()),
+        ("CPU", "simulated Rust scheduler".to_string()),
+        ("GPU", "ANSI renderer".to_string()),
+        ("Memory", "2.0 GiB / 4.0 GiB simulated".to_string()),
+        ("Disk", "4 KiB / 1.0 GiB phase1fs".to_string()),
+        ("Battery", "virtual power: online".to_string()),
+        ("Locale", "en_US.UTF-8".to_string()),
+        ("Project", "Phase1".to_string()),
+        ("Version", display_version),
+        ("Branch", channel.to_string()),
+        ("Update Engine", "Rust guarded updater".to_string()),
+        ("Core Motto", "update everything".to_string()),
+        ("Developer Kit", "Ready to test code".to_string()),
+        ("Tests", "update test quick | update test full".to_string()),
+        ("Location", cwd),
+        ("State", state.to_string()),
+        ("Security", security.to_string()),
+        ("Host Tools", host_tools.to_string()),
+        ("Processes", format!("{processes} tasks, {job_count} background")),
+        ("Hardware", format!("{pcie_count} PCIe devices, CR3 0x{:x}", shell.kernel.scheduler.get_cr3())),
+        ("Network", format!("{iface_count} interfaces, privacy-safe summary")),
+        ("Audit", format!("{audit_count} in-memory events")),
     ];
 
     let logo = if ascii_mode() { ASCII_LOGO } else { LOGO };
     let mut right = Vec::new();
-    right.push(color_title("dev@localhost"));
-    right.push(color_rule(&"─".repeat(43)));
-    for (idx, (icon, label, value)) in facts.iter().enumerate() {
-        right.push(fact_line(icon, label, value, idx));
+    right.push(color_title());
+    right.push(color_rule(&"-".repeat(43)));
+    for (idx, (label, value)) in facts.iter().enumerate() {
+        right.push(fact_line(label, value, idx));
     }
     right.push(String::new());
     right.push(color_bars());
@@ -135,9 +106,8 @@ pub fn run(shell: &mut Phase1Shell, config: BootConfig) -> String {
     out.push_str(&prompt_line());
     out.push('\n');
     for idx in 0..rows {
-        let left = logo.get(idx).copied().unwrap_or("");
-        let left = rainbow_logo(left, idx);
         let plain_left = logo.get(idx).copied().unwrap_or("");
+        let left = rainbow_logo(plain_left, idx);
         let pad = width.saturating_sub(plain_left.chars().count());
         let right = right.get(idx).map(String::as_str).unwrap_or("");
         out.push_str(&left);
@@ -145,7 +115,7 @@ pub fn run(shell: &mut Phase1Shell, config: BootConfig) -> String {
         out.push_str(right);
         out.push('\n');
     }
-    out.push_str("privacy: simulated system facts only; no emails, passwords, tokens, or host secrets shown\n");
+    out.push_str("privacy: simulated system facts only; host account details are not shown\n");
     out
 }
 
@@ -156,9 +126,9 @@ fn prompt_line() -> String {
     format!("{GREEN}dev{RESET}@{MAGENTA}localhost{RESET} {BLUE}~{RESET} $ fastfetch")
 }
 
-fn color_title(text: &str) -> String {
+fn color_title() -> String {
     if !color_enabled() {
-        return text.to_string();
+        return "dev@localhost".to_string();
     }
     format!("{BOLD}{RED}dev{RESET}@{BOLD}{YELLOW}local{GREEN}host{RESET}")
 }
@@ -170,12 +140,12 @@ fn color_rule(text: &str) -> String {
     format!("{GRAY}{text}{RESET}")
 }
 
-fn fact_line(icon: &str, label: &str, value: &str, idx: usize) -> String {
+fn fact_line(label: &str, value: &str, idx: usize) -> String {
     if !color_enabled() {
         return format!("{label:<14}: {value}");
     }
     let color = rainbow_color(idx);
-    format!("{color}{icon:<3} {BOLD}{label:<14}{RESET} {value}")
+    format!("{color}{BOLD}{label:<14}{RESET} {value}")
 }
 
 fn rainbow_logo(line: &str, idx: usize) -> String {
@@ -189,9 +159,7 @@ fn color_bars() -> String {
     if !color_enabled() {
         return "Colors: black red yellow green cyan blue magenta white".to_string();
     }
-    format!(
-        "{GRAY}████{RESET} {RED}████{RESET} {YELLOW}████{RESET} {GREEN}████{RESET} {CYAN}████{RESET} {BLUE}████{RESET} {MAGENTA}████{RESET} {WHITE}████{RESET}"
-    )
+    format!("{GRAY}████{RESET} {RED}████{RESET} {YELLOW}████{RESET} {GREEN}████{RESET} {CYAN}████{RESET} {BLUE}████{RESET} {MAGENTA}████{RESET} {WHITE}████{RESET}")
 }
 
 fn rainbow_color(idx: usize) -> &'static str {
