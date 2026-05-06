@@ -96,9 +96,13 @@ fn host_denial_message_from_values(
     host_tools_enabled: bool,
 ) -> String {
     if safe_mode {
-        format!("{command}: disabled by safe boot profile")
+        format!(
+            "{command}: disabled by safe boot profile; for Python/language runtimes reboot and press 4 then t, or use the new r/runtimes boot shortcut when available"
+        )
     } else if !host_tools_enabled {
-        format!("{command}: disabled; set PHASE1_ALLOW_HOST_TOOLS=1 to enable trusted host tools")
+        format!(
+            "{command}: disabled; set PHASE1_ALLOW_HOST_TOOLS=1 to enable trusted host tools, or reboot and press t / r for runtimes"
+        )
     } else {
         format!("{command}: blocked by policy")
     }
