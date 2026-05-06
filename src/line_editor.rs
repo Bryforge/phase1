@@ -226,34 +226,46 @@ fn handle_tab(
 }
 
 fn init_frame(prompt: &str, editor: &EditorState, stdout: &mut io::Stdout) -> io::Result<()> {
-    // The legacy prompt renderer prints a one-line HUD above the prompt. Clear it once
-    // and then own a stable two-line prompt frame: command prompt on top, dynamic HUD below.
     write!(stdout, "\r\x1b[2K\x1b[1A\r\x1b[2K")?;
     redraw_frame(prompt, editor, stdout)
 }
 
 fn redraw_frame(prompt: &str, editor: &EditorState, stdout: &mut io::Stdout) -> io::Result<()> {
-    write!(stdout, "\r\x1b[2K{}{}", prompt, editor.line)?;
-    let len = char_len(&editor.line);
-    if len > editor.cursor {
-        write!(stdout, "\x1b[{}D", len - editor.cursor)?;
-    }
     write!(
         stdout,
-        "\x1b[s\x1b[1B\r\x1b[2K{}\x1b[u",
+        "\r\x1b[2K{}{}\r\n\x1b[2K{}\x1b[1A\r",
+        prompt,
+        editor.line,
         command_status_line(&editor.line)
     )?;
+    move_cursor_to_prompt_position(prompt, editor, stdout)?;
     stdout.flush()
 }
 
 fn finish_frame(prompt: &str, editor: &EditorState, stdout: &mut io::Stdout) -> io::Result<()> {
-    write!(stdout, "\r\x1b[2K{}{}", prompt, editor.line)?;
-    clear_status_and_newline(stdout)
+    write!(
+        stdout,
+        "\r\x1b[2K{}{}\x1b[1B\r\x1b[2K",
+        prompt, editor.line
+    )?;
+    stdout.flush()
 }
 
 fn clear_status_and_newline(stdout: &mut io::Stdout) -> io::Result<()> {
-    write!(stdout, "\x1b[s\x1b[1B\r\x1b[2K\x1b[u\r\n")?;
+    write!(stdout, "\x1b[1B\r\x1b[2K\r\n")?;
     stdout.flush()
+}
+
+fn move_cursor_to_prompt_position(
+    prompt: &str,
+    editor: &EditorState,
+    stdout: &mut io::Stdout,
+) -> io::Result<()> {
+    let column = visible_len(prompt) + editor.cursor;
+    if column > 0 {
+        write!(stdout, "\x1b[{column}C")?;
+    }
+    Ok(())
 }
 
 fn handle_escape_key<R: Read>(
@@ -501,6 +513,28 @@ fn terminal_width() -> usize {
 
 fn clip(text: &str, width: usize) -> String {
     text.chars().take(width).collect()
+}
+
+fn visible_len(text: &str) -> usize {
+    strip_ansi(text).chars().count()
+}
+
+fn strip_ansi(text: &str) -> String {
+    let mut out = String::with_capacity(text.len());
+    let mut chars = text.chars().peekable();
+    while let Some(ch) = chars.next() {
+        if ch == '\x1b' && chars.peek() == Some(&'[') {
+            chars.next();
+            for code in chars.by_ref() {
+                if code.is_ascii_alphabetic() {
+                    break;
+                }
+            }
+        } else {
+            out.push(ch);
+        }
+    }
+    out
 }
 
 fn short_clock_utc() -> String {
