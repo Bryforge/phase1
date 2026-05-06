@@ -82,7 +82,7 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("capabilities", &["caps"], "misc", "capabilities", "Show command capability metadata and guard status.", "none"),
     cmd!("dash", &["dashboard"], "misc", "dash [--compact]", "Show a compact operator dashboard snapshot.", "sys.read"),
     cmd!("matrix", &["rain"], "misc", "matrix [seconds]", "Run Matrix-style terminal digital rain for 1-60 seconds.", "none"),
-    cmd!("bootcfg", &["bootconfig"], "misc", "bootcfg", "Show the active boot profile and detected mobile configuration.", "none"),
+    cmd!("bootcfg", &["bootconfig"], "misc", "bootcfg [show|save|reset|path]", "Show, save, reset, or locate the persisted boot profile in phase1.conf.", "none"),
     cmd!("clear", &[], "misc", "clear", "Clear terminal using an ANSI screen clear sequence.", "none"),
     cmd!("version", &[], "misc", "version", "Show phase1 version.", "none"),
     cmd!("sandbox", &["nsinfo"], "misc", "sandbox", "Show safety model.", "none"),
@@ -108,7 +108,7 @@ pub fn command_map() -> String {
             .join(" ");
         out.push_str(&format!("{:<5}: {}\n", category, names));
     }
-    out.push_str("\nquick : bootcfg | dash --compact | matrix 10 | man browser | capabilities | complete p | audit | ps\n");
+    out.push_str("\nquick : bootcfg | bootcfg save | bootcfg reset | matrix 10 | dash --compact | audit | ps\n");
     out
 }
 
