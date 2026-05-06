@@ -1,0 +1,3 @@
+phase1 built-in Phase1 Arena launcher
+This marker is intentionally handled by the phase1-wasi-lite built-in arena runtime.
+No proprietary assets, WAD data, or external game files are stored here.
