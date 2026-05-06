@@ -2,11 +2,14 @@ use std::fs;
 use std::io::Write;
 use std::path::Path;
 use std::process::{self, Command, Stdio};
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{SystemTime, UNIX_EPOCH};
+
+static RUN_COUNTER: AtomicU64 = AtomicU64::new(0);
 
 fn run_phase1(script: &str) -> String {
     let run_dir = unique_run_dir();
-    fs::create_dir_all(&run_dir).expect("create phase1 smoke temp directory");
+    fresh_run_dir(&run_dir);
     let output = run_phase1_in_dir(&run_dir, &format!("\n{script}"));
     let _ = fs::remove_dir_all(&run_dir);
     output
@@ -14,7 +17,7 @@ fn run_phase1(script: &str) -> String {
 
 fn run_phase1_host_enabled(script: &str) -> String {
     let run_dir = unique_run_dir();
-    fs::create_dir_all(&run_dir).expect("create phase1 smoke temp directory");
+    fresh_run_dir(&run_dir);
     let output = run_phase1_in_dir_with_host_tools(&run_dir, &format!("4\n\n{script}"), true);
     let _ = fs::remove_dir_all(&run_dir);
     output
@@ -22,7 +25,7 @@ fn run_phase1_host_enabled(script: &str) -> String {
 
 fn run_phase1_safe_off_without_host_tools(script: &str) -> String {
     let run_dir = unique_run_dir();
-    fs::create_dir_all(&run_dir).expect("create phase1 smoke temp directory");
+    fresh_run_dir(&run_dir);
     let output = run_phase1_in_dir_with_host_tools(&run_dir, &format!("4\n\n{script}"), false);
     let _ = fs::remove_dir_all(&run_dir);
     output
@@ -70,7 +73,13 @@ fn unique_run_dir() -> std::path::PathBuf {
         .duration_since(UNIX_EPOCH)
         .map(|duration| duration.as_nanos())
         .unwrap_or(0);
-    std::env::temp_dir().join(format!("phase1-smoke-{}-{nonce}", process::id()))
+    let seq = RUN_COUNTER.fetch_add(1, Ordering::Relaxed);
+    std::env::temp_dir().join(format!("phase1-smoke-{}-{nonce}-{seq}", process::id()))
+}
+
+fn fresh_run_dir(run_dir: &Path) {
+    let _ = fs::remove_dir_all(run_dir);
+    fs::create_dir_all(run_dir).expect("create phase1 smoke temp directory");
 }
 
 fn assert_contains_all(output: &str, needles: &[&str]) {
@@ -155,7 +164,7 @@ fn security_and_accounts_reports_are_privacy_safe() {
 #[test]
 fn preboot_persistent_state_mode_is_toggleable_and_restores_home_files() {
     let run_dir = unique_run_dir();
-    fs::create_dir_all(&run_dir).expect("create persistent state smoke directory");
+    fresh_run_dir(&run_dir);
 
     let first = run_phase1_in_dir(&run_dir, "p\n\necho persisted value > keep.txt\nexit\n");
     assert_contains_all(
