@@ -32,6 +32,78 @@ pub struct BootConfig {
     pub persistent_state: bool,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ThemePalette {
+    Rainbow,
+    Matrix,
+    Cyber,
+    Amber,
+    Ice,
+    Synth,
+    Crimson,
+}
+
+impl ThemePalette {
+    pub fn parse(raw: &str) -> Option<Self> {
+        match raw.trim().to_ascii_lowercase().as_str() {
+            "rainbow" | "neon" | "default" => Some(Self::Rainbow),
+            "matrix" | "green" => Some(Self::Matrix),
+            "cyber" | "cyan" | "cyan-magenta" => Some(Self::Cyber),
+            "amber" | "gold" | "terminal" => Some(Self::Amber),
+            "ice" | "blue" | "frost" => Some(Self::Ice),
+            "synth" | "synthwave" | "purple" => Some(Self::Synth),
+            "crimson" | "red" | "alert" => Some(Self::Crimson),
+            _ => None,
+        }
+    }
+
+    pub fn name(self) -> &'static str {
+        match self {
+            Self::Rainbow => "rainbow",
+            Self::Matrix => "matrix",
+            Self::Cyber => "cyber",
+            Self::Amber => "amber",
+            Self::Ice => "ice",
+            Self::Synth => "synthwave",
+            Self::Crimson => "crimson",
+        }
+    }
+
+    pub fn label(self) -> &'static str {
+        match self {
+            Self::Rainbow => "rainbow ANSI gradient, the default phase1 look",
+            Self::Matrix => "green-on-black digital rain console",
+            Self::Cyber => "cyan/magenta high-contrast cyberdeck",
+            Self::Amber => "warm amber retro terminal",
+            Self::Ice => "cool blue/cyan frost terminal",
+            Self::Synth => "purple synthwave operator glow",
+            Self::Crimson => "red alert / intrusion-response console",
+        }
+    }
+
+    pub fn all() -> &'static [Self] {
+        &[
+            Self::Rainbow,
+            Self::Matrix,
+            Self::Cyber,
+            Self::Amber,
+            Self::Ice,
+            Self::Synth,
+            Self::Crimson,
+        ]
+    }
+}
+
+struct Palette {
+    border: &'static str,
+    title: &'static str,
+    accent: &'static str,
+    muted: &'static str,
+    prompt_user: &'static str,
+    prompt_path: &'static str,
+    ready: &'static str,
+}
+
 impl Default for BootConfig {
     fn default() -> Self {
         let mut config = Self::detected_defaults();
@@ -299,7 +371,7 @@ fn splash_info(version: &str, config: BootConfig) -> Vec<String> {
         format!("profile {}", config.profile_name()),
         format!("security  {security_mode}"),
         format!("device  {}", if config.mobile_mode { "mobile" } else { "desktop" }),
-        format!("display {}", if config.color { "rainbow" } else { "mono" }),
+        format!("display {}", display_mode(config)),
         format!("state   {state_mode}"),
         format!("config  {}", config_path()),
     ]
@@ -325,9 +397,10 @@ fn console_title(config: BootConfig) -> String {
     if !config.color || config.ascii_mode {
         format!("{} // Advanced Operator Console", phase1_wordmark(config))
     } else {
+        let colors = palette(active_theme());
         format!(
             "{}{} // Advanced Operator Console{}",
-            phase1_wordmark(config), GREEN, RESET
+            phase1_wordmark(config), colors.title, RESET
         )
     }
 }
@@ -335,7 +408,7 @@ fn console_title(config: BootConfig) -> String {
 fn phase1_wordmark(config: BootConfig) -> String {
     if !config.color || config.ascii_mode {
         "Phase1".to_string()
-    } else {
+    } else if active_theme() == ThemePalette::Rainbow {
         let colors = [RED, YELLOW, GREEN, CYAN, BLUE, MAGENTA];
         "Phase1"
             .chars()
@@ -343,6 +416,9 @@ fn phase1_wordmark(config: BootConfig) -> String {
             .map(|(idx, ch)| format!("{}{}{}", colors[idx % colors.len()], ch, RESET))
             .collect::<Vec<_>>()
             .join("")
+    } else {
+        let colors = palette(active_theme());
+        format!("{}Phase1{}", colors.title, RESET)
     }
 }
 
@@ -350,19 +426,31 @@ fn prompt_text(user: &str, path: &str) -> String {
     if ascii_mode() || !color_enabled() {
         format!("phase1://{} {} > ", user, path)
     } else {
+        let colors = palette(active_theme());
         format!(
-            "{}phase1{}{}://{}{}{}{} {}{}{} ❯ ",
-            BOLD, RESET, GRAY, RESET, CYAN, user, RESET, BLUE, path, RESET
+            "{}{}phase1{}{}://{}{}{}{} {}{}{} ❯ ",
+            BOLD,
+            colors.title,
+            RESET,
+            GRAY,
+            RESET,
+            colors.prompt_user,
+            user,
+            RESET,
+            colors.prompt_path,
+            path,
+            RESET
         )
     }
 }
 
 fn ready_line(desktop: bool) {
     if color_enabled() {
+        let colors = palette(active_theme());
         if desktop {
-            println!("{GREEN}[ready]{RESET} all subsystems nominal {GRAY}:: operator shell armed{RESET}");
+            println!("{}[ready]{} all subsystems nominal {GRAY}:: operator shell armed{RESET}", colors.ready, RESET);
         } else {
-            println!("{GREEN}[ready]{RESET} all subsystems nominal");
+            println!("{}[ready]{} all subsystems nominal", colors.ready, RESET);
         }
     } else if desktop {
         println!("[ready] all subsystems nominal :: operator shell armed");
@@ -370,6 +458,91 @@ fn ready_line(desktop: bool) {
         println!("[ready] all subsystems nominal");
     }
     println!();
+}
+
+fn display_mode(config: BootConfig) -> &'static str {
+    if config.ascii_mode {
+        "ascii"
+    } else if !config.color {
+        "mono"
+    } else {
+        active_theme().name()
+    }
+}
+
+fn active_theme() -> ThemePalette {
+    std::env::var("PHASE1_THEME")
+        .ok()
+        .and_then(|raw| ThemePalette::parse(&raw))
+        .unwrap_or(ThemePalette::Rainbow)
+}
+
+fn palette(theme: ThemePalette) -> Palette {
+    match theme {
+        ThemePalette::Rainbow => Palette {
+            border: CYAN,
+            title: GREEN,
+            accent: CYAN,
+            muted: GRAY,
+            prompt_user: CYAN,
+            prompt_path: BLUE,
+            ready: GREEN,
+        },
+        ThemePalette::Matrix => Palette {
+            border: GREEN,
+            title: GREEN,
+            accent: GREEN,
+            muted: GRAY,
+            prompt_user: GREEN,
+            prompt_path: GREEN,
+            ready: GREEN,
+        },
+        ThemePalette::Cyber => Palette {
+            border: MAGENTA,
+            title: CYAN,
+            accent: MAGENTA,
+            muted: GRAY,
+            prompt_user: MAGENTA,
+            prompt_path: CYAN,
+            ready: CYAN,
+        },
+        ThemePalette::Amber => Palette {
+            border: YELLOW,
+            title: YELLOW,
+            accent: YELLOW,
+            muted: GRAY,
+            prompt_user: YELLOW,
+            prompt_path: YELLOW,
+            ready: YELLOW,
+        },
+        ThemePalette::Ice => Palette {
+            border: CYAN,
+            title: BLUE,
+            accent: CYAN,
+            muted: GRAY,
+            prompt_user: CYAN,
+            prompt_path: BLUE,
+            ready: CYAN,
+        },
+        ThemePalette::Synth => Palette {
+            border: MAGENTA,
+            title: MAGENTA,
+            accent: CYAN,
+            muted: GRAY,
+            prompt_user: CYAN,
+            prompt_path: MAGENTA,
+            ready: MAGENTA,
+        },
+        ThemePalette::Crimson => Palette {
+            border: RED,
+            title: RED,
+            accent: YELLOW,
+            muted: GRAY,
+            prompt_user: RED,
+            prompt_path: YELLOW,
+            ready: RED,
+        },
+    }
 }
 
 fn card_width(config: BootConfig) -> usize {
@@ -383,7 +556,7 @@ fn card_width(config: BootConfig) -> usize {
 
 fn card_top(config: BootConfig, width: usize) -> String {
     if config.color && !config.ascii_mode {
-        format!("{CYAN}╭{}╮{RESET}", "─".repeat(width))
+        format!("{}╭{}╮{RESET}", palette(active_theme()).border, "─".repeat(width))
     } else {
         format!("+{}+", "-".repeat(width))
     }
@@ -391,7 +564,7 @@ fn card_top(config: BootConfig, width: usize) -> String {
 
 fn card_bottom(config: BootConfig, width: usize) -> String {
     if config.color && !config.ascii_mode {
-        format!("{CYAN}╰{}╯{RESET}", "─".repeat(width))
+        format!("{}╰{}╯{RESET}", palette(active_theme()).border, "─".repeat(width))
     } else {
         format!("+{}+", "-".repeat(width))
     }
@@ -399,7 +572,7 @@ fn card_bottom(config: BootConfig, width: usize) -> String {
 
 fn card_rule(config: BootConfig, width: usize) -> String {
     if config.color && !config.ascii_mode {
-        format!("{CYAN}├{}┤{RESET}", "─".repeat(width))
+        format!("{}├{}┤{RESET}", palette(active_theme()).border, "─".repeat(width))
     } else {
         format!("+{}+", "-".repeat(width))
     }
@@ -409,7 +582,8 @@ fn card_section(config: BootConfig, width: usize, label: &str) -> String {
     let marker = format!(" {label} ");
     let fill = width.saturating_sub(marker.chars().count());
     if config.color && !config.ascii_mode {
-        format!("{CYAN}├{marker}{}┤{RESET}", "─".repeat(fill))
+        let colors = palette(active_theme());
+        format!("{}├{}{}{}┤{RESET}", colors.border, colors.accent, marker, "─".repeat(fill))
     } else {
         format!("+{marker}{}+", "-".repeat(fill))
     }
@@ -420,7 +594,8 @@ fn card_line(config: BootConfig, width: usize, text: &str) -> String {
     let visible = visible_len(&clipped);
     let padded = format!("{clipped}{}", " ".repeat(width.saturating_sub(visible)));
     if config.color && !config.ascii_mode {
-        format!("{CYAN}│{RESET}{padded}{CYAN}│{RESET}")
+        let border = palette(active_theme()).border;
+        format!("{border}│{RESET}{padded}{border}│{RESET}")
     } else {
         format!("|{padded}|")
     }
@@ -428,7 +603,7 @@ fn card_line(config: BootConfig, width: usize, text: &str) -> String {
 
 fn value(config: BootConfig, text: &str) -> String {
     if config.color && !config.ascii_mode {
-        format!("{GRAY}{text}{RESET}")
+        format!("{}{text}{RESET}", palette(active_theme()).muted)
     } else {
         text.to_string()
     }
@@ -545,8 +720,8 @@ fn phase1_art() -> [&'static str; 5] {
 #[cfg(test)]
 mod tests {
     use super::{
-        clip, console_title, parse_bool, phase1_art, prompt_text, splash_info, strip_ansi,
-        visible_len, BootConfig, PANEL_WIDTH,
+        clip, console_title, display_mode, parse_bool, phase1_art, prompt_text, splash_info,
+        strip_ansi, visible_len, BootConfig, ThemePalette, PANEL_WIDTH,
     };
 
     #[test]
@@ -618,6 +793,25 @@ mod tests {
         let rows = splash_info("3.8.1", config);
         assert!(rows.contains(&"version v3.8.1".to_string()));
         assert!(!rows.iter().any(|row| row.contains("os      phase1")));
+    }
+
+    #[test]
+    fn theme_palette_names_are_available() {
+        assert_eq!(ThemePalette::parse("rainbow"), Some(ThemePalette::Rainbow));
+        assert_eq!(ThemePalette::parse("synthwave"), Some(ThemePalette::Synth));
+        assert!(ThemePalette::all().len() >= 6);
+
+        let config = BootConfig {
+            color: true,
+            ascii_mode: false,
+            safe_mode: true,
+            quick_boot: false,
+            mobile_mode: true,
+            persistent_state: false,
+        };
+        std::env::set_var("PHASE1_THEME", "matrix");
+        assert_eq!(display_mode(config), "matrix");
+        std::env::remove_var("PHASE1_THEME");
     }
 
     #[test]
