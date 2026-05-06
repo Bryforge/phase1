@@ -26,6 +26,7 @@ use kernel::VfsNode;
 use std::fs;
 use std::io::{self, Write};
 use std::path::Path;
+use std::process::{Command, Stdio};
 
 const PERSISTENT_STATE_PATH: &str = "phase1.state";
 const RESET: &str = "\x1b[0m";
@@ -75,6 +76,10 @@ fn main() {
                 ShellExit::Shutdown => break,
                 ShellExit::Reboot => continue,
             },
+            ui::BootSelection::StorageTools(config) => {
+                run_storage_boot_option(config);
+                continue;
+            }
             ui::BootSelection::Reboot => continue,
             ui::BootSelection::Quit => {
                 println!("boot aborted: phase1 did not enter the main system");
@@ -82,6 +87,65 @@ fn main() {
             }
         }
     }
+}
+
+fn run_storage_boot_option(boot_config: ui::BootConfig) {
+    boot_config.apply();
+
+    println!("phase1 storage helper // boot option");
+    println!("mode      : read-only status");
+    println!(
+        "safe mode : {}",
+        if boot_config.safe_mode { "on" } else { "off" }
+    );
+    println!("hint      : mutating Git/Rust actions still require safe mode off and PHASE1_ALLOW_HOST_TOOLS=1");
+    println!();
+
+    let helper_name = if cfg!(windows) {
+        "phase1-storage.exe"
+    } else {
+        "phase1-storage"
+    };
+
+    let helper_path = std::env::current_exe()
+        .ok()
+        .and_then(|path| path.parent().map(|dir| dir.join(helper_name)));
+
+    match helper_path {
+        Some(path) if path.exists() => {
+            match Command::new(&path)
+                .arg("storage")
+                .arg("status")
+                .stdin(Stdio::null())
+                .output()
+            {
+                Ok(output) => {
+                    print!("{}", String::from_utf8_lossy(&output.stdout));
+                    let stderr = String::from_utf8_lossy(&output.stderr);
+                    if !stderr.trim().is_empty() {
+                        eprintln!("{stderr}");
+                    }
+                }
+                Err(err) => println!("storage helper could not run: {err}"),
+            }
+        }
+        _ => {
+            println!("storage helper binary is not built yet.");
+            println!("build/check it with: cargo check --all-targets");
+        }
+    }
+
+    println!();
+    println!("manual commands:");
+    println!("  cargo run --bin phase1-storage -- storage status");
+    println!("  cargo run --bin phase1-storage -- storage doctor");
+    println!("  cargo run --bin phase1-storage -- git list");
+    println!("  cargo run --bin phase1-storage -- lang roadmap");
+    println!();
+    println!("Press Enter to return to boot.");
+    let _ = io::stdout().flush();
+    let mut ignored = String::new();
+    let _ = io::stdin().read_line(&mut ignored);
 }
 
 fn run_shell(boot_config: ui::BootConfig) -> ShellExit {

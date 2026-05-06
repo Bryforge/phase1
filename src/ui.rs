@@ -18,6 +18,7 @@ const GRAY: &str = "\x1b[90m";
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum BootSelection {
     Boot(BootConfig),
+    StorageTools(BootConfig),
     Quit,
     Reboot,
 }
@@ -312,6 +313,12 @@ pub fn configure_boot(version: &str) -> BootSelection {
                 config.bleeding_edge = !config.bleeding_edge;
                 config.normalize_channel();
             }
+            "d" | "dev" | "storage" | "storage-tools" | "workspace" => {
+                if let Err(err) = config.save() {
+                    eprintln!("boot config save warning: {err}");
+                }
+                return BootSelection::StorageTools(config);
+            }
             "7" | "reboot" | "restart" => return BootSelection::Reboot,
             "8" | "x" | "quit" | "exit" | "shutdown" => return BootSelection::Quit,
             "9" | "save" | "write" => match config.save() {
@@ -325,7 +332,7 @@ pub fn configure_boot(version: &str) -> BootSelection {
                     Err(err) => pause(&format!("Reset defaults, but could not remove phase1.conf: {err}")),
                 }
             }
-            "h" | "help" | "?" => pause("Secure default: safe mode is on. Toggle options, e toggles bleeding edge UI, p toggles persistent state, 9 saves, 0 resets saved config, 1 boots, 7 reboots, 8 quits."),
+            "h" | "help" | "?" => pause("Secure default: safe mode is on. Toggle options, d opens storage helper status, e toggles bleeding edge UI, p toggles persistent state, 9 saves, 0 resets saved config, 1 boots, 7 reboots, 8 quits."),
             _ => pause("Unknown boot option. Press Enter to continue."),
         }
     }
@@ -485,6 +492,7 @@ fn boot_rows(config: BootConfig) -> Vec<String> {
             "p persistent state  {}",
             if config.persistent_state { "on" } else { "off" }
         ),
+        "d storage helper    status".to_string(),
         "7 reboot selector".to_string(),
         "8 quit boot".to_string(),
         "9 save config".to_string(),
