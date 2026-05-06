@@ -48,11 +48,11 @@ fn run_phase1_raw(input: &str) -> String {
 #[test]
 fn bleeding_version_and_roadmap_are_visible() {
     let output = run_phase1(
-        "version --compare\nroadmap\npipeline\nupdate protocol\nsecurity\nwasm run game status\nexit\n",
+        "version --compare\nroadmap\npipeline\nupdate protocol\nsecurity\nwasm run game status\ndash\nexit\n",
     );
     assert!(output.contains("phase1 version report"));
     assert!(output.contains("release version : 3.6.0"));
-    assert!(output.contains("bleeding edge   : 3.9.0-dev"));
+    assert!(output.contains("bleeding edge   : 3.10.0-dev"));
     assert!(output.contains("version scheme  : MAJOR.MINOR.PATCH[-dev]"));
     assert!(output.contains("protocol file   : UPDATE_PROTOCOL.md"));
     assert!(output.contains("Update protocol and semantic patch versioning"));
@@ -68,6 +68,9 @@ fn bleeding_version_and_roadmap_are_visible() {
     assert!(output.contains("live system tab auto-completion"));
     assert!(output.contains("raw-mode input editor"));
     assert!(output.contains("Raw input editing"));
+    assert!(output.contains("Full-screen TUI dashboard"));
+    assert!(output.contains("PHASE1 FULL-SCREEN TUI DASHBOARD"));
+    assert!(output.contains("panels  : core proc vfs net hw audit"));
     assert!(output.contains("capability metadata : enforced"));
     assert!(output.contains("phase1 pipelines"));
     assert!(output.contains("phase1 update protocol"));
@@ -144,14 +147,15 @@ fn bleeding_tab_completion_expands_commands_and_arguments() {
 
 #[test]
 fn bleeding_edge_boot_switch_updates_ui_channel_and_version() {
-    let output = run_phase1_raw("e\n\nbootcfg show\nsysinfo\ntheme\nbanner edge\nexit\n");
+    let output = run_phase1_raw("e\n\nbootcfg show\nsysinfo\ntheme\nbanner edge\ndash --compact\nexit\n");
     assert!(output.contains("bleeding edge     on"), "boot switch missing:\n{output}");
-    assert!(output.contains("version v3.9.0-dev"), "boot UI did not use edge version:\n{output}");
+    assert!(output.contains("version v3.10.0-dev"), "boot UI did not use edge version:\n{output}");
     assert!(output.contains("channel bleeding-edge"), "boot UI channel missing:\n{output}");
     assert!(output.contains("boot profile      : safe+edge"), "bootcfg profile not edge:\n{output}");
     assert!(output.contains("bleeding edge     : on"), "bootcfg edge state missing:\n{output}");
     assert!(output.contains("channel     : bleeding-edge"), "sysinfo channel missing:\n{output}");
-    assert!(output.contains("version     : 3.9.0-dev"), "sysinfo edge version missing:\n{output}");
+    assert!(output.contains("version     : 3.10.0-dev"), "sysinfo edge version missing:\n{output}");
+    assert!(output.contains("PHASE1 DASHBOARD v3.10.0-dev"), "dash edge version missing:\n{output}");
     assert!(output.contains("active : bleeding-edge"), "edge theme not automatic:\n{output}");
     assert!(output.contains("display : bleeding-edge"), "banner edge preview missing:\n{output}");
 }
