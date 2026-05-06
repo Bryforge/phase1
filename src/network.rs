@@ -30,6 +30,10 @@ impl NetworkStack {
 
     pub fn refresh(&mut self) {
         self.interfaces.clear();
+        if safe_mode_enabled() {
+            self.interfaces.push(loopback());
+            return;
+        }
         if cfg!(target_os = "linux") {
             self.refresh_linux();
         } else if cfg!(target_os = "macos") {
@@ -58,10 +62,16 @@ impl NetworkStack {
             }
             out.push('\n');
         }
+        if safe_mode_enabled() {
+            out.push_str("safe-mode: host network inspection disabled\n");
+        }
         out
     }
 
     pub fn iwconfig(&self) -> String {
+        if safe_mode_enabled() {
+            return "safe-mode: host WiFi inspection disabled\n".to_string();
+        }
         let mut out = String::new();
         for iface in &self.interfaces {
             if let Some(ssid) = &iface.wifi_ssid {
@@ -82,6 +92,9 @@ impl NetworkStack {
     }
 
     pub fn wifi_scan(&self) -> String {
+        if safe_mode_enabled() {
+            return "wifi-scan: disabled by safe boot profile\n".to_string();
+        }
         if cfg!(target_os = "macos") {
             return macos_wifi_scan();
         }
@@ -94,6 +107,9 @@ impl NetworkStack {
     }
 
     pub fn wifi_connect(&mut self, ssid: &str, password: Option<&str>) -> String {
+        if safe_mode_enabled() {
+            return "wifi-connect: disabled by safe boot profile".to_string();
+        }
         if ssid.trim().is_empty() {
             return "usage: wifi-connect <ssid> [password]".to_string();
         }
@@ -124,6 +140,9 @@ impl NetworkStack {
     }
 
     pub fn ping(&self, host: &str) -> String {
+        if safe_mode_enabled() {
+            return "ping: disabled by safe boot profile\n".to_string();
+        }
         if !safe_host(host) {
             return "ping: invalid host\n".to_string();
         }
@@ -133,6 +152,9 @@ impl NetworkStack {
     }
 
     pub fn nmcli(&self) -> String {
+        if safe_mode_enabled() {
+            return "safe-mode: host network manager inspection disabled\n".to_string();
+        }
         if cfg!(target_os = "linux") {
             let mut cmd = Command::new("nmcli");
             cmd.args(["-t", "connection", "show", "--active"]);
@@ -314,6 +336,10 @@ fn safe_host(host: &str) -> bool {
     !host.is_empty() && host.len() <= 255 && host.chars().all(|ch| ch.is_ascii_alphanumeric() || matches!(ch, '.' | '-' | ':' | '_'))
 }
 
+fn safe_mode_enabled() -> bool {
+    !matches!(std::env::var("PHASE1_SAFE_MODE").ok().as_deref(), Some("0" | "false" | "off" | "no"))
+}
+
 fn command_text(cmd: Command, timeout: Duration, fallback: &str) -> String {
     match run_with_timeout(cmd, timeout) {
         Ok(output) if output.status.success() => {
@@ -346,7 +372,7 @@ fn run_with_timeout(mut cmd: Command, timeout: Duration) -> io::Result<Output> {
 
 #[cfg(test)]
 mod tests {
-    use super::{prefix_to_netmask, safe_host};
+    use super::{prefix_to_netmask, safe_host, NetworkStack};
 
     #[test]
     fn prefix_to_netmask_handles_common_prefixes() {
@@ -358,5 +384,15 @@ mod tests {
     fn safe_host_rejects_shell_metacharacters() {
         assert!(safe_host("example.com"));
         assert!(!safe_host("example.com;rm-rf"));
+    }
+
+    #[test]
+    fn safe_mode_uses_loopback_only() {
+        std::env::set_var("PHASE1_SAFE_MODE", "1");
+        let network = NetworkStack::new();
+        let output = network.ifconfig();
+        assert!(output.contains("lo:"));
+        assert!(output.contains("safe-mode: host network inspection disabled"));
+        std::env::remove_var("PHASE1_SAFE_MODE");
     }
 }
