@@ -107,7 +107,10 @@ fn handle_normal(vfs: &mut Vfs, state: &mut AvimState, input: &str) -> bool {
             state.dirty = true;
             state.mode = Mode::Insert;
         }
-        "h" | "l" => render_status(state, "character movement is line-oriented in this terminal build"),
+        "h" | "l" => render_status(
+            state,
+            "character movement is line-oriented in this terminal build",
+        ),
         "j" => move_cursor(state, 1),
         "k" => move_cursor(state, -1),
         "gg" => {
@@ -211,7 +214,13 @@ fn handle_command(vfs: &mut Vfs, state: &mut AvimState, command: &str) -> bool {
             false
         }
         raw if raw.starts_with("e ") => {
-            render_status(state, &format!("opening another file is disabled in this avim session: {}", raw.trim_start_matches("e ").trim()));
+            render_status(
+                state,
+                &format!(
+                    "opening another file is disabled in this avim session: {}",
+                    raw.trim_start_matches("e ").trim()
+                ),
+            );
             false
         }
         raw if raw.starts_with("%s/") => {
@@ -404,23 +413,44 @@ fn push_undo(state: &mut AvimState) {
 }
 
 fn render(state: &AvimState) {
-    println!("--- avim {}{} ---", state.filename, if state.dirty { " [+]" } else { "" });
+    println!(
+        "--- avim {}{} ---",
+        state.filename,
+        if state.dirty { " [+]" } else { "" }
+    );
     let start = state.cursor.saturating_sub(6);
     let end = (state.cursor + 7).min(state.lines.len());
     for idx in start..end {
         let marker = if idx == state.cursor { '>' } else { ' ' };
         if state.show_numbers {
-            println!("{marker}{:>4} {}", idx + 1, state.lines.get(idx).map(String::as_str).unwrap_or(""));
+            println!(
+                "{marker}{:>4} {}",
+                idx + 1,
+                state.lines.get(idx).map(String::as_str).unwrap_or("")
+            );
         } else {
-            println!("{marker} {}", state.lines.get(idx).map(String::as_str).unwrap_or(""));
+            println!(
+                "{marker} {}",
+                state.lines.get(idx).map(String::as_str).unwrap_or("")
+            );
         }
     }
-    println!("--- line {}/{} mode={:?} ---", state.cursor + 1, state.lines.len().max(1), state.mode);
+    println!(
+        "--- line {}/{} mode={:?} ---",
+        state.cursor + 1,
+        state.lines.len().max(1),
+        state.mode
+    );
 }
 
 fn render_status(state: &AvimState, message: &str) {
     println!("avim: {message}");
-    println!("line {}/{} mode={:?}", state.cursor + 1, state.lines.len().max(1), state.mode);
+    println!(
+        "line {}/{} mode={:?}",
+        state.cursor + 1,
+        state.lines.len().max(1),
+        state.mode
+    );
 }
 
 fn print_prompt(state: &AvimState) {
@@ -438,7 +468,9 @@ fn print_help() {
     println!("  edit  : dd delete, yy yank, p paste, u undo");
     println!("  search: /text, n repeat");
     println!("  cmd   : :w, :q, :q!, :wq, :set number, :set nonumber, :%s/old/new/g, :r file");
-    println!("  insert: type replacement text for current line; '.' or '<esc>' returns to normal mode");
+    println!(
+        "  insert: type replacement text for current line; '.' or '<esc>' returns to normal mode"
+    );
 }
 
 fn print_security() {

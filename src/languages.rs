@@ -15,8 +15,14 @@ const MAX_OUTPUT_BYTES: usize = 24 * 1024;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum Runner {
-    Interpreted { tools: &'static [&'static str], args: &'static [&'static str] },
-    CompileRun { tools: &'static [&'static str], compile_args: &'static [&'static str] },
+    Interpreted {
+        tools: &'static [&'static str],
+        args: &'static [&'static str],
+    },
+    CompileRun {
+        tools: &'static [&'static str],
+        compile_args: &'static [&'static str],
+    },
     Rust,
     Go,
     JavaSource,
@@ -36,33 +42,285 @@ pub struct LanguageSpec {
 }
 
 pub const LANGUAGES: &[LanguageSpec] = &[
-    spec("rust", &["rs"], &["rs"], "systems", "compiled with rustc; host execution is gated", Runner::Rust),
-    spec("c", &["ansi-c"], &["c"], "systems", "compiled with cc/gcc/clang; host execution is gated", Runner::CompileRun { tools: &["cc", "gcc", "clang"], compile_args: &["-Wall", "-Wextra", "-O0"] }),
-    spec("cpp", &["c++", "cplusplus"], &["cpp", "cc", "cxx"], "systems", "compiled with c++/g++/clang++; host execution is gated", Runner::CompileRun { tools: &["c++", "g++", "clang++"], compile_args: &["-Wall", "-Wextra", "-O0"] }),
-    spec("go", &["golang"], &["go"], "systems/cloud", "go run in a temp workspace; host execution is gated", Runner::Go),
-    spec("zig", &[], &["zig"], "systems", "zig run; host execution is gated", Runner::Interpreted { tools: &["zig"], args: &["run"] }),
-    spec("python", &["py", "python3"], &["py"], "scripting/data", "python3/python execution is gated", Runner::Interpreted { tools: &["python3", "python"], args: &[] }),
-    spec("javascript", &["js", "node"], &["js", "mjs", "cjs"], "web", "node execution is gated", Runner::Interpreted { tools: &["node"], args: &[] }),
-    spec("typescript", &["ts", "deno"], &["ts"], "web", "deno run without extra permissions; host execution is gated", Runner::Interpreted { tools: &["deno"], args: &["run", "--no-prompt"] }),
-    spec("java", &[], &["java"], "jvm", "Java source-file mode; host execution is gated", Runner::JavaSource),
-    spec("kotlin", &["kt"], &["kt"], "jvm", "kotlinc jar build then java -jar; host execution is gated", Runner::Kotlin),
-    spec("scala", &[], &["scala", "sc"], "jvm", "scala source runner where installed; host execution is gated", Runner::Interpreted { tools: &["scala"], args: &[] }),
-    spec("csharp", &["c#", "cs", "dotnet"], &["cs"], ".net", "dotnet console wrapper; host execution is gated", Runner::Dotnet),
-    spec("fsharp", &["fs", "f#"], &["fsx"], ".net", "dotnet fsi where installed; host execution is gated", Runner::Interpreted { tools: &["dotnet"], args: &["fsi"] }),
-    spec("swift", &[], &["swift"], "apple/systems", "swift script runner; host execution is gated", Runner::Interpreted { tools: &["swift"], args: &[] }),
-    spec("ruby", &["rb"], &["rb"], "scripting/web", "ruby execution is gated", Runner::Interpreted { tools: &["ruby"], args: &[] }),
-    spec("php", &[], &["php"], "web", "php cli execution is gated", Runner::Interpreted { tools: &["php"], args: &[] }),
-    spec("perl", &["pl"], &["pl", "pm"], "scripting", "perl execution is gated", Runner::Interpreted { tools: &["perl"], args: &[] }),
-    spec("lua", &[], &["lua"], "scripting/embedded", "lua execution is gated", Runner::Interpreted { tools: &["lua", "lua5.4", "lua5.3"], args: &[] }),
-    spec("r", &["rscript"], &["r"], "data/science", "Rscript execution is gated", Runner::Interpreted { tools: &["Rscript"], args: &[] }),
-    spec("julia", &["jl"], &["jl"], "data/science", "julia execution is gated", Runner::Interpreted { tools: &["julia"], args: &[] }),
-    spec("haskell", &["hs"], &["hs"], "functional", "runghc execution is gated", Runner::Interpreted { tools: &["runghc", "runhaskell"], args: &[] }),
-    spec("ocaml", &["ml"], &["ml"], "functional", "ocaml interpreter execution is gated", Runner::Interpreted { tools: &["ocaml"], args: &[] }),
-    spec("elixir", &["exs"], &["exs", "ex"], "beam", "elixir execution is gated", Runner::Interpreted { tools: &["elixir"], args: &[] }),
-    spec("erlang", &["escript"], &["erl", "escript"], "beam", "escript execution is gated", Runner::Interpreted { tools: &["escript"], args: &[] }),
-    spec("dart", &[], &["dart"], "mobile/web", "dart execution is gated", Runner::Interpreted { tools: &["dart"], args: &[] }),
-    spec("bash", &["sh", "shell"], &["sh", "bash"], "shell", "shell execution is powerful and host-gated; use only for trusted scripts", Runner::Interpreted { tools: &["bash"], args: &["--noprofile", "--norc"] }),
-    spec("wasm", &["wasi", "webassembly"], &["wasm"], "sandbox", "inspected through phase1 WASI-lite path; no host shell execution", Runner::WasmInfo),
+    spec(
+        "rust",
+        &["rs"],
+        &["rs"],
+        "systems",
+        "compiled with rustc; host execution is gated",
+        Runner::Rust,
+    ),
+    spec(
+        "c",
+        &["ansi-c"],
+        &["c"],
+        "systems",
+        "compiled with cc/gcc/clang; host execution is gated",
+        Runner::CompileRun {
+            tools: &["cc", "gcc", "clang"],
+            compile_args: &["-Wall", "-Wextra", "-O0"],
+        },
+    ),
+    spec(
+        "cpp",
+        &["c++", "cplusplus"],
+        &["cpp", "cc", "cxx"],
+        "systems",
+        "compiled with c++/g++/clang++; host execution is gated",
+        Runner::CompileRun {
+            tools: &["c++", "g++", "clang++"],
+            compile_args: &["-Wall", "-Wextra", "-O0"],
+        },
+    ),
+    spec(
+        "go",
+        &["golang"],
+        &["go"],
+        "systems/cloud",
+        "go run in a temp workspace; host execution is gated",
+        Runner::Go,
+    ),
+    spec(
+        "zig",
+        &[],
+        &["zig"],
+        "systems",
+        "zig run; host execution is gated",
+        Runner::Interpreted {
+            tools: &["zig"],
+            args: &["run"],
+        },
+    ),
+    spec(
+        "python",
+        &["py", "python3"],
+        &["py"],
+        "scripting/data",
+        "python3/python execution is gated",
+        Runner::Interpreted {
+            tools: &["python3", "python"],
+            args: &[],
+        },
+    ),
+    spec(
+        "javascript",
+        &["js", "node"],
+        &["js", "mjs", "cjs"],
+        "web",
+        "node execution is gated",
+        Runner::Interpreted {
+            tools: &["node"],
+            args: &[],
+        },
+    ),
+    spec(
+        "typescript",
+        &["ts", "deno"],
+        &["ts"],
+        "web",
+        "deno run without extra permissions; host execution is gated",
+        Runner::Interpreted {
+            tools: &["deno"],
+            args: &["run", "--no-prompt"],
+        },
+    ),
+    spec(
+        "java",
+        &[],
+        &["java"],
+        "jvm",
+        "Java source-file mode; host execution is gated",
+        Runner::JavaSource,
+    ),
+    spec(
+        "kotlin",
+        &["kt"],
+        &["kt"],
+        "jvm",
+        "kotlinc jar build then java -jar; host execution is gated",
+        Runner::Kotlin,
+    ),
+    spec(
+        "scala",
+        &[],
+        &["scala", "sc"],
+        "jvm",
+        "scala source runner where installed; host execution is gated",
+        Runner::Interpreted {
+            tools: &["scala"],
+            args: &[],
+        },
+    ),
+    spec(
+        "csharp",
+        &["c#", "cs", "dotnet"],
+        &["cs"],
+        ".net",
+        "dotnet console wrapper; host execution is gated",
+        Runner::Dotnet,
+    ),
+    spec(
+        "fsharp",
+        &["fs", "f#"],
+        &["fsx"],
+        ".net",
+        "dotnet fsi where installed; host execution is gated",
+        Runner::Interpreted {
+            tools: &["dotnet"],
+            args: &["fsi"],
+        },
+    ),
+    spec(
+        "swift",
+        &[],
+        &["swift"],
+        "apple/systems",
+        "swift script runner; host execution is gated",
+        Runner::Interpreted {
+            tools: &["swift"],
+            args: &[],
+        },
+    ),
+    spec(
+        "ruby",
+        &["rb"],
+        &["rb"],
+        "scripting/web",
+        "ruby execution is gated",
+        Runner::Interpreted {
+            tools: &["ruby"],
+            args: &[],
+        },
+    ),
+    spec(
+        "php",
+        &[],
+        &["php"],
+        "web",
+        "php cli execution is gated",
+        Runner::Interpreted {
+            tools: &["php"],
+            args: &[],
+        },
+    ),
+    spec(
+        "perl",
+        &["pl"],
+        &["pl", "pm"],
+        "scripting",
+        "perl execution is gated",
+        Runner::Interpreted {
+            tools: &["perl"],
+            args: &[],
+        },
+    ),
+    spec(
+        "lua",
+        &[],
+        &["lua"],
+        "scripting/embedded",
+        "lua execution is gated",
+        Runner::Interpreted {
+            tools: &["lua", "lua5.4", "lua5.3"],
+            args: &[],
+        },
+    ),
+    spec(
+        "r",
+        &["rscript"],
+        &["r"],
+        "data/science",
+        "Rscript execution is gated",
+        Runner::Interpreted {
+            tools: &["Rscript"],
+            args: &[],
+        },
+    ),
+    spec(
+        "julia",
+        &["jl"],
+        &["jl"],
+        "data/science",
+        "julia execution is gated",
+        Runner::Interpreted {
+            tools: &["julia"],
+            args: &[],
+        },
+    ),
+    spec(
+        "haskell",
+        &["hs"],
+        &["hs"],
+        "functional",
+        "runghc execution is gated",
+        Runner::Interpreted {
+            tools: &["runghc", "runhaskell"],
+            args: &[],
+        },
+    ),
+    spec(
+        "ocaml",
+        &["ml"],
+        &["ml"],
+        "functional",
+        "ocaml interpreter execution is gated",
+        Runner::Interpreted {
+            tools: &["ocaml"],
+            args: &[],
+        },
+    ),
+    spec(
+        "elixir",
+        &["exs"],
+        &["exs", "ex"],
+        "beam",
+        "elixir execution is gated",
+        Runner::Interpreted {
+            tools: &["elixir"],
+            args: &[],
+        },
+    ),
+    spec(
+        "erlang",
+        &["escript"],
+        &["erl", "escript"],
+        "beam",
+        "escript execution is gated",
+        Runner::Interpreted {
+            tools: &["escript"],
+            args: &[],
+        },
+    ),
+    spec(
+        "dart",
+        &[],
+        &["dart"],
+        "mobile/web",
+        "dart execution is gated",
+        Runner::Interpreted {
+            tools: &["dart"],
+            args: &[],
+        },
+    ),
+    spec(
+        "bash",
+        &["sh", "shell"],
+        &["sh", "bash"],
+        "shell",
+        "shell execution is powerful and host-gated; use only for trusted scripts",
+        Runner::Interpreted {
+            tools: &["bash"],
+            args: &["--noprofile", "--norc"],
+        },
+    ),
+    spec(
+        "wasm",
+        &["wasi", "webassembly"],
+        &["wasm"],
+        "sandbox",
+        "inspected through phase1 WASI-lite path; no host shell execution",
+        Runner::WasmInfo,
+    ),
 ];
 
 const fn spec(
@@ -73,7 +331,14 @@ const fn spec(
     safety: &'static str,
     runner: Runner,
 ) -> LanguageSpec {
-    LanguageSpec { name, aliases, extensions, ecosystem, safety, runner }
+    LanguageSpec {
+        name,
+        aliases,
+        extensions,
+        ecosystem,
+        safety,
+        runner,
+    }
 }
 
 pub fn run(shell: &mut Phase1Shell, args: &[String]) -> String {
@@ -98,7 +363,12 @@ fn help() -> String {
 fn list() -> String {
     let mut out = String::from("language        ecosystem        extensions\n");
     for spec in LANGUAGES {
-        out.push_str(&format!("{:<15} {:<16} {}\n", spec.name, spec.ecosystem, spec.extensions.join(",")));
+        out.push_str(&format!(
+            "{:<15} {:<16} {}\n",
+            spec.name,
+            spec.ecosystem,
+            spec.extensions.join(",")
+        ));
     }
     out
 }
@@ -109,7 +379,11 @@ fn support_matrix() -> String {
         out.push_str(&format!(
             "{:<12} aliases={:<20} ext={:<18} safety={}\n",
             spec.name,
-            if spec.aliases.is_empty() { "-".to_string() } else { spec.aliases.join(",") },
+            if spec.aliases.is_empty() {
+                "-".to_string()
+            } else {
+                spec.aliases.join(",")
+            },
             spec.extensions.join(","),
             spec.safety
         ));
@@ -139,7 +413,12 @@ fn doctor(language: Option<&str>) -> String {
     }
     let specs = match language.and_then(find_language) {
         Some(spec) => vec![spec],
-        None if language.is_some() => return format!("lang: unsupported language '{}'\n", language.unwrap_or_default()),
+        None if language.is_some() => {
+            return format!(
+                "lang: unsupported language '{}'\n",
+                language.unwrap_or_default()
+            )
+        }
         None => LANGUAGES.iter().collect::<Vec<_>>(),
     };
 
@@ -152,7 +431,11 @@ fn doctor(language: Option<&str>) -> String {
             let version = tool_version(tool);
             out.push_str(&format!("{:<15} {} {}\n", spec.name, tool, version.trim()));
         } else {
-            out.push_str(&format!("{:<15} missing ({})\n", spec.name, tools.join("|")));
+            out.push_str(&format!(
+                "{:<15} missing ({})\n",
+                spec.name,
+                tools.join("|")
+            ));
         }
     }
     out
@@ -187,7 +470,11 @@ fn run_language(shell: &mut Phase1Shell, args: &[String]) -> String {
         return format!("lang: source is too large; limit is {MAX_SOURCE_BYTES} bytes\n");
     }
 
-    shell.kernel.audit.record(format!("host.lang.run language={} bytes={}", spec.name, source.len()));
+    shell.kernel.audit.record(format!(
+        "host.lang.run language={} bytes={}",
+        spec.name,
+        source.len()
+    ));
     match execute(spec, &source) {
         Ok(output) => sanitize_output(&format_output(output)),
         Err(err) => format!("lang {}: {}\n", spec.name, err),
@@ -216,16 +503,33 @@ fn execute(spec: &LanguageSpec, source: &str) -> io::Result<Output> {
 
     let result = match spec.runner {
         Runner::Interpreted { tools, args } => {
-            let tool = find_tool(tools).ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, format!("missing tool: {}", tools.join("|"))))?;
+            let tool = find_tool(tools).ok_or_else(|| {
+                io::Error::new(
+                    io::ErrorKind::NotFound,
+                    format!("missing tool: {}", tools.join("|")),
+                )
+            })?;
             let mut cmd = Command::new(tool);
             cmd.args(args).arg(&source_path);
             run_command(cmd, RUN_TIMEOUT)
         }
-        Runner::CompileRun { tools, compile_args } => {
-            let tool = find_tool(tools).ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, format!("missing compiler: {}", tools.join("|"))))?;
+        Runner::CompileRun {
+            tools,
+            compile_args,
+        } => {
+            let tool = find_tool(tools).ok_or_else(|| {
+                io::Error::new(
+                    io::ErrorKind::NotFound,
+                    format!("missing compiler: {}", tools.join("|")),
+                )
+            })?;
             let binary = root.join("main-bin");
             let mut compile = Command::new(tool);
-            compile.args(compile_args).arg(&source_path).arg("-o").arg(&binary);
+            compile
+                .args(compile_args)
+                .arg(&source_path)
+                .arg("-o")
+                .arg(&binary);
             let compile_output = run_command(compile, COMPILE_TIMEOUT)?;
             if compile_output.status.success() {
                 run_command(Command::new(&binary), RUN_TIMEOUT)
@@ -236,9 +540,17 @@ fn execute(spec: &LanguageSpec, source: &str) -> io::Result<Output> {
         Runner::Rust => {
             let binary = root.join("main-rs");
             let mut compile = Command::new("rustc");
-            compile.arg("--edition=2021").arg(&source_path).arg("-o").arg(&binary);
+            compile
+                .arg("--edition=2021")
+                .arg(&source_path)
+                .arg("-o")
+                .arg(&binary);
             let compile_output = run_command(compile, COMPILE_TIMEOUT)?;
-            if compile_output.status.success() { run_command(Command::new(&binary), RUN_TIMEOUT) } else { Ok(compile_output) }
+            if compile_output.status.success() {
+                run_command(Command::new(&binary), RUN_TIMEOUT)
+            } else {
+                Ok(compile_output)
+            }
         }
         Runner::Go => {
             let mut cmd = Command::new("go");
@@ -255,7 +567,12 @@ fn execute(spec: &LanguageSpec, source: &str) -> io::Result<Output> {
         Runner::Kotlin => {
             let jar = root.join("main.jar");
             let mut compile = Command::new("kotlinc");
-            compile.arg(&source_path).arg("-include-runtime").arg("-d").arg(&jar).current_dir(&root);
+            compile
+                .arg(&source_path)
+                .arg("-include-runtime")
+                .arg("-d")
+                .arg(&jar)
+                .current_dir(&root);
             let compile_output = run_command(compile, COMPILE_TIMEOUT)?;
             if compile_output.status.success() {
                 let mut run = Command::new("java");
@@ -301,9 +618,9 @@ fn normalize_java_source(source: &str) -> String {
 
 fn find_language(name: &str) -> Option<&'static LanguageSpec> {
     let lowered = name.to_ascii_lowercase();
-    LANGUAGES.iter().find(|spec| {
-        spec.name == lowered || spec.aliases.iter().any(|alias| *alias == lowered)
-    })
+    LANGUAGES
+        .iter()
+        .find(|spec| spec.name == lowered || spec.aliases.iter().any(|alias| *alias == lowered))
 }
 
 fn detect_language_from_path(path: &str) -> Option<&'static str> {
@@ -329,7 +646,9 @@ fn runner_tools(runner: Runner) -> &'static [&'static str] {
 fn runner_summary(runner: Runner) -> String {
     match runner {
         Runner::Interpreted { tools, args } => format!("{} {}", tools.join("|"), args.join(" ")),
-        Runner::CompileRun { tools, .. } => format!("compile with {} then run binary", tools.join("|")),
+        Runner::CompileRun { tools, .. } => {
+            format!("compile with {} then run binary", tools.join("|"))
+        }
         Runner::Rust => "rustc --edition=2021 then run binary".to_string(),
         Runner::Go => "go run".to_string(),
         Runner::JavaSource => "java source-file mode".to_string(),
@@ -339,7 +658,7 @@ fn runner_summary(runner: Runner) -> String {
     }
 }
 
-fn find_tool(tools: &[&str]) -> Option<&'static str> {
+fn find_tool(tools: &'static [&'static str]) -> Option<&'static str> {
     tools.iter().copied().find(|tool| {
         Command::new(tool)
             .arg("--version")
@@ -435,7 +754,9 @@ fn workspace_root() -> PathBuf {
 
 #[cfg(test)]
 mod tests {
-    use super::{detect_language_from_path, find_language, normalize_java_source, sanitize_output, LANGUAGES};
+    use super::{
+        detect_language_from_path, find_language, normalize_java_source, sanitize_output, LANGUAGES,
+    };
 
     #[test]
     fn all_registered_languages_have_extensions() {
@@ -449,7 +770,10 @@ mod tests {
     #[test]
     fn aliases_resolve_major_languages() {
         assert_eq!(find_language("py").map(|spec| spec.name), Some("python"));
-        assert_eq!(find_language("node").map(|spec| spec.name), Some("javascript"));
+        assert_eq!(
+            find_language("node").map(|spec| spec.name),
+            Some("javascript")
+        );
         assert_eq!(find_language("c++").map(|spec| spec.name), Some("cpp"));
         assert_eq!(find_language("c#").map(|spec| spec.name), Some("csharp"));
     }

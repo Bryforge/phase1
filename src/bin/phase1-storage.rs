@@ -74,7 +74,9 @@ fn git(args: &[String]) -> Result<String, String> {
     match action {
         "clone" => {
             require_host_tools("git clone")?;
-            let url = args.get(1).ok_or("usage: phase1-storage git clone <url> [name]")?;
+            let url = args
+                .get(1)
+                .ok_or("usage: phase1-storage git clone <url> [name]")?;
             validate_git_url(url)?;
             let name = match args.get(2) {
                 Some(name) => validate_repo_name(name)?,
@@ -83,7 +85,10 @@ fn git(args: &[String]) -> Result<String, String> {
             ensure_storage_tree()?;
             let destination = repos_dir().join(&name);
             if destination.exists() {
-                return Err(format!("git clone: destination already exists: {}", destination.display()));
+                return Err(format!(
+                    "git clone: destination already exists: {}",
+                    destination.display()
+                ));
             }
             let mut cmd = Command::new("git");
             cmd.env("GIT_TERMINAL_PROMPT", "0")
@@ -102,7 +107,10 @@ fn git(args: &[String]) -> Result<String, String> {
         }
         "status" => {
             require_host_tools("git status")?;
-            let repo = repo_path(args.get(1).ok_or("usage: phase1-storage git status <name>")?)?;
+            let repo = repo_path(
+                args.get(1)
+                    .ok_or("usage: phase1-storage git status <name>")?,
+            )?;
             let mut cmd = Command::new("git");
             cmd.env("GIT_TERMINAL_PROMPT", "0")
                 .env("GCM_INTERACTIVE", "never")
@@ -147,16 +155,24 @@ fn rust(args: &[String]) -> Result<String, String> {
         }
         "run" => {
             require_host_tools("rust run")?;
-            let source = args.get(1).ok_or("usage: phase1-storage rust run <file.rs | inline-code>")?;
+            let source = args
+                .get(1)
+                .ok_or("usage: phase1-storage rust run <file.rs | inline-code>")?;
             run_rust_source(source)
         }
         "init" | "new" => {
             require_host_tools("rust init")?;
-            let name = validate_repo_name(args.get(1).ok_or("usage: phase1-storage rust init <name>")?)?;
+            let name = validate_repo_name(
+                args.get(1)
+                    .ok_or("usage: phase1-storage rust init <name>")?,
+            )?;
             ensure_storage_tree()?;
             let project = repos_dir().join(&name);
             if project.exists() {
-                return Err(format!("rust init: project already exists: {}", project.display()));
+                return Err(format!(
+                    "rust init: project already exists: {}",
+                    project.display()
+                ));
             }
             fs::create_dir_all(project.join("src")).map_err(|err| err.to_string())?;
             fs::write(
@@ -176,8 +192,12 @@ fn rust(args: &[String]) -> Result<String, String> {
         }
         "cargo" => {
             require_host_tools("cargo")?;
-            let repo = repo_path(args.get(1).ok_or("usage: phase1-storage rust cargo <repo> <check|build|test|run> [args...]")?)?;
-            let subcommand = args.get(2).ok_or("usage: phase1-storage rust cargo <repo> <check|build|test|run> [args...]")?;
+            let repo = repo_path(args.get(1).ok_or(
+                "usage: phase1-storage rust cargo <repo> <check|build|test|run> [args...]",
+            )?)?;
+            let subcommand = args.get(2).ok_or(
+                "usage: phase1-storage rust cargo <repo> <check|build|test|run> [args...]",
+            )?;
             validate_cargo_subcommand(subcommand)?;
             let mut cmd = Command::new("cargo");
             cmd.arg(subcommand).args(&args[3..]).current_dir(repo);
@@ -212,7 +232,11 @@ fn storage_status() -> Result<String, String> {
         root.display(),
         if exists { "yes" } else { "no" },
         repo_count,
-        if host_tools_allowed() { "enabled" } else { "guarded" }
+        if host_tools_allowed() {
+            "enabled"
+        } else {
+            "guarded"
+        }
     ))
 }
 
@@ -223,7 +247,9 @@ fn storage_doctor() -> Result<String, String> {
         let mut cmd = Command::new(tool);
         cmd.arg("--version");
         match run_command(cmd, COMMAND_TIMEOUT) {
-            Ok(output) => out.push_str(&format!("  {tool}: {}", first_line(&format_output(output)))),
+            Ok(output) => {
+                out.push_str(&format!("  {tool}: {}", first_line(&format_output(output))))
+            }
             Err(err) => out.push_str(&format!("  {tool}: missing or blocked ({err})\n")),
         }
     }
@@ -265,7 +291,11 @@ fn run_rust_source(source: &str) -> Result<String, String> {
     fs::write(&source_path, code).map_err(|err| err.to_string())?;
 
     let mut compile = Command::new("rustc");
-    compile.arg("--edition=2021").arg(&source_path).arg("-o").arg(&binary_path);
+    compile
+        .arg("--edition=2021")
+        .arg(&source_path)
+        .arg("-o")
+        .arg(&binary_path);
     let compile_output = run_command(compile, COMMAND_TIMEOUT)?;
     if !compile_output.status.success() {
         let _ = fs::remove_file(source_path);
@@ -368,33 +398,39 @@ fn require_host_tools(command: &str) -> Result<(), String> {
     } else if safe_mode_enabled() {
         Err(format!("{command}: disabled by safe boot profile; set PHASE1_SAFE_MODE=0 and PHASE1_ALLOW_HOST_TOOLS=1 for trusted host-backed use"))
     } else {
-        Err(format!("{command}: disabled; set PHASE1_ALLOW_HOST_TOOLS=1 for trusted host-backed use"))
+        Err(format!(
+            "{command}: disabled; set PHASE1_ALLOW_HOST_TOOLS=1 for trusted host-backed use"
+        ))
     }
 }
 
 fn safe_mode_enabled() -> bool {
-    !matches!(env::var("PHASE1_SAFE_MODE").ok().as_deref(), Some("0" | "false" | "off" | "no"))
+    !matches!(
+        env::var("PHASE1_SAFE_MODE").ok().as_deref(),
+        Some("0" | "false" | "off" | "no")
+    )
 }
 
 fn host_tools_allowed() -> bool {
     !safe_mode_enabled() && env::var("PHASE1_ALLOW_HOST_TOOLS").ok().as_deref() == Some("1")
 }
 
-fn run_command(mut command: Command, timeout: Duration) -> io::Result<Output> {
+fn run_command(mut command: Command, timeout: Duration) -> Result<Output, String> {
     let mut child = command
         .stdin(Stdio::null())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
-        .spawn()?;
+        .spawn()
+        .map_err(|err| err.to_string())?;
     let start = Instant::now();
     loop {
-        if child.try_wait()?.is_some() {
-            return child.wait_with_output();
+        if child.try_wait().map_err(|err| err.to_string())?.is_some() {
+            return child.wait_with_output().map_err(|err| err.to_string());
         }
         if start.elapsed() >= timeout {
             let _ = child.kill();
             let _ = child.wait();
-            return Err(io::Error::new(io::ErrorKind::TimedOut, "command timed out"));
+            return Err("command timed out".to_string());
         }
         thread::sleep(Duration::from_millis(25));
     }
@@ -455,8 +491,14 @@ mod tests {
 
     #[test]
     fn derives_safe_repo_names_from_common_git_urls() {
-        assert_eq!(derive_repo_name("https://github.com/Bryforge/phase1.git").unwrap(), "phase1");
-        assert_eq!(derive_repo_name("git@github.com:Bryforge/phase1.git").unwrap(), "phase1");
+        assert_eq!(
+            derive_repo_name("https://github.com/Bryforge/phase1.git").unwrap(),
+            "phase1"
+        );
+        assert_eq!(
+            derive_repo_name("git@github.com:Bryforge/phase1.git").unwrap(),
+            "phase1"
+        );
     }
 
     #[test]
@@ -478,7 +520,17 @@ mod tests {
     #[test]
     fn roadmap_names_major_language_families() {
         let roadmap = language_roadmap();
-        for language in ["Rust", "Python", "JavaScript", "TypeScript", "Go", "Java", "C#", "Swift", "WebAssembly"] {
+        for language in [
+            "Rust",
+            "Python",
+            "JavaScript",
+            "TypeScript",
+            "Go",
+            "Java",
+            "C#",
+            "Swift",
+            "WebAssembly",
+        ] {
             assert!(roadmap.contains(language));
         }
     }
