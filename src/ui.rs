@@ -1,9 +1,10 @@
 use crate::registry;
 use std::fs;
 use std::io::{self, Write};
+use std::time::{SystemTime, UNIX_EPOCH};
 
-const PANEL_WIDTH: usize = 74;
-const MOBILE_WIDTH: usize = 46;
+const PANEL_WIDTH: usize = 64;
+const MOBILE_WIDTH: usize = 40;
 const BOOT_CONFIG_PATH: &str = "phase1.conf";
 const RESET: &str = "\x1b[0m";
 const BOLD: &str = "\x1b[1m";
@@ -82,10 +83,10 @@ impl ThemePalette {
 
     pub fn label(self) -> &'static str {
         match self {
-            Self::NeoTokyo => "cyan/magenta Neo Tokyo hacker console, the default phase1 look",
+            Self::NeoTokyo => "cyan/magenta Neo Tokyo operator HUD, the default phase1 look",
             Self::Rainbow => "classic rainbow ANSI gradient",
             Self::Matrix => "green-on-black digital rain console",
-            Self::Cyber => "cyan/magenta high-contrast cyberdeck",
+            Self::Cyber => "cyan/magenta high-contrast operator console",
             Self::Amber => "warm amber retro terminal",
             Self::Ice => "cool blue/cyan frost terminal",
             Self::Synth => "purple synthwave operator glow",
@@ -340,8 +341,8 @@ pub fn configure_boot(version: &str) -> BootSelection {
                     Err(err) => pause(&format!("Reset defaults, but could not remove phase1.conf: {err}")),
                 }
             }
-            "h" | "help" | "?" => pause("Neo Tokyo dock: Enter boots, e=edge channel, p=vault persistence, d=storage/Rust/Git helper, 9=saves, 0=resets, 8=quits. Safe mode stays on unless you intentionally drop the shield."),
-            _ => pause("Unknown boot option. Press Enter to re-open the Neo Tokyo boot dock."),
+            "h" | "help" | "?" => pause("HUD dock: Enter boots, e=edge channel, p=vault persistence, d=storage/Rust/Git helper, 9=saves, 0=resets, 8=quits. Safe mode stays on unless you intentionally drop the shield."),
+            _ => pause("Unknown boot option. Press Enter to re-open the Phase1 boot dock."),
         }
     }
 }
@@ -364,8 +365,9 @@ pub fn print_quick_boot(version: &str, config: BootConfig) {
         value(
             config,
             &format!(
-                "[quick] profile={} :: shell armed :: skyline synced",
-                config.profile_name()
+                "[quick] profile={} :: shell armed :: clock {}",
+                config.profile_name(),
+                clock_utc()
             )
         )
     );
@@ -377,6 +379,7 @@ pub fn print_help() {
 }
 
 pub fn print_prompt(user: &str, path: &str) {
+    print!("{}", prompt_status_bar(user, path));
     print!("{}", prompt_text(user, path));
 }
 
@@ -387,13 +390,7 @@ fn print_preboot(version: &str, config: BootConfig) {
         print!("\x1b[2J\x1b[H{BOLD}");
     }
     print_boot_card(version, config, true);
-    println!(
-        "{}",
-        value(
-            config,
-            "Enter=jack in  e=edge  p=vault  d=storage/Rust/Git  h=help"
-        )
-    );
+    println!("{}", value(config, "Enter=boot  e=edge  p=vault  d=storage/Git/Rust  h=help"));
 }
 
 fn print_mobile_boot(version: &str, config: BootConfig) {
@@ -420,7 +417,7 @@ fn print_boot_card(version: &str, config: BootConfig, selector: bool) {
     println!();
     println!("{}", card_top(config, width));
     println!("{}", card_line(config, width, &console_title(config)));
-    println!("{}", card_line(config, width, "東京-01 skyline uplink // virtual OS cyberdeck"));
+    println!("{}", card_line(config, width, &format!("node TOKYO-01 // vOS link // clock {}", clock_utc())));
     println!("{}", card_rule(config, width));
 
     for row in skyline_rows(config) {
@@ -439,8 +436,8 @@ fn print_boot_card(version: &str, config: BootConfig, selector: bool) {
         }
     } else {
         println!("{}", card_section(config, width, "LIVE OPS"));
-        println!("{}", card_line(config, width, "help   dash   sysinfo   security   theme list"));
-        println!("{}", card_line(config, width, "matrix  audit  ps  ls /  storage helper via d"));
+        println!("{}", card_line(config, width, "help  dash  sysinfo  security  theme list"));
+        println!("{}", card_line(config, width, "matrix  audit  ps  ls /  storage via d"));
     }
 
     println!("{}", card_bottom(config, width));
@@ -450,9 +447,9 @@ fn print_boot_card(version: &str, config: BootConfig, selector: bool) {
 fn skyline_rows(config: BootConfig) -> Vec<String> {
     let mode = if config.safe_mode { "shielded" } else { "host-capable" };
     vec![
-        tint(config, "╱╲╱╲ neon skyline locked :: node PHASE1-KERNEL"),
-        format!("district shibuya-IX   signal encrypted   mode {mode}"),
-        "ops      kernel  vfs  proc  net  audit  lang  git".to_string(),
+        tint(config, "neural link locked :: kernel PHASE1"),
+        format!("mesh encrypted :: mode {mode}"),
+        "bus kernel vfs proc net audit lang git rust".to_string(),
     ]
 }
 
@@ -460,50 +457,49 @@ fn splash_info(version: &str, config: BootConfig) -> Vec<String> {
     let state_mode = if config.persistent_state { "vault/persistent" } else { "ram/volatile" };
     let security_mode = if config.safe_mode { "safe shield" } else { "host bridge" };
     let channel = if config.bleeding_edge { "bleeding-edge" } else { "release" };
+    let workspace = std::env::var("PHASE1_STORAGE_ROOT").unwrap_or_else(|_| "phase1.workspace".to_string());
     vec![
         status_row(config, "version", &format!("v{}", display_version(version, config)), true),
+        status_row(config, "clock", &clock_utc(), true),
         status_row(config, "channel", channel, config.bleeding_edge),
         status_row(config, "profile", &config.profile_name(), true),
         status_row(config, "security", security_mode, config.safe_mode),
-        status_row(
-            config,
-            "device",
-            if config.mobile_mode { "mobile deck" } else { "desktop rig" },
-            true,
-        ),
         status_row(config, "display", display_mode(config), true),
         status_row(config, "state", state_mode, config.persistent_state),
-        status_row(config, "config", config_path(), true),
+        status_row(config, "workspace", &workspace, true),
     ]
 }
 
 fn boot_rows(config: BootConfig) -> Vec<String> {
     vec![
-        "[1] jack in / boot system        save profile + enter shell".to_string(),
-        toggle_row(config, "[2] neon color output", config.color),
-        toggle_row(config, "[3] ASCII fallback", config.ascii_mode),
-        toggle_row(config, "[4] safe shield", config.safe_mode),
-        toggle_row(config, "[5] quick warp boot", config.quick_boot),
-        toggle_row(config, "[6] mobile deck layout", config.mobile_mode),
-        toggle_row(config, "[e] bleeding-edge channel", config.bleeding_edge),
-        toggle_row(config, "[p] /home vault persistence", config.persistent_state),
-        "[d] storage / Git / Rust dock     status + doctor commands".to_string(),
-        "[7] reboot selector              rerender boot dock".to_string(),
-        "[8] shutdown                     abort before shell".to_string(),
-        "[9] save config                  write phase1.conf".to_string(),
-        "[0] reset saved config           restore secure defaults".to_string(),
+        option_row(config, "[1] BOOT", "start shell", true),
+        option_row(config, "[2] NEON", on_off(config.color), config.color),
+        option_row(config, "[3] ASCII", on_off(config.ascii_mode), config.ascii_mode),
+        option_row(config, "[4] SHIELD", on_off(config.safe_mode), config.safe_mode),
+        option_row(config, "[5] QUICK", on_off(config.quick_boot), config.quick_boot),
+        option_row(config, "[6] MOBILE", on_off(config.mobile_mode), config.mobile_mode),
+        option_row(config, "[e] EDGE", on_off(config.bleeding_edge), config.bleeding_edge),
+        option_row(config, "[p] VAULT", on_off(config.persistent_state), config.persistent_state),
+        option_row(config, "[d] STORAGE+GIT+RUST", "open dock", true),
+        option_row(config, "[7] REBOOT", "selector", true),
+        option_row(config, "[8] SHUTDOWN", "abort", true),
+        option_row(config, "[9] SAVE", "phase1.conf", true),
+        option_row(config, "[0] RESET", "defaults", true),
     ]
 }
 
-fn toggle_row(config: BootConfig, label: &str, enabled: bool) -> String {
-    let state = if enabled { "ON" } else { "off" };
-    let chip = if enabled { tint(config, state) } else { dim(config, state) };
-    format!("{label:<31} {chip}")
+fn on_off(enabled: bool) -> &'static str {
+    if enabled { "ON" } else { "off" }
+}
+
+fn option_row(config: BootConfig, label: &str, value_text: &str, bright: bool) -> String {
+    let value_text = if bright { tint(config, value_text) } else { dim(config, value_text) };
+    format!("{label:<23} {value_text}")
 }
 
 fn status_row(config: BootConfig, label: &str, value_text: &str, bright: bool) -> String {
     let value_text = if bright { tint(config, value_text) } else { dim(config, value_text) };
-    format!("{label:<9} {value_text}")
+    format!("{label:<10} {value_text}")
 }
 
 fn console_title(config: BootConfig) -> String {
@@ -570,6 +566,39 @@ fn prompt_text(user: &str, path: &str) -> String {
     }
 }
 
+fn prompt_status_bar(user: &str, path: &str) -> String {
+    let width = card_width(BootConfig::default());
+    let version = std::env::var("PHASE1_DISPLAY_VERSION").unwrap_or_else(|_| crate::kernel::VERSION.to_string());
+    let channel = std::env::var("PHASE1_CHANNEL").unwrap_or_else(|_| {
+        if bleeding_edge_env_enabled() {
+            "edge".to_string()
+        } else {
+            "release".to_string()
+        }
+    });
+    let safe = if std::env::var("PHASE1_SAFE_MODE").ok().as_deref() == Some("0") {
+        "host"
+    } else {
+        "safe"
+    };
+    let state = if std::env::var("PHASE1_PERSISTENT_STATE").ok().as_deref() == Some("1") {
+        "vault"
+    } else {
+        "ram"
+    };
+    let raw = format!("HUD {version} | {channel} | {safe} | {state} | {user}@{path} | {}", clock_utc());
+    let clipped = clip_visible(&raw, width);
+    let visible = visible_len(&clipped);
+    let padded = format!("{clipped}{}", " ".repeat(width.saturating_sub(visible)));
+
+    if color_enabled() && !ascii_mode() {
+        let colors = palette(active_theme());
+        format!("{}{}{}\n", colors.accent, padded, RESET)
+    } else {
+        format!("{padded}\n")
+    }
+}
+
 fn command_prompt(config: BootConfig, label: &str) -> String {
     if config.color && !config.ascii_mode {
         let colors = palette(active_theme_for_config(config));
@@ -587,16 +616,16 @@ fn ready_line(desktop: bool) {
         let colors = palette(active_theme());
         if desktop {
             println!(
-                "{}[ready]{} skyline synced {GRAY}:: operator shell armed :: try dash or theme list{RESET}",
+                "{}[ready]{} systems synced {GRAY}:: operator shell armed :: HUD clock active{RESET}",
                 colors.ready, RESET
             );
         } else {
-            println!("{}[ready]{} skyline synced", colors.ready, RESET);
+            println!("{}[ready]{} systems synced", colors.ready, RESET);
         }
     } else if desktop {
-        println!("[ready] skyline synced :: operator shell armed :: try dash or theme list");
+        println!("[ready] systems synced :: operator shell armed :: HUD clock active");
     } else {
-        println!("[ready] skyline synced");
+        println!("[ready] systems synced");
     }
     println!();
 }
@@ -642,12 +671,12 @@ fn active_theme_for_config(config: BootConfig) -> ThemePalette {
 fn palette(theme: ThemePalette) -> Palette {
     match theme {
         ThemePalette::NeoTokyo => Palette {
-            border: MAGENTA,
-            title: CYAN,
-            accent: MAGENTA,
+            border: BLUE,
+            title: MAGENTA,
+            accent: GREEN,
             muted: GRAY,
             prompt_user: MAGENTA,
-            prompt_path: CYAN,
+            prompt_path: GREEN,
             ready: GREEN,
         },
         ThemePalette::Rainbow => Palette {
@@ -716,10 +745,10 @@ fn palette(theme: ThemePalette) -> Palette {
         ThemePalette::BleedingEdge => Palette {
             border: BLUE,
             title: MAGENTA,
-            accent: CYAN,
+            accent: GREEN,
             muted: GRAY,
             prompt_user: MAGENTA,
-            prompt_path: CYAN,
+            prompt_path: GREEN,
             ready: MAGENTA,
         },
     }
@@ -892,6 +921,18 @@ fn parse_bool(value: &str) -> Option<bool> {
     }
 }
 
+fn clock_utc() -> String {
+    let seconds = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_secs()
+        % 86_400;
+    let hours = seconds / 3_600;
+    let minutes = (seconds % 3_600) / 60;
+    let seconds = seconds % 60;
+    format!("{hours:02}:{minutes:02}:{seconds:02} UTC")
+}
+
 fn strip_ansi(text: &str) -> String {
     let mut out = String::with_capacity(text.len());
     let mut chars = text.chars().peekable();
@@ -935,8 +976,8 @@ fn ascii_mode() -> bool {
 #[cfg(test)]
 mod tests {
     use super::{
-        console_title, display_mode, display_version, parse_bool, strip_ansi, BootConfig,
-        ThemePalette,
+        clock_utc, console_title, display_mode, display_version, parse_bool, prompt_status_bar,
+        strip_ansi, visible_len, BootConfig, ThemePalette, PANEL_WIDTH,
     };
 
     fn config() -> BootConfig {
@@ -966,6 +1007,23 @@ mod tests {
             strip_ansi(&console_title(config())),
             "Phase1 // Advanced Operator Console"
         );
+    }
+
+    #[test]
+    fn prompt_status_bar_contains_clock_without_overflowing() {
+        std::env::remove_var("PHASE1_THEME");
+        std::env::set_var("COLUMNS", "80");
+        let bar = prompt_status_bar("root", "~");
+        let plain = strip_ansi(&bar);
+        assert!(plain.contains("HUD"));
+        assert!(plain.contains("UTC"));
+        assert!(plain.lines().all(|line| visible_len(line) <= PANEL_WIDTH));
+        std::env::remove_var("COLUMNS");
+    }
+
+    #[test]
+    fn clock_uses_utc_suffix() {
+        assert!(clock_utc().ends_with(" UTC"));
     }
 
     #[test]
