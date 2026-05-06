@@ -1,7 +1,7 @@
 use crate::kernel::VERSION;
 
 pub const RELEASE_VERSION: &str = "3.6.0";
-pub const BLEEDING_VERSION: &str = "3.7.3-dev";
+pub const BLEEDING_VERSION: &str = "3.7.4-dev";
 pub const CHANNEL: &str = "bleeding-edge";
 pub const UPDATE_PROTOCOL_FILE: &str = "UPDATE_PROTOCOL.md";
 pub const VERSION_SCHEME: &str = "MAJOR.MINOR.PATCH[-dev]";
@@ -13,6 +13,7 @@ const BLEEDING_FEATURES: &[&str] = &[
     "guarded stable-to-bleeding updater",
     "documented update protocol with patch-level SemVer",
     "update protocol patch policy hardening",
+    "metadata-backed capability enforcement",
     "operator sysinfo/theme/banner/tips commands",
 ];
 
@@ -25,7 +26,7 @@ const ROADMAP_STATUS: &[(&str, &str)] = &[
     ),
     (
         "Capability enforcement based on command metadata",
-        "partial: enforced for host tools and network mutation gates",
+        "complete: host tool and network mutation gates are checked from command metadata",
     ),
     (
         "WASM/WASI plugin runtime",
@@ -92,6 +93,7 @@ mod tests {
         assert!(out.contains(UPDATE_PROTOCOL_FILE));
         assert!(out.contains("structured text pipelines"));
         assert!(out.contains("patch-level SemVer"));
+        assert!(out.contains("metadata-backed capability enforcement"));
     }
 
     #[test]
@@ -99,6 +101,7 @@ mod tests {
         let out = roadmap_report();
         assert!(out.contains("Structured command output and pipelines"));
         assert!(out.contains("Update protocol and semantic patch versioning"));
+        assert!(out.contains("Capability enforcement based on command metadata"));
         assert!(out.contains("complete"));
     }
 }
