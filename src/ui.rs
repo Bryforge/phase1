@@ -99,7 +99,9 @@ pub fn configure_boot(version: &str) -> BootConfig {
 }
 
 pub fn print_boot(version: &str) {
-    if ascii_mode() {
+    if terminal_width() < 72 {
+        print_mobile_boot(version);
+    } else if ascii_mode() {
         print_ascii_boot(version);
     } else {
         print_modern_boot(version);
@@ -208,6 +210,40 @@ fn prompt_text(user: &str, path: &str) -> String {
             BOLD, RESET, GRAY, RESET, CYAN, user, RESET, BLUE, path, RESET
         )
     }
+}
+
+fn print_mobile_boot(version: &str) {
+    println!("\x1b[2J\x1b[H");
+    let config = BootConfig::default();
+    println!("{}", accent(config, &format!("PHASE1 // OPERATOR v{version}")));
+    println!("{}", value(config, "virtual kernel • sandbox • cyberdeck"));
+    println!("{}", panel_line(config, "BOOT MATRIX", preboot_width()));
+
+    for (name, state) in [
+        ("core    kernel", "online"),
+        ("vfs     mounted", "ready"),
+        ("proc    scheduler", "active"),
+        ("net     inspection", "linked"),
+        ("hw      pcie model", "ready"),
+        ("sec     audit log", "tracking"),
+    ] {
+        println!("{}  {}", accent(config, name), value(config, state));
+    }
+
+    println!("{}", panel_line(config, "SESSION", preboot_width()));
+    println!("{}", value(config, "user=root  mode=operator"));
+    println!("{}", value(config, "shell=registry  ui=mobile"));
+
+    println!("{}", panel_line(config, "QUICK", preboot_width()));
+    println!("{}", value(config, "help  audit  ps  ls /"));
+    println!("{}", value(config, "browser phase1  version"));
+
+    if color_enabled() {
+        println!("{GREEN}[ready]{RESET} all subsystems nominal");
+    } else {
+        println!("[ready] all subsystems nominal");
+    }
+    println!();
 }
 
 fn print_modern_boot(version: &str) {
@@ -327,6 +363,14 @@ fn rainbow(idx: usize, text: &str, config: BootConfig) -> String {
     }
     let colors = [RED, YELLOW, GREEN, CYAN, BLUE, MAGENTA];
     format!("{}{}{}{}", BOLD, colors[idx % colors.len()], text, RESET)
+}
+
+fn accent(config: BootConfig, text: &str) -> String {
+    if config.color && !config.ascii_mode {
+        format!("{GREEN}{text}{RESET}")
+    } else {
+        text.to_string()
+    }
 }
 
 fn value(config: BootConfig, text: &str) -> String {
