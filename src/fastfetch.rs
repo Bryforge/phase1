@@ -27,10 +27,10 @@ const DESKTOP_LOGO: &[&str] = &[
 
 const MOBILE_LOGO: &[&str] = &[
     "   .-== PHASE1 ==-.",
-    "  /  P1 DEVKIT    \",
+    "  /  P1 DEVKIT     ",
     " | update everything |",
     " | rainbow shell     |",
-    "  \__ fastfetch ___/",
+    "  '-- fastfetch ---'",
 ];
 
 pub fn run(shell: &mut Phase1Shell, config: BootConfig) -> String {
