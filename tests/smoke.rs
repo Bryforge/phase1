@@ -1,11 +1,19 @@
+use std::fs;
 use std::io::Write;
-use std::process::{Command, Stdio};
+use std::process::{self, Command, Stdio};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 fn run_phase1(script: &str) -> String {
     let binary = env!("CARGO_BIN_EXE_phase1");
+    let run_dir = unique_run_dir();
+    fs::create_dir_all(&run_dir).expect("create phase1 smoke temp directory");
+
     let mut child = Command::new(binary)
+        .current_dir(&run_dir)
         .env("PHASE1_NO_COLOR", "1")
         .env("PHASE1_ASCII", "1")
+        .env("COLUMNS", "100")
+        .env("LINES", "30")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
@@ -14,15 +22,26 @@ fn run_phase1(script: &str) -> String {
 
     {
         let stdin = child.stdin.as_mut().expect("phase1 stdin");
-        stdin.write_all(script.as_bytes()).expect("write phase1 script");
+        let booted_script = format!("\n{script}");
+        stdin.write_all(booted_script.as_bytes()).expect("write phase1 script");
     }
 
     let output = child.wait_with_output().expect("wait for phase1");
+    let _ = fs::remove_dir_all(&run_dir);
+
     let mut combined = String::new();
     combined.push_str(&String::from_utf8_lossy(&output.stdout));
     combined.push_str(&String::from_utf8_lossy(&output.stderr));
     assert!(output.status.success(), "phase1 exited unsuccessfully:\n{combined}");
     combined
+}
+
+fn unique_run_dir() -> std::path::PathBuf {
+    let nonce = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|duration| duration.as_nanos())
+        .unwrap_or(0);
+    std::env::temp_dir().join(format!("phase1-smoke-{}-{nonce}", process::id()))
 }
 
 fn assert_contains_all(output: &str, needles: &[&str]) {
