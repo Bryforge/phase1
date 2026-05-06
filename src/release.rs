@@ -1,7 +1,7 @@
 use crate::kernel::VERSION;
 
 pub const RELEASE_VERSION: &str = "3.6.0";
-pub const BLEEDING_VERSION: &str = "3.8.3-dev";
+pub const BLEEDING_VERSION: &str = "3.9.0-dev";
 pub const CHANNEL: &str = "bleeding-edge";
 pub const UPDATE_PROTOCOL_FILE: &str = "UPDATE_PROTOCOL.md";
 pub const VERSION_SCHEME: &str = "MAJOR.MINOR.PATCH[-dev]";
@@ -15,6 +15,7 @@ const BLEEDING_FEATURES: &[&str] = &[
     "update protocol patch policy hardening",
     "metadata-backed capability enforcement",
     "WASI-lite plugin runtime with phase1-only sandboxing",
+    "Phase1 Arena game workspace and clean-room text arena",
     "selectable UI color palettes with rainbow default",
     "live system tab auto-completion for commands and common arguments",
     "raw-mode input editor with redraw-safe backspace handling",
@@ -35,6 +36,10 @@ const ROADMAP_STATUS: &[(&str, &str)] = &[
     (
         "WASM/WASI plugin runtime",
         "complete: WASI-lite plugins run in a phase1 sandbox without host shell access",
+    ),
+    (
+        "Phase1 Arena game workspace",
+        "complete: renamed game prototype, isolated game module, focused docs, and game-only test runner",
     ),
     (
         "Configurable UI color palettes",
@@ -111,6 +116,7 @@ mod tests {
         assert!(out.contains("patch-level SemVer"));
         assert!(out.contains("metadata-backed capability enforcement"));
         assert!(out.contains("WASI-lite plugin runtime"));
+        assert!(out.contains("Phase1 Arena game workspace"));
         assert!(out.contains("selectable UI color palettes"));
         assert!(out.contains("live system tab auto-completion"));
         assert!(out.contains("raw-mode input editor"));
@@ -123,6 +129,7 @@ mod tests {
         assert!(out.contains("Update protocol and semantic patch versioning"));
         assert!(out.contains("Capability enforcement based on command metadata"));
         assert!(out.contains("WASM/WASI plugin runtime"));
+        assert!(out.contains("Phase1 Arena game workspace"));
         assert!(out.contains("Configurable UI color palettes"));
         assert!(out.contains("System tab auto-completion"));
         assert!(out.contains("Raw input editing"));
