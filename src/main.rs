@@ -3,6 +3,7 @@
 mod autocomplete;
 mod browser;
 mod commands;
+mod fastfetch;
 mod history;
 mod kernel;
 mod line_editor;
@@ -267,6 +268,7 @@ fn execute_one(
                     policy::security_report(boot_config.persistent_state, "memory-only")
                 ),
                 "sysinfo" => print!("{}", operator::sysinfo(shell, boot_config)),
+                "fastfetch" => print!("{}", fastfetch::run(shell, boot_config)),
                 "dash" => print!("{}", operator::dashboard(shell, boot_config, args)),
                 "theme" => print!("{}", operator::theme(shell, args)),
                 "banner" => print!("{}", operator::banner(boot_config, args)),
