@@ -50,14 +50,14 @@ pub fn check(command: &str, capability: &str) -> PolicyDecision {
     decision(command, capability, host_backed, PolicyResult::Allow, "policy-ok")
 }
 
-pub fn security_report(persistent_state: bool, history_path: &str) -> String {
+pub fn security_report(persistent_state: bool, history_state: &str) -> String {
     format!(
-        "security mode       : {}\nhost tools          : {}\nhost network changes: {}\npersistent state    : {}\nhistory             : {}\n",
+        "security mode       : {}\nhost tools          : {}\nhost network changes: {}\npersistent state    : {}\nhistory             : {}\nprivacy             : no real emails, passwords, tokens, or account secrets are stored by phase1\n",
         if safe_mode_enabled() { "safe" } else { "host-capable" },
         if host_tools_enabled() { "enabled" } else { "disabled" },
         if host_network_changes_enabled() { "enabled" } else { "disabled" },
         if persistent_state { "on" } else { "off" },
-        history_path
+        history_state
     )
 }
 
@@ -79,7 +79,7 @@ pub fn host_network_changes_enabled() -> bool {
         == Some("1")
 }
 
-pub fn host_inspection_allowed() -> bool {
+pub fn host_tools_allowed() -> bool {
     !safe_mode_enabled() && host_tools_enabled()
 }
 
@@ -116,7 +116,7 @@ fn is_host_backed(command: &str, capability: &str) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use super::{check, host_tools_enabled, PolicyResult};
+    use super::{check, host_tools_allowed, host_tools_enabled, PolicyResult};
 
     #[test]
     fn safe_mode_denies_host_backed_commands() {
@@ -125,6 +125,7 @@ mod tests {
         let decision = check("python", "host.exec");
         assert_eq!(decision.result, PolicyResult::Deny);
         assert_eq!(decision.reason, "safe-mode");
+        assert!(!host_tools_allowed());
         std::env::remove_var("PHASE1_SAFE_MODE");
     }
 
@@ -133,9 +134,13 @@ mod tests {
         std::env::set_var("PHASE1_SAFE_MODE", "0");
         std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
         assert!(!host_tools_enabled());
+        assert!(!host_tools_allowed());
         let decision = check("python", "host.exec");
         assert_eq!(decision.result, PolicyResult::Deny);
         assert_eq!(decision.reason, "host-tools-disabled");
+        std::env::set_var("PHASE1_ALLOW_HOST_TOOLS", "1");
+        assert!(host_tools_allowed());
         std::env::remove_var("PHASE1_SAFE_MODE");
+        std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
     }
 }
