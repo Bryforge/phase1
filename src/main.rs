@@ -84,11 +84,24 @@ fn run_shell(boot_config: ui::BootConfig) {
             Ok(tokens) => {
                 let cmd = &tokens[0];
                 let args = &tokens[1..];
-                dispatch(&mut shell, cmd, args);
+                match registry::canonical_name(cmd).unwrap_or(cmd) {
+                    "matrix" => matrix::run(args),
+                    "bootcfg" => print_boot_config(boot_config),
+                    _ => dispatch(&mut shell, cmd, args),
+                }
             }
             Err(err) => eprintln!("parse error: {}", err),
         }
     }
+}
+
+fn print_boot_config(config: ui::BootConfig) {
+    println!("boot profile : {}", config.profile_name());
+    println!("color        : {}", if config.color { "on" } else { "off" });
+    println!("ascii        : {}", if config.ascii_mode { "on" } else { "off" });
+    println!("safe mode    : {}", if config.safe_mode { "on" } else { "off" });
+    println!("quick boot   : {}", if config.quick_boot { "on" } else { "off" });
+    println!("mobile mode  : {}", if config.mobile_mode { "on" } else { "off" });
 }
 
 #[cfg(test)]
