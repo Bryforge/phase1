@@ -1,3 +1,6 @@
+#[path = "opendoom.rs"]
+mod opendoom;
+
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -27,7 +30,7 @@ impl Default for WasiManifest {
 }
 
 pub fn help() -> String {
-    "phase1 wasm/wasi runtime\nusage: wasm [list|inspect|run|validate|help] [plugin] [args...]\n\nplugins live in ./plugins as .wasm artifacts with optional .wasi manifests.\nruntime is phase1-only: no host shell, no host network, no host filesystem passthrough.\n".to_string()
+    "phase1 wasm/wasi runtime\nusage: wasm [list|inspect|run|validate|help] [plugin] [args...]\n\nplugins live in ./plugins as .wasm artifacts with optional .wasi manifests.\nruntime is phase1-only: no host shell, no host network, no host filesystem passthrough.\nopenDoom is exposed as a built-in WASI-lite game launcher: `opendoom start` or `wasm run opendoom start`.\n".to_string()
 }
 
 pub fn run(plugins_dir: &Path, args: &[String]) -> String {
@@ -51,6 +54,10 @@ pub fn run(plugins_dir: &Path, args: &[String]) -> String {
 }
 
 pub fn execute_plugin(plugins_dir: &Path, name: &str, args: &[String]) -> String {
+    if is_opendoom(name) {
+        return launch_opendoom(args);
+    }
+
     let path = match plugin_path(plugins_dir, name) {
         Ok(path) => path,
         Err(err) => return format!("wasm: {err}\n"),
@@ -109,6 +116,9 @@ fn list_plugins(plugins_dir: &Path) -> String {
             }
         }
     }
+    if !names.iter().any(|name| name == "opendoom") {
+        names.push("opendoom".to_string());
+    }
     names.sort();
     if names.is_empty() {
         "phase1 wasm plugins\nno wasm plugins found\n".to_string()
@@ -118,6 +128,10 @@ fn list_plugins(plugins_dir: &Path) -> String {
 }
 
 fn inspect_plugin(plugins_dir: &Path, name: &str) -> String {
+    if is_opendoom(name) {
+        return opendoom_inspect();
+    }
+
     let path = match plugin_path(plugins_dir, name) {
         Ok(path) => path,
         Err(err) => return format!("wasm: {err}\n"),
@@ -143,6 +157,10 @@ fn inspect_plugin(plugins_dir: &Path, name: &str) -> String {
 }
 
 fn validate_plugin(plugins_dir: &Path, name: &str) -> String {
+    if is_opendoom(name) {
+        return "wasm: opendoom built-in phase1-wasi-lite game launcher\n".to_string();
+    }
+
     let path = match plugin_path(plugins_dir, name) {
         Ok(path) => path,
         Err(err) => return format!("wasm: {err}\n"),
@@ -151,6 +169,31 @@ fn validate_plugin(plugins_dir: &Path, name: &str) -> String {
         Ok(()) => format!("wasm: {} valid wasm32-wasi artifact\n", display_name(&path)),
         Err(err) => format!("wasm: {err}\n"),
     }
+}
+
+fn launch_opendoom(args: &[String]) -> String {
+    match args.first().map(String::as_str) {
+        Some("start" | "play") => {
+            opendoom::play();
+            String::new()
+        }
+        _ => opendoom::run(args),
+    }
+}
+
+fn opendoom_inspect() -> String {
+    let mut out = String::from("phase1 wasm inspect\n");
+    out.push_str("plugin : opendoom\n");
+    out.push_str("module : built-in phase1 text-mode game\n");
+    out.push_str(&format!("runtime: {RUNTIME}\n"));
+    out.push_str("wasi   : sandboxed, no host shell, no host network\n");
+    out.push_str("cap    : none\n");
+    out.push_str("play   : opendoom start\n");
+    out
+}
+
+fn is_opendoom(name: &str) -> bool {
+    matches!(name, "opendoom" | "open-doom" | "doom")
 }
 
 fn plugin_path(plugins_dir: &Path, raw: &str) -> Result<PathBuf, String> {
@@ -265,8 +308,11 @@ mod tests {
         let dir = temp_plugins();
         let listed = run(&dir, &["list".to_string()]);
         assert!(listed.contains("demo"));
+        assert!(listed.contains("opendoom"));
         let inspected = inspect_plugin(&dir, "demo");
         assert!(inspected.contains("valid wasm"));
+        let doom = inspect_plugin(&dir, "opendoom");
+        assert!(doom.contains("built-in phase1 text-mode game"));
         let _ = fs::remove_dir_all(dir);
     }
 
@@ -278,6 +324,15 @@ mod tests {
         assert!(out.contains("hello wasi"));
         assert!(out.contains("host=blocked"));
         assert!(out.contains("[redacted]"));
+        let _ = fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn opendoom_builtin_runs_demo() {
+        let dir = temp_plugins();
+        let out = execute_plugin(&dir, "opendoom", &["demo".to_string()]);
+        assert!(out.contains("phase1 openDoom"));
+        assert!(out.contains("clean-room ASCII"));
         let _ = fs::remove_dir_all(dir);
     }
 }
