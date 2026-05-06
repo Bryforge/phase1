@@ -2,17 +2,55 @@
 
 phase1 is an educational userspace simulator, not a hardened host sandbox. The simulator is designed to keep its virtual filesystem, process table, scheduler, audit log, and boot state separate from the real host operating system.
 
-## Safe-by-default operating guidance
+## Secure default
 
-For maximum host and account safety, run phase1 with safe mode enabled and without host-network or host-execution override variables.
+phase1 now defaults to safe mode. If no environment variable or saved boot config disables it, host-backed execution and host-network inspection are blocked.
 
 Recommended launch:
+
+```bash
+cargo run
+```
+
+Equivalent explicit safe launch:
 
 ```bash
 PHASE1_SAFE_MODE=1 cargo run
 ```
 
-Safe mode is intended to prevent accidental use of host-backed commands such as browser, ping, WiFi scan/connect, Python, C compiler, and plugins.
+Safe mode blocks or avoids host-backed behavior for:
+
+- `browser`
+- `ping`
+- `wifi-scan`
+- `wifi-connect`
+- `python` / `py`
+- `gcc` / `cc`
+- Python plugins
+- host network-interface inspection beyond a simulated loopback view
+
+To intentionally test host-backed tools, disable safe mode at the preboot selector with option `4`, or launch with:
+
+```bash
+PHASE1_SAFE_MODE=0 cargo run
+```
+
+Only do this when you trust the commands, code, plugins, URLs, and network actions being tested.
+
+## Host isolation boundaries
+
+Safe mode is designed to prevent accidental host interaction, but phase1 is still a normal userspace program. It is not a virtualization boundary and should not be treated like a production sandbox.
+
+Current defensive controls:
+
+- Safe mode is on by default.
+- Host network discovery is skipped in safe mode and shows loopback only.
+- Host-backed commands are disabled in safe mode.
+- Browser fetches are restricted to `http://` and `https://` through `curl` protocol restrictions, timeout, and download-size limits.
+- `ping` validates host text before invoking the host command.
+- `wifi-connect` remains dry-run unless `PHASE1_ALLOW_HOST_NETWORK_CHANGES=1` is explicitly set.
+- Python, C compiler, and plugin execution use timeouts and are disabled in safe mode.
+- Runtime files and common secret material are ignored by Git.
 
 ## Data that must never be committed
 
@@ -25,7 +63,7 @@ The repository ignores local runtime files and common credential material, inclu
 - private keys such as `*.pem`, `*.key`, `id_rsa*`, and `id_ed25519*`
 - files with token, secret, or password naming patterns
 
-Do not paste GitHub tokens, passwords, API keys, SSH keys, recovery codes, or session cookies into phase1 commands.
+Do not paste GitHub tokens, passwords, API keys, SSH keys, recovery codes, session cookies, Apple ID credentials, email passwords, or other account secrets into phase1 commands.
 
 ## Host-backed commands
 
@@ -41,6 +79,8 @@ Treat host-backed commands as trusted-user tools only. Do not run untrusted code
 ## Persistent state and history
 
 Persistent state stores phase1-managed virtual `/home` content in `phase1.state`. This file is local runtime state and is ignored by Git.
+
+Persistent state should not be used for secrets. If a secret is accidentally written into the virtual `/home`, remove `phase1.state` before sharing logs, screenshots, or release assets.
 
 Future persistent shell history must remain opt-in or explicitly tied to persistent state, must support `PHASE1_HISTORY=off`, and must be ignored by Git as `.phase1_history`.
 
