@@ -129,15 +129,17 @@ fn guarded_execute(target: Target, build: bool) -> String {
     }
 
     for step in update_steps(target) {
-        out.push_str(&run_step(step.0, step.1));
-        if out.ends_with("[failed]\n") {
+        let (step_out, ok) = run_step(step.0, step.1);
+        out.push_str(&step_out);
+        if !ok {
             return out;
         }
     }
 
     if build {
-        out.push_str(&run_step("cargo build --release", &["cargo", "build", "--release"]));
-        if out.ends_with("[failed]\n") {
+        let (step_out, ok) = run_step("cargo build --release", &["cargo", "build", "--release"]);
+        out.push_str(&step_out);
+        if !ok {
             return out;
         }
     }
@@ -166,7 +168,11 @@ fn plan(target: Target, build: bool) -> String {
     }
     out.push_str("\ninside phase1:\n");
     out.push_str(&format!("  update {} --check\n", target_arg(target)));
-    out.push_str(&format!("  update {} --execute{}\n", target_arg(target), if build { " --build" } else { "" }));
+    out.push_str(&format!(
+        "  update {} --execute{}\n",
+        target_arg(target),
+        if build { " --build" } else { "" }
+    ));
     out
 }
 
@@ -247,12 +253,12 @@ fn run_git_summary(args: &[&str], label: &str) -> String {
     }
 }
 
-fn run_step(label: &str, command: &[&str]) -> String {
+fn run_step(label: &str, command: &[&str]) -> (String, bool) {
     let Some((program, args)) = command.split_first() else {
-        return format!("{label:<19} [failed]\n");
+        return (format!("{label:<19} [failed]\n"), false);
     };
     match run_command(program, args, COMMAND_TIMEOUT) {
-        Ok(output) if output.status.success() => format!("{label:<19} [ok]\n"),
+        Ok(output) if output.status.success() => (format!("{label:<19} [ok]\n"), true),
         Ok(output) => {
             let mut out = format!("{label:<19} [failed]\n");
             let details = sanitize_combined(&output);
@@ -265,9 +271,12 @@ fn run_step(label: &str, command: &[&str]) -> String {
                     out.push('\n');
                 }
             }
-            out
+            (out, false)
         }
-        Err(err) => format!("{label:<19} [failed]\ndetails:\n  {err}\n"),
+        Err(err) => (
+            format!("{label:<19} [failed]\ndetails:\n  {err}\n"),
+            false,
+        ),
     }
 }
 
@@ -341,6 +350,8 @@ mod tests {
 
     #[test]
     fn update_defaults_to_safe_plan() {
+        std::env::remove_var("PHASE1_SAFE_MODE");
+        std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
         let out = run(&[]);
         assert!(out.contains("phase1 updater // plan bleeding edge"));
         assert!(out.contains("update bleeding --execute"));
@@ -349,9 +360,11 @@ mod tests {
 
     #[test]
     fn update_execute_is_guarded() {
+        std::env::remove_var("PHASE1_SAFE_MODE");
+        std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
         let out = run(&["bleeding".to_string(), "--execute".to_string()]);
+        assert!(out.contains("disabled by safe boot profile"));
         assert!(out.contains("PHASE1_ALLOW_HOST_TOOLS"));
-        assert!(out.contains("safe default"));
     }
 
     #[test]
