@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 520" role="img" aria-labelledby="title desc">
+  <title id="title">Phase1 Minimal Neon Banner</title>
+  <desc id="desc">A minimal Phase1 cyberdeck banner with one central neon rainbow mark, a single PHASE1 wordmark, tagline, and terminal prompt.</desc>
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="42%" r="78%">
+      <stop offset="0%" stop-color="#101735"/>
+      <stop offset="58%" stop-color="#050919"/>
+      <stop offset="100%" stop-color="#01030a"/>
+    </radialGradient>
+    <linearGradient id="rainbow" x1="7%" y1="17%" x2="96%" y2="81%">
+      <stop offset="0%" stop-color="#ff1f4b"/>
+      <stop offset="16%" stop-color="#ff8a00"/>
+      <stop offset="32%" stop-color="#fff200"/>
+      <stop offset="48%" stop-color="#39ff4f"/>
+      <stop offset="64%" stop-color="#00f0ff"/>
+      <stop offset="82%" stop-color="#2870ff"/>
+      <stop offset="100%" stop-color="#f026ff"/>
+    </linearGradient>
+    <filter id="glow" x="-35%" y="-45%" width="170%" height="190%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0.22  0 1 0 0 0.72  0 0 1 0 1  0 0 0 0.85 0" result="colorGlow"/>
+      <feMerge><feMergeNode in="colorGlow"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="softShadow" x="-20%" y="-35%" width="140%" height="170%">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#000000" flood-opacity="0.65"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="520" rx="44" fill="url(#bg)"/>
+
+  <g opacity="0.13" stroke="#8eeaff" stroke-width="1.4">
+    <path d="M120 105h1360M120 415h1360M255 70v380M1345 70v380"/>
+    <path d="M120 260h1360M800 70v380" opacity="0.55"/>
+  </g>
+
+  <g transform="translate(800 247)" filter="url(#softShadow)">
+    <circle cx="0" cy="0" r="175" fill="none" stroke="url(#rainbow)" stroke-width="16" opacity="0.92" filter="url(#glow)"/>
+    <path d="M-182 22c58-85 130-129 216-133 56-3 105 6 146 28" fill="none" stroke="url(#rainbow)" stroke-width="13" stroke-linecap="round" opacity="0.85" filter="url(#glow)"/>
+    <g opacity="0.70" stroke="url(#rainbow)" stroke-linecap="round">
+      <path d="M-112 48h82l22 22h66" stroke-width="3" fill="none"/>
+      <path d="M112 48H30L8 70h-66" stroke-width="3" fill="none"/>
+      <path d="M-78 88h65M13 88h65" stroke-width="3"/>
+      <circle cx="-112" cy="48" r="4" fill="#fff200"/>
+      <circle cx="112" cy="48" r="4" fill="#00f0ff"/>
+    </g>
+  </g>
+
+  <g filter="url(#glow)">
+    <text x="800" y="255" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="128" font-weight="900" letter-spacing="10" fill="url(#rainbow)" stroke="#071024" stroke-width="6" paint-order="stroke fill">PHASE1</text>
+    <text x="800" y="326" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="800" letter-spacing="10" fill="url(#rainbow)">ADVANCED OPERATOR KERNEL</text>
+    <text x="800" y="371" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" letter-spacing="6" fill="url(#rainbow)">SECURE | PRIVATE | POWERFUL | OPEN</text>
+  </g>
+
+  <g transform="translate(592 407)" filter="url(#softShadow)">
+    <rect width="416" height="50" rx="25" fill="#080d1d" stroke="#7cf8ff" stroke-width="2" opacity="0.96"/>
+    <text x="208" y="33" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="22" font-weight="800" letter-spacing="1" fill="#f6fbff">phase1://root ~ #</text>
+  </g>
+</svg>
