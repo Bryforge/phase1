@@ -1,9 +1,16 @@
-use std::io::{self, Write};
+use std::io::{self, Read, Write};
+use std::process::{Command, Stdio};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 use crate::kernel::Vfs;
 
 const MAX_FILE_BYTES: usize = 256 * 1024;
 const MAX_UNDO: usize = 64;
+const RESET: &str = "\x1b[0m";
+const BOLD: &str = "\x1b[1m";
+const GREEN: &str = "\x1b[32m";
+const CYAN: &str = "\x1b[36m";
+const YELLOW: &str = "\x1b[33m";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum Mode {
@@ -23,6 +30,12 @@ struct AvimState {
     yank: Option<String>,
     last_search: Option<String>,
     undo: Vec<Vec<String>>,
+}
+
+enum AvimInput {
+    Line(String),
+    Escape,
+    End,
 }
 
 pub fn edit(vfs: &mut Vfs, args: &[String]) {
@@ -57,19 +70,22 @@ pub fn edit(vfs: &mut Vfs, args: &[String]) {
     };
 
     println!("avim: advanced VFS modal editor // {}", state.filename);
-    println!("normal: i insert | o open | dd delete | yy yank | p paste | /text search | :wq save+quit | :q! force quit | :help");
+    println!("mode keys: NORMAL i/a/o insert | INSERT Esc normal | NORMAL :wq save+quit | :help");
     render(&state);
 
     loop {
-        print_prompt(&state);
-        let _ = io::stdout().flush();
-
-        let mut input = String::new();
-        if io::stdin().read_line(&mut input).is_err() {
-            println!("avim: input error");
-            return;
-        }
-        let input = input.trim_end_matches(['\r', '\n']).to_string();
+        let input = match read_avim_input(&state) {
+            Ok(AvimInput::Line(input)) => input,
+            Ok(AvimInput::Escape) => {
+                escape_to_normal(&mut state);
+                continue;
+            }
+            Ok(AvimInput::End) => return,
+            Err(err) => {
+                println!("avim: input error: {err}");
+                return;
+            }
+        };
 
         match state.mode {
             Mode::Normal => {
@@ -91,8 +107,15 @@ pub fn edit(vfs: &mut Vfs, args: &[String]) {
 fn handle_normal(vfs: &mut Vfs, state: &mut AvimState, input: &str) -> bool {
     match input {
         "" => render(state),
-        "i" => state.mode = Mode::Insert,
-        "a" => state.mode = Mode::Insert,
+        raw if is_escape_input(raw) => render_status(state, "already in NORMAL mode"),
+        "i" => {
+            state.mode = Mode::Insert;
+            render_status(state, "INSERT mode: type a line, Enter commits, Esc returns to NORMAL");
+        }
+        "a" => {
+            state.mode = Mode::Insert;
+            render_status(state, "INSERT mode: type a line, Enter commits, Esc returns to NORMAL");
+        }
         "o" => {
             push_undo(state);
             let insert_at = (state.cursor + 1).min(state.lines.len());
@@ -100,12 +123,14 @@ fn handle_normal(vfs: &mut Vfs, state: &mut AvimState, input: &str) -> bool {
             state.cursor = insert_at;
             state.dirty = true;
             state.mode = Mode::Insert;
+            render(state);
         }
         "O" => {
             push_undo(state);
             state.lines.insert(state.cursor, String::new());
             state.dirty = true;
             state.mode = Mode::Insert;
+            render(state);
         }
         "h" | "l" => render_status(
             state,
@@ -126,7 +151,10 @@ fn handle_normal(vfs: &mut Vfs, state: &mut AvimState, input: &str) -> bool {
         "p" => paste_line(state),
         "u" => undo(state),
         "n" => repeat_search(state),
-        ":" => state.mode = Mode::Command,
+        ":" => {
+            state.mode = Mode::Command;
+            render_status(state, "COMMAND mode: w q q! wq help; Esc returns to NORMAL");
+        }
         ":q" => return handle_command(vfs, state, "q"),
         ":q!" => return handle_command(vfs, state, "q!"),
         ":w" => return handle_command(vfs, state, "w"),
@@ -135,36 +163,45 @@ fn handle_normal(vfs: &mut Vfs, state: &mut AvimState, input: &str) -> bool {
         raw if raw.starts_with(':') => return handle_command(vfs, state, &raw[1..]),
         raw if raw.starts_with('/') => search(state, raw.trim_start_matches('/')),
         raw if raw.starts_with("set ") => set_option(state, raw.trim_start_matches("set ")),
-        other => render_status(state, &format!("unknown normal command: {other}")),
+        other => render_status(state, &format!("unknown NORMAL command: {other}; use i for INSERT or :help")),
     }
     false
 }
 
 fn handle_insert(state: &mut AvimState, input: &str) {
-    match input {
-        "." | "<esc>" | "ESC" => {
-            state.mode = Mode::Normal;
-            render(state);
-        }
-        _ => {
-            push_undo(state);
-            if state.lines.is_empty() {
-                state.lines.push(input.to_string());
-                state.cursor = 0;
-            } else {
-                state.lines[state.cursor] = input.to_string();
-                state.cursor = (state.cursor + 1).min(state.lines.len());
-                if state.cursor == state.lines.len() {
-                    state.lines.push(String::new());
-                }
-            }
-            state.dirty = true;
+    if is_escape_input(input) {
+        escape_to_normal(state);
+        return;
+    }
+    if matches!(input.trim(), ":w" | ":wq" | ":q" | ":q!" | ":x") {
+        render_status(
+            state,
+            "still in INSERT mode; press Esc first, then run :wq or :q! from NORMAL mode",
+        );
+        return;
+    }
+
+    push_undo(state);
+    if state.lines.is_empty() {
+        state.lines.push(input.to_string());
+        state.cursor = 0;
+    } else {
+        state.lines[state.cursor] = input.to_string();
+        state.cursor = (state.cursor + 1).min(state.lines.len());
+        if state.cursor == state.lines.len() {
+            state.lines.push(String::new());
         }
     }
+    state.dirty = true;
+    render(state);
 }
 
 fn handle_command(vfs: &mut Vfs, state: &mut AvimState, command: &str) -> bool {
     let command = command.trim();
+    if is_escape_input(command) {
+        escape_to_normal(state);
+        return false;
+    }
     match command {
         "q" => {
             if state.dirty {
@@ -436,41 +473,213 @@ fn render(state: &AvimState) {
         }
     }
     println!(
-        "--- line {}/{} mode={:?} ---",
+        "--- line {}/{} mode={} ---",
         state.cursor + 1,
         state.lines.len().max(1),
-        state.mode
+        mode_name(state.mode)
     );
 }
 
 fn render_status(state: &AvimState, message: &str) {
     println!("avim: {message}");
     println!(
-        "line {}/{} mode={:?}",
+        "line {}/{} mode={} | {}",
         state.cursor + 1,
         state.lines.len().max(1),
-        state.mode
+        mode_name(state.mode),
+        mode_hint(state.mode)
     );
 }
 
-fn print_prompt(state: &AvimState) {
-    let mode = match state.mode {
+fn read_avim_input(state: &AvimState) -> io::Result<AvimInput> {
+    if std::env::var_os("PHASE1_COOKED_INPUT").is_some() {
+        print_avim_prompt(state);
+        let _ = io::stdout().flush();
+        let mut input = String::new();
+        return match io::stdin().read_line(&mut input) {
+            Ok(0) => Ok(AvimInput::End),
+            Ok(_) => {
+                let input = input.trim_end_matches(['\r', '\n']).to_string();
+                if is_escape_input(&input) {
+                    Ok(AvimInput::Escape)
+                } else {
+                    Ok(AvimInput::Line(input))
+                }
+            }
+            Err(err) => Err(err),
+        };
+    }
+
+    let Some(_guard) = RawModeGuard::enter() else {
+        print_avim_prompt(state);
+        let _ = io::stdout().flush();
+        let mut input = String::new();
+        return match io::stdin().read_line(&mut input) {
+            Ok(0) => Ok(AvimInput::End),
+            Ok(_) => {
+                let input = input.trim_end_matches(['\r', '\n']).to_string();
+                if is_escape_input(&input) {
+                    Ok(AvimInput::Escape)
+                } else {
+                    Ok(AvimInput::Line(input))
+                }
+            }
+            Err(err) => Err(err),
+        };
+    };
+
+    let mut stdout = io::stdout();
+    let mut stdin = io::stdin().lock();
+    let mut input = String::new();
+    let mut bytes = [0_u8; 1];
+    let mut last_status = avim_status_line(state);
+
+    write!(stdout, "{}{}", last_status, avim_prompt(state))?;
+    stdout.flush()?;
+
+    loop {
+        match stdin.read(&mut bytes) {
+            Ok(0) => {
+                let status = avim_status_line(state);
+                if status != last_status {
+                    redraw_avim_input(state, &input, &mut stdout)?;
+                    last_status = status;
+                }
+                continue;
+            }
+            Ok(_) => {}
+            Err(err) if err.kind() == io::ErrorKind::Interrupted => continue,
+            Err(err) => return Err(err),
+        }
+
+        match bytes[0] {
+            b'\r' | b'\n' => {
+                stdout.write_all(b"\r\n")?;
+                stdout.flush()?;
+                return Ok(AvimInput::Line(input));
+            }
+            0x1b => {
+                stdout.write_all(b"\r\n")?;
+                stdout.flush()?;
+                return Ok(AvimInput::Escape);
+            }
+            0x7f | 0x08 => {
+                if !input.is_empty() {
+                    input.pop();
+                    redraw_avim_input(state, &input, &mut stdout)?;
+                    last_status = avim_status_line(state);
+                }
+            }
+            0x03 => {
+                stdout.write_all(b"^C\r\n")?;
+                stdout.flush()?;
+                return Ok(AvimInput::Escape);
+            }
+            0x04 => {
+                if input.is_empty() {
+                    stdout.write_all(b"\r\n")?;
+                    stdout.flush()?;
+                    return Ok(AvimInput::End);
+                }
+            }
+            byte if byte.is_ascii_control() => {}
+            byte => {
+                input.push(byte as char);
+                redraw_avim_input(state, &input, &mut stdout)?;
+                last_status = avim_status_line(state);
+            }
+        }
+    }
+}
+
+fn redraw_avim_input(state: &AvimState, input: &str, stdout: &mut io::Stdout) -> io::Result<()> {
+    write!(
+        stdout,
+        "\r\x1b[2K\x1b[1A\r\x1b[2K{}{}{}",
+        avim_status_line(state),
+        avim_prompt(state),
+        input
+    )?;
+    stdout.flush()
+}
+
+fn print_avim_prompt(state: &AvimState) {
+    print!("{}{}", avim_status_line(state), avim_prompt(state));
+}
+
+fn avim_prompt(state: &AvimState) -> String {
+    let marker = match state.mode {
         Mode::Normal => "N",
         Mode::Insert => "I",
         Mode::Command => ":",
     };
-    print!("avim[{mode}] {}:{}> ", state.filename, state.cursor + 1);
+    format!("avim[{marker}] {}:{}> ", state.filename, state.cursor + 1)
+}
+
+fn avim_status_line(state: &AvimState) -> String {
+    let width = terminal_width().clamp(32, 72);
+    let dirty = if state.dirty { "dirty" } else { "clean" };
+    let raw = format!(
+        "AVIM {} {} L{}/{} | {} | {}",
+        mode_name(state.mode),
+        dirty,
+        state.cursor + 1,
+        state.lines.len().max(1),
+        short_clock_utc(),
+        mode_hint(state.mode)
+    );
+    let clipped: String = raw.chars().take(width).collect();
+    let padded = format!("{clipped}{}", " ".repeat(width.saturating_sub(clipped.len())));
+
+    if color_enabled() {
+        let color = match state.mode {
+            Mode::Normal => CYAN,
+            Mode::Insert => GREEN,
+            Mode::Command => YELLOW,
+        };
+        format!("{BOLD}{color}{padded}{RESET}\r\n")
+    } else {
+        format!("{padded}\r\n")
+    }
+}
+
+fn mode_name(mode: Mode) -> &'static str {
+    match mode {
+        Mode::Normal => "NORMAL",
+        Mode::Insert => "INSERT",
+        Mode::Command => "COMMAND",
+    }
+}
+
+fn mode_hint(mode: Mode) -> &'static str {
+    match mode {
+        Mode::Normal => "i INSERT | :wq save | :q! quit",
+        Mode::Insert => "Esc NORMAL | Enter commit line",
+        Mode::Command => "w q q! wq help | Esc NORMAL",
+    }
+}
+
+fn escape_to_normal(state: &mut AvimState) {
+    state.mode = Mode::Normal;
+    render_status(state, "NORMAL mode; use i for INSERT, :wq to save+quit, :help for keys");
+}
+
+fn is_escape_input(input: &str) -> bool {
+    matches!(
+        input.trim(),
+        "\u{1b}" | "^[" | "<esc>" | "<ESC>" | "ESC" | "esc"
+    )
 }
 
 fn print_help() {
     println!("avim help");
-    println!("  normal: i insert, o/O open line, j/k move, gg/G top/bottom");
+    println!("  mode  : NORMAL accepts commands, INSERT writes text, COMMAND runs : commands");
+    println!("  switch: NORMAL i/a/o enters INSERT; Esc returns to NORMAL from any mode");
+    println!("  normal: o/O open line, j/k move, gg/G top/bottom");
     println!("  edit  : dd delete, yy yank, p paste, u undo");
     println!("  search: /text, n repeat");
     println!("  cmd   : :w, :q, :q!, :wq, :set number, :set nonumber, :%s/old/new/g, :r file");
-    println!(
-        "  insert: type replacement text for current line; '.' or '<esc>' returns to normal mode"
-    );
+    println!("  insert: type replacement text for current line; Enter commits current line; Esc returns to NORMAL");
 }
 
 fn print_security() {
@@ -503,9 +712,88 @@ fn safe_vfs_target(path: &str) -> bool {
         && path.len() <= 240
 }
 
+fn terminal_width() -> usize {
+    std::env::var("COLUMNS")
+        .ok()
+        .and_then(|raw| raw.parse().ok())
+        .unwrap_or(40)
+}
+
+fn color_enabled() -> bool {
+    std::env::var_os("NO_COLOR").is_none()
+        && std::env::var("PHASE1_NO_COLOR").ok().as_deref() != Some("1")
+}
+
+fn short_clock_utc() -> String {
+    let seconds = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_secs()
+        % 86_400;
+    let hours = seconds / 3_600;
+    let minutes = (seconds % 3_600) / 60;
+    let seconds = seconds % 60;
+    format!("{hours:02}:{minutes:02}:{seconds:02} UTC")
+}
+
+struct RawModeGuard {
+    original: Option<String>,
+}
+
+impl RawModeGuard {
+    fn enter() -> Option<Self> {
+        let original = stty(&["-g"]).ok().filter(|raw| !raw.trim().is_empty())?;
+        if stty(&["raw", "-echo", "-icanon", "min", "0", "time", "10"]).is_err() {
+            return None;
+        }
+        Some(Self {
+            original: Some(original.trim().to_string()),
+        })
+    }
+}
+
+impl Drop for RawModeGuard {
+    fn drop(&mut self) {
+        if let Some(original) = self.original.take() {
+            let _ = stty(&[&original]);
+        }
+    }
+}
+
+fn stty(args: &[&str]) -> io::Result<String> {
+    let output = Command::new("stty")
+        .args(args)
+        .stdin(Stdio::inherit())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::null())
+        .output()?;
+    if output.status.success() {
+        Ok(String::from_utf8_lossy(&output.stdout).to_string())
+    } else {
+        Err(io::Error::other("stty failed"))
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{content_to_lines, lines_to_content, safe_vfs_target};
+    use super::{
+        avim_status_line, content_to_lines, is_escape_input, lines_to_content, safe_vfs_target,
+        AvimState, Mode,
+    };
+
+    fn state(mode: Mode) -> AvimState {
+        AvimState {
+            filename: "hello.py".to_string(),
+            lines: vec!["print('hi')".to_string()],
+            cursor: 0,
+            mode,
+            dirty: false,
+            show_numbers: true,
+            yank: None,
+            last_search: None,
+            undo: Vec::new(),
+        }
+    }
 
     #[test]
     fn line_round_trip_preserves_terminal_newline() {
@@ -519,5 +807,25 @@ mod tests {
         assert!(safe_vfs_target("/home/app.rs"));
         assert!(!safe_vfs_target("../host"));
         assert!(!safe_vfs_target("/home/../host"));
+    }
+
+    #[test]
+    fn escape_aliases_switch_modes() {
+        assert!(is_escape_input("\u{1b}"));
+        assert!(is_escape_input("^["));
+        assert!(is_escape_input("esc"));
+        assert!(is_escape_input("<ESC>"));
+    }
+
+    #[test]
+    fn avim_status_explains_insert_escape() {
+        std::env::set_var("NO_COLOR", "1");
+        std::env::set_var("COLUMNS", "72");
+        let line = avim_status_line(&state(Mode::Insert));
+        assert!(line.contains("INSERT"));
+        assert!(line.contains("Esc NORMAL"));
+        assert!(line.contains("UTC"));
+        std::env::remove_var("NO_COLOR");
+        std::env::remove_var("COLUMNS");
     }
 }
