@@ -1,53 +1,93 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="470" viewBox="0 0 900 470" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
   <title id="title">phase1 colored boot splash</title>
-  <desc id="desc">A dark terminal-style phase1 boot selector with rainbow ASCII art and safe-mode status.</desc>
+  <desc id="desc">A polished cyberdeck-style phase1 boot selector with a clean neon wordmark, safe-mode status, and boot options.</desc>
   <defs>
     <linearGradient id="panel" x1="0" x2="1" y1="0" y2="1">
-      <stop offset="0%" stop-color="#06131f"/>
-      <stop offset="55%" stop-color="#071827"/>
-      <stop offset="100%" stop-color="#10051e"/>
+      <stop offset="0%" stop-color="#05121f"/>
+      <stop offset="52%" stop-color="#020812"/>
+      <stop offset="100%" stop-color="#0c0419"/>
     </linearGradient>
-    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
-      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+    <linearGradient id="wordmark" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0%" stop-color="#ff2f6d"/>
+      <stop offset="16%" stop-color="#ffdf37"/>
+      <stop offset="34%" stop-color="#39ff14"/>
+      <stop offset="55%" stop-color="#00f5ff"/>
+      <stop offset="76%" stop-color="#3d7cff"/>
+      <stop offset="100%" stop-color="#c15cff"/>
+    </linearGradient>
+    <filter id="softGlow" x="-35%" y="-35%" width="170%" height="170%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
       <feMerge>
         <feMergeNode in="blur"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
+    <filter id="deepShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#000000" flood-opacity="0.75"/>
+    </filter>
+    <style>
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, Liberation Mono, monospace; }
+      .label { fill: #a8b3c2; }
+      .value { fill: #f3f6fb; }
+      .green { fill: #39ff14; }
+      .cyan { fill: #21e6c1; }
+      .gold { fill: #ffd84a; }
+      .muted { fill: #8993a3; }
+    </style>
   </defs>
 
-  <rect width="900" height="470" rx="26" fill="#05070d"/>
-  <rect x="18" y="18" width="864" height="434" rx="18" fill="url(#panel)" stroke="#21e6c1" stroke-width="2" opacity="0.98"/>
-  <rect x="38" y="38" width="824" height="394" rx="10" fill="#020812" stroke="#153447" stroke-width="1"/>
+  <rect width="1200" height="720" fill="none"/>
 
-  <g font-family="SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace" font-size="22" font-weight="700" filter="url(#glow)">
-    <text x="70" y="92" fill="#ff3366"> ____  _                     __ </text>
-    <text x="70" y="120" fill="#ffcc33">|  _ \| |__   __ _ ___  ___ /_ |</text>
-    <text x="70" y="148" fill="#39ff14">| |_) | '_ \ / _` / __|/ _ \ | |</text>
-    <text x="70" y="176" fill="#00e5ff">|  __/| | | | (_| \__ \  __/ | |</text>
-    <text x="70" y="204" fill="#9d5cff">|_|   |_| |_|\__,_|___/\___| |_|</text>
+  <g filter="url(#deepShadow)">
+    <rect x="64" y="94" width="1072" height="532" rx="34" fill="#02050a"/>
+    <rect x="84" y="114" width="1032" height="492" rx="24" fill="url(#panel)" stroke="#21e6c1" stroke-width="3" filter="url(#softGlow)"/>
+    <rect x="112" y="140" width="976" height="440" rx="14" fill="#020812" stroke="#163246" stroke-width="1.5"/>
   </g>
 
-  <g font-family="SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace" font-size="19">
-    <text x="500" y="92" fill="#9aa7b2">os      <tspan fill="#e6edf3">phase1 v3.6.0</tspan></text>
-    <text x="500" y="120" fill="#9aa7b2">profile <tspan fill="#e6edf3">mobile-safe</tspan></text>
-    <text x="500" y="148" fill="#9aa7b2">security <tspan fill="#39ff14">safe</tspan></text>
-    <text x="500" y="176" fill="#9aa7b2">device  <tspan fill="#e6edf3">mobile</tspan></text>
-    <text x="500" y="204" fill="#9aa7b2">display <tspan fill="#ffcc33">rainbow</tspan></text>
-    <text x="500" y="232" fill="#9aa7b2">state   <tspan fill="#e6edf3">volatile</tspan></text>
-    <text x="500" y="260" fill="#9aa7b2">config  <tspan fill="#e6edf3">phase1.conf</tspan></text>
-    <text x="500" y="298" fill="#21e6c1">fastfetch boot // cyberdeck ready</text>
+  <g filter="url(#softGlow)">
+    <text x="150" y="285"
+          font-family="Impact, Arial Black, ui-sans-serif, system-ui, sans-serif"
+          font-size="136"
+          font-weight="900"
+          letter-spacing="-8"
+          fill="none"
+          stroke="url(#wordmark)"
+          stroke-width="7"
+          stroke-linejoin="round"
+          stroke-linecap="round">Phase1</text>
+    <text x="150" y="285"
+          font-family="Impact, Arial Black, ui-sans-serif, system-ui, sans-serif"
+          font-size="136"
+          font-weight="900"
+          letter-spacing="-8"
+          fill="rgba(4,10,19,0.18)"
+          stroke="#020812"
+          stroke-width="1.2">Phase1</text>
   </g>
 
-  <g font-family="SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace" font-size="17">
-    <text x="70" y="264" fill="#00e5ff">-- BOOT ────────────────────────────────────</text>
-    <text x="70" y="292" fill="#e6edf3">  1  boot system       <tspan fill="#9aa7b2">save+start</tspan></text>
-    <text x="70" y="318" fill="#e6edf3">  2  color output      <tspan fill="#39ff14">on</tspan></text>
-    <text x="70" y="344" fill="#e6edf3">  3  ascii compatible  <tspan fill="#9aa7b2">off</tspan></text>
-    <text x="70" y="370" fill="#e6edf3">  4  safe mode         <tspan fill="#39ff14">on</tspan></text>
-    <text x="70" y="396" fill="#e6edf3">  p  persistent state  <tspan fill="#9aa7b2">off</tspan></text>
-    <text x="500" y="344" fill="#39ff14">Secure default: safe=on</text>
-    <text x="500" y="370" fill="#9aa7b2">Enter=save+boot  p=persist  h=help</text>
-    <text x="500" y="396" fill="#00e5ff">phase1://root ~ ❯</text>
+  <g class="mono" font-size="25">
+    <text x="690" y="202"><tspan class="label">os</tspan><tspan class="value" dx="45">phase1 v3.6.0</tspan></text>
+    <text x="690" y="244"><tspan class="label">profile</tspan><tspan class="value" dx="45">mobile-safe</tspan></text>
+    <text x="690" y="286"><tspan class="label">security</tspan><tspan class="green" dx="45">safe</tspan></text>
+    <text x="690" y="328"><tspan class="label">device</tspan><tspan class="value" dx="45">mobile</tspan></text>
+    <text x="690" y="370"><tspan class="label">display</tspan><tspan class="gold" dx="45">rainbow</tspan></text>
+    <text x="690" y="412"><tspan class="label">state</tspan><tspan class="value" dx="45">volatile</tspan></text>
+    <text x="690" y="454"><tspan class="label">config</tspan><tspan class="value" dx="45">phase1.conf</tspan></text>
+  </g>
+
+  <g class="mono" font-size="25">
+    <text x="150" y="410" class="cyan">-- BOOT ─────────────────────────────</text>
+    <text x="150" y="455" class="value">1 boot system <tspan class="value">save+start</tspan></text>
+    <text x="150" y="497" class="value">2 color output <tspan class="green">on</tspan></text>
+    <text x="150" y="539" class="value">3 ascii compatible <tspan class="muted">off</tspan></text>
+    <text x="150" y="581" class="value">4 safe mode <tspan class="green">on</tspan></text>
+    <text x="150" y="623" class="value">p persistent state <tspan class="muted">off</tspan></text>
+  </g>
+
+  <g class="mono" font-size="25">
+    <text x="690" y="505" class="cyan">fastfetch boot // cyberdeck ready</text>
+    <text x="690" y="557" class="green">Secure default: safe=on</text>
+    <text x="690" y="600" class="muted">Enter=save+boot  p=persist  h=help</text>
+    <text x="690" y="643" class="cyan">phase1://root ~ ❯</text>
   </g>
 </svg>
