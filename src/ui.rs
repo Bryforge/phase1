@@ -14,20 +14,30 @@ const MAGENTA: &str = "\x1b[35m";
 const GRAY: &str = "\x1b[90m";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum BootSelection {
+    Boot(BootConfig),
+    Quit,
+    Reboot,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct BootConfig {
     pub color: bool,
     pub ascii_mode: bool,
     pub safe_mode: bool,
     pub quick_boot: bool,
+    pub mobile_mode: bool,
 }
 
 impl Default for BootConfig {
     fn default() -> Self {
+        let detected_mobile = detect_mobile();
         Self {
             color: color_enabled(),
             ascii_mode: ascii_mode(),
             safe_mode: std::env::var("PHASE1_SAFE_MODE").ok().as_deref() == Some("1"),
             quick_boot: std::env::var("PHASE1_QUICK_BOOT").ok().as_deref() == Some("1"),
+            mobile_mode: std::env::var("PHASE1_MOBILE_MODE").ok().as_deref() == Some("1") || detected_mobile,
         }
     }
 }
@@ -57,19 +67,29 @@ impl BootConfig {
         } else {
             std::env::remove_var("PHASE1_QUICK_BOOT");
         }
+
+        if self.mobile_mode {
+            std::env::set_var("PHASE1_MOBILE_MODE", "1");
+        } else {
+            std::env::remove_var("PHASE1_MOBILE_MODE");
+        }
     }
 
     pub fn profile_name(self) -> &'static str {
-        match (self.safe_mode, self.quick_boot) {
-            (true, true) => "safe+quick",
-            (true, false) => "safe",
-            (false, true) => "quick",
-            (false, false) => "operator",
+        match (self.mobile_mode, self.safe_mode, self.quick_boot) {
+            (true, true, true) => "mobile-safe+quick",
+            (true, true, false) => "mobile-safe",
+            (true, false, true) => "mobile-quick",
+            (true, false, false) => "mobile",
+            (false, true, true) => "safe+quick",
+            (false, true, false) => "safe",
+            (false, false, true) => "quick",
+            (false, false, false) => "operator",
         }
     }
 }
 
-pub fn configure_boot(version: &str) -> BootConfig {
+pub fn configure_boot(version: &str) -> BootSelection {
     let mut config = BootConfig::default();
     let stdin = io::stdin();
     let mut input = String::new();
@@ -81,25 +101,28 @@ pub fn configure_boot(version: &str) -> BootConfig {
 
         input.clear();
         match stdin.read_line(&mut input) {
-            Ok(0) | Err(_) => return config,
+            Ok(0) | Err(_) => return BootSelection::Quit,
             Ok(_) => {}
         }
 
         match input.trim().to_ascii_lowercase().as_str() {
-            "" | "1" | "b" | "boot" | "start" => return config,
+            "" | "1" | "b" | "boot" | "start" => return BootSelection::Boot(config),
             "2" | "c" | "color" | "colour" => config.color = !config.color,
             "3" | "a" | "ascii" => config.ascii_mode = !config.ascii_mode,
             "4" | "s" | "safe" | "safe-mode" => config.safe_mode = !config.safe_mode,
             "5" | "q" | "quick" | "quick-boot" => config.quick_boot = !config.quick_boot,
+            "6" | "m" | "mobile" | "mobile-mode" => config.mobile_mode = !config.mobile_mode,
+            "7" | "reboot" | "restart" => return BootSelection::Reboot,
+            "8" | "x" | "quit" | "exit" | "shutdown" => return BootSelection::Quit,
             "0" | "r" | "reset" => config = BootConfig::default(),
-            "h" | "help" | "?" => pause("Toggle options, then press Enter or choose 1 to boot."),
+            "h" | "help" | "?" => pause("Toggle options, press 1/Enter to boot, 7 to reboot, or 8 to quit."),
             _ => pause("Unknown boot option. Press Enter to continue."),
         }
     }
 }
 
 pub fn print_boot(version: &str) {
-    if terminal_width() < 72 {
+    if mobile_mode_enabled() || terminal_width() < 72 {
         print_mobile_boot(version);
     } else if ascii_mode() {
         print_ascii_boot(version);
@@ -136,6 +159,9 @@ fn print_preboot(version: &str, config: BootConfig) {
     println!("  3  ascii compatible  {}", flag(config, config.ascii_mode));
     println!("  4  safe mode         {}", flag(config, config.safe_mode));
     println!("  5  quick boot        {}", flag(config, config.quick_boot));
+    println!("  6  mobile mode       {}", flag(config, config.mobile_mode));
+    println!("  7  reboot selector");
+    println!("  8  quit boot");
     println!("  0  reset defaults");
     println!();
     println!("{}", value(config, "Enter=boot  h=help  number/name"));
@@ -146,7 +172,7 @@ fn print_fastfetch_splash(version: &str, config: BootConfig) {
 }
 
 fn print_fastfetch_splash_with_config(version: &str, config: BootConfig) {
-    let compact = terminal_width() < 72;
+    let compact = config.mobile_mode || terminal_width() < 72;
     let art = phase1_art();
     let info = splash_info(version, config, compact);
 
@@ -176,16 +202,16 @@ fn splash_info(version: &str, config: BootConfig, compact: bool) -> Vec<String> 
         vec![
             format!("os      phase1 v{version}"),
             format!("profile {}", config.profile_name()),
+            format!("device  {}", if config.mobile_mode { "mobile" } else { "desktop" }),
             format!("display {}", if config.color { "rainbow" } else { "mono" }),
-            format!("charset {}", if config.ascii_mode { "ascii" } else { "unicode" }),
             format!("guards  {}", if config.safe_mode { "locked" } else { "audited" }),
         ]
     } else {
         vec![
             format!("os        phase1 terminal-os-sim v{version}"),
             format!("profile   {}", config.profile_name()),
+            format!("device    {}", if config.mobile_mode { "mobile" } else { "desktop" }),
             format!("display   {}", if config.color { "retro rainbow" } else { "mono" }),
-            format!("charset   {}", if config.ascii_mode { "ascii" } else { "unicode" }),
             format!("guards    {}", if config.safe_mode { "host locked" } else { "audited" }),
         ]
     }
@@ -236,7 +262,7 @@ fn print_mobile_boot(version: &str) {
 
     println!("{}", panel_line(config, "QUICK", preboot_width()));
     println!("{}", value(config, "help  audit  ps  ls /"));
-    println!("{}", value(config, "browser phase1  version"));
+    println!("{}", value(config, "matrix  browser phase1  version"));
 
     if color_enabled() {
         println!("{GREEN}[ready]{RESET} all subsystems nominal");
@@ -263,7 +289,7 @@ fn print_modern_boot(version: &str) {
     line("integrity=nominal  shell=registry-backed  ui=mobile-aware");
     mid("QUICK ACTIONS");
     line("help        complete p      audit        ps        ls /");
-    line("man browser browser phase1  ifconfig     tree      version");
+    line("matrix      browser phase1  ifconfig     tree      version");
     bottom();
     if color_enabled() {
         println!("{GREEN}[ready]{RESET} all subsystems nominal {GRAY}:: operator shell armed{RESET}");
@@ -285,7 +311,7 @@ fn print_ascii_boot(version: &str) {
     println!("| HW   pcie + memory model                          READY      |");
     println!("| SEC  audit telemetry pipeline                     TRACKING   |");
     println!("+--------------------------- QUICK ACTIONS --------------------+");
-    println!("| help  complete p  audit  ps  ls /  browser phase1            |");
+    println!("| help  complete p  audit  ps  ls /  matrix                    |");
     println!("+--------------------------------------------------------------+");
     println!("[ready] all subsystems nominal :: operator shell armed");
     println!();
@@ -408,6 +434,24 @@ fn terminal_width() -> usize {
     std::env::var("COLUMNS").ok().and_then(|raw| raw.parse().ok()).unwrap_or(MOBILE_WIDTH)
 }
 
+fn detect_mobile() -> bool {
+    if terminal_width() < 72 {
+        return true;
+    }
+    let indicators = ["IPHONE", "ANDROID", "BLINK", "ISH", "TERMUX", "MOBILE"];
+    ["TERM_PROGRAM", "TERM", "SSH_CLIENT", "PHASE1_DEVICE"]
+        .iter()
+        .filter_map(|name| std::env::var(name).ok())
+        .any(|value| {
+            let upper = value.to_ascii_uppercase();
+            indicators.iter().any(|needle| upper.contains(needle))
+        })
+}
+
+fn mobile_mode_enabled() -> bool {
+    std::env::var("PHASE1_MOBILE_MODE").ok().as_deref() == Some("1") || detect_mobile()
+}
+
 fn clip(text: &str, width: usize) -> String {
     text.chars().take(width).collect()
 }
@@ -443,8 +487,8 @@ mod tests {
 
     #[test]
     fn boot_profile_names_cover_modes() {
-        assert_eq!(BootConfig { color: true, ascii_mode: false, safe_mode: false, quick_boot: false }.profile_name(), "operator");
-        assert_eq!(BootConfig { color: true, ascii_mode: false, safe_mode: true, quick_boot: true }.profile_name(), "safe+quick");
+        assert_eq!(BootConfig { color: true, ascii_mode: false, safe_mode: false, quick_boot: false, mobile_mode: false }.profile_name(), "operator");
+        assert_eq!(BootConfig { color: true, ascii_mode: false, safe_mode: true, quick_boot: true, mobile_mode: true }.profile_name(), "mobile-safe+quick");
     }
 
     #[test]
