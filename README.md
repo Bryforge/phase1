@@ -11,9 +11,11 @@
 
 **phase1** is a terminal-first educational virtual operating-system console written in Rust.
 
-It runs as a safe userspace simulator while modeling real OS concepts: a VFS with optional `/home` persistence, simulated process scheduler, syscall-style shell operations, `/proc`, `/dev`, `/var/log`, PCIe enumeration, guarded network views, guarded host tools, plugins, generated man pages, command completion metadata, compact dashboard telemetry, and an in-memory audit log.
+It runs as a safe userspace simulator while modeling real OS concepts: a VFS with optional `/home` persistence, simulated process scheduler, syscall-style shell operations, `/proc`, `/dev`, `/var/log`, PCIe enumeration, guarded network views, guarded host tools, plugins, generated man pages, command completion metadata, compact dashboard telemetry, in-memory audit logging, persistent shell history, and structured text pipelines.
 
 Current release: **v3.6.0**
+
+Bleeding edge: **v3.7.0-dev** on `master`
 
 ## Highlights
 
@@ -22,7 +24,11 @@ Current release: **v3.6.0**
 - Retro fastfetch-style preboot selector with colored `phase1` ASCII art.
 - Configurable boot options for color, ASCII compatibility, safe mode, quick boot, mobile mode, persistent state, reboot, and quit.
 - Optional persistent state mode saves and restores `/home` VFS content through `phase1.state`.
-- Safe mode blocks host execution, host network inspection, browser fetches, ping, WiFi scan/connect, Python, C compiler, and plugins.
+- Persistent shell history saves to `phase1.history` only when persistent state is enabled, and redacts password/token/secret-like commands before writing.
+- Structured text pipelines support producer/filter flows such as `cat log.txt | grep alpha | wc -l`.
+- `version --compare` shows release-vs-bleeding-edge feature differences.
+- `roadmap` shows roadmap completion status for the current edge build.
+- Safe mode blocks host execution, host network inspection, browser fetches, ping, WiFi scan/connect, Python, C compiler, plugins, and updater execution.
 - In safe mode, network display is limited to a simulated loopback interface.
 - Enhanced `matrix` / `rain` digital-rain terminal effect with clean `q` exit, forever mode, themes, density, tail, and speed controls.
 - Compact `dash --compact` dashboard for release/demo screenshots.
@@ -85,6 +91,8 @@ Safe mode is on by default. Turning safe mode off is not enough to run host-back
 
 When persistent state is on, phase1 loads `/home` content from `phase1.state` before the shell starts and saves `/home` changes back to `phase1.state` after shell commands. This keeps user-created VFS files available across runs while leaving system paths such as `/proc`, `/dev`, and `/var/log` freshly simulated each boot. Do not store secrets in persistent state.
 
+Persistent history is also enabled automatically when persistent state is on. It writes sanitized commands to `phase1.history`. You can disable it with `PHASE1_HISTORY=off` or override the path with `PHASE1_HISTORY=<path>`.
+
 The selector automatically enables mobile mode for narrow terminals and common mobile terminal environments. It also honors environment defaults:
 
 ```bash
@@ -96,6 +104,7 @@ PHASE1_SAFE_MODE=0 PHASE1_ALLOW_HOST_TOOLS=1 cargo run
 PHASE1_QUICK_BOOT=1 cargo run
 PHASE1_MOBILE_MODE=1 cargo run
 PHASE1_PERSISTENT_STATE=1 cargo run
+PHASE1_HISTORY=off cargo run
 PHASE1_DEVICE=mobile cargo run
 ```
 
@@ -105,8 +114,16 @@ PHASE1_DEVICE=mobile cargo run
 help
 commands
 complete p
+version
+version --compare
+roadmap
+pipeline
 security
 accounts
+history status
+history path
+history save
+history clear
 capabilities
 bootcfg
 bootcfg show
@@ -126,9 +143,27 @@ ps
 audit
 echo "hello world" > note.txt
 cat note.txt
+cat note.txt | grep hello | wc -l
+find /home -type f | sort
 browser phase1
 browser https://example.com
+update
+update bleeding --check
 ```
+
+## Structured pipelines
+
+Bleeding edge builds include lightweight structured text pipelines for VFS and simulator output:
+
+```text
+cat log.txt | grep alpha | wc -l
+history | tail -5
+ps | grep worker
+find /home -type f | sort | uniq
+version --compare | grep bleeding
+```
+
+Supported producers include `cat`, `echo`, `history`, `ps`, `ls`, `find`, `audit`, `env`, `version`, and `sysinfo`. Supported filters include `grep`, `wc`, `head`, `tail`, `sort`, `uniq`, and `cut`.
 
 ## Matrix controls
 
@@ -148,9 +183,9 @@ Press `q` to return to the phase1 shell.
 
 ## Safety model
 
-phase1 simulates the kernel, VFS, process table, and scheduler in memory. Optional persistent state only writes phase1-managed `/home` VFS content to the local `phase1.state` file. Runtime state files and common credential files are ignored by Git.
+phase1 simulates the kernel, VFS, process table, and scheduler in memory. Optional persistent state only writes phase1-managed `/home` VFS content to the local `phase1.state` file. Persistent history writes sanitized shell commands to `phase1.history` only when persistent state is enabled. Runtime state files and common credential files are ignored by Git.
 
-Safe mode is the default and blocks host-backed command paths. When safe mode is disabled, host-backed command paths still require `PHASE1_ALLOW_HOST_TOOLS=1`. Some commands can call host tools (`python3`, `cc`/`gcc`/`clang`, `curl`, `ping`, `nmcli`, `networksetup`) only after that explicit opt-in. Those paths use validation and timeouts. `wifi-connect` is dry-run by default and requires `PHASE1_ALLOW_HOST_NETWORK_CHANGES=1` before it attempts host network mutation.
+Safe mode is the default and blocks host-backed command paths. When safe mode is disabled, host-backed command paths still require `PHASE1_ALLOW_HOST_TOOLS=1`. Some commands can call host tools (`python3`, `cc`/`gcc`/`clang`, `curl`, `ping`, `nmcli`, `networksetup`, and `git` for guarded updater execution) only after that explicit opt-in. Those paths use validation and timeouts. `wifi-connect` is dry-run by default and requires `PHASE1_ALLOW_HOST_NETWORK_CHANGES=1` before it attempts host network mutation.
 
 phase1 should never need your GitHub password, personal access token, SSH private key, browser cookies, Apple ID, email password, or recovery codes. The repository examples and simulated account model do not include real emails, passwords, tokens, or account secrets. See `SECURITY.md` and `SECURITY_REVIEW.md` before publishing releases or sharing runtime files.
 
@@ -190,8 +225,8 @@ cargo test --test smoke -- --nocapture
 
 ## Roadmap
 
-- Persistent shell history.
-- Structured command output and pipelines.
-- Capability enforcement based on command metadata.
-- WASM/WASI plugin runtime.
-- Full-screen TUI dashboard.
+- Persistent shell history: complete in bleeding edge.
+- Structured command output and pipelines: complete in bleeding edge.
+- Capability enforcement based on command metadata: partial, with host-tool and host-network gates enforced.
+- WASM/WASI plugin runtime: planned.
+- Full-screen TUI dashboard: planned; compact dashboard and sysinfo are available now.
