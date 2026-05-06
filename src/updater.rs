@@ -8,7 +8,7 @@ const BLEEDING_BRANCH: &str = "master";
 const STABLE_BRANCH: &str = "stable";
 const UPDATE_PROTOCOL_FILE: &str = "UPDATE_PROTOCOL.md";
 const VERSION_SCHEME: &str = "MAJOR.MINOR.PATCH[-dev]";
-pub const CURRENT_EDGE_VERSION: &str = "3.10.0-dev";
+pub const CURRENT_EDGE_VERSION: &str = "3.10.1-dev";
 const COMMAND_TIMEOUT: Duration = Duration::from_secs(20);
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -27,7 +27,7 @@ impl Target {
 
     fn label(self) -> &'static str {
         match self {
-            Self::Bleeding => "bleeding edge",
+            Self::Bleeding => "latest bleeding edge",
             Self::Stable => "stable",
         }
     }
@@ -46,6 +46,7 @@ struct UpdateRequest {
     action: Action,
     target: Target,
     build: bool,
+    trust_host: bool,
 }
 
 impl Default for UpdateRequest {
@@ -54,6 +55,7 @@ impl Default for UpdateRequest {
             action: Action::Plan,
             target: Target::Bleeding,
             build: false,
+            trust_host: false,
         }
     }
 }
@@ -64,6 +66,10 @@ pub fn run(args: &[String]) -> String {
         Ok(None) => return help(),
         Err(err) => return format!("update: {err}\n{}", help()),
     };
+
+    if request.trust_host {
+        std::env::set_var("PHASE1_ALLOW_HOST_TOOLS", "1");
+    }
 
     match request.action {
         Action::Plan => plan(request.target, request.build),
@@ -117,7 +123,7 @@ fn guarded_execute(target: Target, build: bool) -> String {
     }
 
     let mut out = format!("phase1 updater // execute {}\n", target.label());
-    out.push_str("mode       : guarded host git update\n");
+    out.push_str("mode       : guarded host git update from inside phase1\n");
     out.push_str(&format!("protocol   : {}\n", UPDATE_PROTOCOL_FILE));
     out.push_str("privacy    : command output is sanitized before display\n");
 
@@ -155,9 +161,12 @@ fn guarded_execute(target: Target, build: bool) -> String {
         if !ok {
             return out;
         }
+        out.push_str("build path : target/release/phase1\n");
+    } else {
+        out.push_str("build      : skipped; run update latest --execute --build to rebuild now\n");
     }
 
-    out.push_str("update: complete; restart phase1 to run the updated code\n");
+    out.push_str("update: complete; exit and relaunch phase1 to run the updated code\n");
     out
 }
 
@@ -168,7 +177,7 @@ fn plan(target: Target, build: bool) -> String {
     out.push_str(&format!("versioning   : {VERSION_SCHEME}\n"));
     out.push_str(&format!("protocol     : {UPDATE_PROTOCOL_FILE}\n"));
     out.push_str("safe default : this command does not modify files unless --execute is provided\n");
-    out.push_str("guard        : --execute requires PHASE1_SAFE_MODE=0 and PHASE1_ALLOW_HOST_TOOLS=1\n");
+    out.push_str("guard        : --execute requires safe mode off and explicit --trust-host\n");
     out.push_str("privacy      : updater never asks for private credentials or keys\n");
     out.push_str("local safety : tracked local changes block the update instead of being overwritten\n\n");
     out.push_str("manual commands:\n");
@@ -180,13 +189,10 @@ fn plan(target: Target, build: bool) -> String {
         out.push_str("  cargo build --release\n");
     }
     out.push_str("\ninside phase1:\n");
-    out.push_str("  update protocol\n");
-    out.push_str(&format!("  update {} --check\n", target_arg(target)));
-    out.push_str(&format!(
-        "  update {} --execute{}\n",
-        target_arg(target),
-        if build { " --build" } else { "" }
-    ));
+    out.push_str("  boot selector: turn safe mode off first\n");
+    out.push_str("  update latest --trust-host --check\n");
+    out.push_str("  update latest --trust-host --execute --build\n");
+    out.push_str("  update now --trust-host\n");
     out
 }
 
@@ -204,7 +210,8 @@ fn protocol_report() -> String {
     out.push_str("  - move the third number before publishing any follow-up bleeding-edge change\n");
     out.push_str("\nsafety gates\n");
     out.push_str("  - update without --execute is a dry-run plan\n");
-    out.push_str("  - update --execute requires PHASE1_SAFE_MODE=0 and PHASE1_ALLOW_HOST_TOOLS=1\n");
+    out.push_str("  - update --execute requires safe mode off and explicit --trust-host\n");
+    out.push_str("  - update now --trust-host fetches, fast-forwards, and builds latest bleeding edge\n");
     out.push_str("  - tracked local changes block execution instead of being overwritten\n");
     out.push_str("  - updater output is sanitized before display\n");
     out
@@ -218,11 +225,19 @@ fn parse_args(args: &[String]) -> Result<Option<UpdateRequest>, String> {
             "plan" | "--plan" => request.action = Action::Plan,
             "check" | "--check" | "status" => request.action = Action::Check,
             "execute" | "--execute" | "apply" => request.action = Action::Execute,
+            "now" | "self" | "self-update" => {
+                request.action = Action::Execute;
+                request.target = Target::Bleeding;
+                request.build = true;
+            }
             "protocol" | "--protocol" | "update-protocol" => request.action = Action::Protocol,
-            "bleeding" | "edge" | "master" | "main" => request.target = Target::Bleeding,
+            "latest" | "--latest" | "bleeding" | "edge" | "master" | "main" => {
+                request.target = Target::Bleeding;
+            }
             "stable" | "release" => request.target = Target::Stable,
             "--build" | "build" => request.build = true,
             "--no-build" => request.build = false,
+            "--trust-host" | "trust-host" | "trust" => request.trust_host = true,
             other => return Err(format!("unknown option '{other}'")),
         }
     }
@@ -377,13 +392,13 @@ fn sanitize_token(token: &str) -> String {
 
 fn target_arg(target: Target) -> &'static str {
     match target {
-        Target::Bleeding => "bleeding",
+        Target::Bleeding => "latest",
         Target::Stable => "stable",
     }
 }
 
 fn help() -> String {
-    "usage: update [plan|check|--execute|protocol] [bleeding|stable] [--build]\n\nupdate defaults to a safe dry-run plan.\nprotocol prints the local update and versioning protocol reference.\n--execute runs guarded git fetch/checkout/pull and requires PHASE1_SAFE_MODE=0 plus PHASE1_ALLOW_HOST_TOOLS=1.\n--build also runs cargo build --release after a successful update.\n".to_string()
+    "usage: update [plan|check|--execute|protocol|now] [latest|stable] [--build] [--trust-host]\n\nupdate defaults to a safe dry-run plan for the latest bleeding-edge build.\nlatest targets the repository default bleeding-edge branch.\nnow is shorthand for latest --execute --build.\nprotocol prints the local update and versioning protocol reference.\n--trust-host opts in to host git/cargo tools from inside phase1; safe mode must still be off.\n--execute runs guarded git fetch/checkout/pull and refuses to overwrite tracked local changes.\n--build also runs cargo build --release after a successful update.\n".to_string()
 }
 
 #[cfg(test)]
@@ -393,12 +408,21 @@ mod tests {
     #[test]
     fn update_defaults_to_safe_plan() {
         let out = run(&[]);
-        assert!(out.contains("phase1 updater // plan bleeding edge"));
+        assert!(out.contains("phase1 updater // plan latest bleeding edge"));
         assert!(out.contains(CURRENT_EDGE_VERSION));
         assert!(out.contains("MAJOR.MINOR.PATCH"));
         assert!(out.contains("update protocol"));
-        assert!(out.contains("update bleeding --execute"));
+        assert!(out.contains("update latest --trust-host --execute --build"));
         assert!(out.contains("private credentials"));
+    }
+
+    #[test]
+    fn update_latest_plan_is_available_from_inside_phase1() {
+        let out = run(&["latest".to_string(), "--build".to_string()]);
+        assert!(out.contains("phase1 updater // plan latest bleeding edge"));
+        assert!(out.contains("boot selector: turn safe mode off first"));
+        assert!(out.contains("update now --trust-host"));
+        assert!(out.contains("cargo build --release"));
     }
 
     #[test]
@@ -407,16 +431,28 @@ mod tests {
         assert!(out.contains("phase1 update protocol"));
         assert!(out.contains("UPDATE_PROTOCOL.md"));
         assert!(out.contains("third number"));
-        assert!(out.contains("PHASE1_ALLOW_HOST_TOOLS"));
+        assert!(out.contains("--trust-host"));
         assert!(out.contains(CURRENT_EDGE_VERSION));
         assert!(out.contains("README changes"));
     }
 
     #[test]
     fn update_execute_is_guarded() {
-        let out = run(&["bleeding".to_string(), "--execute".to_string()]);
+        std::env::remove_var("PHASE1_SAFE_MODE");
+        std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
+        let out = run(&["latest".to_string(), "--execute".to_string()]);
         assert!(out.contains("disabled by safe boot profile"));
-        assert!(out.contains("PHASE1_ALLOW_HOST_TOOLS"));
+        assert!(out.contains("--trust-host"));
+    }
+
+    #[test]
+    fn update_now_trust_still_requires_safe_mode_off() {
+        std::env::remove_var("PHASE1_SAFE_MODE");
+        std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
+        let out = run(&["now".to_string(), "--trust-host".to_string()]);
+        assert!(out.contains("disabled by safe boot profile"));
+        assert!(out.contains("update latest --trust-host --execute --build"));
+        std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
     }
 
     #[test]
