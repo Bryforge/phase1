@@ -1,55 +1,3 @@
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum PolicyResult {
-    Allow,
-    Deny,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct PolicyDecision {
-    pub command: String,
-    pub capability: String,
-    pub result: PolicyResult,
-    pub reason: &'static str,
-    pub host_backed: bool,
-}
-
-impl PolicyDecision {
-    pub fn allowed(&self) -> bool {
-        self.result == PolicyResult::Allow
-    }
-
-    pub fn audit_event(&self, user: &str) -> String {
-        format!(
-            "user={user} action=policy.check object={} capability={} result={} reason={} host_backed={}",
-            self.command,
-            self.capability,
-            match self.result {
-                PolicyResult::Allow => "allow",
-                PolicyResult::Deny => "deny",
-            },
-            self.reason,
-            self.host_backed
-        )
-    }
-}
-
-pub fn check(command: &str, capability: &str) -> PolicyDecision {
-    let host_backed = is_host_backed(command, capability);
-    if host_backed && safe_mode_enabled() {
-        return decision(command, capability, host_backed, PolicyResult::Deny, "safe-mode");
-    }
-    if host_backed && !host_tools_enabled() {
-        return decision(
-            command,
-            capability,
-            host_backed,
-            PolicyResult::Deny,
-            "host-tools-disabled",
-        );
-    }
-    decision(command, capability, host_backed, PolicyResult::Allow, "policy-ok")
-}
-
 pub fn security_report(persistent_state: bool, history_state: &str) -> String {
     format!(
         "security mode       : {}\nhost tools          : {}\nhost network changes: {}\npersistent state    : {}\nhistory             : {}\nprivacy             : no real emails, passwords, tokens, or account secrets are stored by phase1\n",
@@ -93,40 +41,17 @@ pub fn host_denial_message(command: &str) -> String {
     }
 }
 
-fn decision(
-    command: &str,
-    capability: &str,
-    host_backed: bool,
-    result: PolicyResult,
-    reason: &'static str,
-) -> PolicyDecision {
-    PolicyDecision {
-        command: command.to_string(),
-        capability: capability.to_string(),
-        result,
-        reason,
-        host_backed,
-    }
-}
-
-fn is_host_backed(command: &str, capability: &str) -> bool {
-    matches!(capability, "host.exec" | "host.net" | "net.admin")
-        || matches!(command, "ping" | "wifi-scan" | "nmcli")
-}
-
 #[cfg(test)]
 mod tests {
-    use super::{check, host_tools_allowed, host_tools_enabled, PolicyResult};
+    use super::{host_tools_allowed, host_tools_enabled, safe_mode_enabled};
 
     #[test]
-    fn safe_mode_denies_host_backed_commands() {
-        std::env::set_var("PHASE1_SAFE_MODE", "1");
-        std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
-        let decision = check("python", "host.exec");
-        assert_eq!(decision.result, PolicyResult::Deny);
-        assert_eq!(decision.reason, "safe-mode");
-        assert!(!host_tools_allowed());
+    fn secure_defaults_block_host_tools() {
         std::env::remove_var("PHASE1_SAFE_MODE");
+        std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
+        assert!(safe_mode_enabled());
+        assert!(!host_tools_enabled());
+        assert!(!host_tools_allowed());
     }
 
     #[test]
@@ -135,9 +60,6 @@ mod tests {
         std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
         assert!(!host_tools_enabled());
         assert!(!host_tools_allowed());
-        let decision = check("python", "host.exec");
-        assert_eq!(decision.result, PolicyResult::Deny);
-        assert_eq!(decision.reason, "host-tools-disabled");
         std::env::set_var("PHASE1_ALLOW_HOST_TOOLS", "1");
         assert!(host_tools_allowed());
         std::env::remove_var("PHASE1_SAFE_MODE");
