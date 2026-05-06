@@ -4,6 +4,7 @@
 phase1.conf
 phase1.state
 .phase1_history
+phase1.workspace/
 *.tmp
 *.log
 
