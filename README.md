@@ -11,11 +11,15 @@
 
 **phase1** is a terminal-first educational virtual operating-system console written in Rust.
 
-It runs as a safe userspace simulator while modeling real OS concepts: a VFS with optional `/home` persistence, simulated process scheduler, syscall-style shell operations, `/proc`, `/dev`, `/var/log`, PCIe enumeration, guarded network views, guarded host tools, plugins, generated man pages, command completion metadata, compact dashboard telemetry, in-memory audit logging, persistent shell history, and structured text pipelines.
+It runs as a safe userspace simulator while modeling real OS concepts: a VFS with optional `/home` persistence, simulated process scheduler, syscall-style shell operations, `/proc`, `/dev`, `/var/log`, PCIe enumeration, guarded network views, guarded host tools, plugins, generated man pages, command completion metadata, compact dashboard telemetry, in-memory audit logging, persistent shell history, structured text pipelines, and documented update protocol controls.
 
 Current release: **v3.6.0**
 
-Bleeding edge: **v3.7.0-dev** on `master`
+Bleeding edge: **v3.7.1-dev** on `master`
+
+Version scheme: **MAJOR.MINOR.PATCH[-dev]**. The third number is the patch number and must move for every safe fix, documentation update, update-protocol improvement, formatting-only update, and incremental bleeding-edge feature.
+
+Update protocol reference: [`UPDATE_PROTOCOL.md`](UPDATE_PROTOCOL.md)
 
 ## Highlights
 
@@ -26,8 +30,9 @@ Bleeding edge: **v3.7.0-dev** on `master`
 - Optional persistent state mode saves and restores `/home` VFS content through `phase1.state`.
 - Persistent shell history saves to `phase1.history` only when persistent state is enabled, and redacts password/token/secret-like commands before writing.
 - Structured text pipelines support producer/filter flows such as `cat log.txt | grep alpha | wc -l`.
-- `version --compare` shows release-vs-bleeding-edge feature differences.
+- `version --compare` shows release-vs-bleeding-edge feature differences and update protocol metadata.
 - `roadmap` shows roadmap completion status for the current edge build.
+- `update protocol` prints the safe update protocol, patch-versioning rules, and host-tool gates from inside phase1.
 - Safe mode blocks host execution, host network inspection, browser fetches, ping, WiFi scan/connect, Python, C compiler, plugins, and updater execution.
 - In safe mode, network display is limited to a simulated loopback interface.
 - Enhanced `matrix` / `rain` digital-rain terminal effect with clean `q` exit, forever mode, themes, density, tail, and speed controls.
@@ -148,6 +153,7 @@ find /home -type f | sort
 browser phase1
 browser https://example.com
 update
+update protocol
 update bleeding --check
 ```
 
@@ -164,6 +170,20 @@ version --compare | grep bleeding
 ```
 
 Supported producers include `cat`, `echo`, `history`, `ps`, `ls`, `find`, `audit`, `env`, `version`, and `sysinfo`. Supported filters include `grep`, `wc`, `head`, `tail`, `sort`, `uniq`, and `cut`.
+
+## Update protocol
+
+The canonical update protocol is stored in `UPDATE_PROTOCOL.md`. The in-app updater mirrors that file with `update protocol`.
+
+```text
+update                         print the dry-run plan only
+update protocol                 show versioning and safety reference
+update bleeding --check         inspect local Git state only
+update bleeding --execute       run guarded fetch/checkout/pull
+update bleeding --execute --build
+```
+
+The updater remains safe by default: no file mutation happens without `--execute`; execution requires safe mode off plus `PHASE1_ALLOW_HOST_TOOLS=1`; tracked local changes block execution; and command output is sanitized before display.
 
 ## Matrix controls
 
@@ -227,6 +247,7 @@ cargo test --test smoke -- --nocapture
 
 - Persistent shell history: complete in bleeding edge.
 - Structured command output and pipelines: complete in bleeding edge.
+- Update protocol and semantic patch versioning: complete in bleeding edge.
 - Capability enforcement based on command metadata: partial, with host-tool and host-network gates enforced.
 - WASM/WASI plugin runtime: planned.
 - Full-screen TUI dashboard: planned; compact dashboard and sysinfo are available now.
