@@ -2,6 +2,7 @@ mod browser;
 mod commands;
 mod kernel;
 mod man;
+mod matrix;
 mod ned;
 mod network;
 mod registry;
@@ -23,12 +24,28 @@ fn compact_path(path: &Path) -> String {
 }
 
 fn main() {
-    let boot_config = ui::configure_boot(kernel::VERSION);
+    loop {
+        match ui::configure_boot(kernel::VERSION) {
+            ui::BootSelection::Boot(config) => {
+                run_shell(config);
+                break;
+            }
+            ui::BootSelection::Reboot => continue,
+            ui::BootSelection::Quit => {
+                println!("boot aborted: phase1 did not enter the main system");
+                return;
+            }
+        }
+    }
+}
+
+fn run_shell(boot_config: ui::BootConfig) {
     boot_config.apply();
 
     let mut shell = Phase1Shell::new();
     shell.env.insert("PHASE1_BOOT_PROFILE".to_string(), boot_config.profile_name().to_string());
     shell.env.insert("PHASE1_SAFE_MODE".to_string(), if boot_config.safe_mode { "1" } else { "0" }.to_string());
+    shell.env.insert("PHASE1_MOBILE_MODE".to_string(), if boot_config.mobile_mode { "1" } else { "0" }.to_string());
 
     if boot_config.quick_boot {
         ui::print_quick_boot(kernel::VERSION, boot_config);
