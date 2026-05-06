@@ -14,6 +14,7 @@ mod registry;
 mod text;
 mod ui;
 mod updater;
+mod wasm;
 
 use commands::{dispatch, parse_line, Phase1Shell};
 use kernel::VfsNode;
@@ -316,11 +317,15 @@ fn push_segment(
 }
 
 fn plugin_exists(shell: &Phase1Shell, name: &str) -> bool {
-    !name.is_empty()
-        && name
+    if name.is_empty()
+        || !name
             .chars()
             .all(|ch| ch.is_ascii_alphanumeric() || matches!(ch, '_' | '-'))
-        && shell.plugins_dir.join(format!("{name}.py")).exists()
+    {
+        return false;
+    }
+    shell.plugins_dir.join(format!("{name}.py")).exists()
+        || shell.plugins_dir.join(format!("{name}.wasm")).exists()
 }
 
 fn accounts_report(shell: &Phase1Shell) -> String {
