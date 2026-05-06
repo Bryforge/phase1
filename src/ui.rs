@@ -30,6 +30,7 @@ pub struct BootConfig {
     pub quick_boot: bool,
     pub mobile_mode: bool,
     pub persistent_state: bool,
+    pub bleeding_edge: bool,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -41,6 +42,7 @@ pub enum ThemePalette {
     Ice,
     Synth,
     Crimson,
+    BleedingEdge,
 }
 
 impl ThemePalette {
@@ -53,6 +55,7 @@ impl ThemePalette {
             "ice" | "blue" | "frost" => Some(Self::Ice),
             "synth" | "synthwave" | "purple" => Some(Self::Synth),
             "crimson" | "red" | "alert" => Some(Self::Crimson),
+            "bleeding" | "bleeding-edge" | "edge" => Some(Self::BleedingEdge),
             _ => None,
         }
     }
@@ -66,6 +69,7 @@ impl ThemePalette {
             Self::Ice => "ice",
             Self::Synth => "synthwave",
             Self::Crimson => "crimson",
+            Self::BleedingEdge => "bleeding-edge",
         }
     }
 
@@ -78,6 +82,7 @@ impl ThemePalette {
             Self::Ice => "cool blue/cyan frost terminal",
             Self::Synth => "purple synthwave operator glow",
             Self::Crimson => "red alert / intrusion-response console",
+            Self::BleedingEdge => "edge-only blue/magenta update channel console",
         }
     }
 
@@ -90,6 +95,7 @@ impl ThemePalette {
             Self::Ice,
             Self::Synth,
             Self::Crimson,
+            Self::BleedingEdge,
         ]
     }
 }
@@ -111,20 +117,24 @@ impl Default for BootConfig {
             config = saved;
         }
         config.apply_env_overrides();
+        config.normalize_channel();
         config
     }
 }
 
 impl BootConfig {
     pub fn detected_defaults() -> Self {
-        Self {
+        let mut config = Self {
             color: color_enabled(),
             ascii_mode: ascii_mode(),
             safe_mode: env_flag("PHASE1_SAFE_MODE").unwrap_or(true),
             quick_boot: env_flag("PHASE1_QUICK_BOOT").unwrap_or(false),
             mobile_mode: env_flag("PHASE1_MOBILE_MODE").unwrap_or(false) || detect_mobile(),
             persistent_state: env_flag("PHASE1_PERSISTENT_STATE").unwrap_or(false),
-        }
+            bleeding_edge: env_flag("PHASE1_BLEEDING_EDGE").unwrap_or(false),
+        };
+        config.normalize_channel();
+        config
     }
 
     pub fn apply(self) {
@@ -132,11 +142,16 @@ impl BootConfig {
         set_bool_env("PHASE1_QUICK_BOOT", self.quick_boot);
         set_bool_env("PHASE1_MOBILE_MODE", self.mobile_mode);
         set_bool_env("PHASE1_PERSISTENT_STATE", self.persistent_state);
+        set_bool_env("PHASE1_BLEEDING_EDGE", self.bleeding_edge);
+        std::env::set_var("PHASE1_DISPLAY_VERSION", display_version(crate::kernel::VERSION, self));
         std::env::set_var("PHASE1_SAFE_MODE", if self.safe_mode { "1" } else { "0" });
         if self.color {
             std::env::remove_var("PHASE1_NO_COLOR");
         } else {
             std::env::set_var("PHASE1_NO_COLOR", "1");
+        }
+        if self.bleeding_edge && std::env::var("PHASE1_THEME").is_err() {
+            std::env::set_var("PHASE1_THEME", ThemePalette::BleedingEdge.name());
         }
     }
 
@@ -152,8 +167,8 @@ impl BootConfig {
         }
     }
 
-    pub fn profile_name(self) -> &'static str {
-        match (self.mobile_mode, self.safe_mode, self.quick_boot) {
+    pub fn profile_name(self) -> String {
+        let base = match (self.mobile_mode, self.safe_mode, self.quick_boot) {
             (true, true, true) => "mobile-safe+quick",
             (true, true, false) => "mobile-safe",
             (true, false, true) => "mobile-quick",
@@ -162,6 +177,11 @@ impl BootConfig {
             (false, true, false) => "safe",
             (false, false, true) => "quick",
             (false, false, false) => "operator",
+        };
+        if self.bleeding_edge {
+            format!("{base}+edge")
+        } else {
+            base.to_string()
         }
     }
 
@@ -185,9 +205,11 @@ impl BootConfig {
                 "quick" | "quick_boot" => config.quick_boot = value,
                 "mobile" | "mobile_mode" => config.mobile_mode = value,
                 "persistent" | "persist" | "persistent_state" => config.persistent_state = value,
+                "bleeding" | "bleeding_edge" | "edge" => config.bleeding_edge = value,
                 _ => {}
             }
         }
+        config.normalize_channel();
         Some(config)
     }
 
@@ -213,23 +235,43 @@ impl BootConfig {
         if let Some(value) = env_flag("PHASE1_PERSISTENT_STATE") {
             self.persistent_state = value;
         }
+        if let Some(value) = env_flag("PHASE1_BLEEDING_EDGE") {
+            self.bleeding_edge = value;
+        }
+        self.normalize_channel();
+    }
+
+    fn normalize_channel(&mut self) {
+        if self.bleeding_edge {
+            self.color = true;
+            self.ascii_mode = false;
+        }
     }
 
     fn to_config_string(self) -> String {
         format!(
-            "# phase1 boot configuration\n# safe=true is the secure default; set safe=false only when intentionally testing host-backed tools.\ncolor={}\nascii={}\nsafe={}\nquick={}\nmobile={}\npersistent={}\n",
+            "# phase1 boot configuration\n# safe=true is the secure default; set safe=false only when intentionally testing host-backed tools.\ncolor={}\nascii={}\nsafe={}\nquick={}\nmobile={}\npersistent={}\nbleeding_edge={}\n",
             self.color,
             self.ascii_mode,
             self.safe_mode,
             self.quick_boot,
             self.mobile_mode,
-            self.persistent_state
+            self.persistent_state,
+            self.bleeding_edge
         )
     }
 }
 
 pub fn config_path() -> &'static str {
     BOOT_CONFIG_PATH
+}
+
+pub fn display_version(release_version: &str, config: BootConfig) -> String {
+    if config.bleeding_edge {
+        crate::updater::CURRENT_EDGE_VERSION.to_string()
+    } else {
+        release_version.to_string()
+    }
 }
 
 pub fn configure_boot(version: &str) -> BootSelection {
@@ -263,6 +305,10 @@ pub fn configure_boot(version: &str) -> BootSelection {
             "p" | "persist" | "persistent" | "persistent-state" => {
                 config.persistent_state = !config.persistent_state;
             }
+            "e" | "edge" | "bleeding" | "bleeding-edge" => {
+                config.bleeding_edge = !config.bleeding_edge;
+                config.normalize_channel();
+            }
             "7" | "reboot" | "restart" => return BootSelection::Reboot,
             "8" | "x" | "quit" | "exit" | "shutdown" => return BootSelection::Quit,
             "9" | "save" | "write" => match config.save() {
@@ -276,19 +322,20 @@ pub fn configure_boot(version: &str) -> BootSelection {
                     Err(err) => pause(&format!("Reset defaults, but could not remove phase1.conf: {err}")),
                 }
             }
-            "h" | "help" | "?" => pause("Secure default: safe mode is on. Toggle options, p toggles persistent state, 9 saves, 0 resets saved config, 1 boots, 7 reboots, 8 quits."),
+            "h" | "help" | "?" => pause("Secure default: safe mode is on. Toggle options, e toggles bleeding edge UI, p toggles persistent state, 9 saves, 0 resets saved config, 1 boots, 7 reboots, 8 quits."),
             _ => pause("Unknown boot option. Press Enter to continue."),
         }
     }
 }
 
 pub fn print_boot(version: &str) {
+    let config = BootConfig::default();
     if mobile_mode_enabled() || terminal_width() < 72 {
-        print_mobile_boot(version);
+        print_mobile_boot(version, config);
     } else if ascii_mode() {
-        print_ascii_boot(version);
+        print_ascii_boot(version, config);
     } else {
-        print_modern_boot(version);
+        print_modern_boot(version, config);
     }
 }
 
@@ -313,27 +360,24 @@ fn print_preboot(version: &str, config: BootConfig) {
         print!("\x1b[2J\x1b[H{BOLD}");
     }
     print_boot_card(version, config, true);
-    println!("{}", value(config, "Secure default: safe=on  Enter=boot  p=persist  h=help"));
+    println!("{}", value(config, "Secure default: safe=on  Enter=boot  e=edge  p=persist  h=help"));
 }
 
-fn print_mobile_boot(version: &str) {
+fn print_mobile_boot(version: &str, config: BootConfig) {
     println!("\x1b[2J\x1b[H");
-    print_boot_card(version, BootConfig::default(), false);
+    print_boot_card(version, config, false);
     ready_line(false);
 }
 
-fn print_modern_boot(version: &str) {
+fn print_modern_boot(version: &str, config: BootConfig) {
     println!("\x1b[2J\x1b[H");
-    print_boot_card(version, BootConfig::default(), false);
+    print_boot_card(version, config, false);
     ready_line(true);
 }
 
-fn print_ascii_boot(version: &str) {
-    let config = BootConfig {
-        color: false,
-        ascii_mode: true,
-        ..BootConfig::default()
-    };
+fn print_ascii_boot(version: &str, mut config: BootConfig) {
+    config.color = false;
+    config.ascii_mode = true;
     print_boot_card(version, config, false);
     ready_line(true);
 }
@@ -366,8 +410,10 @@ fn print_boot_card(version: &str, config: BootConfig, selector: bool) {
 fn splash_info(version: &str, config: BootConfig) -> Vec<String> {
     let state_mode = if config.persistent_state { "persistent" } else { "volatile" };
     let security_mode = if config.safe_mode { "safe" } else { "host-enabled" };
+    let channel = if config.bleeding_edge { "bleeding-edge" } else { "release" };
     vec![
-        format!("version v{version}"),
+        format!("version v{}", display_version(version, config)),
+        format!("channel {channel}"),
         format!("profile {}", config.profile_name()),
         format!("security  {security_mode}"),
         format!("device  {}", if config.mobile_mode { "mobile" } else { "desktop" }),
@@ -385,6 +431,7 @@ fn boot_rows(config: BootConfig) -> Vec<String> {
         format!("4 safe mode         {}", if config.safe_mode { "on" } else { "off" }),
         format!("5 quick boot        {}", if config.quick_boot { "on" } else { "off" }),
         format!("6 mobile mode       {}", if config.mobile_mode { "on" } else { "off" }),
+        format!("e bleeding edge     {}", if config.bleeding_edge { "on" } else { "off" }),
         format!("p persistent state  {}", if config.persistent_state { "on" } else { "off" }),
         "7 reboot selector".to_string(),
         "8 quit boot".to_string(),
@@ -397,10 +444,12 @@ fn console_title(config: BootConfig) -> String {
     if !config.color || config.ascii_mode {
         format!("{} // Advanced Operator Console", phase1_wordmark(config))
     } else {
-        let colors = palette(active_theme());
+        let colors = palette(active_theme_for_config(config));
         format!(
             "{}{} // Advanced Operator Console{}",
-            phase1_wordmark(config), colors.title, RESET
+            phase1_wordmark(config),
+            colors.title,
+            RESET
         )
     }
 }
@@ -408,7 +457,7 @@ fn console_title(config: BootConfig) -> String {
 fn phase1_wordmark(config: BootConfig) -> String {
     if !config.color || config.ascii_mode {
         "Phase1".to_string()
-    } else if active_theme() == ThemePalette::Rainbow {
+    } else if active_theme_for_config(config) == ThemePalette::Rainbow {
         let colors = [RED, YELLOW, GREEN, CYAN, BLUE, MAGENTA];
         "Phase1"
             .chars()
@@ -417,7 +466,7 @@ fn phase1_wordmark(config: BootConfig) -> String {
             .collect::<Vec<_>>()
             .join("")
     } else {
-        let colors = palette(active_theme());
+        let colors = palette(active_theme_for_config(config));
         format!("{}Phase1{}", colors.title, RESET)
     }
 }
@@ -448,7 +497,10 @@ fn ready_line(desktop: bool) {
     if color_enabled() {
         let colors = palette(active_theme());
         if desktop {
-            println!("{}[ready]{} all subsystems nominal {GRAY}:: operator shell armed{RESET}", colors.ready, RESET);
+            println!(
+                "{}[ready]{} all subsystems nominal {GRAY}:: operator shell armed{RESET}",
+                colors.ready, RESET
+            );
         } else {
             println!("{}[ready]{} all subsystems nominal", colors.ready, RESET);
         }
@@ -466,7 +518,7 @@ fn display_mode(config: BootConfig) -> &'static str {
     } else if !config.color {
         "mono"
     } else {
-        active_theme().name()
+        active_theme_for_config(config).name()
     }
 }
 
@@ -474,7 +526,28 @@ fn active_theme() -> ThemePalette {
     std::env::var("PHASE1_THEME")
         .ok()
         .and_then(|raw| ThemePalette::parse(&raw))
-        .unwrap_or(ThemePalette::Rainbow)
+        .filter(|theme| *theme != ThemePalette::BleedingEdge || bleeding_edge_env_enabled())
+        .unwrap_or_else(|| {
+            if bleeding_edge_env_enabled() {
+                ThemePalette::BleedingEdge
+            } else {
+                ThemePalette::Rainbow
+            }
+        })
+}
+
+fn active_theme_for_config(config: BootConfig) -> ThemePalette {
+    std::env::var("PHASE1_THEME")
+        .ok()
+        .and_then(|raw| ThemePalette::parse(&raw))
+        .filter(|theme| *theme != ThemePalette::BleedingEdge || config.bleeding_edge)
+        .unwrap_or_else(|| {
+            if config.bleeding_edge {
+                ThemePalette::BleedingEdge
+            } else {
+                ThemePalette::Rainbow
+            }
+        })
 }
 
 fn palette(theme: ThemePalette) -> Palette {
@@ -542,6 +615,15 @@ fn palette(theme: ThemePalette) -> Palette {
             prompt_path: YELLOW,
             ready: RED,
         },
+        ThemePalette::BleedingEdge => Palette {
+            border: BLUE,
+            title: MAGENTA,
+            accent: CYAN,
+            muted: GRAY,
+            prompt_user: MAGENTA,
+            prompt_path: CYAN,
+            ready: MAGENTA,
+        },
     }
 }
 
@@ -556,7 +638,11 @@ fn card_width(config: BootConfig) -> usize {
 
 fn card_top(config: BootConfig, width: usize) -> String {
     if config.color && !config.ascii_mode {
-        format!("{}╭{}╮{RESET}", palette(active_theme()).border, "─".repeat(width))
+        format!(
+            "{}╭{}╮{RESET}",
+            palette(active_theme_for_config(config)).border,
+            "─".repeat(width)
+        )
     } else {
         format!("+{}+", "-".repeat(width))
     }
@@ -564,7 +650,11 @@ fn card_top(config: BootConfig, width: usize) -> String {
 
 fn card_bottom(config: BootConfig, width: usize) -> String {
     if config.color && !config.ascii_mode {
-        format!("{}╰{}╯{RESET}", palette(active_theme()).border, "─".repeat(width))
+        format!(
+            "{}╰{}╯{RESET}",
+            palette(active_theme_for_config(config)).border,
+            "─".repeat(width)
+        )
     } else {
         format!("+{}+", "-".repeat(width))
     }
@@ -572,7 +662,11 @@ fn card_bottom(config: BootConfig, width: usize) -> String {
 
 fn card_rule(config: BootConfig, width: usize) -> String {
     if config.color && !config.ascii_mode {
-        format!("{}├{}┤{RESET}", palette(active_theme()).border, "─".repeat(width))
+        format!(
+            "{}├{}┤{RESET}",
+            palette(active_theme_for_config(config)).border,
+            "─".repeat(width)
+        )
     } else {
         format!("+{}+", "-".repeat(width))
     }
@@ -582,8 +676,14 @@ fn card_section(config: BootConfig, width: usize, label: &str) -> String {
     let marker = format!(" {label} ");
     let fill = width.saturating_sub(marker.chars().count());
     if config.color && !config.ascii_mode {
-        let colors = palette(active_theme());
-        format!("{}├{}{}{}┤{RESET}", colors.border, colors.accent, marker, "─".repeat(fill))
+        let colors = palette(active_theme_for_config(config));
+        format!(
+            "{}├{}{}{}┤{RESET}",
+            colors.border,
+            colors.accent,
+            marker,
+            "─".repeat(fill)
+        )
     } else {
         format!("+{marker}{}+", "-".repeat(fill))
     }
@@ -594,7 +694,7 @@ fn card_line(config: BootConfig, width: usize, text: &str) -> String {
     let visible = visible_len(&clipped);
     let padded = format!("{clipped}{}", " ".repeat(width.saturating_sub(visible)));
     if config.color && !config.ascii_mode {
-        let border = palette(active_theme()).border;
+        let border = palette(active_theme_for_config(config)).border;
         format!("{border}│{RESET}{padded}{border}│{RESET}")
     } else {
         format!("|{padded}|")
@@ -603,7 +703,7 @@ fn card_line(config: BootConfig, width: usize, text: &str) -> String {
 
 fn value(config: BootConfig, text: &str) -> String {
     if config.color && !config.ascii_mode {
-        format!("{}{text}{RESET}", palette(active_theme()).muted)
+        format!("{}{text}{RESET}", palette(active_theme_for_config(config)).muted)
     } else {
         text.to_string()
     }
@@ -647,6 +747,10 @@ fn detect_mobile() -> bool {
 
 fn mobile_mode_enabled() -> bool {
     std::env::var("PHASE1_MOBILE_MODE").ok().as_deref() == Some("1") || detect_mobile()
+}
+
+fn bleeding_edge_env_enabled() -> bool {
+    std::env::var("PHASE1_BLEEDING_EDGE").ok().as_deref() == Some("1")
 }
 
 fn env_flag(name: &str) -> Option<bool> {
@@ -720,9 +824,21 @@ fn phase1_art() -> [&'static str; 5] {
 #[cfg(test)]
 mod tests {
     use super::{
-        clip, console_title, display_mode, parse_bool, phase1_art, prompt_text, splash_info,
-        strip_ansi, visible_len, BootConfig, ThemePalette, PANEL_WIDTH,
+        clip, console_title, display_mode, display_version, parse_bool, phase1_art, prompt_text,
+        splash_info, strip_ansi, visible_len, BootConfig, ThemePalette, PANEL_WIDTH,
     };
+
+    fn test_config() -> BootConfig {
+        BootConfig {
+            color: true,
+            ascii_mode: false,
+            safe_mode: true,
+            quick_boot: false,
+            mobile_mode: true,
+            persistent_state: false,
+            bleeding_edge: false,
+        }
+    }
 
     #[test]
     fn panel_width_stays_terminal_friendly() {
@@ -756,6 +872,7 @@ mod tests {
                 quick_boot: false,
                 mobile_mode: false,
                 persistent_state: false,
+                bleeding_edge: false,
             }
             .profile_name(),
             "operator"
@@ -768,9 +885,10 @@ mod tests {
                 quick_boot: true,
                 mobile_mode: true,
                 persistent_state: true,
+                bleeding_edge: true,
             }
             .profile_name(),
-            "mobile-safe+quick"
+            "mobile-safe+quick+edge"
         );
     }
 
@@ -788,6 +906,7 @@ mod tests {
             quick_boot: false,
             mobile_mode: true,
             persistent_state: false,
+            bleeding_edge: false,
         };
         assert_eq!(console_title(config), "Phase1 // Advanced Operator Console");
         let rows = splash_info("3.8.1", config);
@@ -799,19 +918,24 @@ mod tests {
     fn theme_palette_names_are_available() {
         assert_eq!(ThemePalette::parse("rainbow"), Some(ThemePalette::Rainbow));
         assert_eq!(ThemePalette::parse("synthwave"), Some(ThemePalette::Synth));
-        assert!(ThemePalette::all().len() >= 6);
+        assert_eq!(ThemePalette::parse("bleeding-edge"), Some(ThemePalette::BleedingEdge));
+        assert!(ThemePalette::all().len() >= 7);
 
-        let config = BootConfig {
-            color: true,
-            ascii_mode: false,
-            safe_mode: true,
-            quick_boot: false,
-            mobile_mode: true,
-            persistent_state: false,
-        };
+        let config = test_config();
         std::env::set_var("PHASE1_THEME", "matrix");
         assert_eq!(display_mode(config), "matrix");
         std::env::remove_var("PHASE1_THEME");
+    }
+
+    #[test]
+    fn bleeding_edge_updates_display_version_and_palette() {
+        let mut config = test_config();
+        config.bleeding_edge = true;
+        config.color = true;
+        config.ascii_mode = false;
+        assert_eq!(display_version("3.6.0", config), crate::updater::CURRENT_EDGE_VERSION);
+        assert_eq!(display_mode(config), "bleeding-edge");
+        assert!(splash_info("3.6.0", config).contains(&"channel bleeding-edge".to_string()));
     }
 
     #[test]
