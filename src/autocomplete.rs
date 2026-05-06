@@ -15,6 +15,14 @@ pub fn complete_tab_line(line: &str) -> TabCompletion {
 
     let before = &line[..tab_idx];
     let after = line[tab_idx + 1..].replace('\t', "");
+    complete_at(before, &after)
+}
+
+pub fn complete_input_prefix(line: &str) -> TabCompletion {
+    complete_at(line, "")
+}
+
+fn complete_at(before: &str, after: &str) -> TabCompletion {
     let token_start = current_token_start(before);
     let prefix = &before[token_start..];
     let command_position = is_command_position(before, token_start);
@@ -25,6 +33,16 @@ pub fn complete_tab_line(line: &str) -> TabCompletion {
         argument_matches(command, prefix)
     };
 
+    completion_result(before, after, token_start, prefix, matches)
+}
+
+fn completion_result(
+    before: &str,
+    after: &str,
+    token_start: usize,
+    prefix: &str,
+    matches: Vec<String>,
+) -> TabCompletion {
     match matches.len() {
         0 => TabCompletion::NoMatch {
             prefix: prefix.to_string(),
@@ -33,11 +51,35 @@ pub fn complete_tab_line(line: &str) -> TabCompletion {
             "{}{}{}",
             &before[..token_start], matches[0], after
         )),
-        _ => TabCompletion::Suggestions {
-            prefix: prefix.to_string(),
-            matches,
-        },
+        _ => {
+            let common = common_prefix(&matches);
+            if common.len() > prefix.len() {
+                TabCompletion::Completed(format!("{}{}{}", &before[..token_start], common, after))
+            } else {
+                TabCompletion::Suggestions {
+                    prefix: prefix.to_string(),
+                    matches,
+                }
+            }
+        }
     }
+}
+
+fn common_prefix(matches: &[String]) -> String {
+    let Some(first) = matches.first() else {
+        return String::new();
+    };
+    let mut end = first.len();
+    for candidate in matches.iter().skip(1) {
+        end = first[..end]
+            .char_indices()
+            .map(|(idx, _)| idx)
+            .chain(std::iter::once(end))
+            .take_while(|idx| candidate.starts_with(&first[..*idx]))
+            .last()
+            .unwrap_or(0);
+    }
+    first[..end].to_string()
 }
 
 fn current_token_start(input: &str) -> usize {
@@ -152,13 +194,17 @@ fn matches_from(options: &[&str], prefix: &str) -> Vec<String> {
 
 #[cfg(test)]
 mod tests {
-    use super::{complete_tab_line, TabCompletion};
+    use super::{complete_input_prefix, complete_tab_line, TabCompletion};
 
     #[test]
     fn tab_completes_unique_command_prefix() {
         assert_eq!(
             complete_tab_line("vers\t --compare"),
             TabCompletion::Completed("version --compare".to_string())
+        );
+        assert_eq!(
+            complete_input_prefix("spa"),
+            TabCompletion::Completed("spawn".to_string())
         );
     }
 
