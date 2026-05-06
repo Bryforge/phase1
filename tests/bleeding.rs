@@ -4,6 +4,10 @@ use std::process::{Command, Stdio};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 fn run_phase1(script: &str) -> String {
+    run_phase1_raw(&format!("\n{script}"))
+}
+
+fn run_phase1_raw(input: &str) -> String {
     let nonce = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map(|duration| duration.as_nanos())
@@ -29,7 +33,7 @@ fn run_phase1(script: &str) -> String {
         .stdin
         .as_mut()
         .expect("stdin")
-        .write_all(format!("\n{script}").as_bytes())
+        .write_all(input.as_bytes())
         .expect("write script");
 
     let output = child.wait_with_output().expect("wait phase1");
@@ -105,7 +109,7 @@ fn bleeding_theme_palettes_are_selectable() {
 
 #[test]
 fn bleeding_edge_boot_switch_updates_ui_channel_and_version() {
-    let output = run_phase1("e\n\nbootcfg show\nsysinfo\ntheme\nbanner edge\nexit\n");
+    let output = run_phase1_raw("e\n\nbootcfg show\nsysinfo\ntheme\nbanner edge\nexit\n");
     assert!(output.contains("bleeding edge     on"), "boot switch missing:\n{output}");
     assert!(output.contains("version v3.8.1-dev"), "boot UI did not use edge version:\n{output}");
     assert!(output.contains("channel bleeding-edge"), "boot UI channel missing:\n{output}");
