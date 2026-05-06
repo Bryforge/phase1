@@ -8,10 +8,7 @@ pub fn edit(vfs: &mut Vfs, filename: &str) {
         return;
     }
 
-    let mut buffer = match vfs.cat(filename) {
-        Ok(content) => content,
-        Err(_) => String::new(),
-    };
+    let mut buffer = vfs.cat(filename).unwrap_or_default();
 
     println!("ned: editing {}", filename);
     println!("Commands: single '.' or ':wq' saves and exits; ':q' exits without saving.");
