@@ -1,8 +1,10 @@
 use crate::registry;
+use std::fs;
 use std::io::{self, Write};
 
 const PANEL_WIDTH: usize = 62;
 const MOBILE_WIDTH: usize = 44;
+const BOOT_CONFIG_PATH: &str = "phase1.conf";
 const RESET: &str = "\x1b[0m";
 const BOLD: &str = "\x1b[1m";
 const RED: &str = "\x1b[31m";
@@ -31,18 +33,26 @@ pub struct BootConfig {
 
 impl Default for BootConfig {
     fn default() -> Self {
-        let detected_mobile = detect_mobile();
-        Self {
-            color: color_enabled(),
-            ascii_mode: ascii_mode(),
-            safe_mode: std::env::var("PHASE1_SAFE_MODE").ok().as_deref() == Some("1"),
-            quick_boot: std::env::var("PHASE1_QUICK_BOOT").ok().as_deref() == Some("1"),
-            mobile_mode: std::env::var("PHASE1_MOBILE_MODE").ok().as_deref() == Some("1") || detected_mobile,
+        let mut config = Self::detected_defaults();
+        if let Some(saved) = Self::load_saved() {
+            config = saved;
         }
+        config.apply_env_overrides();
+        config
     }
 }
 
 impl BootConfig {
+    pub fn detected_defaults() -> Self {
+        Self {
+            color: color_enabled(),
+            ascii_mode: ascii_mode(),
+            safe_mode: env_flag("PHASE1_SAFE_MODE").unwrap_or(false),
+            quick_boot: env_flag("PHASE1_QUICK_BOOT").unwrap_or(false),
+            mobile_mode: env_flag("PHASE1_MOBILE_MODE").unwrap_or(false) || detect_mobile(),
+        }
+    }
+
     pub fn apply(self) {
         if self.ascii_mode {
             std::env::set_var("PHASE1_ASCII", "1");
@@ -75,6 +85,18 @@ impl BootConfig {
         }
     }
 
+    pub fn save(self) -> io::Result<()> {
+        fs::write(config_path(), self.to_config_string())
+    }
+
+    pub fn remove_saved() -> io::Result<()> {
+        match fs::remove_file(config_path()) {
+            Ok(()) => Ok(()),
+            Err(err) if err.kind() == io::ErrorKind::NotFound => Ok(()),
+            Err(err) => Err(err),
+        }
+    }
+
     pub fn profile_name(self) -> &'static str {
         match (self.mobile_mode, self.safe_mode, self.quick_boot) {
             (true, true, true) => "mobile-safe+quick",
@@ -87,6 +109,65 @@ impl BootConfig {
             (false, false, false) => "operator",
         }
     }
+
+    fn load_saved() -> Option<Self> {
+        let raw = fs::read_to_string(config_path()).ok()?;
+        let mut config = Self::detected_defaults();
+
+        for line in raw.lines() {
+            let line = line.trim();
+            if line.is_empty() || line.starts_with('#') {
+                continue;
+            }
+            let Some((key, value)) = line.split_once('=') else {
+                continue;
+            };
+            let Some(value) = parse_bool(value.trim()) else {
+                continue;
+            };
+            match key.trim() {
+                "color" => config.color = value,
+                "ascii" | "ascii_mode" => config.ascii_mode = value,
+                "safe" | "safe_mode" => config.safe_mode = value,
+                "quick" | "quick_boot" => config.quick_boot = value,
+                "mobile" | "mobile_mode" => config.mobile_mode = value,
+                _ => {}
+            }
+        }
+        Some(config)
+    }
+
+    fn apply_env_overrides(&mut self) {
+        if let Some(value) = env_flag("PHASE1_ASCII") {
+            self.ascii_mode = value;
+        }
+        if let Some(value) = env_flag("PHASE1_NO_COLOR") {
+            self.color = !value;
+        }
+        if let Some(value) = env_flag("NO_COLOR") {
+            self.color = !value;
+        }
+        if let Some(value) = env_flag("PHASE1_SAFE_MODE") {
+            self.safe_mode = value;
+        }
+        if let Some(value) = env_flag("PHASE1_QUICK_BOOT") {
+            self.quick_boot = value;
+        }
+        if let Some(value) = env_flag("PHASE1_MOBILE_MODE") {
+            self.mobile_mode = value;
+        }
+    }
+
+    fn to_config_string(self) -> String {
+        format!(
+            "# phase1 boot configuration\ncolor={}\nascii={}\nsafe={}\nquick={}\nmobile={}\n",
+            self.color, self.ascii_mode, self.safe_mode, self.quick_boot, self.mobile_mode
+        )
+    }
+}
+
+pub fn config_path() -> &'static str {
+    BOOT_CONFIG_PATH
 }
 
 pub fn configure_boot(version: &str) -> BootSelection {
@@ -106,7 +187,12 @@ pub fn configure_boot(version: &str) -> BootSelection {
         }
 
         match input.trim().to_ascii_lowercase().as_str() {
-            "" | "1" | "b" | "boot" | "start" => return BootSelection::Boot(config),
+            "" | "1" | "b" | "boot" | "start" => {
+                if let Err(err) = config.save() {
+                    eprintln!("boot config save warning: {err}");
+                }
+                return BootSelection::Boot(config);
+            }
             "2" | "c" | "color" | "colour" => config.color = !config.color,
             "3" | "a" | "ascii" => config.ascii_mode = !config.ascii_mode,
             "4" | "s" | "safe" | "safe-mode" => config.safe_mode = !config.safe_mode,
@@ -114,8 +200,18 @@ pub fn configure_boot(version: &str) -> BootSelection {
             "6" | "m" | "mobile" | "mobile-mode" => config.mobile_mode = !config.mobile_mode,
             "7" | "reboot" | "restart" => return BootSelection::Reboot,
             "8" | "x" | "quit" | "exit" | "shutdown" => return BootSelection::Quit,
-            "0" | "r" | "reset" => config = BootConfig::default(),
-            "h" | "help" | "?" => pause("Toggle options, press 1/Enter to boot, 7 to reboot, or 8 to quit."),
+            "9" | "save" | "write" => match config.save() {
+                Ok(()) => pause("Saved boot configuration to phase1.conf."),
+                Err(err) => pause(&format!("Could not save phase1.conf: {err}")),
+            },
+            "0" | "r" | "reset" => {
+                config = BootConfig::detected_defaults();
+                match BootConfig::remove_saved() {
+                    Ok(()) => pause("Reset to detected defaults and removed phase1.conf."),
+                    Err(err) => pause(&format!("Reset defaults, but could not remove phase1.conf: {err}")),
+                }
+            }
+            "h" | "help" | "?" => pause("Toggle options, 9 saves, 0 resets saved config, 1 boots, 7 reboots, 8 quits."),
             _ => pause("Unknown boot option. Press Enter to continue."),
         }
     }
@@ -154,7 +250,7 @@ fn print_preboot(version: &str, config: BootConfig) {
     print_fastfetch_splash_with_config(version, config);
     let width = preboot_width();
     println!("{}", panel_line(config, "BOOT", width));
-    println!("  1  boot system       {}", value(config, "ready"));
+    println!("  1  boot system       {}", value(config, "save+start"));
     println!("  2  color output      {}", flag(config, config.color));
     println!("  3  ascii compatible  {}", flag(config, config.ascii_mode));
     println!("  4  safe mode         {}", flag(config, config.safe_mode));
@@ -162,9 +258,10 @@ fn print_preboot(version: &str, config: BootConfig) {
     println!("  6  mobile mode       {}", flag(config, config.mobile_mode));
     println!("  7  reboot selector");
     println!("  8  quit boot");
-    println!("  0  reset defaults");
+    println!("  9  save config");
+    println!("  0  reset saved config");
     println!();
-    println!("{}", value(config, "Enter=boot  h=help  number/name"));
+    println!("{}", value(config, "Enter=save+boot  h=help  number/name"));
 }
 
 fn print_fastfetch_splash(version: &str, config: BootConfig) {
@@ -204,7 +301,7 @@ fn splash_info(version: &str, config: BootConfig, compact: bool) -> Vec<String> 
             format!("profile {}", config.profile_name()),
             format!("device  {}", if config.mobile_mode { "mobile" } else { "desktop" }),
             format!("display {}", if config.color { "rainbow" } else { "mono" }),
-            format!("guards  {}", if config.safe_mode { "locked" } else { "audited" }),
+            format!("config  {}", config_path()),
         ]
     } else {
         vec![
@@ -212,7 +309,7 @@ fn splash_info(version: &str, config: BootConfig, compact: bool) -> Vec<String> 
             format!("profile   {}", config.profile_name()),
             format!("device    {}", if config.mobile_mode { "mobile" } else { "desktop" }),
             format!("display   {}", if config.color { "retro rainbow" } else { "mono" }),
-            format!("guards    {}", if config.safe_mode { "host locked" } else { "audited" }),
+            format!("config    {}", config_path()),
         ]
     }
 }
@@ -452,6 +549,18 @@ fn mobile_mode_enabled() -> bool {
     std::env::var("PHASE1_MOBILE_MODE").ok().as_deref() == Some("1") || detect_mobile()
 }
 
+fn env_flag(name: &str) -> Option<bool> {
+    std::env::var(name).ok().and_then(|value| parse_bool(&value))
+}
+
+fn parse_bool(value: &str) -> Option<bool> {
+    match value.trim().to_ascii_lowercase().as_str() {
+        "1" | "true" | "yes" | "on" => Some(true),
+        "0" | "false" | "no" | "off" => Some(false),
+        _ => None,
+    }
+}
+
 fn clip(text: &str, width: usize) -> String {
     text.chars().take(width).collect()
 }
@@ -466,7 +575,7 @@ fn ascii_mode() -> bool {
 
 #[cfg(test)]
 mod tests {
-    use super::{clip, phase1_art, prompt_text, BootConfig, PANEL_WIDTH};
+    use super::{clip, parse_bool, phase1_art, prompt_text, BootConfig, PANEL_WIDTH};
 
     #[test]
     fn panel_width_stays_terminal_friendly() {
@@ -494,5 +603,12 @@ mod tests {
     #[test]
     fn phase1_art_is_mobile_width() {
         assert!(phase1_art().iter().all(|line| line.chars().count() <= 40));
+    }
+
+    #[test]
+    fn parse_bool_accepts_config_values() {
+        assert_eq!(parse_bool("true"), Some(true));
+        assert_eq!(parse_bool("off"), Some(false));
+        assert_eq!(parse_bool("maybe"), None);
     }
 }
