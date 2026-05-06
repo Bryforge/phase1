@@ -40,6 +40,7 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("head", &[], "text", "head [-n count|-count] <file>...", "Show the first lines of VFS text files.", "fs.read"),
     cmd!("tail", &[], "text", "tail [-n count|-count] <file>...", "Show the last lines of VFS text files.", "fs.read"),
     cmd!("find", &[], "text", "find [path] [-name pattern] [-type f|d] [-maxdepth n]", "Search the VFS tree by name, type, and depth.", "fs.read"),
+    cmd!("pipeline", &["pipes"], "text", "pipeline", "Show structured text pipeline help and supported filters.", "none"),
     cmd!("ps", &[], "proc", "ps", "Show simulated process table.", "proc.read"),
     cmd!("top", &[], "proc", "top", "Show scheduler state.", "proc.read"),
     cmd!("spawn", &[], "proc", "spawn <name> [args...] [--background]", "Create a simulated process through sys_spawn.", "proc.spawn"),
@@ -83,7 +84,7 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("id", &[], "user", "id", "Print simulated user id.", "user.read"),
     cmd!("su", &[], "user", "su <user>", "Switch simulated user.", "user.switch"),
     cmd!("accounts", &["users"], "user", "accounts", "Explain and list simulated Unix accounts without real emails or credentials.", "user.read"),
-    cmd!("history", &[], "user", "history", "Show shell command history.", "user.read"),
+    cmd!("history", &[], "user", "history [list|status|path|save|clear]", "Show shell command history and persistent-history status.", "user.read"),
     cmd!("security", &["sec", "policy"], "user", "security", "Show safe mode, host tool gates, persistence, and privacy status.", "user.read"),
     cmd!("theme", &["style"], "user", "theme [show|list|neon|mono|ascii|reset]", "Switch or inspect the live terminal theme.", "user.env"),
     cmd!("banner", &["splash"], "user", "banner [mobile|desktop|mono|neon|ascii|safe|host|persist]", "Preview boot splash profile choices without changing saved config.", "user.read"),
@@ -96,7 +97,8 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("matrix", &["rain"], "misc", "matrix [seconds|0|forever] [--speed ms] [--density n] [--chars set]", "Run enhanced Matrix rain. Press q to exit interactively; 0/forever runs until quit.", "none"),
     cmd!("bootcfg", &["bootconfig"], "misc", "bootcfg [show|save|reset|path]", "Show, save, reset, or locate the persisted boot profile in phase1.conf.", "none"),
     cmd!("clear", &[], "misc", "clear", "Clear terminal using an ANSI screen clear sequence.", "none"),
-    cmd!("version", &[], "misc", "version", "Show phase1 version.", "none"),
+    cmd!("version", &["ver"], "misc", "version [--compare]", "Show release version or compare release with bleeding edge.", "none"),
+    cmd!("roadmap", &["map"], "misc", "roadmap", "Show roadmap completion status for release versus bleeding edge.", "none"),
     cmd!("sandbox", &["nsinfo"], "misc", "sandbox", "Show safety model.", "none"),
     cmd!("exit", &["quit", "shutdown", "poweroff"], "misc", "exit", "Terminate simulator.", "none"),
 ];
@@ -120,7 +122,7 @@ pub fn command_map() -> String {
             .join(" ");
         out.push_str(&format!("{:<5}: {}\n", category, names));
     }
-    out.push_str("\nquick : update | update bleeding --check | grep phase1 /home/readme.txt | wc /home/readme.txt | find /home -type f | sysinfo\n");
+    out.push_str("\nquick : version --compare | roadmap | pipeline | cat log.txt | grep alpha | wc -l | update bleeding --check | sysinfo\n");
     out
 }
 
@@ -197,6 +199,8 @@ mod tests {
         assert_eq!(lookup("splash").map(|cmd| cmd.name), Some("banner"));
         assert_eq!(lookup("hint").map(|cmd| cmd.name), Some("tips"));
         assert_eq!(lookup("upgrade").map(|cmd| cmd.name), Some("update"));
+        assert_eq!(lookup("pipes").map(|cmd| cmd.name), Some("pipeline"));
+        assert_eq!(lookup("map").map(|cmd| cmd.name), Some("roadmap"));
     }
 
     #[test]
@@ -213,6 +217,9 @@ mod tests {
         assert_eq!(canonical_name("neofetch"), Some("sysinfo"));
         assert_eq!(canonical_name("style"), Some("theme"));
         assert_eq!(canonical_name("upgrade"), Some("update"));
+        assert_eq!(canonical_name("pipes"), Some("pipeline"));
+        assert_eq!(canonical_name("ver"), Some("version"));
+        assert_eq!(canonical_name("map"), Some("roadmap"));
     }
 
     #[test]
@@ -233,6 +240,8 @@ mod tests {
         assert!(map.contains("grep"));
         assert!(map.contains("find"));
         assert!(map.contains("update"));
+        assert!(map.contains("pipeline"));
+        assert!(map.contains("roadmap"));
     }
 
     #[test]
@@ -240,13 +249,17 @@ mod tests {
         let page = man_page("update").expect("update man page");
         assert!(page.contains("stable to bleeding edge"));
         assert!(page.contains("host.exec"));
+        let pipeline = man_page("pipeline").expect("pipeline man page");
+        assert!(pipeline.contains("structured text pipeline"));
     }
 
     #[test]
     fn completions_include_aliases() {
         assert!(completions("p").contains(&"python"));
         assert!(completions("p").contains(&"py"));
+        assert!(completions("p").contains(&"pipeline"));
         assert!(completions("r").contains(&"rain"));
+        assert!(completions("r").contains(&"roadmap"));
         assert!(completions("boot").contains(&"bootcfg"));
         assert!(completions("sec").contains(&"security"));
         assert!(completions("the").contains(&"theme"));
@@ -265,5 +278,6 @@ mod tests {
         assert!(report.contains("theme"));
         assert!(report.contains("grep"));
         assert!(report.contains("update"));
+        assert!(report.contains("pipeline"));
     }
 }
