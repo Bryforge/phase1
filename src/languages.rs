@@ -462,10 +462,7 @@ fn run_language(shell: &mut Phase1Shell, args: &[String]) -> String {
         return "lang wasm: use the phase1 'wasm' command for WASI-lite plugin validation and execution\n".to_string();
     }
 
-    let source = match load_source(shell, &source_arg) {
-        Ok(source) => source,
-        Err(err) => return format!("lang: {err}\n"),
-    };
+    let source = load_source(shell, &source_arg);
     if source.len() > MAX_SOURCE_BYTES {
         return format!("lang: source is too large; limit is {MAX_SOURCE_BYTES} bytes\n");
     }
@@ -532,7 +529,8 @@ fn execute(spec: &LanguageSpec, source: &str) -> io::Result<Output> {
                 .arg(&binary);
             let compile_output = run_command(compile, COMPILE_TIMEOUT)?;
             if compile_output.status.success() {
-                run_command(Command::new(&binary), RUN_TIMEOUT)
+                let run = Command::new(&binary);
+                run_command(run, RUN_TIMEOUT)
             } else {
                 Ok(compile_output)
             }
@@ -547,7 +545,8 @@ fn execute(spec: &LanguageSpec, source: &str) -> io::Result<Output> {
                 .arg(&binary);
             let compile_output = run_command(compile, COMPILE_TIMEOUT)?;
             if compile_output.status.success() {
-                run_command(Command::new(&binary), RUN_TIMEOUT)
+                let run = Command::new(&binary);
+                run_command(run, RUN_TIMEOUT)
             } else {
                 Ok(compile_output)
             }
@@ -588,7 +587,7 @@ fn execute(spec: &LanguageSpec, source: &str) -> io::Result<Output> {
             fs::write(project.join("phase1.csproj"), "<Project Sdk=\"Microsoft.NET.Sdk\"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable></PropertyGroup></Project>")?;
             fs::write(project.join("Program.cs"), source)?;
             let mut cmd = Command::new("dotnet");
-            cmd.arg("run").arg("--no-restore").current_dir(project);
+            cmd.arg("run").current_dir(project);
             run_command(cmd, Duration::from_secs(30))
         }
         Runner::WasmInfo => unreachable!(),
@@ -598,14 +597,14 @@ fn execute(spec: &LanguageSpec, source: &str) -> io::Result<Output> {
     result
 }
 
-fn load_source(shell: &mut Phase1Shell, raw: &str) -> Result<String, String> {
+fn load_source(shell: &mut Phase1Shell, raw: &str) -> String {
     let looks_like_path = raw.starts_with('/') || raw.contains('.') || raw.ends_with('s');
     if looks_like_path {
         if let Ok(content) = shell.kernel.sys_read(raw) {
-            return Ok(content);
+            return content;
         }
     }
-    Ok(raw.to_string())
+    raw.to_string()
 }
 
 fn normalize_java_source(source: &str) -> String {
