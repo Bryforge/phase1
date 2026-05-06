@@ -367,7 +367,7 @@ pub fn print_quick_boot(version: &str, config: BootConfig) {
             &format!(
                 "[quick] profile={} :: shell armed :: clock {}",
                 config.profile_name(),
-                clock_utc()
+                short_clock_utc()
             )
         )
     );
@@ -379,7 +379,7 @@ pub fn print_help() {
 }
 
 pub fn print_prompt(user: &str, path: &str) {
-    print!("{}", prompt_status_bar(user, path));
+    print!("{}", prompt_status_bar());
     print!("{}", prompt_text(user, path));
 }
 
@@ -417,7 +417,7 @@ fn print_boot_card(version: &str, config: BootConfig, selector: bool) {
     println!();
     println!("{}", card_top(config, width));
     println!("{}", card_line(config, width, &console_title(config)));
-    println!("{}", card_line(config, width, &format!("node TOKYO-01 // vOS link // clock {}", clock_utc())));
+    println!("{}", card_line(config, width, &format!("node TOKYO-01 | {}", short_clock_utc())));
     println!("{}", card_rule(config, width));
 
     for row in skyline_rows(config) {
@@ -436,8 +436,9 @@ fn print_boot_card(version: &str, config: BootConfig, selector: bool) {
         }
     } else {
         println!("{}", card_section(config, width, "LIVE OPS"));
-        println!("{}", card_line(config, width, "help  dash  sysinfo  security  theme list"));
-        println!("{}", card_line(config, width, "matrix  audit  ps  ls /  storage via d"));
+        println!("{}", card_line(config, width, "help dash sysinfo security"));
+        println!("{}", card_line(config, width, "theme list matrix audit ps"));
+        println!("{}", card_line(config, width, "ls /  storage via d"));
     }
 
     println!("{}", card_bottom(config, width));
@@ -447,9 +448,9 @@ fn print_boot_card(version: &str, config: BootConfig, selector: bool) {
 fn skyline_rows(config: BootConfig) -> Vec<String> {
     let mode = if config.safe_mode { "shielded" } else { "host-capable" };
     vec![
-        tint(config, "neural link locked :: kernel PHASE1"),
-        format!("mesh encrypted :: mode {mode}"),
-        "bus kernel vfs proc net audit lang git rust".to_string(),
+        tint(config, "neural sync :: kernel PHASE1"),
+        format!("mesh encrypted :: {mode}"),
+        "bus kern/vfs/proc/net/audit/lang".to_string(),
     ]
 }
 
@@ -480,7 +481,7 @@ fn boot_rows(config: BootConfig) -> Vec<String> {
         option_row(config, "[6] MOBILE", on_off(config.mobile_mode), config.mobile_mode),
         option_row(config, "[e] EDGE", on_off(config.bleeding_edge), config.bleeding_edge),
         option_row(config, "[p] VAULT", on_off(config.persistent_state), config.persistent_state),
-        option_row(config, "[d] STORAGE+GIT+RUST", "open dock", true),
+        option_row(config, "[d] STORAGE/GIT/RUST", "open dock", true),
         option_row(config, "[7] REBOOT", "selector", true),
         option_row(config, "[8] SHUTDOWN", "abort", true),
         option_row(config, "[9] SAVE", "phase1.conf", true),
@@ -494,7 +495,7 @@ fn on_off(enabled: bool) -> &'static str {
 
 fn option_row(config: BootConfig, label: &str, value_text: &str, bright: bool) -> String {
     let value_text = if bright { tint(config, value_text) } else { dim(config, value_text) };
-    format!("{label:<23} {value_text}")
+    format!("{label:<22} {value_text}")
 }
 
 fn status_row(config: BootConfig, label: &str, value_text: &str, bright: bool) -> String {
@@ -566,9 +567,8 @@ fn prompt_text(user: &str, path: &str) -> String {
     }
 }
 
-fn prompt_status_bar(user: &str, path: &str) -> String {
+fn prompt_status_bar() -> String {
     let width = card_width(BootConfig::default());
-    let version = std::env::var("PHASE1_DISPLAY_VERSION").unwrap_or_else(|_| crate::kernel::VERSION.to_string());
     let channel = std::env::var("PHASE1_CHANNEL").unwrap_or_else(|_| {
         if bleeding_edge_env_enabled() {
             "edge".to_string()
@@ -586,7 +586,7 @@ fn prompt_status_bar(user: &str, path: &str) -> String {
     } else {
         "ram"
     };
-    let raw = format!("HUD {version} | {channel} | {safe} | {state} | {user}@{path} | {}", clock_utc());
+    let raw = format!("HUD {channel}/{safe}/{state} | {}", short_clock_utc());
     let clipped = clip_visible(&raw, width);
     let visible = visible_len(&clipped);
     let padded = format!("{clipped}{}", " ".repeat(width.saturating_sub(visible)));
@@ -933,6 +933,17 @@ fn clock_utc() -> String {
     format!("{hours:02}:{minutes:02}:{seconds:02} UTC")
 }
 
+fn short_clock_utc() -> String {
+    let seconds = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_secs()
+        % 86_400;
+    let hours = seconds / 3_600;
+    let minutes = (seconds % 3_600) / 60;
+    format!("{hours:02}:{minutes:02} UTC")
+}
+
 fn strip_ansi(text: &str) -> String {
     let mut out = String::with_capacity(text.len());
     let mut chars = text.chars().peekable();
@@ -977,7 +988,7 @@ fn ascii_mode() -> bool {
 mod tests {
     use super::{
         clock_utc, console_title, display_mode, display_version, parse_bool, prompt_status_bar,
-        strip_ansi, visible_len, BootConfig, ThemePalette, PANEL_WIDTH,
+        short_clock_utc, strip_ansi, visible_len, BootConfig, ThemePalette, PANEL_WIDTH,
     };
 
     fn config() -> BootConfig {
@@ -1013,10 +1024,11 @@ mod tests {
     fn prompt_status_bar_contains_clock_without_overflowing() {
         std::env::remove_var("PHASE1_THEME");
         std::env::set_var("COLUMNS", "80");
-        let bar = prompt_status_bar("root", "~");
+        let bar = prompt_status_bar();
         let plain = strip_ansi(&bar);
         assert!(plain.contains("HUD"));
         assert!(plain.contains("UTC"));
+        assert!(!plain.contains("root@"));
         assert!(plain.lines().all(|line| visible_len(line) <= PANEL_WIDTH));
         std::env::remove_var("COLUMNS");
     }
@@ -1024,6 +1036,7 @@ mod tests {
     #[test]
     fn clock_uses_utc_suffix() {
         assert!(clock_utc().ends_with(" UTC"));
+        assert!(short_clock_utc().ends_with(" UTC"));
     }
 
     #[test]
