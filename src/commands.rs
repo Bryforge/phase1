@@ -168,8 +168,8 @@ print("status=ok")
         if !path.exists() {
             return false;
         }
-        if safe_mode_enabled() {
-            println!("plugin: disabled by safe boot profile");
+        if host_tools_blocked() {
+            println!("{}", crate::policy::host_denial_message("plugin"));
             return true;
         }
 
@@ -341,7 +341,7 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
         }
         "wifi-scan" => print!("{}", shell.network.wifi_scan()),
         "wifi-connect" => {
-            if args.is_empty() && !safe_mode_enabled() {
+            if args.is_empty() && !host_tools_blocked() {
                 println!("usage: wifi-connect <ssid> [password]");
             } else {
                 println!(
@@ -358,8 +358,8 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
         }),
         "nmcli" => print!("{}", shell.network.nmcli()),
         "browser" => {
-            if safe_mode_enabled() {
-                println!("browser: disabled by safe boot profile");
+            if host_tools_blocked() {
+                println!("{}", crate::policy::host_denial_message("browser"));
             } else {
                 println!(
                     "{}",
@@ -431,7 +431,7 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
                 println!("{:>4} {}", idx + 1, line);
             }
         }
-        "sandbox" => println!("sandbox: VFS/processes are simulated; host commands are guarded by validation and timeouts. Safe mode is the default and blocks host execution/network inspection."),
+        "sandbox" => println!("sandbox: VFS/processes are simulated; host commands are guarded by validation, timeouts, safe mode, and PHASE1_ALLOW_HOST_TOOLS=1."),
         "man" => match args.first() {
             Some(topic) => match man::get_man_page(topic) {
                 Some(page) => println!("{}", page),
@@ -488,7 +488,7 @@ fn dashboard(shell: &mut Phase1Shell, args: &[String]) -> String {
             job_count,
             cwd,
             iface_count,
-            if safe_mode_enabled() {
+            if host_tools_blocked() {
                 "safe-mode"
             } else {
                 "host-enabled"
@@ -508,7 +508,7 @@ fn dashboard(shell: &mut Phase1Shell, args: &[String]) -> String {
             job_count,
             cwd,
             iface_count,
-            if safe_mode_enabled() {
+            if host_tools_blocked() {
                 "safe-mode"
             } else {
                 "host-enabled"
@@ -561,8 +561,8 @@ fn spawn(shell: &mut Phase1Shell, args: &[String]) {
 }
 
 fn run_python(shell: &mut Phase1Shell, args: &[String]) {
-    if safe_mode_enabled() {
-        println!("python: disabled by safe boot profile");
+    if host_tools_blocked() {
+        println!("{}", crate::policy::host_denial_message("python"));
         return;
     }
     if args.is_empty() || (args[0] == "-c" && args.len() < 2) {
@@ -590,8 +590,8 @@ fn run_python(shell: &mut Phase1Shell, args: &[String]) {
 }
 
 fn run_c(shell: &mut Phase1Shell, args: &[String]) {
-    if safe_mode_enabled() {
-        println!("gcc: disabled by safe boot profile");
+    if host_tools_blocked() {
+        println!("{}", crate::policy::host_denial_message("gcc"));
         return;
     }
     if args.is_empty() {
@@ -715,11 +715,8 @@ fn is_safe_name(name: &str) -> bool {
             .all(|ch| ch.is_ascii_alphanumeric() || matches!(ch, '_' | '-'))
 }
 
-fn safe_mode_enabled() -> bool {
-    !matches!(
-        std::env::var("PHASE1_SAFE_MODE").ok().as_deref(),
-        Some("0" | "false" | "off" | "no")
-    )
+fn host_tools_blocked() -> bool {
+    !crate::policy::host_tools_allowed()
 }
 
 fn now_unix() -> u64 {
@@ -787,7 +784,7 @@ fn print_output(output: Output) {
 
 #[cfg(test)]
 mod tests {
-    use super::{parse_line, safe_mode_enabled};
+    use super::parse_line;
 
     #[test]
     fn parses_quotes_and_redirect() {
@@ -798,14 +795,5 @@ mod tests {
             "out".to_string(),
         ];
         assert_eq!(parse_line("echo 'hello world' > out").unwrap(), expected);
-    }
-
-    #[test]
-    fn command_security_defaults_to_safe_mode() {
-        std::env::remove_var("PHASE1_SAFE_MODE");
-        assert!(safe_mode_enabled());
-        std::env::set_var("PHASE1_SAFE_MODE", "0");
-        assert!(!safe_mode_enabled());
-        std::env::remove_var("PHASE1_SAFE_MODE");
     }
 }
