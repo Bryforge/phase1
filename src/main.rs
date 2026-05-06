@@ -18,7 +18,7 @@ mod operator;
 mod policy;
 mod registry;
 mod text;
-#[path = "boot_ui.rs"]
+#[path = "boot_ui_fixed.rs"]
 mod ui;
 mod updater;
 mod wasm;
