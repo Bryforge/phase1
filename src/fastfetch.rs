@@ -56,32 +56,12 @@ pub fn run(shell: &mut Phase1Shell, config: BootConfig) -> String {
 
 fn collect_facts(shell: &Phase1Shell, config: BootConfig) -> Vec<(&'static str, String)> {
     let display_version = crate::ui::display_version(crate::kernel::VERSION, config);
-    let channel = if config.bleeding_edge {
-        "bleeding-edge"
-    } else {
-        "release"
-    };
-    let security = if config.safe_mode {
-        "safe-mode"
-    } else {
-        "host-capable"
-    };
-    let state = if config.persistent_state {
-        "persistent"
-    } else {
-        "volatile"
-    };
-    let host_tools = if crate::policy::host_tools_allowed() {
-        "enabled"
-    } else {
-        "disabled"
-    };
+    let channel = if config.bleeding_edge { "bleeding-edge" } else { "release" };
+    let security = if config.safe_mode { "safe-mode" } else { "host-capable" };
+    let state = if config.persistent_state { "persistent" } else { "volatile" };
+    let host_tools = if crate::policy::host_tools_allowed() { "enabled" } else { "disabled" };
     let jobs = shell.kernel.scheduler.jobs();
-    let job_count = if jobs.trim() == "no background jobs" {
-        0
-    } else {
-        jobs.lines().count()
-    };
+    let job_count = if jobs.trim() == "no background jobs" { 0 } else { jobs.lines().count() };
     let processes = shell.kernel.scheduler.ps().lines().skip(1).count();
     let audit_count = shell.kernel.audit.dump().lines().count();
     let pcie_count = shell.kernel.pcie.lspci().lines().count();
@@ -99,10 +79,7 @@ fn collect_facts(shell: &Phase1Shell, config: BootConfig) -> Vec<(&'static str, 
         ("Host", "Bryforge cyberdeck".to_string()),
         ("Kernel", format!("phase1 {display_version}")),
         ("Uptime", format!("{uptime}s")),
-        (
-            "Pkgs",
-            format!("{} built-ins", crate::registry::COMMANDS.len()),
-        ),
+        ("Pkgs", format!("{} built-ins", crate::registry::COMMANDS.len())),
         ("Shell", "phase1".to_string()),
         ("Terminal", "ANSI console".to_string()),
         ("Theme", "rainbow".to_string()),
@@ -133,11 +110,7 @@ fn render_mobile(facts: &[(&str, String)], color: bool) -> String {
     out.push_str(&prompt_line(color));
     out.push('\n');
 
-    let card = if color {
-        MOBILE_CARD
-    } else {
-        MOBILE_CARD_ASCII
-    };
+    let card = if color { MOBILE_CARD } else { MOBILE_CARD_ASCII };
     for (idx, line) in card.iter().enumerate() {
         out.push_str(&rainbow_logo(line, idx, color));
         out.push('\n');
@@ -148,18 +121,11 @@ fn render_mobile(facts: &[(&str, String)], color: bool) -> String {
     out.push_str(&mobile_rule(color));
     out.push('\n');
 
-    for (idx, label) in [
-        "OS", "Kernel", "Branch", "Security", "State", "Path", "DevKit", "Tests",
-    ]
-    .iter()
-    .enumerate()
+    for (idx, label) in ["OS", "Kernel", "Branch", "Security", "State", "Path", "DevKit", "Tests"]
+        .iter()
+        .enumerate()
     {
-        out.push_str(&compact_fact_line(
-            label,
-            fact_value(facts, label),
-            idx,
-            color,
-        ));
+        out.push_str(&compact_fact_line(label, fact_value(facts, label), idx, color));
         out.push('\n');
     }
 
@@ -173,13 +139,7 @@ fn render_mobile(facts: &[(&str, String)], color: bool) -> String {
     out.push('\n');
     out.push_str(&meter_line("NET", 1, fact_value(facts, "Net"), 4, color));
     out.push('\n');
-    out.push_str(&meter_line(
-        "SEC",
-        8,
-        fact_value(facts, "Security"),
-        5,
-        color,
-    ));
+    out.push_str(&meter_line("SEC", 8, fact_value(facts, "Security"), 5, color));
     out.push('\n');
 
     out.push_str(&color_bars_compact(color));
@@ -243,11 +203,7 @@ fn color_rule(text: &str, color: bool) -> String {
 }
 
 fn mobile_rule(color: bool) -> String {
-    if !color {
-        "------------------------".to_string()
-    } else {
-        color_rule("────────────────────────", color)
-    }
+    if !color { "------------------------".to_string() } else { color_rule("────────────────────────", color) }
 }
 
 fn mobile_section(title: &str, idx: usize, color: bool) -> String {
@@ -338,6 +294,7 @@ mod tests {
             mobile_mode,
             persistent_state: false,
             bleeding_edge: true,
+            host_tools: false,
         }
     }
 

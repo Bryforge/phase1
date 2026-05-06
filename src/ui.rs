@@ -34,6 +34,7 @@ pub struct BootConfig {
     pub mobile_mode: bool,
     pub persistent_state: bool,
     pub bleeding_edge: bool,
+    pub host_tools: bool,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -52,9 +53,7 @@ pub enum ThemePalette {
 impl ThemePalette {
     pub fn parse(raw: &str) -> Option<Self> {
         match raw.trim().to_ascii_lowercase().as_str() {
-            "neo-tokyo" | "neotokyo" | "tokyo" | "neo" | "city" | "hacker" => {
-                Some(Self::NeoTokyo)
-            }
+            "neo-tokyo" | "neotokyo" | "tokyo" | "neo" | "city" | "hacker" => Some(Self::NeoTokyo),
             "rainbow" | "default" | "classic" => Some(Self::Rainbow),
             "matrix" | "green" => Some(Self::Matrix),
             "cyber" | "cyan" | "cyan-magenta" | "neon" => Some(Self::Cyber),
@@ -142,6 +141,7 @@ impl BootConfig {
             mobile_mode: env_flag("PHASE1_MOBILE_MODE").unwrap_or(false) || detect_mobile(),
             persistent_state: env_flag("PHASE1_PERSISTENT_STATE").unwrap_or(false),
             bleeding_edge: env_flag("PHASE1_BLEEDING_EDGE").unwrap_or(false),
+            host_tools: env_flag("PHASE1_ALLOW_HOST_TOOLS").unwrap_or(false),
         };
         config.normalize_channel();
         config
@@ -153,6 +153,7 @@ impl BootConfig {
         set_bool_env("PHASE1_MOBILE_MODE", self.mobile_mode);
         set_bool_env("PHASE1_PERSISTENT_STATE", self.persistent_state);
         set_bool_env("PHASE1_BLEEDING_EDGE", self.bleeding_edge);
+        set_bool_env("PHASE1_ALLOW_HOST_TOOLS", self.host_tools);
         std::env::set_var(
             "PHASE1_DISPLAY_VERSION",
             display_version(crate::kernel::VERSION, self),
@@ -219,6 +220,7 @@ impl BootConfig {
                 "mobile" | "mobile_mode" => config.mobile_mode = value,
                 "persistent" | "persist" | "persistent_state" => config.persistent_state = value,
                 "bleeding" | "bleeding_edge" | "edge" => config.bleeding_edge = value,
+                "host_tools" | "allow_host_tools" | "trusted_host_tools" => config.host_tools = value,
                 _ => {}
             }
         }
@@ -251,6 +253,9 @@ impl BootConfig {
         if let Some(value) = env_flag("PHASE1_BLEEDING_EDGE") {
             self.bleeding_edge = value;
         }
+        if let Some(value) = env_flag("PHASE1_ALLOW_HOST_TOOLS") {
+            self.host_tools = value;
+        }
         self.normalize_channel();
     }
 
@@ -263,14 +268,15 @@ impl BootConfig {
 
     fn to_config_string(self) -> String {
         format!(
-            "# phase1 boot configuration\n# safe=true is the secure default; set safe=false only when intentionally testing host-backed tools.\ncolor={}\nascii={}\nsafe={}\nquick={}\nmobile={}\npersistent={}\nbleeding_edge={}\n",
+            "# phase1 boot configuration\n# safe=true is the secure default. Host tools also require safe=false before they can run.\ncolor={}\nascii={}\nsafe={}\nquick={}\nmobile={}\npersistent={}\nbleeding_edge={}\nhost_tools={}\n",
             self.color,
             self.ascii_mode,
             self.safe_mode,
             self.quick_boot,
             self.mobile_mode,
             self.persistent_state,
-            self.bleeding_edge
+            self.bleeding_edge,
+            self.host_tools
         )
     }
 }
@@ -315,6 +321,9 @@ pub fn configure_boot(version: &str) -> BootSelection {
             "4" | "s" | "safe" | "safe-mode" | "shield" => config.safe_mode = !config.safe_mode,
             "5" | "q" | "quick" | "quick-boot" => config.quick_boot = !config.quick_boot,
             "6" | "m" | "mobile" | "mobile-mode" => config.mobile_mode = !config.mobile_mode,
+            "t" | "trust" | "trusted" | "host-tools" | "hosttools" => {
+                config.host_tools = !config.host_tools;
+            }
             "p" | "persist" | "persistent" | "persistent-state" | "vault" => {
                 config.persistent_state = !config.persistent_state;
             }
@@ -341,7 +350,7 @@ pub fn configure_boot(version: &str) -> BootSelection {
                     Err(err) => pause(&format!("Reset defaults, but could not remove phase1.conf: {err}")),
                 }
             }
-            "h" | "help" | "?" => pause("HUD dock: Enter boots, e=edge channel, p=vault persistence, d=storage/Rust/Git helper, 9=saves, 0=resets, 8=quits. Safe mode stays on unless you intentionally drop the shield."),
+            "h" | "help" | "?" => pause("HUD dock: Enter boots, t=trusted host tools, 4 toggles safe shield, e=edge, p=vault persistence, d=storage/Rust/Git helper, 9=saves, 0=resets, 8=quits. Host tools only run when SHIELD is off and TRUST is ON."),
             _ => pause("Unknown boot option. Press Enter to re-open the Phase1 boot dock."),
         }
     }
@@ -390,7 +399,13 @@ fn print_preboot(version: &str, config: BootConfig) {
         print!("\x1b[2J\x1b[H{BOLD}");
     }
     print_boot_card(version, config, true);
-    println!("{}", value(config, "Enter=boot  e=edge  p=vault  d=storage/Git/Rust  h=help"));
+    println!(
+        "{}",
+        value(
+            config,
+            "Enter=boot  t=trust  4=shield  e=edge  p=vault  h=help"
+        )
+    );
 }
 
 fn print_mobile_boot(version: &str, config: BootConfig) {
@@ -417,7 +432,10 @@ fn print_boot_card(version: &str, config: BootConfig, selector: bool) {
     println!();
     println!("{}", card_top(config, width));
     println!("{}", card_line(config, width, &console_title(config)));
-    println!("{}", card_line(config, width, &format!("node TOKYO-01 | {}", short_clock_utc())));
+    println!(
+        "{}",
+        card_line(config, width, &format!("node TOKYO-01 | {}", short_clock_utc()))
+    );
     println!("{}", card_rule(config, width));
 
     for row in skyline_rows(config) {
@@ -465,6 +483,7 @@ fn splash_info(version: &str, config: BootConfig) -> Vec<String> {
         status_row(config, "channel", channel, config.bleeding_edge),
         status_row(config, "profile", &config.profile_name(), true),
         status_row(config, "security", security_mode, config.safe_mode),
+        status_row(config, "trust", trust_label(config), config.host_tools),
         status_row(config, "display", display_mode(config), true),
         status_row(config, "state", state_mode, config.persistent_state),
         status_row(config, "workspace", &workspace, true),
@@ -479,6 +498,7 @@ fn boot_rows(config: BootConfig) -> Vec<String> {
         option_row(config, "[4] SHIELD", on_off(config.safe_mode), config.safe_mode),
         option_row(config, "[5] QUICK", on_off(config.quick_boot), config.quick_boot),
         option_row(config, "[6] MOBILE", on_off(config.mobile_mode), config.mobile_mode),
+        option_row(config, "[t] TRUST HOST", trust_label(config), config.host_tools && !config.safe_mode),
         option_row(config, "[e] EDGE", on_off(config.bleeding_edge), config.bleeding_edge),
         option_row(config, "[p] VAULT", on_off(config.persistent_state), config.persistent_state),
         option_row(config, "[d] STORAGE/GIT/RUST", "open dock", true),
@@ -487,6 +507,14 @@ fn boot_rows(config: BootConfig) -> Vec<String> {
         option_row(config, "[9] SAVE", "phase1.conf", true),
         option_row(config, "[0] RESET", "defaults", true),
     ]
+}
+
+fn trust_label(config: BootConfig) -> &'static str {
+    match (config.host_tools, config.safe_mode) {
+        (true, true) => "armed/safe",
+        (true, false) => "enabled",
+        (false, _) => "off",
+    }
 }
 
 fn on_off(enabled: bool) -> &'static str {
@@ -510,9 +538,7 @@ fn console_title(config: BootConfig) -> String {
         let colors = palette(active_theme_for_config(config));
         format!(
             "{}{} // Advanced Operator Console{}",
-            phase1_wordmark(config),
-            colors.title,
-            RESET
+            phase1_wordmark(config), colors.title, RESET
         )
     }
 }
@@ -552,30 +578,15 @@ fn prompt_text(user: &str, path: &str) -> String {
         let colors = palette(active_theme());
         format!(
             "{}{}phase1{}{}://{}{}{}{} {}{}{} ⇢ ",
-            BOLD,
-            colors.title,
-            RESET,
-            GRAY,
-            RESET,
-            colors.prompt_user,
-            user,
-            RESET,
-            colors.prompt_path,
-            path,
-            RESET
+            BOLD, colors.title, RESET, GRAY, RESET, colors.prompt_user, user, RESET,
+            colors.prompt_path, path, RESET
         )
     }
 }
 
 fn prompt_status_bar() -> String {
     let width = card_width(BootConfig::default());
-    let channel = std::env::var("PHASE1_CHANNEL").unwrap_or_else(|_| {
-        if bleeding_edge_env_enabled() {
-            "edge".to_string()
-        } else {
-            "release".to_string()
-        }
-    });
+    let channel = if bleeding_edge_env_enabled() { "edge" } else { "release" };
     let safe = if std::env::var("PHASE1_SAFE_MODE").ok().as_deref() == Some("0") {
         "host"
     } else {
@@ -586,7 +597,12 @@ fn prompt_status_bar() -> String {
     } else {
         "ram"
     };
-    let raw = format!("HUD {channel}/{safe}/{state} | {}", short_clock_utc());
+    let trust = if std::env::var("PHASE1_ALLOW_HOST_TOOLS").ok().as_deref() == Some("1") {
+        "trust"
+    } else {
+        "no-trust"
+    };
+    let raw = format!("HUD {channel}/{safe}/{state}/{trust} | {}", short_clock_utc());
     let clipped = clip_visible(&raw, width);
     let visible = visible_len(&clipped);
     let padded = format!("{clipped}{}", " ".repeat(width.saturating_sub(visible)));
@@ -765,11 +781,7 @@ fn card_width(config: BootConfig) -> usize {
 
 fn card_top(config: BootConfig, width: usize) -> String {
     if config.color && !config.ascii_mode {
-        format!(
-            "{}╭{}╮{RESET}",
-            palette(active_theme_for_config(config)).border,
-            "─".repeat(width)
-        )
+        format!("{}╭{}╮{RESET}", palette(active_theme_for_config(config)).border, "─".repeat(width))
     } else {
         format!("+{}+", "-".repeat(width))
     }
@@ -777,11 +789,7 @@ fn card_top(config: BootConfig, width: usize) -> String {
 
 fn card_bottom(config: BootConfig, width: usize) -> String {
     if config.color && !config.ascii_mode {
-        format!(
-            "{}╰{}╯{RESET}",
-            palette(active_theme_for_config(config)).border,
-            "─".repeat(width)
-        )
+        format!("{}╰{}╯{RESET}", palette(active_theme_for_config(config)).border, "─".repeat(width))
     } else {
         format!("+{}+", "-".repeat(width))
     }
@@ -789,11 +797,7 @@ fn card_bottom(config: BootConfig, width: usize) -> String {
 
 fn card_rule(config: BootConfig, width: usize) -> String {
     if config.color && !config.ascii_mode {
-        format!(
-            "{}├{}┤{RESET}",
-            palette(active_theme_for_config(config)).border,
-            "─".repeat(width)
-        )
+        format!("{}├{}┤{RESET}", palette(active_theme_for_config(config)).border, "─".repeat(width))
     } else {
         format!("+{}+", "-".repeat(width))
     }
@@ -804,13 +808,7 @@ fn card_section(config: BootConfig, width: usize, label: &str) -> String {
     let fill = width.saturating_sub(marker.chars().count());
     if config.color && !config.ascii_mode {
         let colors = palette(active_theme_for_config(config));
-        format!(
-            "{}├{}{}{}┤{RESET}",
-            colors.border,
-            colors.accent,
-            marker,
-            "─".repeat(fill)
-        )
+        format!("{}├{}{}{}┤{RESET}", colors.border, colors.accent, marker, "─".repeat(fill))
     } else {
         format!("+{marker}{}+", "-".repeat(fill))
     }
@@ -830,10 +828,7 @@ fn card_line(config: BootConfig, width: usize, text: &str) -> String {
 
 fn value(config: BootConfig, text: &str) -> String {
     if config.color && !config.ascii_mode {
-        format!(
-            "{}{text}{RESET}",
-            palette(active_theme_for_config(config)).muted
-        )
+        format!("{}{text}{RESET}", palette(active_theme_for_config(config)).muted)
     } else {
         text.to_string()
     }
@@ -841,12 +836,7 @@ fn value(config: BootConfig, text: &str) -> String {
 
 fn tint(config: BootConfig, text: &str) -> String {
     if config.color && !config.ascii_mode {
-        format!(
-            "{}{}{}",
-            palette(active_theme_for_config(config)).accent,
-            text,
-            RESET
-        )
+        format!("{}{}{}", palette(active_theme_for_config(config)).accent, text, RESET)
     } else {
         text.to_string()
     }
@@ -854,10 +844,7 @@ fn tint(config: BootConfig, text: &str) -> String {
 
 fn dim(config: BootConfig, text: &str) -> String {
     if config.color && !config.ascii_mode {
-        format!(
-            "{}{DIM}{text}{RESET}",
-            palette(active_theme_for_config(config)).muted
-        )
+        format!("{}{DIM}{text}{RESET}", palette(active_theme_for_config(config)).muted)
     } else {
         text.to_string()
     }
@@ -908,9 +895,7 @@ fn bleeding_edge_env_enabled() -> bool {
 }
 
 fn env_flag(name: &str) -> Option<bool> {
-    std::env::var(name)
-        .ok()
-        .and_then(|value| parse_bool(&value))
+    std::env::var(name).ok().and_then(|value| parse_bool(&value))
 }
 
 fn parse_bool(value: &str) -> Option<bool> {
@@ -1000,6 +985,7 @@ mod tests {
             mobile_mode: false,
             persistent_state: false,
             bleeding_edge: false,
+            host_tools: false,
         }
     }
 
@@ -1058,6 +1044,17 @@ mod tests {
         assert_eq!(parse_bool("on"), Some(true));
         assert_eq!(parse_bool("0"), Some(false));
         assert_eq!(parse_bool("maybe"), None);
+    }
+
+    #[test]
+    fn host_tools_apply_sets_trust_gate_env() {
+        let mut trusted = config();
+        trusted.safe_mode = false;
+        trusted.host_tools = true;
+        trusted.apply();
+        assert_eq!(std::env::var("PHASE1_SAFE_MODE").ok().as_deref(), Some("0"));
+        assert_eq!(std::env::var("PHASE1_ALLOW_HOST_TOOLS").ok().as_deref(), Some("1"));
+        std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
     }
 
     #[test]

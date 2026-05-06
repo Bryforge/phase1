@@ -4,13 +4,8 @@ use crate::registry;
 pub enum TabCompletion {
     Unchanged(String),
     Completed(String),
-    Suggestions {
-        prefix: String,
-        matches: Vec<String>,
-    },
-    NoMatch {
-        prefix: String,
-    },
+    Suggestions { prefix: String, matches: Vec<String> },
+    NoMatch { prefix: String },
 }
 
 pub fn complete_tab_line(line: &str) -> TabCompletion {
@@ -49,19 +44,14 @@ fn completion_result(
     matches: Vec<String>,
 ) -> TabCompletion {
     match matches.len() {
-        0 => TabCompletion::NoMatch {
-            prefix: prefix.to_string(),
-        },
+        0 => TabCompletion::NoMatch { prefix: prefix.to_string() },
         1 => TabCompletion::Completed(format!("{}{}{}", &before[..token_start], matches[0], after)),
         _ => {
             let common = common_prefix(&matches);
             if common.len() > prefix.len() {
                 TabCompletion::Completed(format!("{}{}{}", &before[..token_start], common, after))
             } else {
-                TabCompletion::Suggestions {
-                    prefix: prefix.to_string(),
-                    matches,
-                }
+                TabCompletion::Suggestions { prefix: prefix.to_string(), matches }
             }
         }
     }
@@ -130,124 +120,108 @@ fn command_matches(prefix: &str) -> Vec<String> {
 
 fn argument_matches(command: &str, prefix: &str, before_token: &str) -> Vec<String> {
     let canonical = registry::canonical_name(command).unwrap_or(command);
-    let options: &[&str] = match canonical {
-        "theme" => &[
-            "show",
-            "list",
-            "rainbow",
-            "matrix",
-            "cyber",
-            "amber",
-            "ice",
-            "synthwave",
-            "crimson",
-            "mono",
-            "ascii",
-            "reset",
-        ],
-        "banner" => &[
-            "mobile",
-            "desktop",
-            "mono",
-            "rainbow",
-            "matrix",
-            "cyber",
-            "amber",
-            "ice",
-            "synthwave",
-            "crimson",
-            "ascii",
-            "safe",
-            "host",
-            "persist",
-            "edge",
-            "bleeding-edge",
-        ],
-        "update" if update_suite_context(before_token) => &[
-            "quick",
-            "full",
-            "smoke",
-            "game",
-            "fmt",
-            "cargo-check",
-            "clippy",
-            "doctor",
-            "--build",
-            "--no-build",
-            "--trust-host",
-            "--execute",
-        ],
-        "update" => &[
-            "plan",
-            "check",
-            "status",
-            "execute",
-            "--execute",
-            "protocol",
-            "latest",
-            "now",
-            "self-update",
-            "bleeding",
-            "edge",
-            "stable",
-            "release",
-            "test",
-            "tests",
-            "devtest",
-            "validate",
-            "verify",
-            "qa",
-            "quick",
-            "full",
-            "smoke",
-            "game",
-            "fmt",
-            "cargo-check",
-            "clippy",
-            "doctor",
-            "--build",
-            "--no-build",
-            "--trust-host",
-        ],
-        "wasm" => &[
-            "list",
-            "inspect",
-            "run",
-            "validate",
-            "hello-wasi",
-            "arena",
-            "game",
-        ],
-        "arena" | "doom" => &[
-            "start",
-            "play",
-            "demo",
-            "script",
-            "roadmap",
-            "dev",
-            "test-plan",
-            "help",
-            "quit",
-        ],
-        "game" => &[
-            "status",
-            "files",
-            "roadmap",
-            "test-plan",
-            "version",
-            "help",
-            "arena",
-        ],
-        "history" => &["list", "status", "path", "save", "clear"],
-        "bootcfg" => &["show", "save", "reset", "defaults", "path", "state", "help"],
-        "matrix" => &["0", "forever", "--speed", "--density", "--chars"],
-        "grep" => &["-i", "-n", "-c", "--help"],
-        "wc" => &["-l", "-w", "-c", "--help"],
-        "head" | "tail" => &["-n", "--lines", "--help"],
+    let mut matches = match canonical {
+        "theme" => matches_from(
+            &[
+                "show", "list", "neo-tokyo", "rainbow", "matrix", "cyber", "amber", "ice",
+                "synthwave", "crimson", "bleeding-edge", "mono", "ascii", "reset",
+            ],
+            prefix,
+        ),
+        "banner" => matches_from(
+            &[
+                "mobile", "desktop", "mono", "rainbow", "matrix", "cyber", "amber", "ice",
+                "synthwave", "crimson", "ascii", "safe", "host", "persist", "edge",
+                "bleeding-edge",
+            ],
+            prefix,
+        ),
+        "update" if update_suite_context(before_token) => matches_from(
+            &[
+                "quick", "full", "smoke", "game", "fmt", "cargo-check", "clippy", "doctor",
+                "--build", "--no-build", "--trust-host", "--execute",
+            ],
+            prefix,
+        ),
+        "update" => matches_from(
+            &[
+                "plan", "check", "status", "execute", "--execute", "protocol", "latest", "now",
+                "self-update", "bleeding", "edge", "stable", "release", "test", "tests", "devtest",
+                "validate", "verify", "qa", "quick", "full", "smoke", "game", "fmt",
+                "cargo-check", "clippy", "doctor", "--build", "--no-build", "--trust-host",
+            ],
+            prefix,
+        ),
+        "wasm" => matches_from(
+            &["list", "inspect", "run", "validate", "hello-wasi", "arena", "game"],
+            prefix,
+        ),
+        "arena" | "doom" => matches_from(
+            &["start", "play", "demo", "script", "roadmap", "dev", "test-plan", "help", "quit"],
+            prefix,
+        ),
+        "game" => matches_from(
+            &["status", "files", "roadmap", "test-plan", "version", "help", "arena"],
+            prefix,
+        ),
+        "history" => matches_from(&["list", "status", "path", "save", "clear"], prefix),
+        "bootcfg" => matches_from(
+            &["show", "save", "reset", "defaults", "path", "state", "help"],
+            prefix,
+        ),
+        "matrix" => matches_from(&["0", "forever", "--speed", "--density", "--chars"], prefix),
+        "grep" => option_and_file_matches(&["-i", "-n", "-c", "--help"], prefix),
+        "wc" => option_and_file_matches(&["-l", "-w", "-c", "--help"], prefix),
+        "head" | "tail" => option_and_file_matches(&["-n", "--lines", "--help"], prefix),
+        "cat" | "avim" | "ned" | "python" | "gcc" | "rm" | "cp" | "mv" | "ls" | "cd"
+        | "tree" | "find" => file_matches(prefix),
+        "lang" => lang_matches(prefix, before_token),
         "man" | "complete" => return command_matches(prefix),
-        _ => &[],
+        _ => Vec::new(),
     };
-    matches_from(options, prefix)
+    matches.sort();
+    matches.dedup();
+    matches
+}
+
+fn lang_matches(prefix: &str, before_token: &str) -> Vec<String> {
+    let mut options = matches_from(
+        &[
+            "list", "support", "status", "doctor", "detect", "run", "security", "rust", "python",
+            "javascript", "typescript", "go", "java", "c", "cpp",
+        ],
+        prefix,
+    );
+    if before_token.split_whitespace().any(|token| token == "run" || token == "detect") {
+        options.extend(file_matches(prefix));
+    }
+    options
+}
+
+fn option_and_file_matches(options: &[&str], prefix: &str) -> Vec<String> {
+    let mut matches = matches_from(options, prefix);
+    matches.extend(file_matches(prefix));
+    matches.sort();
+    matches.dedup();
+    matches
+}
+
+fn file_matches(prefix: &str) -> Vec<String> {
+    let options = [
+        "readme.txt",
+        "hello.py",
+        "notes.rs",
+        "main.rs",
+        "phase1.conf",
+        "phase1.state",
+        "/home/readme.txt",
+        "/home/hello.py",
+        "/etc/passwd",
+        "/proc/version",
+        "/proc/uptime",
+        "/var/log/boot.log",
+    ];
+    matches_from(&options, prefix)
 }
 
 fn update_suite_context(before_token: &str) -> bool {
@@ -255,12 +229,7 @@ fn update_suite_context(before_token: &str) -> bool {
     before_token[start..]
         .split_whitespace()
         .skip(1)
-        .any(|token| {
-            matches!(
-                token,
-                "test" | "tests" | "devtest" | "validate" | "verify" | "qa"
-            )
-        })
+        .any(|token| matches!(token, "test" | "tests" | "devtest" | "validate" | "verify" | "qa"))
 }
 
 fn matches_from(options: &[&str], prefix: &str) -> Vec<String> {
@@ -306,6 +275,10 @@ mod tests {
             TabCompletion::Completed("theme matrix".to_string())
         );
         assert_eq!(
+            complete_tab_line("theme neo\t"),
+            TabCompletion::Completed("theme neo-tokyo".to_string())
+        );
+        assert_eq!(
             complete_tab_line("update pr\t"),
             TabCompletion::Completed("update protocol".to_string())
         );
@@ -340,6 +313,22 @@ mod tests {
         assert_eq!(
             complete_tab_line("game test-p\t"),
             TabCompletion::Completed("game test-plan".to_string())
+        );
+    }
+
+    #[test]
+    fn tab_completes_vfs_file_arguments() {
+        assert_eq!(
+            complete_input_prefix("cat rea"),
+            TabCompletion::Completed("cat readme.txt".to_string())
+        );
+        assert_eq!(
+            complete_tab_line("avim hel\t"),
+            TabCompletion::Completed("avim hello.py".to_string())
+        );
+        assert_eq!(
+            complete_tab_line("cat /proc/ver\t"),
+            TabCompletion::Completed("cat /proc/version".to_string())
         );
     }
 
