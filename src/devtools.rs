@@ -154,7 +154,11 @@ fn run_suite(suite: Suite) -> String {
             break;
         }
     }
-    out.push_str(if all_ok { "result     : ok\n" } else { "result     : failed\n" });
+    out.push_str(if all_ok {
+        "result     : ok\n"
+    } else {
+        "result     : failed\n"
+    });
     out
 }
 
@@ -169,9 +173,24 @@ fn doctor() -> String {
 
     let mut out = String::from("phase1 developer test kit // doctor\n");
     for step in [
-        TestStep { label: "cargo version", command: vec!["cargo", "--version"] },
-        TestStep { label: "rustc version", command: vec!["rustc", "--version"] },
-        TestStep { label: "git status", command: vec!["git", "status", "--short", "--branch", "--untracked-files=no"] },
+        TestStep {
+            label: "cargo version",
+            command: vec!["cargo", "--version"],
+        },
+        TestStep {
+            label: "rustc version",
+            command: vec!["rustc", "--version"],
+        },
+        TestStep {
+            label: "git status",
+            command: vec![
+                "git",
+                "status",
+                "--short",
+                "--branch",
+                "--untracked-files=no",
+            ],
+        },
     ] {
         let (step_out, _) = run_step(&step);
         out.push_str(&step_out);
@@ -182,7 +201,15 @@ fn doctor() -> String {
 fn suite_steps(suite: Suite) -> Vec<TestStep> {
     match suite {
         Suite::Quick => vec![fmt_step(), check_step(), all_tests_step()],
-        Suite::Full => vec![fmt_step(), check_step(), clippy_step(), all_tests_step(), smoke_step(), bleeding_step(), game_step()],
+        Suite::Full => vec![
+            fmt_step(),
+            check_step(),
+            clippy_step(),
+            all_tests_step(),
+            smoke_step(),
+            bleeding_step(),
+            game_step(),
+        ],
         Suite::Smoke => vec![smoke_step()],
         Suite::Bleeding => vec![bleeding_step()],
         Suite::Game => vec![game_step()],
@@ -193,31 +220,52 @@ fn suite_steps(suite: Suite) -> Vec<TestStep> {
 }
 
 fn fmt_step() -> TestStep {
-    TestStep { label: "cargo fmt", command: vec!["cargo", "fmt", "--all", "--", "--check"] }
+    TestStep {
+        label: "cargo fmt",
+        command: vec!["cargo", "fmt", "--all", "--", "--check"],
+    }
 }
 
 fn check_step() -> TestStep {
-    TestStep { label: "cargo check", command: vec!["cargo", "check", "--all-targets"] }
+    TestStep {
+        label: "cargo check",
+        command: vec!["cargo", "check", "--all-targets"],
+    }
 }
 
 fn clippy_step() -> TestStep {
-    TestStep { label: "cargo clippy", command: vec!["cargo", "clippy", "--all-targets", "--", "-D", "warnings"] }
+    TestStep {
+        label: "cargo clippy",
+        command: vec!["cargo", "clippy", "--all-targets", "--", "-D", "warnings"],
+    }
 }
 
 fn all_tests_step() -> TestStep {
-    TestStep { label: "cargo test all", command: vec!["cargo", "test", "--all-targets"] }
+    TestStep {
+        label: "cargo test all",
+        command: vec!["cargo", "test", "--all-targets"],
+    }
 }
 
 fn smoke_step() -> TestStep {
-    TestStep { label: "smoke tests", command: vec!["cargo", "test", "--test", "smoke", "--", "--nocapture"] }
+    TestStep {
+        label: "smoke tests",
+        command: vec!["cargo", "test", "--test", "smoke", "--", "--nocapture"],
+    }
 }
 
 fn bleeding_step() -> TestStep {
-    TestStep { label: "bleeding tests", command: vec!["cargo", "test", "--test", "bleeding", "--", "--nocapture"] }
+    TestStep {
+        label: "bleeding tests",
+        command: vec!["cargo", "test", "--test", "bleeding", "--", "--nocapture"],
+    }
 }
 
 fn game_step() -> TestStep {
-    TestStep { label: "game tests", command: vec!["cargo", "test", "--test", "game", "--", "--nocapture"] }
+    TestStep {
+        label: "game tests",
+        command: vec!["cargo", "test", "--test", "game", "--", "--nocapture"],
+    }
 }
 
 fn run_step(step: &TestStep) -> (String, bool) {
@@ -307,7 +355,11 @@ mod tests {
     fn developer_test_execution_is_guarded() {
         std::env::remove_var("PHASE1_SAFE_MODE");
         std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
-        let out = run(&["test".to_string(), "quick".to_string(), "--execute".to_string()]);
+        let out = run(&[
+            "test".to_string(),
+            "quick".to_string(),
+            "--execute".to_string(),
+        ]);
         assert!(out.contains("disabled by safe boot profile"));
         assert!(out.contains("safe mode off"));
     }
