@@ -58,6 +58,7 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("python", &["py"], "host", "python <file.py> | python -c <code>", "Run Python with a timeout.", "host.exec"),
     cmd!("gcc", &["cc"], "host", "gcc <file.c> | gcc <code>", "Compile and run C with host compiler timeout guards.", "host.exec"),
     cmd!("plugins", &["plugin"], "host", "plugins", "List Python plugins in ./plugins.", "host.exec"),
+    cmd!("update", &["upgrade"], "host", "update [plan|check|--execute] [bleeding|stable] [--build]", "Safely plan or run a guarded Git update from stable to bleeding edge.", "host.exec"),
     cmd!("ned", &["nano", "vi"], "host", "ned <file>", "Edit a VFS file with a small line editor.", "fs.write"),
     cmd!("lspci", &[], "arch", "lspci", "List simulated PCIe devices.", "hw.read"),
     cmd!("pcie", &[], "arch", "pcie", "Show PCIe subsystem summary.", "hw.read"),
@@ -119,7 +120,7 @@ pub fn command_map() -> String {
             .join(" ");
         out.push_str(&format!("{:<5}: {}\n", category, names));
     }
-    out.push_str("\nquick : grep phase1 /home/readme.txt | wc /home/readme.txt | find /home -type f | sysinfo | theme list | matrix 0\n");
+    out.push_str("\nquick : update | update bleeding --check | grep phase1 /home/readme.txt | wc /home/readme.txt | find /home -type f | sysinfo\n");
     out
 }
 
@@ -195,6 +196,7 @@ mod tests {
         assert_eq!(lookup("style").map(|cmd| cmd.name), Some("theme"));
         assert_eq!(lookup("splash").map(|cmd| cmd.name), Some("banner"));
         assert_eq!(lookup("hint").map(|cmd| cmd.name), Some("tips"));
+        assert_eq!(lookup("upgrade").map(|cmd| cmd.name), Some("update"));
     }
 
     #[test]
@@ -210,6 +212,7 @@ mod tests {
         assert_eq!(canonical_name("policy"), Some("security"));
         assert_eq!(canonical_name("neofetch"), Some("sysinfo"));
         assert_eq!(canonical_name("style"), Some("theme"));
+        assert_eq!(canonical_name("upgrade"), Some("update"));
     }
 
     #[test]
@@ -229,13 +232,14 @@ mod tests {
         assert!(map.contains("tips"));
         assert!(map.contains("grep"));
         assert!(map.contains("find"));
+        assert!(map.contains("update"));
     }
 
     #[test]
     fn man_pages_are_generated() {
-        let page = man_page("grep").expect("grep man page");
-        assert!(page.contains("Search VFS text files"));
-        assert!(page.contains("capability"));
+        let page = man_page("update").expect("update man page");
+        assert!(page.contains("stable to bleeding edge"));
+        assert!(page.contains("host.exec"));
     }
 
     #[test]
@@ -248,6 +252,8 @@ mod tests {
         assert!(completions("the").contains(&"theme"));
         assert!(completions("f").contains(&"find"));
         assert!(completions("g").contains(&"grep"));
+        assert!(completions("u").contains(&"update"));
+        assert!(completions("u").contains(&"upgrade"));
     }
 
     #[test]
@@ -258,5 +264,6 @@ mod tests {
         assert!(report.contains("PHASE1_ALLOW_HOST_TOOLS"));
         assert!(report.contains("theme"));
         assert!(report.contains("grep"));
+        assert!(report.contains("update"));
     }
 }
