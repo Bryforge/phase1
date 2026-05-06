@@ -1,6 +1,7 @@
 /target/
 # Local runtime files
 /plugins/*.local.py
+phase1.conf
 *.tmp
 *.log
 
