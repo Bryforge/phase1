@@ -8,7 +8,7 @@ const BLEEDING_BRANCH: &str = "master";
 const STABLE_BRANCH: &str = "stable";
 const UPDATE_PROTOCOL_FILE: &str = "UPDATE_PROTOCOL.md";
 const VERSION_SCHEME: &str = "MAJOR.MINOR.PATCH[-dev]";
-const CURRENT_EDGE_VERSION: &str = "3.7.1-dev";
+const CURRENT_EDGE_VERSION: &str = "3.7.2-dev";
 const COMMAND_TIMEOUT: Duration = Duration::from_secs(20);
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -84,7 +84,7 @@ fn guarded_check(target: Target) -> String {
 
     let mut out = format!("phase1 updater // check {}\n", target.label());
     out.push_str("host tools : enabled\n");
-    out.push_str("privacy    : command output is sanitized; credentials and tokens are redacted\n");
+    out.push_str("privacy    : command output is sanitized before display\n");
     out.push_str(&run_git_summary(
         &["rev-parse", "--is-inside-work-tree"],
         "git repo",
@@ -119,7 +119,7 @@ fn guarded_execute(target: Target, build: bool) -> String {
     let mut out = format!("phase1 updater // execute {}\n", target.label());
     out.push_str("mode       : guarded host git update\n");
     out.push_str(&format!("protocol   : {}\n", UPDATE_PROTOCOL_FILE));
-    out.push_str("privacy    : command output is sanitized; credentials and tokens are redacted\n");
+    out.push_str("privacy    : command output is sanitized before display\n");
 
     if let Err(err) = ensure_git_repo() {
         out.push_str(&format!("update: {err}\n"));
@@ -169,7 +169,7 @@ fn plan(target: Target, build: bool) -> String {
     out.push_str(&format!("protocol     : {UPDATE_PROTOCOL_FILE}\n"));
     out.push_str("safe default : this command does not modify files unless --execute is provided\n");
     out.push_str("guard        : --execute requires PHASE1_SAFE_MODE=0 and PHASE1_ALLOW_HOST_TOOLS=1\n");
-    out.push_str("privacy      : updater never asks for passwords, tokens, email credentials, cookies, or keys\n");
+    out.push_str("privacy      : updater never asks for private credentials or keys\n");
     out.push_str("local safety : tracked local changes block the update instead of being overwritten\n\n");
     out.push_str("manual commands:\n");
     out.push_str("  git status --short --branch --untracked-files=no\n");
@@ -200,6 +200,7 @@ fn protocol_report() -> String {
     out.push_str("  - use MINOR for meaningful roadmap capability sets\n");
     out.push_str("  - use MAJOR only for deliberate compatibility-breaking behavior\n");
     out.push_str("  - keep bleeding-edge builds on -dev until promoted to stable release\n");
+    out.push_str("  - move the third number before publishing any follow-up bleeding-edge change\n");
     out.push_str("\nsafety gates\n");
     out.push_str("  - update without --execute is a dry-run plan\n");
     out.push_str("  - update --execute requires PHASE1_SAFE_MODE=0 and PHASE1_ALLOW_HOST_TOOLS=1\n");
@@ -390,11 +391,11 @@ mod tests {
         std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
         let out = run(&[]);
         assert!(out.contains("phase1 updater // plan bleeding edge"));
-        assert!(out.contains("3.7.1-dev"));
+        assert!(out.contains("3.7.2-dev"));
         assert!(out.contains("MAJOR.MINOR.PATCH"));
         assert!(out.contains("update protocol"));
         assert!(out.contains("update bleeding --execute"));
-        assert!(out.contains("never asks for passwords"));
+        assert!(out.contains("private credentials"));
     }
 
     #[test]
@@ -404,6 +405,7 @@ mod tests {
         assert!(out.contains("UPDATE_PROTOCOL.md"));
         assert!(out.contains("third number"));
         assert!(out.contains("PHASE1_ALLOW_HOST_TOOLS"));
+        assert!(out.contains("3.7.2-dev"));
     }
 
     #[test]
@@ -419,7 +421,7 @@ mod tests {
     fn sanitizer_redacts_tokens_and_url_credentials() {
         assert_eq!(sanitize_token("ghp_abc123"), "[redacted-token]");
         assert_eq!(
-            sanitize_token("https://user:secret@example.com/repo.git"),
+            sanitize_token("https://user:example@example.com/repo.git"),
             "https://[redacted-credential]@example.com/repo.git"
         );
     }
