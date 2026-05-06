@@ -3,8 +3,23 @@
 /plugins/*.local.py
 phase1.conf
 phase1.state
+.phase1_history
 *.tmp
 *.log
+
+# Local secrets / credentials - never commit
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+*_token*
+*_secret*
+*_password*
 
 # Editor and OS noise
 **/*.rs.bk
