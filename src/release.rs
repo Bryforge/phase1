@@ -1,7 +1,7 @@
 use crate::kernel::VERSION;
 
 pub const RELEASE_VERSION: &str = "3.6.0";
-pub const BLEEDING_VERSION: &str = "3.10.0-dev";
+pub const BLEEDING_VERSION: &str = "3.10.1-dev";
 pub const CHANNEL: &str = "bleeding-edge";
 pub const UPDATE_PROTOCOL_FILE: &str = "UPDATE_PROTOCOL.md";
 pub const VERSION_SCHEME: &str = "MAJOR.MINOR.PATCH[-dev]";
@@ -11,6 +11,7 @@ const BLEEDING_FEATURES: &[&str] = &[
     "structured shell command chains",
     "structured text pipelines",
     "guarded stable-to-bleeding updater",
+    "in-system latest self-update flow with explicit host trust",
     "documented update protocol with patch-level SemVer",
     "update protocol patch policy hardening",
     "metadata-backed capability enforcement",
@@ -57,6 +58,10 @@ const ROADMAP_STATUS: &[(&str, &str)] = &[
     (
         "Full-screen TUI dashboard",
         "complete: dash renders a full-screen operator panel set; dash --compact keeps the quick snapshot",
+    ),
+    (
+        "In-system latest updater",
+        "complete: update now --trust-host fetches, fast-forwards, and rebuilds latest bleeding edge from inside phase1",
     ),
 ];
 
@@ -122,6 +127,7 @@ mod tests {
         assert!(out.contains("live system tab auto-completion"));
         assert!(out.contains("raw-mode input editor"));
         assert!(out.contains("full-screen operator TUI dashboard"));
+        assert!(out.contains("in-system latest self-update"));
     }
 
     #[test]
@@ -136,6 +142,7 @@ mod tests {
         assert!(out.contains("System tab auto-completion"));
         assert!(out.contains("Raw input editing"));
         assert!(out.contains("Full-screen TUI dashboard"));
+        assert!(out.contains("In-system latest updater"));
         assert!(out.contains("complete"));
     }
 }
