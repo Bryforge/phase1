@@ -25,12 +25,20 @@ const DESKTOP_LOGO: &[&str] = &[
     "      '-==++#%@@%#++==-'      ",
 ];
 
-const MOBILE_LOGO: &[&str] = &[
-    "   .-== PHASE1 ==-.",
-    "  /  P1 DEVKIT     ",
-    " | update everything |",
-    " | rainbow shell     |",
-    "  '-- fastfetch ---'",
+const MOBILE_CARD: &[&str] = &[
+    "╭─ phase1 devkit ─────────╮",
+    "│    ◢◤ PHASE1 CORE       │",
+    "│ update everything        │",
+    "│ code · test · ship       │",
+    "╰── mobile fastfetch ─────╯",
+];
+
+const MOBILE_CARD_ASCII: &[&str] = &[
+    ".-== phase1 devkit ==-.",
+    "|   P1 CORE          |",
+    "| update everything  |",
+    "| code test ship     |",
+    "'-- mobile fastfetch-'",
 ];
 
 pub fn run(shell: &mut Phase1Shell, config: BootConfig) -> String {
@@ -94,18 +102,41 @@ fn render_mobile(facts: &[(&str, String)]) -> String {
     let mut out = String::new();
     out.push_str(&prompt_line());
     out.push('\n');
-    for (idx, line) in MOBILE_LOGO.iter().enumerate() {
+
+    let card = if color_enabled() { MOBILE_CARD } else { MOBILE_CARD_ASCII };
+    for (idx, line) in card.iter().enumerate() {
         out.push_str(&rainbow_logo(line, idx));
         out.push('\n');
     }
+
     out.push_str(&color_title());
     out.push('\n');
-    out.push_str(&color_rule("----------------------"));
+    out.push_str(&mobile_rule());
     out.push('\n');
-    for (idx, (label, value)) in facts.iter().enumerate() {
-        out.push_str(&compact_fact_line(label, value, idx));
+
+    for (idx, label) in [
+        "OS", "Kernel", "Branch", "Security", "State", "Path", "DevKit", "Tests",
+    ]
+    .iter()
+    .enumerate()
+    {
+        out.push_str(&compact_fact_line(label, fact_value(facts, label), idx));
         out.push('\n');
     }
+
+    out.push_str(&mobile_section("system meters", 0));
+    out.push('\n');
+    out.push_str(&meter_line("CPU", 6, "Rust scheduler", 1));
+    out.push('\n');
+    out.push_str(&meter_line("MEM", 4, fact_value(facts, "Memory"), 2));
+    out.push('\n');
+    out.push_str(&meter_line("DSK", 2, fact_value(facts, "Disk"), 3));
+    out.push('\n');
+    out.push_str(&meter_line("NET", 1, fact_value(facts, "Net"), 4));
+    out.push('\n');
+    out.push_str(&meter_line("SEC", 8, fact_value(facts, "Security"), 5));
+    out.push('\n');
+
     out.push_str(&color_bars_compact());
     out.push('\n');
     out.push_str("privacy: simulated facts only\n");
@@ -166,6 +197,22 @@ fn color_rule(text: &str) -> String {
     format!("{GRAY}{text}{RESET}")
 }
 
+fn mobile_rule() -> String {
+    if !color_enabled() {
+        "------------------------".to_string()
+    } else {
+        color_rule("────────────────────────")
+    }
+}
+
+fn mobile_section(title: &str, idx: usize) -> String {
+    if !color_enabled() {
+        return format!("-- {title} --");
+    }
+    let color = rainbow_color(idx);
+    format!("{color}╭─ {title} ─────────╮{RESET}")
+}
+
 fn fact_line(label: &str, value: &str, idx: usize) -> String {
     if !color_enabled() {
         return format!("{label:<10}: {value}");
@@ -180,6 +227,30 @@ fn compact_fact_line(label: &str, value: &str, idx: usize) -> String {
     }
     let color = rainbow_color(idx);
     format!("{color}{BOLD}{label:<9}{RESET} {value}")
+}
+
+fn meter_line(label: &str, filled: usize, value: &str, idx: usize) -> String {
+    let total = 8;
+    let filled = filled.min(total);
+    if !color_enabled() {
+        let bar = format!("{}{}", "#".repeat(filled), ".".repeat(total - filled));
+        return format!("{label:<3} [{bar}] {value}");
+    }
+    let color = rainbow_color(idx);
+    let bar = format!(
+        "{color}{}{GRAY}{}{RESET}",
+        "█".repeat(filled),
+        "░".repeat(total - filled)
+    );
+    format!("{color}{BOLD}{label:<3}{RESET} [{bar}] {value}")
+}
+
+fn fact_value<'a>(facts: &'a [(&str, String)], label: &str) -> &'a str {
+    facts
+        .iter()
+        .find(|(name, _)| *name == label)
+        .map(|(_, value)| value.as_str())
+        .unwrap_or("n/a")
 }
 
 fn rainbow_logo(line: &str, idx: usize) -> String {
@@ -263,6 +334,8 @@ mod tests {
         let out = run(&mut shell, config(true));
         assert!(out.contains("dev@localhost"));
         assert!(out.contains("update everything"));
+        assert!(out.contains("system meters"));
+        assert!(out.contains("code test ship"));
         assert!(out.contains("Colors: blk red yel grn cyn blu mag wht"));
         assert!(out.lines().all(|line| line.chars().count() <= 44));
         std::env::remove_var("PHASE1_ASCII");
