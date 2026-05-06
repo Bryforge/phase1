@@ -1,7 +1,7 @@
 use crate::kernel::VERSION;
 
 pub const RELEASE_VERSION: &str = "3.6.0";
-pub const BLEEDING_VERSION: &str = "3.10.1-dev";
+pub const BLEEDING_VERSION: &str = "3.10.2-dev";
 pub const CHANNEL: &str = "bleeding-edge";
 pub const UPDATE_PROTOCOL_FILE: &str = "UPDATE_PROTOCOL.md";
 pub const VERSION_SCHEME: &str = "MAJOR.MINOR.PATCH[-dev]";
@@ -12,6 +12,7 @@ const BLEEDING_FEATURES: &[&str] = &[
     "structured text pipelines",
     "guarded stable-to-bleeding updater",
     "in-system latest self-update flow with explicit host trust",
+    "developer test kit for quick/full Rust validation from inside phase1",
     "documented update protocol with patch-level SemVer",
     "update protocol patch policy hardening",
     "metadata-backed capability enforcement",
@@ -62,6 +63,10 @@ const ROADMAP_STATUS: &[(&str, &str)] = &[
     (
         "In-system latest updater",
         "complete: update now --trust-host fetches, fast-forwards, and rebuilds latest bleeding edge from inside phase1",
+    ),
+    (
+        "Developer test kit",
+        "complete: update test plans and runs quick/full/smoke/bleeding/game validation suites from inside phase1",
     ),
 ];
 
@@ -128,6 +133,7 @@ mod tests {
         assert!(out.contains("raw-mode input editor"));
         assert!(out.contains("full-screen operator TUI dashboard"));
         assert!(out.contains("in-system latest self-update"));
+        assert!(out.contains("developer test kit"));
     }
 
     #[test]
@@ -143,6 +149,7 @@ mod tests {
         assert!(out.contains("Raw input editing"));
         assert!(out.contains("Full-screen TUI dashboard"));
         assert!(out.contains("In-system latest updater"));
+        assert!(out.contains("Developer test kit"));
         assert!(out.contains("complete"));
     }
 }
