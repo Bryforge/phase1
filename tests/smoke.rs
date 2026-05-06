@@ -95,7 +95,7 @@ fn boot_help_man_and_completion_work() {
         &output,
         &[
             "security  safe",
-            "PHASE1 // ADVANCED OPERATOR CONSOLE",
+            "Phase1 // Advanced Operator Console",
             "phase1 // command map",
             "text : grep wc head tail find",
             "proc",
