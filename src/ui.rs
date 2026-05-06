@@ -271,6 +271,7 @@ fn print_boot_card(version: &str, config: BootConfig, selector: bool) {
     println!();
     println!("{}", card_top(config, width));
     println!("{}", card_line(config, width, &phase1_wordmark(config)));
+    println!("{}", card_line(config, width, "PHASE1 // ADVANCED OPERATOR CONSOLE"));
     println!("{}", card_rule(config, width));
     for row in splash_info(version, config) {
         println!("{}", card_line(config, width, &row));
@@ -297,7 +298,7 @@ fn splash_info(version: &str, config: BootConfig) -> Vec<String> {
     vec![
         format!("os      phase1 v{version}"),
         format!("profile {}", config.profile_name()),
-        format!("security {security_mode}"),
+        format!("security  {security_mode}"),
         format!("device  {}", if config.mobile_mode { "mobile" } else { "desktop" }),
         format!("display {}", if config.color { "rainbow" } else { "mono" }),
         format!("state   {state_mode}"),
@@ -475,10 +476,6 @@ fn parse_bool(value: &str) -> Option<bool> {
     }
 }
 
-fn clip(text: &str, width: usize) -> String {
-    text.chars().take(width).collect()
-}
-
 fn strip_ansi(text: &str) -> String {
     let mut out = String::with_capacity(text.len());
     let mut chars = text.chars().peekable();
@@ -517,6 +514,11 @@ fn color_enabled() -> bool {
 
 fn ascii_mode() -> bool {
     std::env::var("PHASE1_ASCII").ok().as_deref() == Some("1")
+}
+
+#[cfg(test)]
+fn clip(text: &str, width: usize) -> String {
+    text.chars().take(width).collect()
 }
 
 #[cfg(test)]
