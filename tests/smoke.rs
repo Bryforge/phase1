@@ -102,7 +102,7 @@ fn boot_help_man_and_completion_work() {
     assert_contains_all(
         &output,
         &[
-            "security  safe",
+            "security   safe shield",
             "Phase1 // Advanced Operator Console",
             "phase1 // command map",
             "text : grep wc head tail find",
@@ -110,7 +110,7 @@ fn boot_help_man_and_completion_work() {
             "python",
             "browser",
             "usage      : browser <url|phase1|about>",
-            "phase1 3.6.0",
+            "phase1 3.10.6",
         ],
     );
 }
@@ -121,7 +121,7 @@ fn secure_default_blocks_host_backed_commands() {
     assert_contains_all(
         &output,
         &[
-            "security  safe",
+            "security   safe shield",
             "safe-mode: host network inspection disabled",
             "safe-mode: host WiFi inspection disabled",
             "wifi-scan: disabled by safe boot profile",
@@ -145,7 +145,7 @@ fn safe_off_without_host_tools_still_blocks_host_commands() {
     assert_contains_all(
         &output,
         &[
-            "safe mode         off",
+            "security   host bridge",
             "security mode       : host-capable",
             "host tools          : disabled",
             "python: disabled; set PHASE1_ALLOW_HOST_TOOLS=1 to enable trusted host tools",
@@ -188,7 +188,7 @@ fn preboot_persistent_state_mode_is_toggleable_and_restores_home_files() {
     assert_contains_all(
         &first,
         &[
-            "persistent state  on",
+            "state      vault/persistent",
             "persistent state: enabled; no saved state found at phase1.state",
         ],
     );
@@ -227,7 +227,7 @@ fn persistent_history_restores_and_sanitizes_commands() {
     assert_contains_all(
         &first,
         &[
-            "persistent state  on",
+            "state      vault/persistent",
             "persistent history  : on",
             "history file        : phase1.history",
             "password/token/secret-like commands are redacted",
@@ -270,7 +270,7 @@ fn roadmap_aliases_capabilities_and_dashboard_work() {
     assert_contains_all(
         &output,
         &[
-            "safe mode         off",
+            "security   host bridge",
             "phase1 // command map",
             "command        category capability",
             "wifi-connect",
