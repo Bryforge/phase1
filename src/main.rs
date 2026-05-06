@@ -1,5 +1,6 @@
 #![allow(clippy::assertions_on_constants)]
 
+mod autocomplete;
 mod browser;
 mod commands;
 mod history;
@@ -120,7 +121,10 @@ fn run_shell(boot_config: ui::BootConfig) {
 
     match history_store.load(&mut shell.history) {
         Ok(count) if count > 0 => {
-            println!("persistent history: restored {count} entries from {}", history_store.describe())
+            println!(
+                "persistent history: restored {count} entries from {}",
+                history_store.describe()
+            )
         }
         Ok(_) => {}
         Err(err) => println!("persistent history: restore warning: {err}"),
@@ -152,12 +156,27 @@ fn run_shell(boot_config: ui::BootConfig) {
         }
 
         let line = input.trim_end_matches(['\r', '\n']);
+        let line = match autocomplete::complete_tab_line(line) {
+            autocomplete::TabCompletion::Unchanged(line) => line,
+            autocomplete::TabCompletion::Completed(line) => {
+                println!("tab complete: {line}");
+                line
+            }
+            autocomplete::TabCompletion::Suggestions { prefix, matches } => {
+                println!("tab matches for '{prefix}': {}", matches.join(" "));
+                continue;
+            }
+            autocomplete::TabCompletion::NoMatch { prefix } => {
+                println!("tab complete: no matches for '{prefix}'");
+                continue;
+            }
+        };
         if line.trim().is_empty() {
             continue;
         }
 
-        history::push_bounded(&mut shell.history, line);
-        match execute_chain(&mut shell, boot_config, &history_store, line) {
+        history::push_bounded(&mut shell.history, &line);
+        match execute_chain(&mut shell, boot_config, &history_store, &line) {
             Ok(_) => {
                 if boot_config.persistent_state {
                     if let Err(err) = save_persistent_state(&shell) {
@@ -394,8 +413,18 @@ fn handle_bootcfg(config: ui::BootConfig, args: &[String]) {
 
 fn print_boot_config(config: ui::BootConfig) {
     println!("boot profile      : {}", config.profile_name());
-    println!("channel           : {}", if config.bleeding_edge { "bleeding-edge" } else { "release" });
-    println!("display version   : {}", ui::display_version(kernel::VERSION, config));
+    println!(
+        "channel           : {}",
+        if config.bleeding_edge {
+            "bleeding-edge"
+        } else {
+            "release"
+        }
+    );
+    println!(
+        "display version   : {}",
+        ui::display_version(kernel::VERSION, config)
+    );
     println!("config file       : {}", ui::config_path());
     println!("state file        : {}", PERSISTENT_STATE_PATH);
     println!("color             : {}", if config.color { "on" } else { "off" });
