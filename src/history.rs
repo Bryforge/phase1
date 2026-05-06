@@ -62,11 +62,16 @@ impl HistoryStore {
         let Self::Disk(path) = self else {
             return Ok(0);
         };
-        if let Some(parent) = path.parent().filter(|parent| !parent.as_os_str().is_empty()) {
+        if let Some(parent) = path
+            .parent()
+            .filter(|parent| !parent.as_os_str().is_empty())
+        {
             fs::create_dir_all(parent)?;
         }
         let mut out = String::from("# phase1 persistent history v1\n");
-        out.push_str("# command history is sanitized before write; do not type secrets into commands\n");
+        out.push_str(
+            "# command history is sanitized before write; do not type secrets into commands\n",
+        );
         let mut written = 0;
         for line in history.iter().filter(|line| !line.trim().is_empty()) {
             out.push_str("H\t");
@@ -256,7 +261,10 @@ mod tests {
             sanitize_line("wifi-connect home password123"),
             "[redacted-sensitive-command]"
         );
-        assert_eq!(sanitize_line("export API_TOKEN=abc"), "[redacted-sensitive-command]");
+        assert_eq!(
+            sanitize_line("export API_TOKEN=abc"),
+            "[redacted-sensitive-command]"
+        );
         assert_eq!(sanitize_line("echo hello world"), "echo hello world");
     }
 }

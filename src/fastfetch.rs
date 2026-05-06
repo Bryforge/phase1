@@ -56,12 +56,32 @@ pub fn run(shell: &mut Phase1Shell, config: BootConfig) -> String {
 
 fn collect_facts(shell: &Phase1Shell, config: BootConfig) -> Vec<(&'static str, String)> {
     let display_version = crate::ui::display_version(crate::kernel::VERSION, config);
-    let channel = if config.bleeding_edge { "bleeding-edge" } else { "release" };
-    let security = if config.safe_mode { "safe-mode" } else { "host-capable" };
-    let state = if config.persistent_state { "persistent" } else { "volatile" };
-    let host_tools = if crate::policy::host_tools_allowed() { "enabled" } else { "disabled" };
+    let channel = if config.bleeding_edge {
+        "bleeding-edge"
+    } else {
+        "release"
+    };
+    let security = if config.safe_mode {
+        "safe-mode"
+    } else {
+        "host-capable"
+    };
+    let state = if config.persistent_state {
+        "persistent"
+    } else {
+        "volatile"
+    };
+    let host_tools = if crate::policy::host_tools_allowed() {
+        "enabled"
+    } else {
+        "disabled"
+    };
     let jobs = shell.kernel.scheduler.jobs();
-    let job_count = if jobs.trim() == "no background jobs" { 0 } else { jobs.lines().count() };
+    let job_count = if jobs.trim() == "no background jobs" {
+        0
+    } else {
+        jobs.lines().count()
+    };
     let processes = shell.kernel.scheduler.ps().lines().skip(1).count();
     let audit_count = shell.kernel.audit.dump().lines().count();
     let pcie_count = shell.kernel.pcie.lspci().lines().count();
@@ -79,7 +99,10 @@ fn collect_facts(shell: &Phase1Shell, config: BootConfig) -> Vec<(&'static str, 
         ("Host", "Bryforge cyberdeck".to_string()),
         ("Kernel", format!("phase1 {display_version}")),
         ("Uptime", format!("{uptime}s")),
-        ("Pkgs", format!("{} built-ins", crate::registry::COMMANDS.len())),
+        (
+            "Pkgs",
+            format!("{} built-ins", crate::registry::COMMANDS.len()),
+        ),
         ("Shell", "phase1".to_string()),
         ("Terminal", "ANSI console".to_string()),
         ("Theme", "rainbow".to_string()),
@@ -88,7 +111,13 @@ fn collect_facts(shell: &Phase1Shell, config: BootConfig) -> Vec<(&'static str, 
         ("Security", security.to_string()),
         ("HostTools", host_tools.to_string()),
         ("Proc", format!("{processes} tasks, {job_count} bg")),
-        ("HW", format!("{pcie_count} PCIe, CR3 0x{:x}", shell.kernel.scheduler.get_cr3())),
+        (
+            "HW",
+            format!(
+                "{pcie_count} PCIe, CR3 0x{:x}",
+                shell.kernel.scheduler.get_cr3()
+            ),
+        ),
         ("Net", format!("{iface_count} iface")),
         ("Memory", "2.0/4.0 GiB sim".to_string()),
         ("Disk", "4 KiB/1 GiB phase1fs".to_string()),
@@ -104,7 +133,11 @@ fn render_mobile(facts: &[(&str, String)], color: bool) -> String {
     out.push_str(&prompt_line(color));
     out.push('\n');
 
-    let card = if color { MOBILE_CARD } else { MOBILE_CARD_ASCII };
+    let card = if color {
+        MOBILE_CARD
+    } else {
+        MOBILE_CARD_ASCII
+    };
     for (idx, line) in card.iter().enumerate() {
         out.push_str(&rainbow_logo(line, idx, color));
         out.push('\n');
@@ -121,7 +154,12 @@ fn render_mobile(facts: &[(&str, String)], color: bool) -> String {
     .iter()
     .enumerate()
     {
-        out.push_str(&compact_fact_line(label, fact_value(facts, label), idx, color));
+        out.push_str(&compact_fact_line(
+            label,
+            fact_value(facts, label),
+            idx,
+            color,
+        ));
         out.push('\n');
     }
 
@@ -135,7 +173,13 @@ fn render_mobile(facts: &[(&str, String)], color: bool) -> String {
     out.push('\n');
     out.push_str(&meter_line("NET", 1, fact_value(facts, "Net"), 4, color));
     out.push('\n');
-    out.push_str(&meter_line("SEC", 8, fact_value(facts, "Security"), 5, color));
+    out.push_str(&meter_line(
+        "SEC",
+        8,
+        fact_value(facts, "Security"),
+        5,
+        color,
+    ));
     out.push('\n');
 
     out.push_str(&color_bars_compact(color));

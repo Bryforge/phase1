@@ -61,7 +61,14 @@ impl Scheduler {
             cr4_pcide: false,
         };
         let _ = scheduler.spawn("init", 0, "/sbin/init", 128, false, 0);
-        let _ = scheduler.spawn("phase1-shell", process::id(), "phase1 shell", 8192, false, 0);
+        let _ = scheduler.spawn(
+            "phase1-shell",
+            process::id(),
+            "phase1 shell",
+            8192,
+            false,
+            0,
+        );
         scheduler
     }
 
@@ -102,7 +109,8 @@ impl Scheduler {
     }
 
     pub fn ps(&self) -> String {
-        let mut out = String::from("PID   PPID  USER   PRI STATE MEMKB TICKS AGE CR3       NAME CMD\n");
+        let mut out =
+            String::from("PID   PPID  USER   PRI STATE MEMKB TICKS AGE CR3       NAME CMD\n");
         for process in self.live_processes() {
             out.push_str(&format!(
                 "{:<5} {:<5} {:<6} {:>3} {:<5} {:>5} {:>5} {:>3} 0x{:06x} {:<10} {}\n",
@@ -173,7 +181,12 @@ impl Scheduler {
 
     pub fn set_background(&mut self, raw_pid: Option<&str>, background: bool) -> String {
         let Some(pid) = raw_pid.and_then(|value| value.parse::<u32>().ok()) else {
-            return if background { "usage: bg <pid>" } else { "usage: fg <pid>" }.to_string();
+            return if background {
+                "usage: bg <pid>"
+            } else {
+                "usage: fg <pid>"
+            }
+            .to_string();
         };
         if let Some(process) = self.processes.iter_mut().find(|p| p.pid == pid) {
             process.background = background;
@@ -185,7 +198,11 @@ impl Scheduler {
             return format!(
                 "process {} moved to {}",
                 pid,
-                if background { "background" } else { "foreground" }
+                if background {
+                    "background"
+                } else {
+                    "foreground"
+                }
             );
         }
         format!("no such process: {}", pid)
@@ -213,7 +230,10 @@ impl Scheduler {
 
     pub fn tick(&mut self) {
         for process in &mut self.processes {
-            if matches!(process.state, ProcessState::Running | ProcessState::RunningBg) {
+            if matches!(
+                process.state,
+                ProcessState::Running | ProcessState::RunningBg
+            ) {
                 process.cpu_ticks = process.cpu_ticks.saturating_add(1);
             }
         }
@@ -233,7 +253,10 @@ impl Scheduler {
 
 #[derive(Clone, Debug)]
 pub enum VfsNode {
-    File { content: String, perm: u16 },
+    File {
+        content: String,
+        perm: u16,
+    },
     Dir {
         children: HashMap<String, VfsNode>,
         perm: u16,
@@ -403,7 +426,10 @@ impl Vfs {
                 }
                 out
             }
-            None => format!("ls: cannot access '{}': no such file or directory\n", target),
+            None => format!(
+                "ls: cannot access '{}': no such file or directory\n",
+                target
+            ),
         }
     }
 
@@ -660,11 +686,17 @@ fn procfs(uptime: u64) -> VfsNode {
     let mut children = HashMap::new();
     children.insert(
         "cpuinfo".to_string(),
-        file("processor: 0\nmodel: phase1 virtual cpu\n".to_string(), 0o444),
+        file(
+            "processor: 0\nmodel: phase1 virtual cpu\n".to_string(),
+            0o444,
+        ),
     );
     children.insert(
         "meminfo".to_string(),
-        file("MemTotal: 4194304 kB\nMemFree: 2097152 kB\n".to_string(), 0o444),
+        file(
+            "MemTotal: 4194304 kB\nMemFree: 2097152 kB\n".to_string(),
+            0o444,
+        ),
     );
     children.insert(
         "uptime".to_string(),
@@ -725,7 +757,10 @@ fn path_parts(path: &Path) -> Vec<String> {
 }
 
 fn parent_and_name(path: &Path) -> Result<(PathBuf, String), String> {
-    let parent = path.parent().unwrap_or_else(|| Path::new("/")).to_path_buf();
+    let parent = path
+        .parent()
+        .unwrap_or_else(|| Path::new("/"))
+        .to_path_buf();
     let name = path
         .file_name()
         .and_then(|part| part.to_str())

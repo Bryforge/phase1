@@ -108,13 +108,24 @@ pub fn run(args: &[String]) {
     let stdin = io::stdin();
     let mut stdin = stdin.lock();
     let mut rng = Lcg::new(seed());
-    let field_height = if config.hud && height > 10 { height - 1 } else { height };
+    let field_height = if config.hud && height > 10 {
+        height - 1
+    } else {
+        height
+    };
     let end = effective_duration.map(|duration| Instant::now() + duration);
     let mut columns = build_columns(width, field_height, &mut rng, config);
     let mut frame = 0u64;
     let start = Instant::now();
 
-    draw_intro(&mut stdout, width, height, config, interactive_quit, effective_duration);
+    draw_intro(
+        &mut stdout,
+        width,
+        height,
+        config,
+        interactive_quit,
+        effective_duration,
+    );
 
     loop {
         if let Some(end) = end {
@@ -126,7 +137,14 @@ pub fn run(args: &[String]) {
             break;
         }
 
-        render_frame(&mut stdout, &mut columns, field_height, frame, &mut rng, config);
+        render_frame(
+            &mut stdout,
+            &mut columns,
+            field_height,
+            frame,
+            &mut rng,
+            config,
+        );
         if config.hud && height > 10 && frame.is_multiple_of(6) {
             draw_hud(
                 &mut stdout,
@@ -149,7 +167,8 @@ fn build_columns(width: usize, height: usize, rng: &mut Lcg, config: MatrixConfi
         .map(|_| Column {
             head: -(rng.range(height.max(1) as u64) as isize),
             speed: 1 + rng.range(4),
-            tail: config.tail_min + rng.range((config.tail_max - config.tail_min + 1) as u64) as usize,
+            tail: config.tail_min
+                + rng.range((config.tail_max - config.tail_min + 1) as u64) as usize,
             glitch: rng.range(100) as u8,
         })
         .collect()
@@ -188,7 +207,13 @@ fn render_frame(
 
         if rng.chance(config.density as u64) {
             let flash_row = rng.range(height as u64) as usize + 1;
-            print_at(stdout, flash_row, x, color_for_depth(0, trail, column.glitch, config.color), rng.char(config.glyphs));
+            print_at(
+                stdout,
+                flash_row,
+                x,
+                color_for_depth(0, trail, column.glitch, config.color),
+                rng.char(config.glyphs),
+            );
         }
 
         column.head += 1;
@@ -196,7 +221,8 @@ fn render_frame(
         if column.head - trail > reset_after {
             column.head = -(rng.range(height as u64).max(1) as isize);
             column.speed = 1 + rng.range(4);
-            column.tail = config.tail_min + rng.range((config.tail_max - config.tail_min + 1) as u64) as usize;
+            column.tail = config.tail_min
+                + rng.range((config.tail_max - config.tail_min + 1) as u64) as usize;
             column.glitch = rng.range(100) as u8;
         }
     }
@@ -246,7 +272,10 @@ fn draw_intro(
     };
     let title = format!(" PHASE1 MATRIX // {status} // duration={duration} ");
     let row = height.saturating_div(2).max(1);
-    let col = width.saturating_sub(title.chars().count()).saturating_div(2).max(1);
+    let col = width
+        .saturating_sub(title.chars().count())
+        .saturating_div(2)
+        .max(1);
     let color = if config.color { Some("92") } else { None };
     for (offset, ch) in title.chars().enumerate() {
         print_at(stdout, row, col + offset, color, ch);
@@ -326,7 +355,12 @@ fn parse_args(args: &[String]) -> Result<Option<MatrixConfig>, String> {
             }
             "--density" => {
                 idx += 1;
-                config.density = parse_u8(args.get(idx).ok_or("missing density value")?, 1, 90, "density")?;
+                config.density = parse_u8(
+                    args.get(idx).ok_or("missing density value")?,
+                    1,
+                    90,
+                    "density",
+                )?;
             }
             _ if arg.starts_with("--tail=") => {
                 let tail = parse_usize(value_after_equals(arg)?, 2, 60, "tail")?;

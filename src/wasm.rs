@@ -70,10 +70,7 @@ pub fn execute_plugin(plugins_dir: &Path, name: &str, args: &[String]) -> String
     }
 
     let manifest = read_manifest(&path);
-    let plugin_name = manifest
-        .name
-        .clone()
-        .unwrap_or_else(|| display_name(&path));
+    let plugin_name = manifest.name.clone().unwrap_or_else(|| display_name(&path));
     let mut out = String::from("phase1 wasi run\n");
     out.push_str(&format!("plugin : {plugin_name}\n"));
     out.push_str(&format!("runtime: {RUNTIME}\n"));

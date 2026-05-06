@@ -23,7 +23,9 @@ pub struct NetworkStack {
 
 impl NetworkStack {
     pub fn new() -> Self {
-        let mut stack = Self { interfaces: Vec::new() };
+        let mut stack = Self {
+            interfaces: Vec::new(),
+        };
         stack.refresh();
         stack
     }
@@ -47,8 +49,15 @@ impl NetworkStack {
     pub fn ifconfig(&self) -> String {
         let mut out = String::new();
         for iface in &self.interfaces {
-            out.push_str(&format!("{}: flags=<{}> mtu 1500\n", iface.name, iface.status.to_ascii_uppercase()));
-            out.push_str(&format!("    inet {} netmask {}\n", iface.ip, iface.netmask));
+            out.push_str(&format!(
+                "{}: flags=<{}> mtu 1500\n",
+                iface.name,
+                iface.status.to_ascii_uppercase()
+            ));
+            out.push_str(&format!(
+                "    inet {} netmask {}\n",
+                iface.ip, iface.netmask
+            ));
             out.push_str(&format!("    ether {}\n", iface.mac));
             if let Some(ssid) = &iface.wifi_ssid {
                 out.push_str(&format!("    wifi ssid=\"{}\"", ssid));
@@ -190,7 +199,11 @@ impl NetworkStack {
             });
         }
         if let Some(ssid) = linux_wifi_ssid() {
-            if let Some(iface) = self.interfaces.iter_mut().find(|iface| iface.name.starts_with("wl")) {
+            if let Some(iface) = self
+                .interfaces
+                .iter_mut()
+                .find(|iface| iface.name.starts_with("wl"))
+            {
                 iface.wifi_ssid = Some(ssid);
             }
         }
@@ -262,14 +275,17 @@ fn read_linux_mac(name: &str) -> String {
 fn linux_wifi_ssid() -> Option<String> {
     let mut cmd = Command::new("iwgetid");
     cmd.arg("-r");
-    run_with_timeout(cmd, Duration::from_secs(2)).ok().and_then(|output| {
-        let ssid = String::from_utf8_lossy(&output.stdout).trim().to_string();
-        (!ssid.is_empty()).then_some(ssid)
-    })
+    run_with_timeout(cmd, Duration::from_secs(2))
+        .ok()
+        .and_then(|output| {
+            let ssid = String::from_utf8_lossy(&output.stdout).trim().to_string();
+            (!ssid.is_empty()).then_some(ssid)
+        })
 }
 
 fn macos_wifi_scan() -> String {
-    let airport = "/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport";
+    let airport =
+        "/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport";
     if Path::new(airport).exists() {
         let mut cmd = Command::new(airport);
         cmd.arg("-s");
@@ -280,7 +296,9 @@ fn macos_wifi_scan() -> String {
     }
 
     let mut out = String::from("wifi-scan: macOS nearby scan backend unavailable\n");
-    out.push_str("note: Apple removed or restricts the legacy airport scanner on newer macOS releases.\n\n");
+    out.push_str(
+        "note: Apple removed or restricts the legacy airport scanner on newer macOS releases.\n\n",
+    );
 
     if Path::new("/usr/bin/wdutil").exists() {
         let mut cmd = Command::new("/usr/bin/wdutil");
@@ -300,13 +318,21 @@ fn macos_wifi_scan() -> String {
     let mut current = Command::new("networksetup");
     current.arg("-getairportnetwork").arg(&device);
     out.push_str(&format!("[current network: {device}]\n"));
-    out.push_str(&command_text(current, Duration::from_secs(5), "current WiFi network unavailable"));
+    out.push_str(&command_text(
+        current,
+        Duration::from_secs(5),
+        "current WiFi network unavailable",
+    ));
     out.push('\n');
 
     let mut preferred = Command::new("networksetup");
     preferred.arg("-listpreferredwirelessnetworks").arg(&device);
     out.push_str(&format!("[saved networks: {device}]\n"));
-    out.push_str(&command_text(preferred, Duration::from_secs(5), "saved WiFi networks unavailable"));
+    out.push_str(&command_text(
+        preferred,
+        Duration::from_secs(5),
+        "saved WiFi networks unavailable",
+    ));
     out
 }
 
@@ -322,7 +348,9 @@ fn macos_wifi_device() -> Option<String> {
             continue;
         }
         if saw_wifi && line.starts_with("Device:") {
-            return line.split_once(':').map(|(_, value)| value.trim().to_string());
+            return line
+                .split_once(':')
+                .map(|(_, value)| value.trim().to_string());
         }
     }
     None
@@ -330,8 +358,18 @@ fn macos_wifi_device() -> Option<String> {
 
 fn prefix_to_netmask(prefix: u8) -> String {
     let prefix = prefix.min(32);
-    let mask = if prefix == 0 { 0 } else { u32::MAX << (32 - prefix) };
-    format!("{}.{}.{}.{}", (mask >> 24) & 0xff, (mask >> 16) & 0xff, (mask >> 8) & 0xff, mask & 0xff)
+    let mask = if prefix == 0 {
+        0
+    } else {
+        u32::MAX << (32 - prefix)
+    };
+    format!(
+        "{}.{}.{}.{}",
+        (mask >> 24) & 0xff,
+        (mask >> 16) & 0xff,
+        (mask >> 8) & 0xff,
+        mask & 0xff
+    )
 }
 
 fn safe_host(host: &str) -> bool {

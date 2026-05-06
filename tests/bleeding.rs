@@ -87,8 +87,14 @@ fn bleeding_structured_pipelines_filter_text() {
     let output = run_phase1(
         "echo alpha > log.txt\necho beta >> log.txt\necho alpha beta >> log.txt\ncat log.txt | grep alpha | wc -l\necho c b a | cut -d ' ' -f 2\nexit\n",
     );
-    assert!(output.contains("    2"), "pipeline count missing:\n{output}");
-    assert!(output.contains("b"), "cut pipeline output missing:\n{output}");
+    assert!(
+        output.contains("    2"),
+        "pipeline count missing:\n{output}"
+    );
+    assert!(
+        output.contains("b"),
+        "cut pipeline output missing:\n{output}"
+    );
 }
 
 #[test]
@@ -112,8 +118,14 @@ fn bleeding_wasi_lite_plugins_are_sandboxed() {
         output.contains("valid wasm"),
         "missing validation output:\n{output}"
     );
-    assert!(output.contains("phase1 wasi run"), "missing run output:\n{output}");
-    assert!(output.contains("host=blocked"), "sandbox not reported:\n{output}");
+    assert!(
+        output.contains("phase1 wasi run"),
+        "missing run output:\n{output}"
+    );
+    assert!(
+        output.contains("host=blocked"),
+        "sandbox not reported:\n{output}"
+    );
     assert!(
         output.contains("hello from phase1 wasi-lite"),
         "manifest stdout missing:\n{output}"
@@ -122,8 +134,14 @@ fn bleeding_wasi_lite_plugins_are_sandboxed() {
         output.contains("[redacted]"),
         "secret-looking args were not redacted:\n{output}"
     );
-    assert!(output.contains("wasm"), "wasm completion missing:\n{output}");
-    assert!(output.contains("wasi"), "wasi completion missing:\n{output}");
+    assert!(
+        output.contains("wasm"),
+        "wasm completion missing:\n{output}"
+    );
+    assert!(
+        output.contains("wasi"),
+        "wasi completion missing:\n{output}"
+    );
 }
 
 #[test]
@@ -196,14 +214,21 @@ fn bleeding_tab_completion_expands_commands_and_arguments() {
         output.contains("tab matches for 'w':"),
         "ambiguous tab suggestions missing:\n{output}"
     );
-    assert!(output.contains("wasm"), "wasm suggestion missing:\n{output}");
+    assert!(
+        output.contains("wasm"),
+        "wasm suggestion missing:\n{output}"
+    );
     assert!(output.contains("wc"), "wc suggestion missing:\n{output}");
 }
 
 #[test]
 fn bleeding_edge_boot_switch_updates_ui_channel_and_version() {
-    let output = run_phase1_raw("e\n\nbootcfg show\nsysinfo\ntheme\nbanner edge\ndash --compact\nexit\n");
-    assert!(output.contains("bleeding edge     on"), "boot switch missing:\n{output}");
+    let output =
+        run_phase1_raw("e\n\nbootcfg show\nsysinfo\ntheme\nbanner edge\ndash --compact\nexit\n");
+    assert!(
+        output.contains("bleeding edge     on"),
+        "boot switch missing:\n{output}"
+    );
     assert!(
         output.contains("version v3.10.2-dev"),
         "boot UI did not use edge version:\n{output}"

@@ -108,14 +108,18 @@ pub fn wc(vfs: &Vfs, args: &[String]) -> String {
                 let counts = Counts::from_text(&content);
                 totals.add(counts);
                 counted += 1;
-                out.push_str(&format_counts(counts, show_lines, show_words, show_bytes, file));
+                out.push_str(&format_counts(
+                    counts, show_lines, show_words, show_bytes, file,
+                ));
             }
             Err(err) => out.push_str(&format!("wc: {file}: {err}\n")),
         }
     }
 
     if counted > 1 {
-        out.push_str(&format_counts(totals, show_lines, show_words, show_bytes, "total"));
+        out.push_str(&format_counts(
+            totals, show_lines, show_words, show_bytes, "total",
+        ));
     }
 
     out
@@ -257,11 +261,19 @@ fn lines_window(vfs: &Vfs, args: &[String], default_lines: usize, from_start: bo
         if arg == "-n" || arg == "--lines" {
             idx += 1;
             let Some(value) = args.get(idx) else {
-                return format!("{}: missing line count\n", if from_start { "head" } else { "tail" });
+                return format!(
+                    "{}: missing line count\n",
+                    if from_start { "head" } else { "tail" }
+                );
             };
             match value.parse::<usize>() {
                 Ok(value) => limit = value,
-                Err(_) => return format!("{}: invalid line count '{value}'\n", if from_start { "head" } else { "tail" }),
+                Err(_) => {
+                    return format!(
+                        "{}: invalid line count '{value}'\n",
+                        if from_start { "head" } else { "tail" }
+                    )
+                }
             }
         } else if let Some(raw) = arg.strip_prefix('-') {
             if raw.chars().all(|ch| ch.is_ascii_digit()) && !raw.is_empty() {
@@ -271,7 +283,10 @@ fn lines_window(vfs: &Vfs, args: &[String], default_lines: usize, from_start: bo
             } else if arg == "-h" || arg == "--help" {
                 return if from_start { head_help() } else { tail_help() };
             } else {
-                return format!("{}: unknown option '{arg}'\n", if from_start { "head" } else { "tail" });
+                return format!(
+                    "{}: unknown option '{arg}'\n",
+                    if from_start { "head" } else { "tail" }
+                );
             }
         } else {
             files.push(arg.as_str());
@@ -303,7 +318,10 @@ fn lines_window(vfs: &Vfs, args: &[String], default_lines: usize, from_start: bo
                     out.push('\n');
                 }
             }
-            Err(err) => out.push_str(&format!("{}: {file}: {err}\n", if from_start { "head" } else { "tail" })),
+            Err(err) => out.push_str(&format!(
+                "{}: {file}: {err}\n",
+                if from_start { "head" } else { "tail" }
+            )),
         }
     }
     out
@@ -410,10 +428,24 @@ mod tests {
         vfs.write_file("/home/log.txt", "alpha\nbeta\nalpha beta\n", false)
             .unwrap();
         assert!(grep(&vfs, &["alpha".to_string(), "/home/log.txt".to_string()]).contains("alpha"));
-        assert!(grep(&vfs, &["-c".to_string(), "alpha".to_string(), "/home/log.txt".to_string()]).contains("2"));
+        assert!(grep(
+            &vfs,
+            &[
+                "-c".to_string(),
+                "alpha".to_string(),
+                "/home/log.txt".to_string()
+            ]
+        )
+        .contains("2"));
         assert!(wc(&vfs, &["/home/log.txt".to_string()]).contains("/home/log.txt"));
-        assert_eq!(head(&vfs, &["-1".to_string(), "/home/log.txt".to_string()]), "alpha\n");
-        assert_eq!(tail(&vfs, &["-1".to_string(), "/home/log.txt".to_string()]), "alpha beta\n");
+        assert_eq!(
+            head(&vfs, &["-1".to_string(), "/home/log.txt".to_string()]),
+            "alpha\n"
+        );
+        assert_eq!(
+            tail(&vfs, &["-1".to_string(), "/home/log.txt".to_string()]),
+            "alpha beta\n"
+        );
     }
 
     #[test]

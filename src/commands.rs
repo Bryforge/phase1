@@ -111,7 +111,8 @@ impl Phase1Shell {
     }
 
     pub fn cmd_cd(&mut self, dir: Option<&str>) {
-        let target = dir.unwrap_or_else(|| self.env.get("HOME").map(String::as_str).unwrap_or("/home"));
+        let target =
+            dir.unwrap_or_else(|| self.env.get("HOME").map(String::as_str).unwrap_or("/home"));
         let path = self.kernel.vfs.resolve_path(target);
         match self.kernel.vfs.get_node(&path) {
             Some(VfsNode::Dir { .. }) => self.kernel.vfs.cwd = path,

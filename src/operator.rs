@@ -129,7 +129,9 @@ pub fn banner(config: BootConfig, args: &[String]) -> String {
             } else {
                 std::env::var("PHASE1_THEME")
                     .ok()
-                    .and_then(|raw| ThemePalette::parse(&raw).map(|palette| palette.name().to_string()))
+                    .and_then(|raw| {
+                        ThemePalette::parse(&raw).map(|palette| palette.name().to_string())
+                    })
                     .unwrap_or_else(|| "rainbow".to_string())
             }
         } else {
@@ -324,7 +326,11 @@ fn theme_status(shell: &Phase1Shell) -> String {
 
     format!(
         "theme status\nactive : {active}\nchannel: {}\ncolor  : {}\nascii  : {}\n",
-        if bleeding_edge_active() { "bleeding-edge" } else { "release" },
+        if bleeding_edge_active() {
+            "bleeding-edge"
+        } else {
+            "release"
+        },
         if color { "on" } else { "off" },
         if ascii { "on" } else { "off" }
     )
@@ -393,7 +399,10 @@ mod tests {
         let mut shell = Phase1Shell::new();
         let out = theme(&mut shell, &["matrix".to_string()]);
         assert!(out.contains("matrix enabled"));
-        assert_eq!(shell.env.get("PHASE1_THEME").map(String::as_str), Some("matrix"));
+        assert_eq!(
+            shell.env.get("PHASE1_THEME").map(String::as_str),
+            Some("matrix")
+        );
         let status = theme(&mut shell, &[]);
         assert!(status.contains("active : matrix"));
     }

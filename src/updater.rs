@@ -184,10 +184,14 @@ fn plan(target: Target, build: bool) -> String {
     out.push_str(&format!("versioning   : {VERSION_SCHEME}\n"));
     out.push_str(&format!("protocol     : {UPDATE_PROTOCOL_FILE}\n"));
     out.push_str("hint         : run update protocol to view the versioning rules\n");
-    out.push_str("safe default : this command does not modify files unless --execute is provided\n");
+    out.push_str(
+        "safe default : this command does not modify files unless --execute is provided\n",
+    );
     out.push_str("guard        : --execute requires safe mode off and explicit --trust-host\n");
     out.push_str("privacy      : updater never asks for private credentials or keys\n");
-    out.push_str("local safety : tracked local changes block the update instead of being overwritten\n\n");
+    out.push_str(
+        "local safety : tracked local changes block the update instead of being overwritten\n\n",
+    );
     out.push_str("manual commands:\n");
     out.push_str("  git status --short --branch --untracked-files=no\n");
     out.push_str(&format!("  git fetch --prune {DEFAULT_REMOTE} {branch}\n"));
@@ -216,11 +220,15 @@ fn protocol_report() -> String {
     out.push_str("  - use MINOR for meaningful roadmap capability sets\n");
     out.push_str("  - use MAJOR only for deliberate compatibility-breaking behavior\n");
     out.push_str("  - keep bleeding-edge builds on -dev until promoted to stable release\n");
-    out.push_str("  - move the third number before publishing any follow-up bleeding-edge change\n");
+    out.push_str(
+        "  - move the third number before publishing any follow-up bleeding-edge change\n",
+    );
     out.push_str("\nsafety gates\n");
     out.push_str("  - update without --execute is a dry-run plan\n");
     out.push_str("  - update --execute requires safe mode off and explicit --trust-host\n");
-    out.push_str("  - update now --trust-host fetches, fast-forwards, and builds latest bleeding edge\n");
+    out.push_str(
+        "  - update now --trust-host fetches, fast-forwards, and builds latest bleeding edge\n",
+    );
     out.push_str("  - update test defaults to a no-host developer validation plan\n");
     out.push_str("  - tracked local changes block execution instead of being overwritten\n");
     out.push_str("  - updater output is sanitized before display\n");
@@ -270,8 +278,12 @@ fn update_steps(target: Target) -> Vec<(&'static str, Vec<&'static str>)> {
 }
 
 fn ensure_git_repo() -> Result<(), String> {
-    let output = run_command("git", &["rev-parse", "--is-inside-work-tree"], COMMAND_TIMEOUT)
-        .map_err(|err| format!("git repo check failed: {err}"))?;
+    let output = run_command(
+        "git",
+        &["rev-parse", "--is-inside-work-tree"],
+        COMMAND_TIMEOUT,
+    )
+    .map_err(|err| format!("git repo check failed: {err}"))?;
     if output.status.success() && sanitize_output(&output.stdout).trim() == "true" {
         Ok(())
     } else {
@@ -336,10 +348,7 @@ fn run_step(label: &str, command: &[&str]) -> (String, bool) {
             }
             (out, false)
         }
-        Err(err) => (
-            format!("{label:<19} [failed]\ndetails:\n  {err}\n"),
-            false,
-        ),
+        Err(err) => (format!("{label:<19} [failed]\ndetails:\n  {err}\n"), false),
     }
 }
 

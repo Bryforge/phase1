@@ -21,7 +21,9 @@ macro_rules! cmd {
     };
 }
 
-pub const CATEGORIES: &[&str] = &["fs", "text", "proc", "net", "host", "arch", "sys", "user", "misc"];
+pub const CATEGORIES: &[&str] = &[
+    "fs", "text", "proc", "net", "host", "arch", "sys", "user", "misc",
+];
 
 pub const COMMANDS: &[CommandSpec] = &[
     cmd!("ls", &[], "fs", "ls [-l] [path]", "List VFS directory contents.", "fs.read"),
@@ -180,7 +182,9 @@ fn guard_status(capability: &str) -> &'static str {
         "wasm.exec" => "phase1-wasi sandbox",
         "net.admin" => "safe-mode + host-tools + network-change opt-in",
         "hw.write" => "validated",
-        "fs.write" | "proc.kill" | "proc.spawn" | "proc.manage" | "user.switch" | "user.env" => "audited",
+        "fs.write" | "proc.kill" | "proc.spawn" | "proc.manage" | "user.switch" | "user.env" => {
+            "audited"
+        }
         _ => "read-only/audited",
     }
 }

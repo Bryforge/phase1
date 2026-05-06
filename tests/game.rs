@@ -50,14 +50,38 @@ fn phase1_arena_workspace_commands_are_visible() {
 
     assert!(output.contains("arena"), "arena plugin missing:\n{output}");
     assert!(output.contains("game"), "game workspace missing:\n{output}");
-    assert!(output.contains("Phase1 Arena"), "game title missing:\n{output}");
-    assert!(output.contains("phase1 arena"), "arena renderer missing:\n{output}");
-    assert!(output.contains("original ASCII"), "asset safety marker missing:\n{output}");
-    assert!(output.contains("GAME_DEV.md"), "game dev doc missing:\n{output}");
-    assert!(output.contains("scripts/test-game.sh"), "game runner missing:\n{output}");
-    assert!(output.contains("src/arena.rs"), "game module missing:\n{output}");
-    assert!(output.contains("phase1 game roadmap"), "game roadmap missing:\n{output}");
-    assert!(!output.contains("phase1 openDoom"), "old game name leaked:\n{output}");
+    assert!(
+        output.contains("Phase1 Arena"),
+        "game title missing:\n{output}"
+    );
+    assert!(
+        output.contains("phase1 arena"),
+        "arena renderer missing:\n{output}"
+    );
+    assert!(
+        output.contains("original ASCII"),
+        "asset safety marker missing:\n{output}"
+    );
+    assert!(
+        output.contains("GAME_DEV.md"),
+        "game dev doc missing:\n{output}"
+    );
+    assert!(
+        output.contains("scripts/test-game.sh"),
+        "game runner missing:\n{output}"
+    );
+    assert!(
+        output.contains("src/arena.rs"),
+        "game module missing:\n{output}"
+    );
+    assert!(
+        output.contains("phase1 game roadmap"),
+        "game roadmap missing:\n{output}"
+    );
+    assert!(
+        !output.contains("phase1 openDoom"),
+        "old game name leaked:\n{output}"
+    );
 }
 
 #[test]
@@ -70,9 +94,18 @@ fn phase1_arena_scripted_runs_are_deterministic() {
         output.contains("phase1 arena scripted run"),
         "scripted run banner missing:\n{output}"
     );
-    assert!(output.contains("arena> fire"), "fire command missing:\n{output}");
+    assert!(
+        output.contains("arena> fire"),
+        "fire command missing:\n{output}"
+    );
     assert!(output.contains("@"), "player marker missing:\n{output}");
     assert!(output.contains("M"), "hostile marker missing:\n{output}");
-    assert!(output.contains("status=live"), "live status missing:\n{output}");
-    assert!(!output.contains("openDoom"), "old game name leaked:\n{output}");
+    assert!(
+        output.contains("status=live"),
+        "live status missing:\n{output}"
+    );
+    assert!(
+        !output.contains("openDoom"),
+        "old game name leaked:\n{output}"
+    );
 }

@@ -177,7 +177,11 @@ impl Game {
             out.push_str("A wall blocks your path.\n");
             return true;
         }
-        if self.enemies.iter().any(|enemy| enemy.x == nx && enemy.y == ny) {
+        if self
+            .enemies
+            .iter()
+            .any(|enemy| enemy.x == nx && enemy.y == ny)
+        {
             out.push_str("A hostile blocks that tile. Fire first.\n");
             return true;
         }
@@ -201,7 +205,10 @@ impl Game {
         if self.enemies[target_idx].hp <= 0 {
             let enemy = self.enemies.remove(target_idx);
             self.kills += 1;
-            out.push_str(&format!("Direct hit. Hostile cleared at {},{}.\n", enemy.x, enemy.y));
+            out.push_str(&format!(
+                "Direct hit. Hostile cleared at {},{}.\n",
+                enemy.x, enemy.y
+            ));
         } else {
             out.push_str("Direct hit. The hostile staggers.\n");
         }
@@ -223,7 +230,11 @@ impl Game {
             if self.walls[uy][ux] {
                 return None;
             }
-            if let Some(idx) = self.enemies.iter().position(|enemy| enemy.x == ux && enemy.y == uy) {
+            if let Some(idx) = self
+                .enemies
+                .iter()
+                .position(|enemy| enemy.x == ux && enemy.y == uy)
+            {
                 return Some(idx);
             }
         }
@@ -313,7 +324,9 @@ impl Game {
     fn render(&self) -> String {
         let mut out = String::new();
         out.push_str("\nphase1 arena // clean-room text-mode game\n");
-        out.push_str("asset mode: original ASCII, no external WAD or proprietary assets required\n");
+        out.push_str(
+            "asset mode: original ASCII, no external WAD or proprietary assets required\n",
+        );
         out.push_str(&format!(
             "hp={} ammo={} dir={} kills={} enemies={} status={}\n",
             self.hp.max(0),
@@ -322,7 +335,11 @@ impl Game {
             self.kills,
             self.enemies.len(),
             if self.done {
-                if self.won { "cleared" } else { "ended" }
+                if self.won {
+                    "cleared"
+                } else {
+                    "ended"
+                }
             } else {
                 "live"
             }
@@ -332,7 +349,11 @@ impl Game {
             for x in 0..WIDTH {
                 let ch = if (x, y) == (self.player_x, self.player_y) {
                     '@'
-                } else if self.enemies.iter().any(|enemy| enemy.x == x && enemy.y == y) {
+                } else if self
+                    .enemies
+                    .iter()
+                    .any(|enemy| enemy.x == x && enemy.y == y)
+                {
                     'M'
                 } else if self.ammo_pickups.iter().any(|pos| *pos == (x, y)) {
                     'A'

@@ -143,7 +143,10 @@ impl BootConfig {
         set_bool_env("PHASE1_MOBILE_MODE", self.mobile_mode);
         set_bool_env("PHASE1_PERSISTENT_STATE", self.persistent_state);
         set_bool_env("PHASE1_BLEEDING_EDGE", self.bleeding_edge);
-        std::env::set_var("PHASE1_DISPLAY_VERSION", display_version(crate::kernel::VERSION, self));
+        std::env::set_var(
+            "PHASE1_DISPLAY_VERSION",
+            display_version(crate::kernel::VERSION, self),
+        );
         std::env::set_var("PHASE1_SAFE_MODE", if self.safe_mode { "1" } else { "0" });
         if self.color {
             std::env::remove_var("PHASE1_NO_COLOR");
@@ -360,7 +363,13 @@ fn print_preboot(version: &str, config: BootConfig) {
         print!("\x1b[2J\x1b[H{BOLD}");
     }
     print_boot_card(version, config, true);
-    println!("{}", value(config, "Secure default: safe=on  Enter=boot  e=edge  p=persist  h=help"));
+    println!(
+        "{}",
+        value(
+            config,
+            "Secure default: safe=on  Enter=boot  e=edge  p=persist  h=help"
+        )
+    );
 }
 
 fn print_mobile_boot(version: &str, config: BootConfig) {
@@ -401,22 +410,44 @@ fn print_boot_card(version: &str, config: BootConfig, selector: bool) {
     } else {
         println!("{}", card_section(config, width, "QUICK"));
         println!("{}", card_line(config, width, "help  audit  ps  ls /"));
-        println!("{}", card_line(config, width, "matrix  sysinfo  security  theme"));
+        println!(
+            "{}",
+            card_line(config, width, "matrix  sysinfo  security  theme")
+        );
     }
     println!("{}", card_bottom(config, width));
     println!();
 }
 
 fn splash_info(version: &str, config: BootConfig) -> Vec<String> {
-    let state_mode = if config.persistent_state { "persistent" } else { "volatile" };
-    let security_mode = if config.safe_mode { "safe" } else { "host-enabled" };
-    let channel = if config.bleeding_edge { "bleeding-edge" } else { "release" };
+    let state_mode = if config.persistent_state {
+        "persistent"
+    } else {
+        "volatile"
+    };
+    let security_mode = if config.safe_mode {
+        "safe"
+    } else {
+        "host-enabled"
+    };
+    let channel = if config.bleeding_edge {
+        "bleeding-edge"
+    } else {
+        "release"
+    };
     vec![
         format!("version v{}", display_version(version, config)),
         format!("channel {channel}"),
         format!("profile {}", config.profile_name()),
         format!("security  {security_mode}"),
-        format!("device  {}", if config.mobile_mode { "mobile" } else { "desktop" }),
+        format!(
+            "device  {}",
+            if config.mobile_mode {
+                "mobile"
+            } else {
+                "desktop"
+            }
+        ),
         format!("display {}", display_mode(config)),
         format!("state   {state_mode}"),
         format!("config  {}", config_path()),
@@ -426,13 +457,34 @@ fn splash_info(version: &str, config: BootConfig) -> Vec<String> {
 fn boot_rows(config: BootConfig) -> Vec<String> {
     vec![
         "1 boot system       save+start".to_string(),
-        format!("2 color output      {}", if config.color { "on" } else { "off" }),
-        format!("3 ascii compatible  {}", if config.ascii_mode { "on" } else { "off" }),
-        format!("4 safe mode         {}", if config.safe_mode { "on" } else { "off" }),
-        format!("5 quick boot        {}", if config.quick_boot { "on" } else { "off" }),
-        format!("6 mobile mode       {}", if config.mobile_mode { "on" } else { "off" }),
-        format!("e bleeding edge     {}", if config.bleeding_edge { "on" } else { "off" }),
-        format!("p persistent state  {}", if config.persistent_state { "on" } else { "off" }),
+        format!(
+            "2 color output      {}",
+            if config.color { "on" } else { "off" }
+        ),
+        format!(
+            "3 ascii compatible  {}",
+            if config.ascii_mode { "on" } else { "off" }
+        ),
+        format!(
+            "4 safe mode         {}",
+            if config.safe_mode { "on" } else { "off" }
+        ),
+        format!(
+            "5 quick boot        {}",
+            if config.quick_boot { "on" } else { "off" }
+        ),
+        format!(
+            "6 mobile mode       {}",
+            if config.mobile_mode { "on" } else { "off" }
+        ),
+        format!(
+            "e bleeding edge     {}",
+            if config.bleeding_edge { "on" } else { "off" }
+        ),
+        format!(
+            "p persistent state  {}",
+            if config.persistent_state { "on" } else { "off" }
+        ),
         "7 reboot selector".to_string(),
         "8 quit boot".to_string(),
         "9 save config".to_string(),
@@ -703,7 +755,10 @@ fn card_line(config: BootConfig, width: usize, text: &str) -> String {
 
 fn value(config: BootConfig, text: &str) -> String {
     if config.color && !config.ascii_mode {
-        format!("{}{text}{RESET}", palette(active_theme_for_config(config)).muted)
+        format!(
+            "{}{text}{RESET}",
+            palette(active_theme_for_config(config)).muted
+        )
     } else {
         text.to_string()
     }
@@ -754,7 +809,9 @@ fn bleeding_edge_env_enabled() -> bool {
 }
 
 fn env_flag(name: &str) -> Option<bool> {
-    std::env::var(name).ok().and_then(|value| parse_bool(&value))
+    std::env::var(name)
+        .ok()
+        .and_then(|value| parse_bool(&value))
 }
 
 fn parse_bool(value: &str) -> Option<bool> {
@@ -918,7 +975,10 @@ mod tests {
     fn theme_palette_names_are_available() {
         assert_eq!(ThemePalette::parse("rainbow"), Some(ThemePalette::Rainbow));
         assert_eq!(ThemePalette::parse("synthwave"), Some(ThemePalette::Synth));
-        assert_eq!(ThemePalette::parse("bleeding-edge"), Some(ThemePalette::BleedingEdge));
+        assert_eq!(
+            ThemePalette::parse("bleeding-edge"),
+            Some(ThemePalette::BleedingEdge)
+        );
         assert!(ThemePalette::all().len() >= 7);
 
         let config = test_config();
@@ -933,7 +993,10 @@ mod tests {
         config.bleeding_edge = true;
         config.color = true;
         config.ascii_mode = false;
-        assert_eq!(display_version("3.6.0", config), crate::updater::CURRENT_EDGE_VERSION);
+        assert_eq!(
+            display_version("3.6.0", config),
+            crate::updater::CURRENT_EDGE_VERSION
+        );
         assert_eq!(display_mode(config), "bleeding-edge");
         assert!(splash_info("3.6.0", config).contains(&"channel bleeding-edge".to_string()));
     }

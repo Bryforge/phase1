@@ -101,9 +101,10 @@ fn run_shell(boot_config: ui::BootConfig) -> ShellExit {
     shell
         .env
         .insert("PHASE1_CHANNEL".to_string(), channel.to_string());
-    shell
-        .env
-        .insert("PHASE1_DISPLAY_VERSION".to_string(), display_version.clone());
+    shell.env.insert(
+        "PHASE1_DISPLAY_VERSION".to_string(),
+        display_version.clone(),
+    );
     shell.env.insert(
         "PHASE1_SAFE_MODE".to_string(),
         if boot_config.safe_mode { "1" } else { "0" }.to_string(),
@@ -114,7 +115,12 @@ fn run_shell(boot_config: ui::BootConfig) -> ShellExit {
     );
     shell.env.insert(
         "PHASE1_PERSISTENT_STATE".to_string(),
-        if boot_config.persistent_state { "1" } else { "0" }.to_string(),
+        if boot_config.persistent_state {
+            "1"
+        } else {
+            "0"
+        }
+        .to_string(),
     );
     shell.env.insert(
         "PHASE1_BLEEDING_EDGE".to_string(),
@@ -130,7 +136,9 @@ fn run_shell(boot_config: ui::BootConfig) -> ShellExit {
                 println!("persistent state: restored {count} entries from {PERSISTENT_STATE_PATH}")
             }
             Ok(_) => {
-                println!("persistent state: enabled; no saved state found at {PERSISTENT_STATE_PATH}")
+                println!(
+                    "persistent state: enabled; no saved state found at {PERSISTENT_STATE_PATH}"
+                )
             }
             Err(err) => println!("persistent state: restore warning: {err}"),
         }
@@ -154,7 +162,10 @@ fn run_shell(boot_config: ui::BootConfig) -> ShellExit {
     }
 
     shell.cmd_cd(Some("/home"));
-    println!("phase1 {} ready. Type 'help' for commands.", display_version);
+    println!(
+        "phase1 {} ready. Type 'help' for commands.",
+        display_version
+    );
 
     let mut shell_exit = ShellExit::Shutdown;
     loop {
@@ -494,7 +505,10 @@ fn print_boot_config(config: ui::BootConfig) {
     );
     println!("config file       : {}", ui::config_path());
     println!("state file        : {}", PERSISTENT_STATE_PATH);
-    println!("color             : {}", if config.color { "on" } else { "off" });
+    println!(
+        "color             : {}",
+        if config.color { "on" } else { "off" }
+    );
     println!(
         "ascii             : {}",
         if config.ascii_mode { "on" } else { "off" }

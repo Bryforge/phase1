@@ -56,7 +56,9 @@ fn run_phase1_in_dir_with_host_tools(run_dir: &Path, input: &str, host_tools: bo
 
     {
         let stdin = child.stdin.as_mut().expect("phase1 stdin");
-        stdin.write_all(input.as_bytes()).expect("write phase1 script");
+        stdin
+            .write_all(input.as_bytes())
+            .expect("write phase1 script");
     }
 
     let output = child.wait_with_output().expect("wait for phase1");
@@ -64,7 +66,10 @@ fn run_phase1_in_dir_with_host_tools(run_dir: &Path, input: &str, host_tools: bo
     let mut combined = String::new();
     combined.push_str(&String::from_utf8_lossy(&output.stdout));
     combined.push_str(&String::from_utf8_lossy(&output.stderr));
-    assert!(output.status.success(), "phase1 exited unsuccessfully:\n{combined}");
+    assert!(
+        output.status.success(),
+        "phase1 exited unsuccessfully:\n{combined}"
+    );
     combined
 }
 
@@ -84,7 +89,10 @@ fn fresh_run_dir(run_dir: &Path) {
 
 fn assert_contains_all(output: &str, needles: &[&str]) {
     for needle in needles {
-        assert!(output.contains(needle), "missing expected output: {needle}\n--- output ---\n{output}");
+        assert!(
+            output.contains(needle),
+            "missing expected output: {needle}\n--- output ---\n{output}"
+        );
     }
 }
 
@@ -123,7 +131,10 @@ fn secure_default_blocks_host_backed_commands() {
             "python: disabled by safe boot profile",
         ],
     );
-    assert!(!output.contains("blocked"), "safe mode executed Python unexpectedly:\n{output}");
+    assert!(
+        !output.contains("blocked"),
+        "safe mode executed Python unexpectedly:\n{output}"
+    );
 }
 
 #[test]
@@ -141,7 +152,10 @@ fn safe_off_without_host_tools_still_blocks_host_commands() {
             "browser: disabled; set PHASE1_ALLOW_HOST_TOOLS=1 to enable trusted host tools",
         ],
     );
-    assert!(!output.contains("blocked"), "host tools ran without explicit opt-in:\n{output}");
+    assert!(
+        !output.contains("blocked"),
+        "host tools ran without explicit opt-in:\n{output}"
+    );
 }
 
 #[test]
@@ -159,7 +173,10 @@ fn security_and_accounts_reports_are_privacy_safe() {
             "user",
         ],
     );
-    assert!(!output.contains('@'), "privacy-safe account output should not include email-like data:\n{output}");
+    assert!(
+        !output.contains('@'),
+        "privacy-safe account output should not include email-like data:\n{output}"
+    );
 }
 
 #[test]
@@ -175,8 +192,14 @@ fn preboot_persistent_state_mode_is_toggleable_and_restores_home_files() {
             "persistent state: enabled; no saved state found at phase1.state",
         ],
     );
-    assert!(run_dir.join("phase1.conf").exists(), "boot config was not saved");
-    assert!(run_dir.join("phase1.state").exists(), "persistent state file was not saved");
+    assert!(
+        run_dir.join("phase1.conf").exists(),
+        "boot config was not saved"
+    );
+    assert!(
+        run_dir.join("phase1.state").exists(),
+        "persistent state file was not saved"
+    );
 
     let second = run_phase1_in_dir(&run_dir, "\ncat keep.txt\nbootcfg show\nexit\n");
     assert_contains_all(
@@ -211,10 +234,19 @@ fn persistent_history_restores_and_sanitizes_commands() {
         ],
     );
     let history_file = run_dir.join("phase1.history");
-    assert!(history_file.exists(), "persistent history file was not saved");
+    assert!(
+        history_file.exists(),
+        "persistent history file was not saved"
+    );
     let raw = fs::read_to_string(&history_file).expect("read history file");
-    assert!(!raw.contains("supersecret"), "history leaked secret value:\n{raw}");
-    assert!(!raw.contains("API_TOKEN"), "history leaked token variable name:\n{raw}");
+    assert!(
+        !raw.contains("supersecret"),
+        "history leaked secret value:\n{raw}"
+    );
+    assert!(
+        !raw.contains("API_TOKEN"),
+        "history leaked token variable name:\n{raw}"
+    );
 
     let second = run_phase1_in_dir(&run_dir, "\nhistory status\nhistory 8\nexit\n");
     assert_contains_all(
@@ -232,7 +264,9 @@ fn persistent_history_restores_and_sanitizes_commands() {
 
 #[test]
 fn roadmap_aliases_capabilities_and_dashboard_work() {
-    let output = run_phase1_host_enabled("commands\ncaps\ndash --compact\npy -c \"print('alias-ok')\"\nquit\n");
+    let output = run_phase1_host_enabled(
+        "commands\ncaps\ndash --compact\npy -c \"print('alias-ok')\"\nquit\n",
+    );
     assert_contains_all(
         &output,
         &[
@@ -260,15 +294,12 @@ fn filesystem_commands_round_trip() {
     );
     assert_contains_all(
         &output,
-        &[
-            "/home",
-            "bin",
-            "/home/lab",
-            "hello world",
-            "note.txt",
-        ],
+        &["/home", "bin", "/home/lab", "hello world", "note.txt"],
     );
-    assert!(!output.contains("command not found"), "unexpected missing command:\n{output}");
+    assert!(
+        !output.contains("command not found"),
+        "unexpected missing command:\n{output}"
+    );
 }
 
 #[test]
@@ -291,7 +322,10 @@ fn text_search_and_chain_commands_work() {
             "chain-two",
         ],
     );
-    assert!(!output.contains("should-not-run"), "&& branch ran after failed command:\n{output}");
+    assert!(
+        !output.contains("should-not-run"),
+        "&& branch ran after failed command:\n{output}"
+    );
 }
 
 #[test]

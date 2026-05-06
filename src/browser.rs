@@ -89,13 +89,19 @@ impl Browser {
                 if ch == '>' {
                     let normalized = tag.trim().to_ascii_lowercase();
                     let closing = normalized.starts_with('/');
-                    let name = normalized.trim_start_matches('/').split_whitespace().next().unwrap_or("");
+                    let name = normalized
+                        .trim_start_matches('/')
+                        .split_whitespace()
+                        .next()
+                        .unwrap_or("");
                     match (closing, name) {
                         (false, "script") => in_script = true,
                         (true, "script") => in_script = false,
                         (false, "style") => in_style = true,
                         (true, "style") => in_style = false,
-                        (_, "br" | "p" | "div" | "li" | "tr" | "h1" | "h2" | "h3") => text.push('\n'),
+                        (_, "br" | "p" | "div" | "li" | "tr" | "h1" | "h2" | "h3") => {
+                            text.push('\n')
+                        }
                         _ => {}
                     }
                     in_tag = false;
@@ -176,7 +182,8 @@ mod tests {
 
     #[test]
     fn browser_strips_script_text() {
-        let text = Browser::new().render_text("<h1>Hello</h1><script>bad()</script><p>World &amp; ok</p>");
+        let text =
+            Browser::new().render_text("<h1>Hello</h1><script>bad()</script><p>World &amp; ok</p>");
         assert!(text.contains("Hello"));
         assert!(text.contains("World & ok"));
         assert!(!text.contains("bad"));

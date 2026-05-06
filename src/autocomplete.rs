@@ -4,8 +4,13 @@ use crate::registry;
 pub enum TabCompletion {
     Unchanged(String),
     Completed(String),
-    Suggestions { prefix: String, matches: Vec<String> },
-    NoMatch { prefix: String },
+    Suggestions {
+        prefix: String,
+        matches: Vec<String>,
+    },
+    NoMatch {
+        prefix: String,
+    },
 }
 
 pub fn complete_tab_line(line: &str) -> TabCompletion {
@@ -47,10 +52,7 @@ fn completion_result(
         0 => TabCompletion::NoMatch {
             prefix: prefix.to_string(),
         },
-        1 => TabCompletion::Completed(format!(
-            "{}{}{}",
-            &before[..token_start], matches[0], after
-        )),
+        1 => TabCompletion::Completed(format!("{}{}{}", &before[..token_start], matches[0], after)),
         _ => {
             let common = common_prefix(&matches);
             if common.len() > prefix.len() {
@@ -207,7 +209,15 @@ fn argument_matches(command: &str, prefix: &str, before_token: &str) -> Vec<Stri
             "--no-build",
             "--trust-host",
         ],
-        "wasm" => &["list", "inspect", "run", "validate", "hello-wasi", "arena", "game"],
+        "wasm" => &[
+            "list",
+            "inspect",
+            "run",
+            "validate",
+            "hello-wasi",
+            "arena",
+            "game",
+        ],
         "arena" | "doom" => &[
             "start",
             "play",
@@ -219,7 +229,15 @@ fn argument_matches(command: &str, prefix: &str, before_token: &str) -> Vec<Stri
             "help",
             "quit",
         ],
-        "game" => &["status", "files", "roadmap", "test-plan", "version", "help", "arena"],
+        "game" => &[
+            "status",
+            "files",
+            "roadmap",
+            "test-plan",
+            "version",
+            "help",
+            "arena",
+        ],
         "history" => &["list", "status", "path", "save", "clear"],
         "bootcfg" => &["show", "save", "reset", "defaults", "path", "state", "help"],
         "matrix" => &["0", "forever", "--speed", "--density", "--chars"],
@@ -237,7 +255,12 @@ fn update_suite_context(before_token: &str) -> bool {
     before_token[start..]
         .split_whitespace()
         .skip(1)
-        .any(|token| matches!(token, "test" | "tests" | "devtest" | "validate" | "verify" | "qa"))
+        .any(|token| {
+            matches!(
+                token,
+                "test" | "tests" | "devtest" | "validate" | "verify" | "qa"
+            )
+        })
 }
 
 fn matches_from(options: &[&str], prefix: &str) -> Vec<String> {
