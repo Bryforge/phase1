@@ -25,6 +25,21 @@ use std::io::{self, Write};
 use std::path::Path;
 
 const PERSISTENT_STATE_PATH: &str = "phase1.state";
+const RESET: &str = "\x1b[0m";
+const BOLD: &str = "\x1b[1m";
+const GREEN: &str = "\x1b[32m";
+const CYAN: &str = "\x1b[36m";
+const BLUE: &str = "\x1b[34m";
+const MAGENTA: &str = "\x1b[35m";
+const GRAY: &str = "\x1b[90m";
+const YELLOW: &str = "\x1b[33m";
+const RED: &str = "\x1b[31m";
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum ShellExit {
+    Shutdown,
+    Reboot,
+}
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum ChainOp {
@@ -53,10 +68,10 @@ fn compact_path(path: &Path) -> String {
 fn main() {
     loop {
         match ui::configure_boot(kernel::VERSION) {
-            ui::BootSelection::Boot(config) => {
-                run_shell(config);
-                break;
-            }
+            ui::BootSelection::Boot(config) => match run_shell(config) {
+                ShellExit::Shutdown => break,
+                ShellExit::Reboot => continue,
+            },
             ui::BootSelection::Reboot => continue,
             ui::BootSelection::Quit => {
                 println!("boot aborted: phase1 did not enter the main system");
@@ -66,7 +81,7 @@ fn main() {
     }
 }
 
-fn run_shell(boot_config: ui::BootConfig) {
+fn run_shell(boot_config: ui::BootConfig) -> ShellExit {
     boot_config.apply();
 
     let mut shell = Phase1Shell::new();
@@ -140,13 +155,14 @@ fn run_shell(boot_config: ui::BootConfig) {
     shell.cmd_cd(Some("/home"));
     println!("phase1 {} ready. Type 'help' for commands.", display_version);
 
+    let mut shell_exit = ShellExit::Shutdown;
     loop {
         shell.kernel.tick();
 
         let path = compact_path(&shell.kernel.vfs.cwd);
         ui::print_prompt(shell.user(), &path);
         let _ = io::stdout().flush();
-        let editor_prompt = format!("phase1://{} {} > ", shell.user(), path);
+        let editor_prompt = editor_prompt_text(shell.user(), &path);
 
         let line = match line_editor::read_shell_line(&editor_prompt) {
             Ok(Some(line)) => line,
@@ -177,6 +193,15 @@ fn run_shell(boot_config: ui::BootConfig) {
             }
             Err(err) => eprintln!("parse error: {err}"),
         }
+
+        if shell
+            .env
+            .get("PHASE1_REBOOT_REQUESTED")
+            .is_some_and(|value| value == "1")
+        {
+            shell_exit = ShellExit::Reboot;
+            break;
+        }
     }
 
     if boot_config.persistent_state {
@@ -187,6 +212,7 @@ fn run_shell(boot_config: ui::BootConfig) {
     if let Err(err) = history_store.save(&shell.history) {
         eprintln!("persistent history save warning: {err}");
     }
+    shell_exit
 }
 
 fn execute_chain(
@@ -206,6 +232,13 @@ fn execute_chain(
         };
         if should_run {
             last_status = execute_one(shell, boot_config, history_store, &segment.command)?;
+        }
+        if shell
+            .env
+            .get("PHASE1_REBOOT_REQUESTED")
+            .is_some_and(|value| value == "1")
+        {
+            break;
         }
     }
 
@@ -246,12 +279,55 @@ fn execute_one(
                 "find" => print!("{}", text::find(&shell.kernel.vfs, args)),
                 "matrix" => matrix::run(args),
                 "bootcfg" => handle_bootcfg(boot_config, args),
+                "reboot" => request_reboot(shell),
                 _ => dispatch(shell, cmd, args),
             }
             Ok(known)
         }
         Err(err) => Err(err),
     }
+}
+
+fn request_reboot(shell: &mut Phase1Shell) {
+    shell
+        .env
+        .insert("PHASE1_REBOOT_REQUESTED".to_string(), "1".to_string());
+    println!("reboot: returning to boot configuration screen");
+}
+
+fn editor_prompt_text(user: &str, path: &str) -> String {
+    if std::env::var("PHASE1_ASCII").ok().as_deref() == Some("1")
+        || std::env::var_os("NO_COLOR").is_some()
+        || std::env::var("PHASE1_NO_COLOR").ok().as_deref() == Some("1")
+    {
+        return format!("phase1://{} {} > ", user, path);
+    }
+
+    let (title, user_color, path_color) = match active_theme_name().as_str() {
+        "matrix" => (GREEN, GREEN, GREEN),
+        "cyber" => (CYAN, MAGENTA, CYAN),
+        "amber" => (YELLOW, YELLOW, YELLOW),
+        "ice" => (BLUE, CYAN, BLUE),
+        "synthwave" | "synth" => (MAGENTA, CYAN, MAGENTA),
+        "crimson" => (RED, RED, YELLOW),
+        "bleeding-edge" | "bleeding" | "edge" => (MAGENTA, MAGENTA, CYAN),
+        _ => (GREEN, CYAN, BLUE),
+    };
+
+    format!(
+        "{}{}phase1{}{}://{}{}{}{} {}{}{} ❯ ",
+        BOLD, title, RESET, GRAY, RESET, user_color, user, RESET, path_color, path, RESET
+    )
+}
+
+fn active_theme_name() -> String {
+    std::env::var("PHASE1_THEME").unwrap_or_else(|_| {
+        if std::env::var("PHASE1_BLEEDING_EDGE").ok().as_deref() == Some("1") {
+            "bleeding-edge".to_string()
+        } else {
+            "rainbow".to_string()
+        }
+    })
 }
 
 fn parse_chain(line: &str) -> Result<Vec<ChainSegment>, String> {
@@ -559,7 +635,7 @@ fn hex_value(byte: u8) -> Option<u8> {
 
 #[cfg(test)]
 mod tests {
-    use super::{compact_path, decode_hex, encode_hex, parse_chain, ChainOp};
+    use super::{compact_path, decode_hex, editor_prompt_text, encode_hex, parse_chain, ChainOp};
     use std::path::Path;
 
     #[test]
@@ -583,5 +659,17 @@ mod tests {
         assert_eq!(chain[1].op, ChainOp::Always);
         assert_eq!(chain[2].op, ChainOp::And);
         assert_eq!(chain[3].op, ChainOp::Or);
+    }
+
+    #[test]
+    fn editor_prompt_preserves_theme_escape_codes() {
+        std::env::remove_var("PHASE1_ASCII");
+        std::env::remove_var("PHASE1_NO_COLOR");
+        std::env::set_var("PHASE1_THEME", "bleeding-edge");
+        let prompt = editor_prompt_text("root", "~");
+        assert!(prompt.contains("\x1b["));
+        assert!(prompt.contains("phase1"));
+        assert!(prompt.contains("root"));
+        std::env::remove_var("PHASE1_THEME");
     }
 }
