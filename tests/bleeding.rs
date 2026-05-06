@@ -53,10 +53,10 @@ fn bleeding_version_and_roadmap_are_visible() {
         "version --compare\nroadmap\npipeline\nupdate protocol\nupdate latest --build\nupdate test quick\nsecurity\nwasm run game status\ndash\nexit\n",
     );
     assert!(output.contains("phase1 version report"));
-    assert!(output.contains("release version : 3.6.0"));
+    assert!(output.contains("stable version  : 3.6.0"));
     assert!(
-        output.contains(&format!("bleeding edge   : {EDGE_VERSION}")),
-        "edge version report did not track package version:\n{output}"
+        output.contains(&format!("current version : {EDGE_VERSION}")),
+        "current version report did not track package version:\n{output}"
     );
     assert!(output.contains("version scheme  : MAJOR.MINOR.PATCH[-dev]"));
     assert!(output.contains("protocol file   : UPDATE_PROTOCOL.md"));
