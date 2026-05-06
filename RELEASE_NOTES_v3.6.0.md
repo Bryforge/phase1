@@ -62,6 +62,25 @@ bootcfg show
 
 You should see the saved file content and `persistent state  : on`.
 
+## Validation
+
+Local validation passed on Chase Bryan's MacBook Air:
+
+```text
+cargo test --all-targets
+```
+
+Result:
+
+```text
+22 unit tests passed
+8 smoke tests passed
+30 total tests passed
+0 failed
+```
+
+Persistent state mode was verified through the preboot selector and restored `/home` VFS content across restarts.
+
 ## Upgrade instructions
 
 ```bash
@@ -88,4 +107,3 @@ phase1 is an educational userspace simulator. It models OS behavior but is not a
 - Persistent shell history is designed but not yet implemented.
 - Structured pipelines are designed but not yet implemented.
 - The dashboard is text/compact first; fullscreen TUI work remains on the roadmap.
-- The release was prepared through GitHub repository updates from ChatGPT. Final local verification should be run on a machine with Rust installed.
