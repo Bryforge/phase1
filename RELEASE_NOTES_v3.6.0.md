@@ -17,9 +17,11 @@ capabilities
 caps
 ```
 
+- Persistent state mode is now available from the preboot selector. Press `p` before entering the system to toggle it on or off.
+- When persistent state is enabled, phase1 restores `/home` VFS content from `phase1.state` before the shell starts and saves `/home` changes back after shell commands.
 - Registry-backed aliases now normalize through one command registry path.
 - Release docs now include a roadmap design index and detailed track documents.
-- Smoke tests now cover dashboard output, alias behavior, capabilities, network fallbacks, command errors, process commands, and filesystem commands.
+- Smoke tests now cover dashboard output, alias behavior, capabilities, network fallbacks, command errors, process commands, filesystem commands, and persistent state restore behavior.
 - Runtime version is now `3.6.0`.
 
 ## Demo command flow
@@ -34,6 +36,31 @@ jobs
 audit
 browser phase1
 ```
+
+## Persistent state demo
+
+At the boot selector:
+
+```text
+p
+Enter
+```
+
+Then inside phase1:
+
+```text
+echo saved data > keep.txt
+exit
+```
+
+Restart phase1 with persistent state still enabled and run:
+
+```text
+cat keep.txt
+bootcfg show
+```
+
+You should see the saved file content and `persistent state  : on`.
 
 ## Upgrade instructions
 
@@ -52,7 +79,7 @@ cargo build --release
 
 ## Safety notes
 
-phase1 is an educational userspace simulator. It models OS behavior but is not a host operating-system sandbox. Host-backed commands remain bounded by validation, timeouts, and dry-run behavior where mutation is involved.
+phase1 is an educational userspace simulator. It models OS behavior but is not a host operating-system sandbox. Optional persistent state only writes phase1-managed `/home` VFS content to `phase1.state`. Host-backed commands remain bounded by validation, timeouts, and dry-run behavior where mutation is involved.
 
 `wifi-connect` remains dry-run by default. Set `PHASE1_ALLOW_HOST_NETWORK_CHANGES=1` only when intentionally testing host network mutation.
 
