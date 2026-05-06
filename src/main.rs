@@ -2,6 +2,7 @@
 
 mod browser;
 mod commands;
+mod history;
 mod kernel;
 mod man;
 mod matrix;
@@ -66,6 +67,7 @@ fn run_shell(boot_config: ui::BootConfig) {
     boot_config.apply();
 
     let mut shell = Phase1Shell::new();
+    let history_store = history::HistoryStore::from_env(boot_config.persistent_state);
     shell.env.insert(
         "PHASE1_BOOT_PROFILE".to_string(),
         boot_config.profile_name().to_string(),
@@ -82,6 +84,9 @@ fn run_shell(boot_config: ui::BootConfig) {
         "PHASE1_PERSISTENT_STATE".to_string(),
         if boot_config.persistent_state { "1" } else { "0" }.to_string(),
     );
+    shell
+        .env
+        .insert("PHASE1_HISTORY".to_string(), history_store.describe());
 
     if boot_config.persistent_state {
         match load_persistent_state(&mut shell) {
@@ -93,6 +98,14 @@ fn run_shell(boot_config: ui::BootConfig) {
             }
             Err(err) => println!("persistent state: restore warning: {err}"),
         }
+    }
+
+    match history_store.load(&mut shell.history) {
+        Ok(count) if count > 0 => {
+            println!("persistent history: restored {count} entries from {}", history_store.describe())
+        }
+        Ok(_) => {}
+        Err(err) => println!("persistent history: restore warning: {err}"),
     }
 
     if boot_config.quick_boot {
@@ -125,13 +138,16 @@ fn run_shell(boot_config: ui::BootConfig) {
             continue;
         }
 
-        shell.push_history(line);
-        match execute_chain(&mut shell, boot_config, line) {
+        history::push_bounded(&mut shell.history, line);
+        match execute_chain(&mut shell, boot_config, &history_store, line) {
             Ok(_) => {
                 if boot_config.persistent_state {
                     if let Err(err) = save_persistent_state(&shell) {
                         eprintln!("persistent state save warning: {err}");
                     }
+                }
+                if let Err(err) = history_store.save(&shell.history) {
+                    eprintln!("persistent history save warning: {err}");
                 }
             }
             Err(err) => eprintln!("parse error: {err}"),
@@ -143,11 +159,15 @@ fn run_shell(boot_config: ui::BootConfig) {
             eprintln!("persistent state save warning: {err}");
         }
     }
+    if let Err(err) = history_store.save(&shell.history) {
+        eprintln!("persistent history save warning: {err}");
+    }
 }
 
 fn execute_chain(
     shell: &mut Phase1Shell,
     boot_config: ui::BootConfig,
+    history_store: &history::HistoryStore,
     line: &str,
 ) -> Result<bool, String> {
     let chain = parse_chain(line)?;
@@ -160,7 +180,7 @@ fn execute_chain(
             ChainOp::Or => !last_status,
         };
         if should_run {
-            last_status = execute_one(shell, boot_config, &segment.command)?;
+            last_status = execute_one(shell, boot_config, history_store, &segment.command)?;
         }
     }
 
@@ -170,6 +190,7 @@ fn execute_chain(
 fn execute_one(
     shell: &mut Phase1Shell,
     boot_config: ui::BootConfig,
+    history_store: &history::HistoryStore,
     line: &str,
 ) -> Result<bool, String> {
     let expanded = shell.expand_env(line);
@@ -192,6 +213,7 @@ fn execute_one(
                 "banner" => print!("{}", operator::banner(boot_config, args)),
                 "tips" => print!("{}", operator::tips(shell)),
                 "update" => print!("{}", updater::run(args)),
+                "history" => print!("{}", history::run(shell, history_store, args)),
                 "grep" => print!("{}", text::grep(&shell.kernel.vfs, args)),
                 "wc" => print!("{}", text::wc(&shell.kernel.vfs, args)),
                 "head" => print!("{}", text::head(&shell.kernel.vfs, args)),
