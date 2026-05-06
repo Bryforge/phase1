@@ -12,6 +12,7 @@ mod policy;
 mod registry;
 mod text;
 mod ui;
+mod updater;
 
 use commands::{dispatch, parse_line, Phase1Shell};
 use kernel::VfsNode;
@@ -190,6 +191,7 @@ fn execute_one(
                 "theme" => print!("{}", operator::theme(shell, args)),
                 "banner" => print!("{}", operator::banner(boot_config, args)),
                 "tips" => print!("{}", operator::tips(shell)),
+                "update" => print!("{}", updater::run(args)),
                 "grep" => print!("{}", text::grep(&shell.kernel.vfs, args)),
                 "wc" => print!("{}", text::wc(&shell.kernel.vfs, args)),
                 "head" => print!("{}", text::head(&shell.kernel.vfs, args)),
