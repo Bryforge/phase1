@@ -1,5 +1,4 @@
 use crate::commands::Phase1Shell;
-use crate::kernel::VERSION;
 use crate::ui::{BootConfig, ThemePalette};
 
 const TIPS: &[&str] = &[
@@ -10,6 +9,7 @@ const TIPS: &[&str] = &[
     "Safe mode blocks host-backed execution by default.",
     "Persistent state only restores phase1-managed /home files.",
     "Try theme matrix, theme cyber, theme amber, theme ice, theme synthwave, or theme crimson.",
+    "Boot with e=edge to enable the bleeding-edge version display and edge-only palette.",
 ];
 
 pub fn theme(shell: &mut Phase1Shell, args: &[String]) -> String {
@@ -19,28 +19,53 @@ pub fn theme(shell: &mut Phase1Shell, args: &[String]) -> String {
         Some("mono") | Some("plain") => {
             std::env::set_var("PHASE1_NO_COLOR", "1");
             std::env::remove_var("PHASE1_ASCII");
-            shell.env.insert("PHASE1_THEME".to_string(), "mono".to_string());
-            shell.env.insert("PHASE1_NO_COLOR".to_string(), "1".to_string());
-            shell.env.insert("PHASE1_ASCII".to_string(), "0".to_string());
+            shell
+                .env
+                .insert("PHASE1_THEME".to_string(), "mono".to_string());
+            shell
+                .env
+                .insert("PHASE1_NO_COLOR".to_string(), "1".to_string());
+            shell
+                .env
+                .insert("PHASE1_ASCII".to_string(), "0".to_string());
             "theme: mono terminal enabled\n".to_string()
         }
         Some("ascii") => {
             std::env::set_var("PHASE1_ASCII", "1");
             std::env::set_var("PHASE1_NO_COLOR", "1");
-            shell.env.insert("PHASE1_THEME".to_string(), "ascii".to_string());
-            shell.env.insert("PHASE1_NO_COLOR".to_string(), "1".to_string());
-            shell.env.insert("PHASE1_ASCII".to_string(), "1".to_string());
+            shell
+                .env
+                .insert("PHASE1_THEME".to_string(), "ascii".to_string());
+            shell
+                .env
+                .insert("PHASE1_NO_COLOR".to_string(), "1".to_string());
+            shell
+                .env
+                .insert("PHASE1_ASCII".to_string(), "1".to_string());
             "theme: ascii compatibility enabled\n".to_string()
         }
         Some("reset") => {
-            set_palette(shell, ThemePalette::Rainbow);
-            "theme: reset to rainbow default\n".to_string()
+            if bleeding_edge_active() {
+                set_palette(shell, ThemePalette::BleedingEdge);
+                "theme: reset to bleeding-edge default\n".to_string()
+            } else {
+                set_palette(shell, ThemePalette::Rainbow);
+                "theme: reset to rainbow default\n".to_string()
+            }
         }
         Some("default") => {
-            set_palette(shell, ThemePalette::Rainbow);
-            "theme: rainbow default enabled\n".to_string()
+            if bleeding_edge_active() {
+                set_palette(shell, ThemePalette::BleedingEdge);
+                "theme: bleeding-edge default enabled\n".to_string()
+            } else {
+                set_palette(shell, ThemePalette::Rainbow);
+                "theme: rainbow default enabled\n".to_string()
+            }
         }
         Some(raw) => match ThemePalette::parse(raw) {
+            Some(ThemePalette::BleedingEdge) if !bleeding_edge_active() => {
+                "theme: bleeding-edge palette requires booting with e=edge first\n".to_string()
+            }
             Some(palette) => {
                 set_palette(shell, palette);
                 format!("theme: {} enabled\n", palette.name())
@@ -72,12 +97,21 @@ pub fn banner(config: BootConfig, args: &[String]) -> String {
                 preview.color = false;
                 display = Some("ascii".to_string());
             }
+            "edge" | "bleeding" | "bleeding-edge" | "--edge" => {
+                preview.bleeding_edge = true;
+                preview.color = true;
+                preview.ascii_mode = false;
+                display = Some("bleeding-edge".to_string());
+            }
             "safe" | "--safe" => preview.safe_mode = true,
             "host" | "--host" => preview.safe_mode = false,
             "persist" | "persistent" | "--persistent" => preview.persistent_state = true,
             "volatile" | "--volatile" => preview.persistent_state = false,
             other => {
                 if let Some(palette) = ThemePalette::parse(other) {
+                    if palette == ThemePalette::BleedingEdge && !preview.bleeding_edge {
+                        continue;
+                    }
                     preview.color = true;
                     preview.ascii_mode = false;
                     display = Some(palette.name().to_string());
@@ -90,18 +124,24 @@ pub fn banner(config: BootConfig, args: &[String]) -> String {
         if preview.ascii_mode {
             "ascii".to_string()
         } else if preview.color {
-            std::env::var("PHASE1_THEME")
-                .ok()
-                .and_then(|raw| ThemePalette::parse(&raw).map(|palette| palette.name().to_string()))
-                .unwrap_or_else(|| "rainbow".to_string())
+            if preview.bleeding_edge {
+                "bleeding-edge".to_string()
+            } else {
+                std::env::var("PHASE1_THEME")
+                    .ok()
+                    .and_then(|raw| ThemePalette::parse(&raw).map(|palette| palette.name().to_string()))
+                    .unwrap_or_else(|| "rainbow".to_string())
+            }
         } else {
             "mono".to_string()
         }
     });
 
     format!(
-        "banner preview\nprofile : {}\nsecurity: {}\nstate   : {}\ndisplay : {}\ntry     : cargo run, then use the preboot selector\n",
+        "banner preview\nprofile : {}\nchannel : {}\nversion : {}\nsecurity: {}\nstate   : {}\ndisplay : {}\ntry     : cargo run, then use the preboot selector\n",
         preview.profile_name(),
+        if preview.bleeding_edge { "bleeding-edge" } else { "release" },
+        crate::ui::display_version(crate::kernel::VERSION, preview),
         if preview.safe_mode { "safe" } else { "host-capable" },
         if preview.persistent_state { "persistent" } else { "volatile" },
         display,
@@ -121,7 +161,9 @@ pub fn sysinfo(shell: &mut Phase1Shell, config: BootConfig) -> String {
     let pcie_count = shell.kernel.pcie.lspci().lines().count();
 
     format!(
-        "phase1 sysinfo\nversion     : {VERSION}\nprofile     : {}\nuser        : {}\nuid         : {}\ncwd         : {}\nuptime      : {}s\nsecurity    : {}\nstate       : {}\nprocesses   : {}\nbackground  : {}\npcie devices: {}\naudit events: {}\nhost tools  : {}\nprivacy     : no emails, passwords, tokens, or host account secrets are shown\n",
+        "phase1 sysinfo\nversion     : {}\nchannel     : {}\nprofile     : {}\nuser        : {}\nuid         : {}\ncwd         : {}\nuptime      : {}s\nsecurity    : {}\nstate       : {}\nprocesses   : {}\nbackground  : {}\npcie devices: {}\naudit events: {}\nhost tools  : {}\nprivacy     : no emails, passwords, tokens, or host account secrets are shown\n",
+        crate::ui::display_version(crate::kernel::VERSION, config),
+        if config.bleeding_edge { "bleeding-edge" } else { "release" },
         config.profile_name(),
         shell.user(),
         shell.kernel.scheduler.current_uid,
@@ -162,6 +204,10 @@ fn set_palette(shell: &mut Phase1Shell, palette: ThemePalette) {
         .insert("PHASE1_ASCII".to_string(), "0".to_string());
 }
 
+fn bleeding_edge_active() -> bool {
+    std::env::var("PHASE1_BLEEDING_EDGE").ok().as_deref() == Some("1")
+}
+
 fn theme_status(shell: &Phase1Shell) -> String {
     let color = std::env::var("PHASE1_NO_COLOR").ok().as_deref() != Some("1");
     let ascii = std::env::var("PHASE1_ASCII").ok().as_deref() == Some("1");
@@ -179,11 +225,18 @@ fn theme_status(shell: &Phase1Shell) -> String {
                     .ok()
                     .and_then(|raw| ThemePalette::parse(&raw).map(|theme| theme.name().to_string()))
             })
-            .unwrap_or_else(|| ThemePalette::Rainbow.name().to_string())
+            .unwrap_or_else(|| {
+                if bleeding_edge_active() {
+                    ThemePalette::BleedingEdge.name().to_string()
+                } else {
+                    ThemePalette::Rainbow.name().to_string()
+                }
+            })
     };
 
     format!(
-        "theme status\nactive : {active}\ncolor  : {}\nascii  : {}\n",
+        "theme status\nactive : {active}\nchannel: {}\ncolor  : {}\nascii  : {}\n",
+        if bleeding_edge_active() { "bleeding-edge" } else { "release" },
         if color { "on" } else { "off" },
         if ascii { "on" } else { "off" }
     )
@@ -192,11 +245,11 @@ fn theme_status(shell: &Phase1Shell) -> String {
 fn theme_list() -> String {
     let mut out = String::from("theme list\n");
     for palette in ThemePalette::all() {
-        out.push_str(&format!("- {:<10} {}\n", palette.name(), palette.label()));
+        out.push_str(&format!("- {:<13} {}\n", palette.name(), palette.label()));
     }
-    out.push_str("- mono       no color, normal unicode\n");
-    out.push_str("- ascii      no color, ASCII-compatible prompt\n");
-    out.push_str("- reset      rainbow default\n");
+    out.push_str("- mono          no color, normal unicode\n");
+    out.push_str("- ascii         no color, ASCII-compatible prompt\n");
+    out.push_str("- reset         channel default\n");
     out
 }
 
@@ -206,23 +259,33 @@ mod tests {
     use crate::commands::Phase1Shell;
     use crate::ui::BootConfig;
 
-    #[test]
-    fn banner_preview_reports_modes() {
-        let config = BootConfig {
+    fn config() -> BootConfig {
+        BootConfig {
             color: true,
             ascii_mode: false,
             safe_mode: true,
             quick_boot: false,
             mobile_mode: true,
             persistent_state: false,
-        };
+            bleeding_edge: false,
+        }
+    }
+
+    #[test]
+    fn banner_preview_reports_modes() {
+        let config = config();
         let out = banner(config, &["persistent".to_string(), "mono".to_string()]);
         assert!(out.contains("profile : mobile-safe"));
+        assert!(out.contains("channel : release"));
         assert!(out.contains("state   : persistent"));
         assert!(out.contains("display : mono"));
 
         let cyber = banner(config, &["cyber".to_string()]);
         assert!(cyber.contains("display : cyber"));
+
+        let edge = banner(config, &["edge".to_string()]);
+        assert!(edge.contains("channel : bleeding-edge"));
+        assert!(edge.contains("display : bleeding-edge"));
     }
 
     #[test]
@@ -233,6 +296,7 @@ mod tests {
         assert!(out.contains("matrix"));
         assert!(out.contains("cyber"));
         assert!(out.contains("synthwave"));
+        assert!(out.contains("bleeding-edge"));
         assert!(out.contains("ascii"));
     }
 
@@ -244,5 +308,18 @@ mod tests {
         assert_eq!(shell.env.get("PHASE1_THEME").map(String::as_str), Some("matrix"));
         let status = theme(&mut shell, &[]);
         assert!(status.contains("active : matrix"));
+    }
+
+    #[test]
+    fn bleeding_edge_theme_requires_edge_mode() {
+        std::env::remove_var("PHASE1_BLEEDING_EDGE");
+        let mut shell = Phase1Shell::new();
+        let blocked = theme(&mut shell, &["bleeding-edge".to_string()]);
+        assert!(blocked.contains("requires booting with e=edge"));
+
+        std::env::set_var("PHASE1_BLEEDING_EDGE", "1");
+        let enabled = theme(&mut shell, &["bleeding-edge".to_string()]);
+        assert!(enabled.contains("bleeding-edge enabled"));
+        std::env::remove_var("PHASE1_BLEEDING_EDGE");
     }
 }
