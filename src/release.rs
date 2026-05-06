@@ -1,7 +1,7 @@
 use crate::kernel::VERSION;
 
 pub const RELEASE_VERSION: &str = "3.6.0";
-pub const BLEEDING_VERSION: &str = "3.8.1-dev";
+pub const BLEEDING_VERSION: &str = "3.8.2-dev";
 pub const CHANNEL: &str = "bleeding-edge";
 pub const UPDATE_PROTOCOL_FILE: &str = "UPDATE_PROTOCOL.md";
 pub const VERSION_SCHEME: &str = "MAJOR.MINOR.PATCH[-dev]";
@@ -16,6 +16,7 @@ const BLEEDING_FEATURES: &[&str] = &[
     "metadata-backed capability enforcement",
     "WASI-lite plugin runtime with phase1-only sandboxing",
     "selectable UI color palettes with rainbow default",
+    "system tab auto-completion for commands and common arguments",
     "operator sysinfo/theme/banner/tips commands",
 ];
 
@@ -37,6 +38,10 @@ const ROADMAP_STATUS: &[(&str, &str)] = &[
     (
         "Configurable UI color palettes",
         "complete: rainbow remains default; matrix, cyber, amber, ice, synthwave, and crimson are available",
+    ),
+    (
+        "System tab auto-completion",
+        "complete: literal Tab expands unique command/argument matches and lists ambiguous matches",
     ),
     (
         "Full-screen TUI dashboard",
@@ -102,6 +107,7 @@ mod tests {
         assert!(out.contains("metadata-backed capability enforcement"));
         assert!(out.contains("WASI-lite plugin runtime"));
         assert!(out.contains("selectable UI color palettes"));
+        assert!(out.contains("system tab auto-completion"));
     }
 
     #[test]
@@ -112,6 +118,7 @@ mod tests {
         assert!(out.contains("Capability enforcement based on command metadata"));
         assert!(out.contains("WASM/WASI plugin runtime"));
         assert!(out.contains("Configurable UI color palettes"));
+        assert!(out.contains("System tab auto-completion"));
         assert!(out.contains("complete"));
     }
 }
