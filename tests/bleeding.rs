@@ -50,7 +50,7 @@ fn bleeding_version_and_roadmap_are_visible() {
     let output = run_phase1("version --compare\nroadmap\npipeline\nupdate protocol\nsecurity\nexit\n");
     assert!(output.contains("phase1 version report"));
     assert!(output.contains("release version : 3.6.0"));
-    assert!(output.contains("bleeding edge   : 3.8.1-dev"));
+    assert!(output.contains("bleeding edge   : 3.8.2-dev"));
     assert!(output.contains("version scheme  : MAJOR.MINOR.PATCH[-dev]"));
     assert!(output.contains("protocol file   : UPDATE_PROTOCOL.md"));
     assert!(output.contains("Update protocol and semantic patch versioning"));
@@ -60,6 +60,8 @@ fn bleeding_version_and_roadmap_are_visible() {
     assert!(output.contains("metadata-backed capability enforcement"));
     assert!(output.contains("Configurable UI color palettes"));
     assert!(output.contains("selectable UI color palettes"));
+    assert!(output.contains("System tab auto-completion"));
+    assert!(output.contains("system tab auto-completion"));
     assert!(output.contains("capability metadata : enforced"));
     assert!(output.contains("phase1 pipelines"));
     assert!(output.contains("phase1 update protocol"));
@@ -108,15 +110,42 @@ fn bleeding_theme_palettes_are_selectable() {
 }
 
 #[test]
+fn bleeding_tab_completion_expands_commands_and_arguments() {
+    let output = run_phase1("vers\t --compare\ntheme ma\t\nw\t\nexit\n");
+    assert!(
+        output.contains("tab complete: version --compare"),
+        "command tab completion missing:\n{output}"
+    );
+    assert!(
+        output.contains("phase1 version report"),
+        "completed version command did not execute:\n{output}"
+    );
+    assert!(
+        output.contains("tab complete: theme matrix"),
+        "argument tab completion missing:\n{output}"
+    );
+    assert!(
+        output.contains("matrix enabled"),
+        "completed theme argument did not execute:\n{output}"
+    );
+    assert!(
+        output.contains("tab matches for 'w':"),
+        "ambiguous tab suggestions missing:\n{output}"
+    );
+    assert!(output.contains("wasm"), "wasm suggestion missing:\n{output}");
+    assert!(output.contains("wc"), "wc suggestion missing:\n{output}");
+}
+
+#[test]
 fn bleeding_edge_boot_switch_updates_ui_channel_and_version() {
     let output = run_phase1_raw("e\n\nbootcfg show\nsysinfo\ntheme\nbanner edge\nexit\n");
     assert!(output.contains("bleeding edge     on"), "boot switch missing:\n{output}");
-    assert!(output.contains("version v3.8.1-dev"), "boot UI did not use edge version:\n{output}");
+    assert!(output.contains("version v3.8.2-dev"), "boot UI did not use edge version:\n{output}");
     assert!(output.contains("channel bleeding-edge"), "boot UI channel missing:\n{output}");
     assert!(output.contains("boot profile      : safe+edge"), "bootcfg profile not edge:\n{output}");
     assert!(output.contains("bleeding edge     : on"), "bootcfg edge state missing:\n{output}");
     assert!(output.contains("channel     : bleeding-edge"), "sysinfo channel missing:\n{output}");
-    assert!(output.contains("version     : 3.8.1-dev"), "sysinfo edge version missing:\n{output}");
+    assert!(output.contains("version     : 3.8.2-dev"), "sysinfo edge version missing:\n{output}");
     assert!(output.contains("active : bleeding-edge"), "edge theme not automatic:\n{output}");
     assert!(output.contains("display : bleeding-edge"), "banner edge preview missing:\n{output}");
 }
