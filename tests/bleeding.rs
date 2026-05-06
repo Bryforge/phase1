@@ -48,11 +48,11 @@ fn run_phase1_raw(input: &str) -> String {
 #[test]
 fn bleeding_version_and_roadmap_are_visible() {
     let output = run_phase1(
-        "version --compare\nroadmap\npipeline\nupdate protocol\nupdate latest --build\nsecurity\nwasm run game status\ndash\nexit\n",
+        "version --compare\nroadmap\npipeline\nupdate protocol\nupdate latest --build\nupdate test quick\nsecurity\nwasm run game status\ndash\nexit\n",
     );
     assert!(output.contains("phase1 version report"));
     assert!(output.contains("release version : 3.6.0"));
-    assert!(output.contains("bleeding edge   : 3.10.1-dev"));
+    assert!(output.contains("bleeding edge   : 3.10.2-dev"));
     assert!(output.contains("version scheme  : MAJOR.MINOR.PATCH[-dev]"));
     assert!(output.contains("protocol file   : UPDATE_PROTOCOL.md"));
     assert!(output.contains("Update protocol and semantic patch versioning"));
@@ -70,7 +70,10 @@ fn bleeding_version_and_roadmap_are_visible() {
     assert!(output.contains("Raw input editing"));
     assert!(output.contains("Full-screen TUI dashboard"));
     assert!(output.contains("In-system latest updater"));
+    assert!(output.contains("Developer test kit"));
+    assert!(output.contains("developer test kit"));
     assert!(output.contains("update now --trust-host"));
+    assert!(output.contains("update test quick --trust-host --execute"));
     assert!(output.contains("PHASE1 FULL-SCREEN TUI DASHBOARD"));
     assert!(output.contains("panels  : core proc vfs net hw audit"));
     assert!(output.contains("capability metadata : enforced"));
@@ -93,14 +96,32 @@ fn bleeding_wasi_lite_plugins_are_sandboxed() {
     let output = run_phase1(
         "plugins\nwasm list\nwasm inspect hello-wasi\nwasm run hello-wasi token=supersecret\nhello-wasi password=hunter2\ncomplete wa\nexit\n",
     );
-    assert!(output.contains("wasm plugins:"), "missing wasm plugin list:\n{output}");
-    assert!(output.contains("hello-wasi"), "missing example wasm plugin:\n{output}");
-    assert!(output.contains("phase1 wasm inspect"), "missing inspect output:\n{output}");
-    assert!(output.contains("valid wasm"), "missing validation output:\n{output}");
+    assert!(
+        output.contains("wasm plugins:"),
+        "missing wasm plugin list:\n{output}"
+    );
+    assert!(
+        output.contains("hello-wasi"),
+        "missing example wasm plugin:\n{output}"
+    );
+    assert!(
+        output.contains("phase1 wasm inspect"),
+        "missing inspect output:\n{output}"
+    );
+    assert!(
+        output.contains("valid wasm"),
+        "missing validation output:\n{output}"
+    );
     assert!(output.contains("phase1 wasi run"), "missing run output:\n{output}");
     assert!(output.contains("host=blocked"), "sandbox not reported:\n{output}");
-    assert!(output.contains("hello from phase1 wasi-lite"), "manifest stdout missing:\n{output}");
-    assert!(output.contains("[redacted]"), "secret-looking args were not redacted:\n{output}");
+    assert!(
+        output.contains("hello from phase1 wasi-lite"),
+        "manifest stdout missing:\n{output}"
+    );
+    assert!(
+        output.contains("[redacted]"),
+        "secret-looking args were not redacted:\n{output}"
+    );
     assert!(output.contains("wasm"), "wasm completion missing:\n{output}");
     assert!(output.contains("wasi"), "wasi completion missing:\n{output}");
 }
@@ -110,14 +131,38 @@ fn bleeding_theme_palettes_are_selectable() {
     let output = run_phase1(
         "theme list\ntheme matrix\ntheme\nbanner cyber\ntheme synthwave\ntheme\ntheme reset\ntheme\nexit\n",
     );
-    assert!(output.contains("rainbow ANSI gradient"), "missing rainbow palette:\n{output}");
-    assert!(output.contains("matrix enabled"), "matrix theme did not enable:\n{output}");
-    assert!(output.contains("active : matrix"), "matrix theme status missing:\n{output}");
-    assert!(output.contains("display : cyber"), "banner cyber preview missing:\n{output}");
-    assert!(output.contains("synthwave enabled"), "synthwave theme did not enable:\n{output}");
-    assert!(output.contains("active : synthwave"), "synthwave status missing:\n{output}");
-    assert!(output.contains("reset to rainbow default"), "reset did not return to default:\n{output}");
-    assert!(output.contains("active : rainbow"), "rainbow default status missing:\n{output}");
+    assert!(
+        output.contains("rainbow ANSI gradient"),
+        "missing rainbow palette:\n{output}"
+    );
+    assert!(
+        output.contains("matrix enabled"),
+        "matrix theme did not enable:\n{output}"
+    );
+    assert!(
+        output.contains("active : matrix"),
+        "matrix theme status missing:\n{output}"
+    );
+    assert!(
+        output.contains("display : cyber"),
+        "banner cyber preview missing:\n{output}"
+    );
+    assert!(
+        output.contains("synthwave enabled"),
+        "synthwave theme did not enable:\n{output}"
+    );
+    assert!(
+        output.contains("active : synthwave"),
+        "synthwave status missing:\n{output}"
+    );
+    assert!(
+        output.contains("reset to rainbow default"),
+        "reset did not return to default:\n{output}"
+    );
+    assert!(
+        output.contains("active : rainbow"),
+        "rainbow default status missing:\n{output}"
+    );
 }
 
 #[test]
@@ -159,13 +204,40 @@ fn bleeding_tab_completion_expands_commands_and_arguments() {
 fn bleeding_edge_boot_switch_updates_ui_channel_and_version() {
     let output = run_phase1_raw("e\n\nbootcfg show\nsysinfo\ntheme\nbanner edge\ndash --compact\nexit\n");
     assert!(output.contains("bleeding edge     on"), "boot switch missing:\n{output}");
-    assert!(output.contains("version v3.10.1-dev"), "boot UI did not use edge version:\n{output}");
-    assert!(output.contains("channel bleeding-edge"), "boot UI channel missing:\n{output}");
-    assert!(output.contains("boot profile      : safe+edge"), "bootcfg profile not edge:\n{output}");
-    assert!(output.contains("bleeding edge     : on"), "bootcfg edge state missing:\n{output}");
-    assert!(output.contains("channel     : bleeding-edge"), "sysinfo channel missing:\n{output}");
-    assert!(output.contains("version     : 3.10.1-dev"), "sysinfo edge version missing:\n{output}");
-    assert!(output.contains("PHASE1 DASHBOARD v3.10.1-dev"), "dash edge version missing:\n{output}");
-    assert!(output.contains("active : bleeding-edge"), "edge theme not automatic:\n{output}");
-    assert!(output.contains("display : bleeding-edge"), "banner edge preview missing:\n{output}");
+    assert!(
+        output.contains("version v3.10.2-dev"),
+        "boot UI did not use edge version:\n{output}"
+    );
+    assert!(
+        output.contains("channel bleeding-edge"),
+        "boot UI channel missing:\n{output}"
+    );
+    assert!(
+        output.contains("boot profile      : safe+edge"),
+        "bootcfg profile not edge:\n{output}"
+    );
+    assert!(
+        output.contains("bleeding edge     : on"),
+        "bootcfg edge state missing:\n{output}"
+    );
+    assert!(
+        output.contains("channel     : bleeding-edge"),
+        "sysinfo channel missing:\n{output}"
+    );
+    assert!(
+        output.contains("version     : 3.10.2-dev"),
+        "sysinfo edge version missing:\n{output}"
+    );
+    assert!(
+        output.contains("PHASE1 DASHBOARD v3.10.2-dev"),
+        "dash edge version missing:\n{output}"
+    );
+    assert!(
+        output.contains("active : bleeding-edge"),
+        "edge theme not automatic:\n{output}"
+    );
+    assert!(
+        output.contains("display : bleeding-edge"),
+        "banner edge preview missing:\n{output}"
+    );
 }
