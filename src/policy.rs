@@ -43,11 +43,7 @@ pub fn capability_denial_message(command: &str, capability: &str) -> Option<Stri
 }
 
 pub fn host_denial_message(command: &str) -> String {
-    host_denial_message_from_values(
-        command,
-        safe_mode_enabled(),
-        host_tools_enabled(),
-    )
+    host_denial_message_from_values(command, safe_mode_enabled(), host_tools_enabled())
 }
 
 pub fn capability_metadata_status() -> &'static str {
@@ -131,20 +127,18 @@ mod tests {
 
     #[test]
     fn command_metadata_blocks_guarded_capabilities() {
-        let safe = capability_denial_message_from_values("python", "host.exec", None, None).unwrap();
+        let safe =
+            capability_denial_message_from_values("python", "host.exec", None, None).unwrap();
         assert!(safe.contains("disabled by safe boot profile"));
 
-        let host = capability_denial_message_from_values("browser", "host.net", Some("0"), None)
-            .unwrap();
+        let host =
+            capability_denial_message_from_values("browser", "host.net", Some("0"), None).unwrap();
         assert!(host.contains("PHASE1_ALLOW_HOST_TOOLS"));
 
-        assert!(capability_denial_message_from_values(
-            "python",
-            "host.exec",
-            Some("0"),
-            Some("1")
-        )
-        .is_none());
+        assert!(
+            capability_denial_message_from_values("python", "host.exec", Some("0"), Some("1"))
+                .is_none()
+        );
         assert!(capability_denial_message_from_values(
             "wifi-connect",
             "net.admin",
