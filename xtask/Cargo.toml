@@ -1,0 +1,10 @@
+[package]
+name = "xtask"
+version = "0.1.0"
+edition = "2021"
+authors = ["Chase Bryan"]
+description = "Developer automation for Phase1."
+license = "GPL-3.0-only"
+publish = false
+
+[dependencies]
