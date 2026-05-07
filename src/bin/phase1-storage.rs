@@ -35,14 +35,7 @@ const SENSITIVE_OUTPUT_MARKERS: &[&str] = &[
     "-----begin openssh private key-----",
 ];
 
-const KNOWN_TOKEN_PREFIXES: &[&str] = &[
-    "github_pat_",
-    "ghp_",
-    "gho_",
-    "ghu_",
-    "ghs_",
-    "ghr_",
-];
+const KNOWN_TOKEN_PREFIXES: &[&str] = &["github_pat_", "ghp_", "gho_", "ghu_", "ghs_", "ghr_"];
 
 fn main() {
     let args = env::args().skip(1).collect::<Vec<_>>();
@@ -482,12 +475,18 @@ fn format_output(output: Output) -> String {
 }
 
 fn sanitize_output(raw: &str) -> String {
-    raw.lines().map(sanitize_line).collect::<Vec<_>>().join("\n") + "\n"
+    raw.lines()
+        .map(sanitize_line)
+        .collect::<Vec<_>>()
+        .join("\n")
+        + "\n"
 }
 
 fn sanitize_line(line: &str) -> String {
     let redacted_url_line = redact_url_credentials(line);
-    if contains_sensitive_marker(&redacted_url_line) || contains_known_token_prefix(&redacted_url_line) {
+    if contains_sensitive_marker(&redacted_url_line)
+        || contains_known_token_prefix(&redacted_url_line)
+    {
         "[redacted sensitive output]".to_string()
     } else {
         redacted_url_line
@@ -502,7 +501,9 @@ fn contains_sensitive_marker(line: &str) -> bool {
 }
 
 fn contains_known_token_prefix(line: &str) -> bool {
-    KNOWN_TOKEN_PREFIXES.iter().any(|prefix| line.contains(prefix))
+    KNOWN_TOKEN_PREFIXES
+        .iter()
+        .any(|prefix| line.contains(prefix))
 }
 
 fn redact_url_credentials(line: &str) -> String {
@@ -561,7 +562,8 @@ fn flush_stdout() {
 #[cfg(test)]
 mod tests {
     use super::{
-        derive_repo_name, language_roadmap, redact_url_credentials, sanitize_output, validate_repo_name,
+        derive_repo_name, language_roadmap, redact_url_credentials, sanitize_output,
+        validate_repo_name,
     };
 
     #[test]
