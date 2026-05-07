@@ -5,7 +5,8 @@ for file in \
     terminal/bin/phase1-terminal \
     scripts/install-phase1-terminal.sh \
     scripts/install-phase1-terminal-linux.sh \
-    scripts/install-phase1-terminal-macos.sh
+    scripts/install-phase1-terminal-macos.sh \
+    scripts/uninstall-phase1-terminal.sh
  do
     echo "sh -n $file"
     sh -n "$file"
@@ -20,5 +21,26 @@ if [ ! -f terminal/macos/Phase1-Terminal.terminal ]; then
     echo "missing macOS Terminal profile" >&2
     exit 1
 fi
+
+echo "phase1-terminal help"
+terminal/bin/phase1-terminal help >/dev/null
+
+echo "phase1-terminal version"
+terminal/bin/phase1-terminal version | grep 'phase1-terminal '
+
+echo "phase1-terminal env"
+terminal/bin/phase1-terminal env | grep 'PHASE1_TERMINAL_VERSION='
+
+echo "phase1-terminal doctor --json"
+terminal/bin/phase1-terminal doctor --json | grep '"version"'
+
+echo "phase1-terminal profile list"
+terminal/bin/phase1-terminal profile list | grep 'profiles:'
+
+echo "phase1-terminal install dry-run"
+sh scripts/install-phase1-terminal.sh --dry-run --no-alias >/dev/null
+
+echo "phase1-terminal uninstall dry-run"
+sh scripts/uninstall-phase1-terminal.sh --dry-run >/dev/null
 
 echo "Phase1 Terminal scripts validated"
