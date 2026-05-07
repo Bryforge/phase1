@@ -4,6 +4,8 @@ Phase1 Terminal is the dedicated launcher/profile layer for Phase1 on Linux and 
 
 Use it when you want a consistent Phase1 entry point that configures the shell environment, discovers the Phase1 install path, and launches the fastest available Phase1 binary.
 
+Roadmap: [`../TERMINAL_ROADMAP.md`](../TERMINAL_ROADMAP.md).
+
 ## Command
 
 ```bash
@@ -79,6 +81,12 @@ PHASE1_THEME="cyber"
 PHASE1_SAFE_MODE="1"
 PHASE1_DEVICE_MODE="desktop"
 ```
+
+## Roadmap
+
+The Phase1 Terminal roadmap covers installer hardening, profile UX, session management, Gina-aware workflows, packaging, and native terminal exploration.
+
+Read: [`../TERMINAL_ROADMAP.md`](../TERMINAL_ROADMAP.md).
 
 ## Safety model
 
