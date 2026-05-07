@@ -14,13 +14,24 @@ Run this before every push:
 > ```bash
 > cargo fmt --all -- --check
 > cargo check --all-targets
+> cargo clippy --all-targets -- -D warnings
 > cargo test --all-targets
 > ```
 
-Optional deeper validation:
+Full release validation:
 
 ```bash
+cargo fmt --all -- --check
+cargo check --all-targets
 cargo clippy --all-targets -- -D warnings
+cargo test --all-targets
+cargo audit
+cargo deny check
+```
+
+Optional targeted validation:
+
+```bash
 cargo test --test smoke -- --nocapture
 cargo test --test bleeding -- --nocapture
 cargo test --test game -- --nocapture
@@ -71,7 +82,7 @@ Use edge versions for active development builds that still carry the `-dev` suff
 Current edge version:
 
 ```text
-v3.10.9-dev
+v4.0.0-dev
 ```
 
 Edge tagging example:
@@ -79,9 +90,9 @@ Edge tagging example:
 ```bash
 git status
 git log -1 --oneline
-git tag v3.10.9-dev
+git tag v4.0.0-dev
 git push origin master
-git push origin v3.10.9-dev
+git push origin v4.0.0-dev
 ```
 
 ## Stable release workflow
@@ -91,7 +102,7 @@ Stable releases remove the `-dev` suffix and must pass validation.
 Current stable release:
 
 ```text
-v3.10.7
+v3.10.9
 ```
 
 Stable promotion checklist:
@@ -99,23 +110,26 @@ Stable promotion checklist:
 1. Remove `-dev` from `Cargo.toml`.
 2. Refresh `Cargo.lock`.
 3. Update README and wiki version references.
-4. Run validation.
+4. Run full validation.
 5. Commit the promotion.
 6. Tag the release.
 7. Push branch and tag.
 
-Example:
+Future v4 stable promotion example:
 
 ```bash
 cargo fmt --all -- --check
 cargo check --all-targets
+cargo clippy --all-targets -- -D warnings
 cargo test --all-targets
+cargo audit
+cargo deny check
 git status
-git add Cargo.toml Cargo.lock README.md docs/wiki
-git commit -m "Promote Phase1 v3.10.9"
-git tag v3.10.9
+git add Cargo.toml Cargo.lock README.md docs/wiki plugins
+git commit -m "Promote phase1 v4.0.0"
+git tag v4.0.0
 git push origin master
-git push origin v3.10.9
+git push origin v4.0.0
 ```
 
 ## Documentation release checklist
@@ -128,6 +142,8 @@ docs/wiki/Home.md
 docs/wiki/02-Version-Guide.md
 docs/wiki/08-Updates-Releases-and-Validation.md
 docs/wiki/10-Publish-to-GitHub-Wiki.md
+plugins/wiki-version.wasi
+plugins/wiki-updates.wasi
 /home/readme.txt generator if command behavior changed
 ```
 
@@ -140,7 +156,10 @@ docs/wiki/10-Publish-to-GitHub-Wiki.md
 > git pull origin master
 > cargo fmt --all -- --check
 > cargo check --all-targets
+> cargo clippy --all-targets -- -D warnings
 > cargo test --all-targets
+> cargo audit
+> cargo deny check
 > git status
 > ```
 
