@@ -216,7 +216,14 @@ impl NetworkStack {
         }
         if cfg!(target_os = "linux") {
             let mut cmd = Command::new("nmcli");
-            cmd.args(["-t", "-f", "NAME,TYPE,DEVICE,STATE", "connection", "show", "--active"]);
+            cmd.args([
+                "-t",
+                "-f",
+                "NAME,TYPE,DEVICE,STATE",
+                "connection",
+                "show",
+                "--active",
+            ]);
             command_text(cmd, SHORT_CMD_TIMEOUT, "nmcli unavailable")
         } else {
             self.iwconfig()
@@ -280,7 +287,9 @@ impl NetworkStack {
         };
         let stdout = String::from_utf8_lossy(&output.stdout);
         let wifi_device = macos_wifi_device();
-        let wifi_ssid = wifi_device.as_ref().and_then(|device| macos_current_ssid(device));
+        let wifi_ssid = wifi_device
+            .as_ref()
+            .and_then(|device| macos_current_ssid(device));
         let mut current: Option<NetInterface> = None;
 
         for line in stdout.lines() {
@@ -318,7 +327,11 @@ impl NetworkStack {
         }
 
         if let (Some(device), Some(ssid)) = (wifi_device, wifi_ssid) {
-            if let Some(iface) = self.interfaces.iter_mut().find(|iface| iface.name == device) {
+            if let Some(iface) = self
+                .interfaces
+                .iter_mut()
+                .find(|iface| iface.name == device)
+            {
                 iface.wifi_ssid = Some(ssid);
             }
         }
@@ -352,6 +365,7 @@ fn read_linux_mac(name: &str) -> String {
 
 fn linux_operstate(name: &str) -> String {
     fs::read_to_string(format!("/sys/class/net/{name}/operstate"))
+        .ok()
         .map(|value| value.trim().to_string())
         .filter(|value| !value.is_empty())
         .unwrap_or_else(|| "up".to_string())
@@ -553,9 +567,7 @@ fn safe_host(host: &str) -> bool {
 
 fn safe_ssid(ssid: &str) -> bool {
     let bytes = ssid.as_bytes();
-    !bytes.is_empty()
-        && bytes.len() <= 32
-        && !ssid.chars().any(|ch| ch.is_control() && ch != '\t')
+    !bytes.is_empty() && bytes.len() <= 32 && !ssid.chars().any(|ch| ch.is_control() && ch != '\t')
 }
 
 fn sanitize_inline(text: &str) -> String {
