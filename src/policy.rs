@@ -1,6 +1,6 @@
 pub fn security_report(persistent_state: bool, history_state: &str) -> String {
     format!(
-        "security mode       : {}\nhost tools          : {}\nhost network changes: {}\ncapability metadata : {}\npersistent state    : {}\nhistory             : {}\nprivacy             : no real emails, passwords, tokens, or account secrets are stored by phase1\n",
+        "security mode       : {}\nhost tools          : {}\nhost network changes: {}\ncapability metadata : {}\nsecret redaction    : logs, panic summaries, token-like values, auth headers, and URL credentials\ntransport policy    : prefer HTTPS Git remotes; never place credentials in clone URLs\nci security gates   : fmt, check, clippy, tests, RustSec audit, cargo-deny, and lightweight secret scan\npersistent state    : {}\nhistory             : {}\nprivacy             : no real emails, passwords, tokens, or account secrets are stored by phase1\noperator rule       : SHIELD on by default; TRUST HOST only for explicit local development sessions\n",
         if safe_mode_enabled() { "safe" } else { "host-capable" },
         if host_tools_enabled() { "enabled" } else { "disabled" },
         if host_network_changes_enabled() { "enabled" } else { "disabled" },
@@ -158,8 +158,11 @@ mod tests {
     }
 
     #[test]
-    fn security_report_mentions_metadata_enforcement() {
+    fn security_report_mentions_enforced_controls() {
         let out = security_report(false, "memory-only");
         assert!(out.contains("capability metadata : enforced"));
+        assert!(out.contains("secret redaction"));
+        assert!(out.contains("RustSec audit"));
+        assert!(out.contains("SHIELD on by default"));
     }
 }
