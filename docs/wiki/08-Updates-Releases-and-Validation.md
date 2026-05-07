@@ -1,6 +1,6 @@
 # Updates, Releases, and Validation
 
-![Update](https://img.shields.io/badge/update-dry%20run%20first-00d8ff) ![Validation](https://img.shields.io/badge/tests-required-39ff88) ![Release](https://img.shields.io/badge/release-tagged-ffcc00)
+![Update](https://img.shields.io/badge/update-dry%20run%20first-00d8ff) ![Validation](https://img.shields.io/badge/tests-required-39ff88) ![Release](https://img.shields.io/badge/release-v4.0.0-39ff88)
 
 Phase1 treats updates and release work as guarded operator workflows. Dry-run plans are preferred until execution is explicitly requested.
 
@@ -14,13 +14,24 @@ Run this before every push:
 > ```bash
 > cargo fmt --all -- --check
 > cargo check --all-targets
+> cargo clippy --all-targets -- -D warnings
 > cargo test --all-targets
 > ```
 
-Optional deeper validation:
+Full stable release validation:
 
 ```bash
+cargo fmt --all -- --check
+cargo check --all-targets
 cargo clippy --all-targets -- -D warnings
+cargo test --all-targets
+cargo audit
+cargo deny check
+```
+
+Optional targeted validation:
+
+```bash
 cargo test --test smoke -- --nocapture
 cargo test --test bleeding -- --nocapture
 cargo test --test game -- --nocapture
@@ -64,58 +75,47 @@ Rules:
 - tracked local changes block execution instead of being overwritten
 - updater output is sanitized before display
 
-## Edge release workflow
-
-Use edge versions for active development builds that still carry the `-dev` suffix.
-
-Current edge version:
-
-```text
-v3.10.9-dev
-```
-
-Edge tagging example:
-
-```bash
-git status
-git log -1 --oneline
-git tag v3.10.9-dev
-git push origin master
-git push origin v3.10.9-dev
-```
-
 ## Stable release workflow
 
-Stable releases remove the `-dev` suffix and must pass validation.
+Stable releases have no `-dev` suffix and must pass validation.
 
 Current stable release:
 
 ```text
-v3.10.7
+v4.0.0
+```
+
+Previous stable reference:
+
+```text
+v3.10.9
 ```
 
 Stable promotion checklist:
 
 1. Remove `-dev` from `Cargo.toml`.
 2. Refresh `Cargo.lock`.
-3. Update README and wiki version references.
-4. Run validation.
+3. Update README, website demo output, wiki docs, and in-system wiki fixtures.
+4. Run full validation.
 5. Commit the promotion.
 6. Tag the release.
 7. Push branch and tag.
 
-Example:
+Current v4 stable tagging example:
 
 ```bash
 cargo fmt --all -- --check
 cargo check --all-targets
+cargo clippy --all-targets -- -D warnings
 cargo test --all-targets
+cargo audit
+cargo deny check
 git status
-git add Cargo.toml Cargo.lock README.md docs/wiki
-git commit -m "Promote Phase1 v3.10.9"
-git tag v3.10.9
+git add Cargo.toml Cargo.lock README.md docs/wiki plugins site.js button-fix.css tests
+git commit -m "Promote phase1 v4.0.0 stable"
+git tag v4.0.0
 git push origin master
-git push origin v3.10.9
+git push origin v4.0.0
 ```
 
 ## Documentation release checklist
@@ -123,11 +123,16 @@ git push origin v3.10.9
 When version numbers change, update:
 
 ```text
+Cargo.toml
+Cargo.lock
 README.md
+site.js
 docs/wiki/Home.md
 docs/wiki/02-Version-Guide.md
 docs/wiki/08-Updates-Releases-and-Validation.md
 docs/wiki/10-Publish-to-GitHub-Wiki.md
+plugins/wiki-version.wasi
+plugins/wiki-updates.wasi
 /home/readme.txt generator if command behavior changed
 ```
 
@@ -140,7 +145,10 @@ docs/wiki/10-Publish-to-GitHub-Wiki.md
 > git pull origin master
 > cargo fmt --all -- --check
 > cargo check --all-targets
+> cargo clippy --all-targets -- -D warnings
 > cargo test --all-targets
+> cargo audit
+> cargo deny check
 > git status
 > ```
 
@@ -159,4 +167,5 @@ working tree clean
 | Compile error | Fix source, then run `cargo check --all-targets` |
 | Unit test failure | Fix implementation or expected behavior |
 | Smoke test failure | Compare expected output with current UI text |
+| Audit or dependency policy failure | Fix, update, or explicitly document the dependency decision before release |
 | Local changes block pull | Commit, stash, or discard local changes before pulling |
