@@ -1,0 +1,53 @@
+/* Interaction hardening for mobile browsers and in-app webviews. */
+.nav,
+.hero,
+.hero-copy,
+.hero-actions,
+.founder,
+.founder-copy,
+.sponsor-card,
+.roadmap,
+.footer {
+  isolation: isolate;
+}
+
+.nav,
+.nav a,
+.hero-copy,
+.hero-actions,
+.button,
+.coffee-button,
+.roadmap-link {
+  position: relative;
+  z-index: 50;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: rgba(35, 247, 255, 0.28);
+  touch-action: manipulation;
+}
+
+.logo-stage,
+.logo-stage::before,
+.orbit,
+.orbit::before,
+.orbit::after,
+.phase-logo,
+.aurora,
+.scanlines,
+#space {
+  pointer-events: none !important;
+}
+
+.button,
+.coffee-button,
+.nav-links a,
+.roadmap-link {
+  cursor: pointer;
+  user-select: none;
+}
+
+.button:active,
+.coffee-button:active,
+.nav-links a:active,
+.roadmap-link:active {
+  transform: translateY(1px) scale(0.99);
+}
