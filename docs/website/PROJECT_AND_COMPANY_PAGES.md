@@ -38,7 +38,7 @@ Homepage sections should stay concise:
 7. Support CTA.
 8. Footer navigation.
 
-Avoid repeating the same role label twice. For example, do not show both `Founder profile` and `Builder profile` in the founder card.
+Avoid duplicate labels such as founder profile plus builder profile. Do not show both `Founder profile` and `Builder profile` in the founder card.
 
 ## phase1 project page
 
