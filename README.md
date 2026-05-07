@@ -18,6 +18,8 @@
   ·
   <a href="base1/README.md">Base1 secure host foundation</a>
   ·
+  <a href="QUALITY.md">Quality system</a>
+  ·
   <a href="AI_GINA.md">Gina AI</a>
   ·
   <a href="AI_GINA_ROADMAP.md">Gina roadmap</a>
@@ -47,6 +49,7 @@ It uses a dark live-space background, moving rainbow visuals, the Phase1 neon lo
 | Previous stable | `v3.10.9` | Previous stable reference line |
 | Compatibility base | `v3.6.0` | Historical comparison base |
 | Base1 | `foundation` | Secure host design for Raspberry Pi and X200 targets |
+| Quality | `managed` | Scorecard, gates, scripts, and CI workflow |
 | Gina AI | `offline baseline` | Safe Phase1 AI integration assistant |
 
 The package version is the booted Phase1 version. Boot, ready line, `/proc/version`, dashboard, audit boot record, `/home/readme.txt`, and shutdown dynamically reflect `CARGO_PKG_VERSION`.
@@ -82,12 +85,39 @@ Inside Phase1:
 
 ```text
 gina
+gina security
+gina optimize
+gina consistency
 ai gina
 wasm inspect gina
 wasm run gina status
 ```
 
 Full guide: [`AI_GINA.md`](AI_GINA.md). Roadmap: [`AI_GINA_ROADMAP.md`](AI_GINA_ROADMAP.md).
+
+## Quality management
+
+Phase1 includes a repeatable quality management system with policy, scorecard, validation scripts, CI checks, and tests.
+
+Start here:
+
+- [`QUALITY.md`](QUALITY.md) - quality policy, gates, score model, and ownership areas.
+- [`QUALITY_SCORECARD.md`](QUALITY_SCORECARD.md) - score interpretation and scoring areas.
+- [`scripts/quality-score.sh`](scripts/quality-score.sh) - deterministic repository health score.
+- [`scripts/quality-check.sh`](scripts/quality-check.sh) - quick/full quality gates.
+
+Run:
+
+```bash
+sh scripts/quality-score.sh
+sh scripts/quality-check.sh quick
+```
+
+Before release:
+
+```bash
+sh scripts/quality-check.sh full
+```
 
 ## Base1 secure host foundation
 
@@ -158,6 +188,7 @@ Use `:help` inside `avim` for movement, edit, search, save, and quit commands.
 - Add Gina as the safe offline Phase1 AI integration baseline.
 - Improve the public website with clearer creator labeling, mobile readability, and desktop animation performance guards.
 - Harden `phase1-storage` output redaction for common secret and URL-credential patterns.
+- Manage quality through repeatable scripts, scorecards, tests, and CI.
 
 ## Run checks
 
@@ -171,6 +202,12 @@ cargo install cargo-deny --locked
 Then run the full quality gate:
 
 ```bash
+sh scripts/quality-check.sh full
+```
+
+The Rust-specific gate remains:
+
+```bash
 cargo fmt --all -- --check
 cargo check --all-targets
 cargo clippy --all-targets -- -D warnings
@@ -179,9 +216,9 @@ cargo audit
 cargo deny check
 ```
 
-`cargo test --all-targets` includes unit tests plus scripted smoke tests for the main Phase1 shell, the guarded `phase1-storage` helper, the website, release metadata, the Gina AI plugin baseline, and the Base1 secure host foundation files.
+`cargo test --all-targets` includes unit tests plus scripted smoke tests for the main Phase1 shell, the guarded `phase1-storage` helper, the website, release metadata, quality system files, the Gina AI plugin baseline, and the Base1 secure host foundation files.
 
-CI runs the same quality gate on pull requests, `master`, `main`, `release/**`, and manual dispatch. It also installs and runs RustSec advisory checks and dependency policy validation.
+CI runs Rust validation, security validation, CodeQL, and the quality management workflow on pull requests and branch pushes.
 
 ## Enable Python, browser, network inspection, and runtimes
 
