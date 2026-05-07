@@ -15,7 +15,10 @@ fn storage_status_is_read_only_and_guarded_by_default() {
 
     assert_success(&output, "storage status");
     let text = output_text(&output);
-    assert_contains_all(&text, &["storage root", "exists", "repos", "host tools", "guarded"]);
+    assert_contains_all(
+        &text,
+        &["storage root", "exists", "repos", "host tools", "guarded"],
+    );
 }
 
 #[test]
