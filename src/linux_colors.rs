@@ -34,7 +34,9 @@ impl LinuxColorDepth {
             "16" | "ansi" | "ansi16" | "tty" | "console" | "linux" | "x200" | "trisquel" => {
                 Some(Self::Ansi16)
             }
-            "mono" | "off" | "none" | "dumb" => Some(Self::Mono),
+            "mono" | "off" | "none" | "dumb" | "serial" | "vt100" | "rpi-safe" => {
+                Some(Self::Mono)
+            }
             _ => None,
         }
     }
@@ -53,14 +55,19 @@ pub fn theme(shell: &mut Phase1Shell, args: &[String]) -> String {
         Some("preview") | Some("swatch") | Some("swatches") => preview(detect()),
         Some("apply") | Some("auto") | Some("on") => apply(shell, detect()),
         Some("x200") | Some("trisquel") => apply(shell, LinuxColorDepth::Ansi16),
-        Some("pi") | Some("raspi") | Some("raspberry-pi") | Some("raspberrypi") => apply(shell, raspberry_pi_default()),
+        Some("pi") | Some("raspi") | Some("raspberry-pi") | Some("raspberrypi") => {
+            apply(shell, raspberry_pi_default())
+        }
+        Some("rpi5") | Some("pi5") | Some("raspberry-pi-5") | Some("safe-pi") => {
+            apply(shell, LinuxColorDepth::Mono)
+        }
         Some("off") | Some("reset") => {
             clear(shell);
             "theme linux: color pack disabled; existing palette remains active\n".to_string()
         }
         Some(raw) => match LinuxColorDepth::parse(raw) {
             Some(depth) => apply(shell, depth),
-            None => format!("theme linux: unknown option '{raw}'\nusage: theme linux [status|preview|apply|truecolor|256|ansi|mono|x200|raspberry-pi|off]\n"),
+            None => format!("theme linux: unknown option '{raw}'\nusage: theme linux [status|preview|apply|truecolor|256|ansi|mono|x200|raspberry-pi|rpi5|off]\n"),
         },
     }
 }
@@ -84,23 +91,33 @@ pub fn status(shell: &Phase1Shell) -> String {
     let term = std::env::var("TERM").unwrap_or_else(|_| "unknown".to_string());
     let colorterm = std::env::var("COLORTERM").unwrap_or_else(|_| "unset".to_string());
     format!(
-        "theme linux color pack\nhost target      : {}\nplatform hint    : {}\nTERM             : {}\nCOLORTERM        : {}\ndetected depth   : {}\nconfigured pack  : {}\nconfigured depth : {}\ncompat targets   : ThinkPad X200/Trisquel, Raspberry Pi 5 Pi OS, ANSI consoles\nsafe behavior    : env detection only; no host commands are executed\napply            : theme linux apply | theme linux x200 | theme linux raspberry-pi | theme linux truecolor | theme linux 256 | theme linux ansi\n",
-        if cfg!(target_os = "linux") { "linux" } else { "non-linux compatible" },
+        "theme linux color pack\nhost target      : {}\nplatform hint    : {}\nTERM             : {}\nCOLORTERM        : {}\ndetected depth   : {}\nconfigured pack  : {}\nconfigured depth : {}\nrpi5 compat      : {}\ncompat targets   : ThinkPad X200/Trisquel, Raspberry Pi 5 Pi OS, ANSI consoles\nsafe behavior    : env detection only; no host commands are executed\napply            : theme linux apply | theme linux x200 | theme linux raspberry-pi | theme linux rpi5 | theme linux truecolor | theme linux 256 | theme linux ansi\n",
+        if cfg!(target_os = "linux") {
+            "linux"
+        } else {
+            "non-linux compatible"
+        },
         detected_platform_label(),
         term,
         colorterm,
         detected.name(),
         configured_pack,
         configured_depth,
+        if rpi_compat_enabled() { "on" } else { "off" },
     )
 }
 
 fn apply(shell: &mut Phase1Shell, depth: LinuxColorDepth) -> String {
-    std::env::set_var("PHASE1_COLOR_PACK", "linux");
+    let pack_name = if rpi_compat_enabled() || platform_is_raspberry_pi() {
+        "raspberry-pi"
+    } else {
+        "linux"
+    };
+    std::env::set_var("PHASE1_COLOR_PACK", pack_name);
     std::env::set_var("PHASE1_COLOR_DEPTH", depth.name());
     shell
         .env
-        .insert("PHASE1_COLOR_PACK".to_string(), "linux".to_string());
+        .insert("PHASE1_COLOR_PACK".to_string(), pack_name.to_string());
     shell
         .env
         .insert("PHASE1_COLOR_DEPTH".to_string(), depth.name().to_string());
@@ -108,7 +125,7 @@ fn apply(shell: &mut Phase1Shell, depth: LinuxColorDepth) -> String {
     match depth {
         LinuxColorDepth::Mono => {
             std::env::set_var("PHASE1_NO_COLOR", "1");
-            std::env::remove_var("PHASE1_ASCII");
+            std::env::set_var("PHASE1_ASCII", "1");
             shell
                 .env
                 .insert("PHASE1_THEME".to_string(), "mono".to_string());
@@ -117,7 +134,7 @@ fn apply(shell: &mut Phase1Shell, depth: LinuxColorDepth) -> String {
                 .insert("PHASE1_NO_COLOR".to_string(), "1".to_string());
             shell
                 .env
-                .insert("PHASE1_ASCII".to_string(), "0".to_string());
+                .insert("PHASE1_ASCII".to_string(), "1".to_string());
         }
         _ => {
             std::env::remove_var("PHASE1_NO_COLOR");
@@ -154,6 +171,7 @@ fn detect() -> LinuxColorDepth {
     if std::env::var_os("NO_COLOR").is_some()
         || std::env::var("PHASE1_NO_COLOR").ok().as_deref() == Some("1")
         || std::env::var("PHASE1_ASCII").ok().as_deref() == Some("1")
+        || rpi_compat_enabled()
     {
         return LinuxColorDepth::Mono;
     }
@@ -162,10 +180,7 @@ fn detect() -> LinuxColorDepth {
             return depth;
         }
     }
-    if platform_hint().contains("raspberry")
-        || platform_hint().contains("raspi")
-        || platform_hint().contains("rpi")
-    {
+    if platform_is_raspberry_pi() {
         return raspberry_pi_default();
     }
     let colorterm = std::env::var("COLORTERM")
@@ -188,11 +203,16 @@ fn detect() -> LinuxColorDepth {
 }
 
 fn raspberry_pi_default() -> LinuxColorDepth {
+    if rpi_compat_enabled() {
+        return LinuxColorDepth::Mono;
+    }
     let term = std::env::var("TERM")
         .unwrap_or_default()
         .to_ascii_lowercase();
     if term.contains("256color") {
         LinuxColorDepth::Color256
+    } else if term == "dumb" || term.contains("vt100") || term.contains("linux") {
+        LinuxColorDepth::Mono
     } else {
         LinuxColorDepth::Ansi16
     }
@@ -205,6 +225,18 @@ fn platform_hint() -> String {
         .collect::<Vec<_>>()
         .join(" ")
         .to_ascii_lowercase()
+}
+
+fn platform_is_raspberry_pi() -> bool {
+    let hint = platform_hint();
+    hint.contains("raspberry") || hint.contains("raspi") || hint.contains("rpi")
+}
+
+fn rpi_compat_enabled() -> bool {
+    matches!(
+        std::env::var("PHASE1_RPI_COMPAT").ok().as_deref(),
+        Some("1" | "true" | "yes" | "on")
+    )
 }
 
 fn detected_platform_label() -> &'static str {
@@ -303,5 +335,19 @@ mod tests {
         assert!(pi.contains("color pack enabled"));
         std::env::remove_var("PHASE1_COLOR_PACK");
         std::env::remove_var("PHASE1_COLOR_DEPTH");
+    }
+
+    #[test]
+    fn rpi5_safe_color_mode_forces_mono() {
+        std::env::set_var("PHASE1_RPI_COMPAT", "1");
+        let mut shell = Phase1Shell::new();
+        let pi = theme(&mut shell, &["rpi5".to_string()]);
+        assert!(pi.contains("mono color pack enabled"));
+        assert_eq!(summary(&shell), "raspberry-pi/mono");
+        std::env::remove_var("PHASE1_RPI_COMPAT");
+        std::env::remove_var("PHASE1_COLOR_PACK");
+        std::env::remove_var("PHASE1_COLOR_DEPTH");
+        std::env::remove_var("PHASE1_NO_COLOR");
+        std::env::remove_var("PHASE1_ASCII");
     }
 }
