@@ -1,12 +1,16 @@
 # Phase1
 
 <p align="center">
-  <img src="assets/phase1-rainbow-logo.svg" alt="Phase1 rainbow neon logo" width="320">
+  <img src="assets/phase1-banner.svg" alt="Phase1 minimal neon cyberdeck banner" width="820">
 </p>
 
 <p align="center">
   <strong>Terminal-first virtual OS / advanced operator console in Rust.</strong><br>
   Simulated kernel. VFS. Process table. Audit log. Secure-by-default shell. Futuristic Neo Tokyo UI.
+</p>
+
+<p align="center">
+  <img src="assets/phase1-rainbow-logo.svg" alt="Phase1 rainbow neon app icon" width="180">
 </p>
 
 **Phase1** is a Rust-built, terminal-first educational virtual operating-system console. It runs as a safe userspace simulator while modeling real OS and cybersecurity concepts: boot profiles, a virtual kernel, a VFS, process scheduling, `/proc`, `/dev`, `/var/log`, PCIe-style hardware views, guarded networking, command capability metadata, shell history, pipelines, runtime management, update tooling, and local operations logging.
@@ -17,13 +21,14 @@ Phase1 is designed to feel like a futuristic hacker/operator console while stayi
 
 - Current package version on `master`: **v3.10.7**
 - Latest tagged release: **v3.10.6**
+- Current development channel: **bleeding-edge**
 - Virtual kernel baseline: **v3.6.0**
 - Default branch: **master**
 - Language: **Rust**
 - Default security posture: **safe mode on, host tools off**
 - Version scheme: **MAJOR.MINOR.PATCH[-dev]**
 
-The package/application version tracks the release line. The virtual kernel baseline remains `3.6.0` for compatibility reporting inside the simulated OS.
+The package/application version tracks the release line. The virtual kernel baseline remains `3.6.0` for compatibility reporting inside the simulated OS. Patch builds after a stable tag should be treated as bleeding-edge until promoted and tagged.
 
 ## Quick start
 
@@ -87,11 +92,11 @@ lang support
 update protocol
 ```
 
-To run Python inside Phase1, use the runtime launcher above or start from boot with host trust enabled:
+To run Python or other local language runtimes inside Phase1, use the runtime launcher above or start from boot with host trust enabled:
 
 ```text
 4    # SHIELD off
- t   # TRUST HOST on
+t    # TRUST HOST on
 1    # BOOT
 ```
 
@@ -108,7 +113,8 @@ lang run rust main.rs
 ### Advanced Operator Console UI
 
 - Neo Tokyo / futuristic terminal interface
-- Rainbow logo asset in `assets/phase1-rainbow-logo.svg`
+- Minimal neon banner in `assets/phase1-banner.svg`
+- Rainbow app icon/logo in `assets/phase1-rainbow-logo.svg`
 - Static boot timestamp to avoid redraw glitches on older/narrow terminals
 - Host-aware boot defaults for laptop, desktop, mobile, ASCII, and color terminals
 - Laptop and desktop UI modes
@@ -127,7 +133,7 @@ Host-backed commands are guarded by two gates:
 
 This prevents accidental execution of Python, compilers, plugins, updater execution, browser fetches, and other host-backed paths.
 
-Fast host-runtime paths:
+Fast host-runtime path:
 
 ```bash
 ./scripts/phase1-runtimes.sh
@@ -247,7 +253,7 @@ Common controls:
 l           laptop UI
 w           desktop UI
 t           TRUST HOST toggle
- e          EDGE / bleeding-edge channel toggle
+e           EDGE / bleeding-edge channel toggle
 p           VAULT / persistent state toggle
 d           storage / Git / Rust dock
 7           reboot selector
@@ -480,7 +486,13 @@ SECURITY_REVIEW.md
 
 ## Project assets
 
-Logo:
+Brand banner:
+
+```text
+assets/phase1-banner.svg
+```
+
+App icon / logo:
 
 ```text
 assets/phase1-rainbow-logo.svg
