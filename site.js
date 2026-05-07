@@ -7,9 +7,11 @@ let height = 0;
 let stars = [];
 let comets = [];
 let animationFrame = 0;
+let resizeTimer = 0;
+let running = false;
 
 function resize() {
-  const ratio = Math.min(window.devicePixelRatio || 1, 2);
+  const ratio = Math.min(window.devicePixelRatio || 1, width >= 1200 ? 1.5 : 2);
   width = window.innerWidth;
   height = window.innerHeight;
   canvas.width = Math.floor(width * ratio);
@@ -18,10 +20,17 @@ function resize() {
   canvas.style.height = `${height}px`;
   ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
 
-  const density = prefersReducedMotion ? 12000 : 6200;
-  const starCount = Math.min(prefersReducedMotion ? 90 : 220, Math.floor((width * height) / density));
+  const desktop = width >= 1024;
+  const density = prefersReducedMotion ? 16000 : desktop ? 8800 : 6800;
+  const cap = prefersReducedMotion ? 80 : desktop ? 180 : 210;
+  const starCount = Math.min(cap, Math.floor((width * height) / density));
   stars = Array.from({ length: starCount }, () => makeStar(true));
-  comets = Array.from({ length: prefersReducedMotion ? 0 : 3 }, (_, idx) => makeComet(idx));
+  comets = Array.from({ length: prefersReducedMotion ? 0 : desktop ? 2 : 3 }, (_, idx) => makeComet(idx));
+}
+
+function scheduleResize() {
+  window.clearTimeout(resizeTimer);
+  resizeTimer = window.setTimeout(resize, 120);
 }
 
 function makeStar(randomizeY = false) {
@@ -113,6 +122,8 @@ function drawComet(comet) {
 }
 
 function frame(time) {
+  if (!running) return;
+
   ctx.clearRect(0, 0, width, height);
   drawNebula(time);
 
@@ -127,6 +138,25 @@ function frame(time) {
   }
 
   animationFrame = requestAnimationFrame(frame);
+}
+
+function startAnimation() {
+  if (running) return;
+  running = true;
+  animationFrame = requestAnimationFrame(frame);
+}
+
+function stopAnimation() {
+  running = false;
+  cancelAnimationFrame(animationFrame);
+}
+
+function handleVisibilityChange() {
+  if (document.hidden) {
+    stopAnimation();
+  } else {
+    startAnimation();
+  }
 }
 
 function setupNavigation() {
@@ -263,6 +293,7 @@ resize();
 setupNavigation();
 setupReveals();
 setupTerminalDemo();
-animationFrame = requestAnimationFrame(frame);
-window.addEventListener("resize", resize, { passive: true });
-window.addEventListener("pagehide", () => cancelAnimationFrame(animationFrame));
+startAnimation();
+window.addEventListener("resize", scheduleResize, { passive: true });
+document.addEventListener("visibilitychange", handleVisibilityChange);
+window.addEventListener("pagehide", stopAnimation);
