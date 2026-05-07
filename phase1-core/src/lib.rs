@@ -26,6 +26,6 @@ pub use kernel::{
     AuditLog, Kernel, PcieDevice, PcieManager, ProcessState, Scheduler, SimProcess, Vfs, VfsNode,
 };
 pub use registry::{
-    capabilities_report, canonical_name, command_map, completions, lookup, man_page, CommandSpec,
+    canonical_name, capabilities_report, command_map, completions, lookup, man_page, CommandSpec,
     CATEGORIES, COMMANDS,
 };
