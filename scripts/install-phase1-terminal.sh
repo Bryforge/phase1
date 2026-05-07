@@ -3,6 +3,7 @@ set -eu
 
 PREFIX="${PREFIX:-$HOME/.local}"
 CREATE_ALIAS="${CREATE_ALIAS:-auto}"
+DRY_RUN="0"
 PHASE1_HOME_VALUE="${PHASE1_HOME:-$(pwd)}"
 BIN_DIR="$PREFIX/bin"
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/phase1"
@@ -23,6 +24,7 @@ Options:
   --alias             Also create a terminal alias/symlink.
   --no-alias          Do not create a terminal alias/symlink.
   --phase1-home PATH  Set PHASE1_HOME in generated config.
+  --dry-run           Print planned actions without writing files.
   -h, --help          Show help.
 
 Environment:
@@ -32,13 +34,25 @@ Environment:
 EOF
 }
 
+refresh_paths() {
+    BIN_DIR="$PREFIX/bin"
+    LAUNCHER_TARGET="$BIN_DIR/phase1-terminal"
+    ALIAS_TARGET="$BIN_DIR/terminal"
+}
+
+say_do() {
+    if [ "$DRY_RUN" = "1" ]; then
+        echo "dry-run: $*"
+    else
+        "$@"
+    fi
+}
+
 while [ "$#" -gt 0 ]; do
     case "$1" in
         --prefix)
             PREFIX="$2"
-            BIN_DIR="$PREFIX/bin"
-            LAUNCHER_TARGET="$BIN_DIR/phase1-terminal"
-            ALIAS_TARGET="$BIN_DIR/terminal"
+            refresh_paths
             shift 2
             ;;
         --alias)
@@ -52,6 +66,10 @@ while [ "$#" -gt 0 ]; do
         --phase1-home)
             PHASE1_HOME_VALUE="$2"
             shift 2
+            ;;
+        --dry-run)
+            DRY_RUN="1"
+            shift
             ;;
         -h|--help)
             usage
@@ -70,6 +88,28 @@ if [ ! -f "$LAUNCHER_SOURCE" ]; then
     exit 1
 fi
 
+case "$PHASE1_HOME_VALUE" in
+    "") PHASE1_HOME_VALUE="$(pwd)" ;;
+esac
+
+if [ ! -f "$PHASE1_HOME_VALUE/Cargo.toml" ] && [ ! -x "$PHASE1_HOME_VALUE/phase1" ] && [ ! -x "$PHASE1_HOME_VALUE/bin/phase1" ]; then
+    echo "warning: PHASE1_HOME does not look like a Phase1 source or install root: $PHASE1_HOME_VALUE" >&2
+fi
+
+if [ "$DRY_RUN" = "1" ]; then
+    cat <<EOF
+Phase1 Terminal install dry-run
+
+Would create : $BIN_DIR
+Would create : $CONFIG_DIR
+Would install: $LAUNCHER_SOURCE -> $LAUNCHER_TARGET
+Would config : $CONFIG_FILE
+Alias mode   : $CREATE_ALIAS
+Phase1 home  : $PHASE1_HOME_VALUE
+EOF
+    exit 0
+fi
+
 mkdir -p "$BIN_DIR" "$CONFIG_DIR"
 cp "$LAUNCHER_SOURCE" "$LAUNCHER_TARGET"
 chmod 0755 "$LAUNCHER_TARGET"
@@ -78,11 +118,13 @@ cat > "$CONFIG_FILE" <<EOF
 # Phase1 Terminal config
 PHASE1_HOME="$PHASE1_HOME_VALUE"
 PHASE1_TERMINAL_TITLE="Phase1 Terminal"
+PHASE1_TERMINAL_PROFILE="default"
 PHASE1_THEME="cyber"
 PHASE1_SAFE_MODE="1"
 PHASE1_MOBILE_MODE="0"
 PHASE1_DEVICE_MODE="desktop"
 PHASE1_ASCII="0"
+PHASE1_TERMINAL_HINTS="1"
 EOF
 
 case "$CREATE_ALIAS" in
@@ -121,6 +163,7 @@ Config  : $CONFIG_FILE
 PATH    : $path_hint
 
 Try:
-  phase1-terminal doctor
-  phase1-terminal
+  phase1-terminal doctor --verbose
+  phase1-terminal profile list
+  phase1-terminal gina
 EOF
