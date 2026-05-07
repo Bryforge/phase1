@@ -80,6 +80,8 @@ impl Browser {
     }
 
     fn fetch_url(&self, url: &str) -> io::Result<FetchResponse> {
+        let max_time = FETCH_TIMEOUT.as_secs().to_string();
+        let user_agent = format!("{USER_AGENT_PREFIX}/{VERSION}");
         let mut cmd = Command::new("curl");
         cmd.args([
             "--location",
@@ -89,7 +91,7 @@ impl Browser {
             "--connect-timeout",
             CONNECT_TIMEOUT,
             "--max-time",
-            &FETCH_TIMEOUT.as_secs().to_string(),
+            &max_time,
             "--max-redirs",
             "5",
             "--max-filesize",
@@ -97,7 +99,7 @@ impl Browser {
             "--proto",
             "=http,https",
             "--user-agent",
-            &format!("{USER_AGENT_PREFIX}/{VERSION}"),
+            &user_agent,
             "--write-out",
             "\n\nPHASE1_BROWSER_META:%{http_code}\t%{content_type}\t%{url_effective}\n",
             url,
@@ -327,10 +329,10 @@ fn normalize_url(raw: &str) -> Result<String, String> {
     if url_authority(&normalized).is_some_and(|authority| authority.contains('@')) {
         return Err("URL credentials are blocked; do not put usernames, passwords, or tokens in browser URLs".to_string());
     }
-    if url_authority(&normalized).is_none_or(|authority| authority.trim().is_empty()) {
-        return Err("URL host is missing".to_string());
+    match url_authority(&normalized) {
+        Some(authority) if !authority.trim().is_empty() => Ok(normalized),
+        _ => Err("URL host is missing".to_string()),
     }
-    Ok(normalized)
 }
 
 fn has_scheme(url: &str) -> bool {
