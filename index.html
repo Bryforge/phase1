@@ -10,6 +10,7 @@
   <meta property="og:description" content="Secure, open-source virtual OS console and advanced operator kernel built in Rust by Bryforge.">
   <meta property="og:type" content="website">
   <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./button-fix.css">
 </head>
 <body>
   <canvas id="space" aria-hidden="true"></canvas>
@@ -28,7 +29,7 @@
         <a href="#founder">Founder</a>
         <a href="#sponsor">Sponsor</a>
         <a href="#wiki-roadmap">Wiki Roadmap</a>
-        <a href="https://github.com/Bryforge/phase1">GitHub</a>
+        <a href="https://github.com/Bryforge/phase1" target="_blank" rel="noopener noreferrer">GitHub</a>
       </div>
     </nav>
 
@@ -42,8 +43,8 @@
             process table, audit log, guarded browser, runtime roadmap, and a safe-by-default operator shell.
           </p>
           <div class="hero-actions">
-            <a class="button button-primary" href="https://github.com/Bryforge/phase1">Open GitHub</a>
-            <a class="button button-coffee" href="https://www.buymeacoffee.com/bryforge" target="_blank" rel="noopener">Buy me a coffee</a>
+            <a class="button button-primary" href="https://github.com/Bryforge/phase1" target="_blank" rel="noopener noreferrer">Open GitHub</a>
+            <a class="button button-coffee" href="https://www.buymeacoffee.com/bryforge" target="_blank" rel="noopener noreferrer">Buy me a coffee</a>
             <a class="button button-secondary" href="#wiki-roadmap">View Wiki Plan</a>
           </div>
           <div class="terminal-chip" aria-label="Phase1 prompt preview">
@@ -114,7 +115,7 @@
             Sponsor the project to support continued work on the Phase1 kernel simulation,
             website, docs, language runtime support, storage/Git tooling, and future Bryforge software products.
           </p>
-          <a class="coffee-button" href="https://www.buymeacoffee.com/bryforge" target="_blank" rel="noopener">
+          <a class="coffee-button" href="https://www.buymeacoffee.com/bryforge" target="_blank" rel="noopener noreferrer">
             <span class="coffee-icon">☕</span>
             <span>Buy me a coffee</span>
           </a>
@@ -179,6 +180,7 @@
     </footer>
   </header>
 
+  <script src="./button-fix.js"></script>
   <script src="./site.js"></script>
 </body>
 </html>
