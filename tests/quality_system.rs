@@ -11,7 +11,10 @@ fn quality_docs_exist() {
         "SECURITY_REVIEW.md",
         "UPDATE_PROTOCOL.md",
     ] {
-        assert!(fs::metadata(path).is_ok(), "missing required quality doc: {path}");
+        assert!(
+            fs::metadata(path).is_ok(),
+            "missing required quality doc: {path}"
+        );
     }
 }
 
@@ -24,7 +27,10 @@ fn quality_scripts_exist_and_are_valid_shell() {
             .arg(path)
             .status()
             .expect("run sh -n");
-        assert!(status.success(), "quality script has shell syntax errors: {path}");
+        assert!(
+            status.success(),
+            "quality script has shell syntax errors: {path}"
+        );
     }
 }
 
