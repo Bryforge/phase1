@@ -3,16 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Phase1 by Bryforge // Advanced Operator Kernel</title>
-  <meta name="description" content="Phase1 by Bryforge is a secure, open-source virtual OS console and advanced operator kernel built in Rust by Chase Bryan.">
+  <title>Phase1 by Bryforge // Secure Rust Virtual OS Console</title>
+  <meta name="description" content="Phase1 by Bryforge is a secure, private, open-source Rust virtual OS console with a simulated kernel, VFS, process table, audit log, guarded browser, wiki, and safe-by-default operator shell.">
   <meta name="keywords" content="Bryforge, Phase1, Phase 1, Chase Bryan, advanced operator kernel, virtual OS console, Rust OS console, open source operating system simulator, terminal-first developer tools, secure developer tools, Bryforge software development">
   <meta name="author" content="Chase Bryan, Bryforge">
   <meta name="robots" content="index, follow, max-image-preview:large">
   <meta name="googlebot" content="index, follow, max-image-preview:large">
   <meta name="theme-color" content="#050711">
   <link rel="canonical" href="https://bryforge.github.io/phase1/">
-  <meta property="og:title" content="Phase1 by Bryforge // Advanced Operator Kernel">
-  <meta property="og:description" content="Secure, open-source virtual OS console and advanced operator kernel built in Rust by Bryforge.">
+  <link rel="icon" type="image/svg+xml" href="./assets/phase1-banner.svg">
+  <link rel="apple-touch-icon" href="./assets/phase1-banner.svg">
+  <meta property="og:title" content="Phase1 by Bryforge // Secure Rust Virtual OS Console">
+  <meta property="og:description" content="A secure, private, open-source virtual OS console and advanced operator kernel built in Rust by Chase Bryan / Bryforge.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://bryforge.github.io/phase1/">
   <meta property="og:site_name" content="Phase1 by Bryforge">
@@ -23,8 +25,8 @@
   <meta property="og:image:height" content="1254">
   <meta property="og:image:alt" content="Phase1 neon rainbow advanced operator kernel logo">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Phase1 by Bryforge // Advanced Operator Kernel">
-  <meta name="twitter:description" content="Secure, open-source virtual OS console and advanced operator kernel built in Rust by Bryforge.">
+  <meta name="twitter:title" content="Phase1 by Bryforge // Secure Rust Virtual OS Console">
+  <meta name="twitter:description" content="A secure, private, open-source Rust virtual OS console with a simulated kernel, VFS, audit log, guarded browser, wiki, and safe-by-default shell.">
   <meta name="twitter:image" content="https://bryforge.github.io/phase1/assets/phase1-banner.svg">
   <meta name="twitter:image:alt" content="Phase1 neon rainbow advanced operator kernel logo">
   <link rel="image_src" href="https://bryforge.github.io/phase1/assets/phase1-banner.svg">
@@ -58,7 +60,7 @@
         "@type": "SoftwareSourceCode",
         "@id": "https://bryforge.github.io/phase1/#phase1",
         "name": "Phase1",
-        "alternateName": ["Phase 1", "Phase1 Advanced Operator Kernel"],
+        "alternateName": ["Phase 1", "Phase1 Advanced Operator Kernel", "Phase1 Virtual OS Console"],
         "url": "https://bryforge.github.io/phase1/",
         "codeRepository": "https://github.com/Bryforge/phase1",
         "programmingLanguage": "Rust",
@@ -90,73 +92,209 @@
   <link rel="stylesheet" href="./button-fix.css">
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
   <canvas id="space" aria-hidden="true"></canvas>
   <div class="aurora aurora-one" aria-hidden="true"></div>
   <div class="aurora aurora-two" aria-hidden="true"></div>
   <div class="scanlines" aria-hidden="true"></div>
+  <div class="noise" aria-hidden="true"></div>
 
-  <header class="site-shell">
+  <header class="site-shell" id="top">
     <nav class="nav glass-panel" aria-label="Primary navigation">
       <a class="brand" href="#top" aria-label="Phase1 home">
-        <span class="brand-pip"></span>
+        <span class="brand-pip" aria-hidden="true"></span>
         <span>PHASE1</span>
       </a>
-      <div class="nav-links">
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links">
+        <span class="sr-only">Toggle navigation</span>
+        <span></span><span></span><span></span>
+      </button>
+      <div class="nav-links" id="nav-links">
+        <a href="#demo">Demo</a>
         <a href="#features">Features</a>
+        <a href="#roadmap">Roadmap</a>
         <a href="#founder">Founder</a>
         <a href="#sponsor">Sponsor</a>
         <a href="./wiki/">Wiki Hub</a>
-        <a href="#wiki-roadmap">Roadmap</a>
         <a href="https://github.com/Bryforge/phase1" target="_blank" rel="noopener noreferrer">GitHub</a>
       </div>
     </nav>
 
-    <main id="top">
-      <section class="hero glass-panel" aria-labelledby="hero-title">
+    <main id="main">
+      <section class="hero glass-panel reveal" aria-labelledby="hero-title">
         <div class="hero-copy">
           <p class="eyebrow">secure · private · powerful · open</p>
-          <h1 id="hero-title">Advanced Operator Kernel for a terminal-first future.</h1>
+          <h1 id="hero-title">A Rust virtual OS console for operators who want control.</h1>
           <p class="hero-text">
-            Phase1 is a Rust-built virtual OS console with a simulated kernel, VFS,
-            process table, audit log, guarded browser, runtime roadmap, and a safe-by-default operator shell.
+            Phase1 is a terminal-first advanced operator kernel: a Rust-built virtual OS console with a simulated kernel,
+            VFS, process table, audit log, guarded browser, in-system wiki, runtime roadmap, and safe-by-default shell.
           </p>
-          <div class="hero-actions">
-            <a class="button button-primary" href="./wiki/">Open Wiki Hub</a>
-            <a class="button button-secondary" href="https://github.com/Bryforge/phase1" target="_blank" rel="noopener noreferrer">Open GitHub</a>
-            <a class="button button-coffee" href="https://www.buymeacoffee.com/bryforge" target="_blank" rel="noopener noreferrer">Buy me a coffee</a>
+          <div class="hero-actions" aria-label="Primary actions">
+            <a class="button button-primary" href="https://github.com/Bryforge/phase1#quick-start" target="_blank" rel="noopener noreferrer">Clone &amp; run</a>
+            <a class="button button-secondary" href="#demo">Try the console</a>
+            <a class="button button-ghost" href="./wiki/">Open Wiki Hub</a>
+            <a class="button button-coffee" href="https://www.buymeacoffee.com/bryforge" target="_blank" rel="noopener noreferrer">Support Phase1</a>
           </div>
-          <div class="terminal-chip" aria-label="Phase1 prompt preview">
-            <span>phase1://root ~ #</span><span class="cursor"></span>
+          <div class="hero-command" aria-label="Phase1 quick start command">
+            <span class="prompt">$</span>
+            <code>git clone https://github.com/Bryforge/phase1.git &amp;&amp; cd phase1 &amp;&amp; cargo run</code>
+          </div>
+          <div class="metric-strip" aria-label="Phase1 project highlights">
+            <div><strong>Rust</strong><span>core language</span></div>
+            <div><strong>GPL-3.0</strong><span>open source</span></div>
+            <div><strong>Safe mode</strong><span>default posture</span></div>
+            <div><strong>v4 edge</strong><span>active build</span></div>
           </div>
         </div>
 
         <div class="logo-stage" aria-label="Phase1 rainbow logo">
-          <div class="orbit orbit-one"></div>
-          <div class="orbit orbit-two"></div>
-          <div class="orbit orbit-three"></div>
-          <img class="phase-logo" src="./assets/phase1-banner.svg" alt="Phase1 rainbow neon logo with advanced operator kernel text">
+          <div class="orbit orbit-one" aria-hidden="true"></div>
+          <div class="orbit orbit-two" aria-hidden="true"></div>
+          <div class="orbit orbit-three" aria-hidden="true"></div>
+          <div class="logo-glass">
+            <img class="phase-logo" src="./assets/phase1-banner.svg" alt="Phase1 rainbow neon logo with advanced operator kernel text">
+          </div>
+          <div class="system-card system-card-one" aria-hidden="true"><span>SAFE MODE</span><strong>ON</strong></div>
+          <div class="system-card system-card-two" aria-hidden="true"><span>HOST TRUST</span><strong>GUARDED</strong></div>
         </div>
       </section>
 
-      <section id="features" class="feature-grid" aria-label="Phase1 feature cards">
-        <article class="feature-card">
-          <span class="card-kicker">01</span>
-          <h2>Kernel simulation</h2>
-          <p>Boot profiles, virtual processes, /proc, PCIe flavor, CR3/CR4 commands, and an audit trail for operator visibility.</p>
-        </article>
-        <article class="feature-card">
-          <span class="card-kicker">02</span>
-          <h2>Safe host bridge</h2>
-          <p>Host-backed tools stay guarded behind safe-mode and explicit trust gates, with a secure default posture.</p>
-        </article>
-        <article class="feature-card">
-          <span class="card-kicker">03</span>
-          <h2>Terminal-first UX</h2>
-          <p>Neo Tokyo console visuals, mobile-friendly layout, command metadata, manuals, completions, and persistent state options.</p>
-        </article>
+      <section id="demo" class="terminal-section reveal" aria-labelledby="demo-title">
+        <div class="section-heading">
+          <p class="eyebrow">live-feel preview</p>
+          <h2 id="demo-title">Try the Phase1 prompt before you clone it.</h2>
+          <p>
+            This browser demo is intentionally simulated, but it mirrors the product feel: command-first, transparent, inspectable, and secure by default.
+          </p>
+        </div>
+
+        <div class="terminal glass-panel" role="region" aria-label="Interactive Phase1 terminal demo">
+          <div class="terminal-topbar">
+            <div class="window-lights" aria-hidden="true"><span></span><span></span><span></span></div>
+            <span class="terminal-title">phase1://operator-console</span>
+            <span class="terminal-status">safe mode: on</span>
+          </div>
+          <pre id="terminal-output" class="terminal-output" aria-live="polite"></pre>
+          <form class="terminal-form" id="terminal-form">
+            <label class="sr-only" for="terminal-input">Phase1 command</label>
+            <span aria-hidden="true">phase1://root ~ #</span>
+            <input id="terminal-input" name="command" autocomplete="off" spellcheck="false" placeholder="type help, version, sysinfo, wiki-quick, security">
+            <button type="submit">run</button>
+          </form>
+          <div class="quick-commands" aria-label="Sample Phase1 commands">
+            <button type="button" data-command="help">help</button>
+            <button type="button" data-command="version">version</button>
+            <button type="button" data-command="sysinfo">sysinfo</button>
+            <button type="button" data-command="wiki-quick">wiki-quick</button>
+            <button type="button" data-command="security">security</button>
+          </div>
+        </div>
       </section>
 
-      <section id="founder" class="founder glass-panel" aria-labelledby="founder-title">
+      <section id="features" class="features reveal" aria-labelledby="features-title">
+        <div class="section-heading centered">
+          <p class="eyebrow">operator-grade foundation</p>
+          <h2 id="features-title">Everything feels like a console. Everything is designed to be inspectable.</h2>
+        </div>
+        <div class="feature-grid" aria-label="Phase1 feature cards">
+          <article class="feature-card">
+            <span class="feature-icon" aria-hidden="true">⌁</span>
+            <span class="card-kicker">01 · kernel</span>
+            <h3>Kernel simulation</h3>
+            <p>Boot profiles, virtual processes, /proc, PCIe flavor, CR3/CR4 commands, and audit records for operator visibility.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon" aria-hidden="true">◈</span>
+            <span class="card-kicker">02 · vfs</span>
+            <h3>Virtual filesystem</h3>
+            <p>A terminal-native VFS with files, docs, editors, runtime state, and a safer place to practice OS-style workflows.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon" aria-hidden="true">◇</span>
+            <span class="card-kicker">03 · safety</span>
+            <h3>Guarded host bridge</h3>
+            <p>Host-backed tools stay behind safe-mode and explicit trust gates so the default posture is private and contained.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon" aria-hidden="true">▣</span>
+            <span class="card-kicker">04 · browser</span>
+            <h3>Terminal browser</h3>
+            <p>Guarded browser and network inspection ideas are built around clarity, not hidden background behavior.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon" aria-hidden="true">⌬</span>
+            <span class="card-kicker">05 · runtimes</span>
+            <h3>Runtime roadmap</h3>
+            <p>Language support, storage, Git, Rust workflows, and future runtime shells are being designed with capability metadata and limits.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon" aria-hidden="true">✦</span>
+            <span class="card-kicker">06 · docs</span>
+            <h3>Wiki-first learning</h3>
+            <p>In-system manual pages plus a public Wiki Hub make Phase1 teachable, searchable, and friendly for contributors.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="roadmap" class="roadmap glass-panel reveal" aria-labelledby="roadmap-title">
+        <div class="section-heading">
+          <p class="eyebrow">website roadmap</p>
+          <h2 id="roadmap-title">From landing page to full public front door.</h2>
+          <p>
+            The website roadmap turns GitHub Pages into the main public home for Phase1: homepage, wiki, docs navigation, visual demos, releases, contributors, quality notes, and sponsorship.
+          </p>
+        </div>
+
+        <ol class="timeline" aria-label="Five phase website roadmap">
+          <li class="complete">
+            <span class="timeline-dot" aria-hidden="true"></span>
+            <div>
+              <p class="timeline-status">Phase A · launched</p>
+              <h3>Homepage identity</h3>
+              <p>Dark-space rainbow landing page, Phase1 logo, founder profile, Bryforge company section, sponsor CTA, GitHub links, SEO, and deploy workflow.</p>
+            </div>
+          </li>
+          <li class="active">
+            <span class="timeline-dot" aria-hidden="true"></span>
+            <div>
+              <p class="timeline-status">Phase B · in progress</p>
+              <h3>Wiki content on the site</h3>
+              <p>Bring Quick Start, Boot Profiles, Command Map, Files/VFS, Browser Safety, Language Runtime Support, Updates, Troubleshooting, Tutorials, Sponsorship, and Bryforge into web pages.</p>
+            </div>
+          </li>
+          <li>
+            <span class="timeline-dot" aria-hidden="true"></span>
+            <div>
+              <p class="timeline-status">Phase C · planned</p>
+              <h3>Docs navigation and search</h3>
+              <p>Persistent docs sidebar, mobile docs drawer, page-local table of contents, previous/next links, keyboard-friendly search, and command metadata cards.</p>
+            </div>
+          </li>
+          <li>
+            <span class="timeline-dot" aria-hidden="true"></span>
+            <div>
+              <p class="timeline-status">Phase D · planned</p>
+              <h3>Visual demos and releases</h3>
+              <p>Screenshots, terminal captures, boot-profile selector preview, storage/Git/Rust workflow preview, and safe-mode versus trusted-host explanations.</p>
+            </div>
+          </li>
+          <li>
+            <span class="timeline-dot" aria-hidden="true"></span>
+            <div>
+              <p class="timeline-status">Phase E · planned</p>
+              <h3>Public front door</h3>
+              <p>Release notes, migration guides, stable/edge version cards, contributor guide, roadmap, quality score sections, security policy, audit notes, sponsor, and Bryforge links.</p>
+            </div>
+          </li>
+        </ol>
+
+        <div class="roadmap-actions">
+          <a class="button button-primary" href="./wiki/">Open designed Wiki Hub</a>
+          <a class="button button-secondary" href="./WIKI_ROADMAP.md">Read roadmap source</a>
+        </div>
+      </section>
+
+      <section id="founder" class="founder glass-panel reveal" aria-labelledby="founder-title">
         <div class="founder-profile">
           <div class="avatar-ring">
             <img src="https://avatars.githubusercontent.com/u/281080815?v=4" alt="Chase Bryan profile image" class="founder-avatar">
@@ -185,69 +323,43 @@
             </p>
           </div>
         </div>
-
-        <aside id="sponsor" class="sponsor-card" aria-label="Sponsor Phase1">
-          <p class="eyebrow">support the build</p>
-          <h3>Fuel Phase1 and Bryforge.</h3>
-          <p>
-            Sponsor the project to support continued work on the Phase1 kernel simulation,
-            website, docs, language runtime support, storage/Git tooling, and future Bryforge software products.
-          </p>
-          <a class="coffee-button" href="https://www.buymeacoffee.com/bryforge" target="_blank" rel="noopener noreferrer">
-            <span class="coffee-icon">☕</span>
-            <span>Buy me a coffee</span>
-          </a>
-          <p class="sponsor-note">Your support helps keep Phase1 moving forward.</p>
-        </aside>
       </section>
 
-      <section id="wiki-roadmap" class="roadmap glass-panel" aria-labelledby="roadmap-title">
-        <div class="section-heading">
-          <p class="eyebrow">website roadmap</p>
-          <h2 id="roadmap-title">Roadmap designs are becoming the Phase1 Wiki Hub.</h2>
+      <section id="sponsor" class="support-grid reveal" aria-labelledby="sponsor-title">
+        <div class="support-card glass-panel">
+          <p class="eyebrow">support the build</p>
+          <h2 id="sponsor-title">Fuel Phase1 and the Bryforge roadmap.</h2>
           <p>
-            The public wiki hub now implements the roadmap design: docs navigation, search, command cards, tutorials, release planning, Bryforge, and sponsorship.
+            Sponsor the project to support continued work on the Phase1 kernel simulation, website, docs, language runtime support,
+            storage/Git tooling, security hardening, and future Bryforge software products.
           </p>
+          <div class="hero-actions">
+            <a class="button button-coffee" href="https://www.buymeacoffee.com/bryforge" target="_blank" rel="noopener noreferrer">Buy me a coffee</a>
+            <a class="button button-secondary" href="https://github.com/Bryforge/phase1" target="_blank" rel="noopener noreferrer">Star on GitHub</a>
+          </div>
         </div>
-
-        <ol class="timeline">
-          <li>
-            <span class="timeline-dot"></span>
-            <div>
-              <h3>Phase A · Homepage launched</h3>
-              <p>Animated rainbow-space landing page with Phase1 logo, hero, feature cards, sponsor section, founder profile, SEO, and README link.</p>
-            </div>
-          </li>
-          <li>
-            <span class="timeline-dot"></span>
-            <div>
-              <h3>Phase B · Wiki hub implemented</h3>
-              <p>The website now includes a designed wiki hub with quick start, boot, command, file, browser, language, update, troubleshooting, tutorial, Bryforge, and sponsor sections.</p>
-            </div>
-          </li>
-          <li>
-            <span class="timeline-dot"></span>
-            <div>
-              <h3>Phase C · Docs navigation and search</h3>
-              <p>The wiki hub includes a docs rail, mobile-friendly layout, client-side search, and visual command index cards.</p>
-            </div>
-          </li>
-          <li>
-            <span class="timeline-dot"></span>
-            <div>
-              <h3>Phase D · Visual demos and releases</h3>
-              <p>Next iteration: terminal captures, animated command previews, release pages, and stable/edge upgrade guides.</p>
-            </div>
-          </li>
-        </ol>
-
-        <a class="roadmap-link" href="./wiki/">Open the designed Phase1 Wiki Hub →</a>
+        <div class="support-card support-card-mini glass-panel" aria-label="Project values">
+          <span>secure</span>
+          <span>private</span>
+          <span>powerful</span>
+          <span>open</span>
+        </div>
       </section>
     </main>
 
-    <footer class="footer">
-      <span>PHASE1 // Advanced Operator Kernel</span>
-      <span>Built by Chase Bryan and Bryforge.</span>
+    <footer class="footer glass-panel">
+      <div>
+        <a class="brand footer-brand" href="#top" aria-label="Back to top"><span class="brand-pip" aria-hidden="true"></span><span>PHASE1</span></a>
+        <p>Advanced Operator Kernel · Built by Chase Bryan and Bryforge.</p>
+      </div>
+      <div class="footer-links" aria-label="Footer navigation">
+        <a href="#demo">Demo</a>
+        <a href="#features">Features</a>
+        <a href="./wiki/">Wiki</a>
+        <a href="https://github.com/Bryforge/phase1" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://www.buymeacoffee.com/bryforge" target="_blank" rel="noopener noreferrer">Support</a>
+      </div>
+      <p class="copyright">© Chase Bryan / Bryforge. Phase1 is GPL-3.0 open source.</p>
     </footer>
   </header>
 
