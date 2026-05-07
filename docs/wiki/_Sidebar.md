@@ -12,3 +12,4 @@
 - [Troubleshooting](09-Troubleshooting.md)
 - [Publish to GitHub Wiki](10-Publish-to-GitHub-Wiki.md)
 - [Tutorials](11-Tutorials.md)
+- [In-System Wiki](12-In-System-Wiki.md)
