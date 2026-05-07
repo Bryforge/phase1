@@ -1,7 +1,7 @@
 use std::env;
 use std::fs;
 use std::io::{self, Write};
-use std::path::{Path, PathBuf};
+use std::path::{Component, Path, PathBuf};
 use std::process::{Command, Output, Stdio};
 use std::thread;
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
@@ -10,6 +10,38 @@ const DEFAULT_STORAGE_ROOT: &str = "phase1.workspace";
 const COMMAND_TIMEOUT: Duration = Duration::from_secs(60);
 const RUST_RUN_TIMEOUT: Duration = Duration::from_secs(30);
 const MAX_OUTPUT_BYTES: usize = 24 * 1024;
+
+const SECRET_KEY_MARKERS: &[&str] = &[
+    "authorization",
+    "auth_token",
+    "access_token",
+    "refresh_token",
+    "id_token",
+    "api_key",
+    "apikey",
+    "client_secret",
+    "password",
+    "passwd",
+    "secret",
+    "token",
+    "credential",
+    "private_key",
+    "ssh_key",
+];
+
+const TOKEN_PREFIXES: &[&str] = &[
+    "ghp_",
+    "gho_",
+    "ghu_",
+    "ghs_",
+    "ghr_",
+    "github_pat_",
+    "glpat-",
+    "sk-",
+    "xoxb-",
+    "xoxp-",
+    "xoxa-",
+];
 
 fn main() {
     let args = env::args().skip(1).collect::<Vec<_>>();
@@ -38,7 +70,7 @@ fn run(args: &[String]) -> Result<String, String> {
 }
 
 fn help() -> String {
-    "phase1-storage // guarded storage, Git, Rust, and language roadmap helper\n\nusage:\n  phase1-storage storage status\n  phase1-storage storage init\n  phase1-storage storage list\n  phase1-storage git clone <url> [name]\n  phase1-storage git status <name>\n  phase1-storage git pull <name>\n  phase1-storage rust version\n  phase1-storage rust run <file.rs | inline-code>\n  phase1-storage rust init <name>\n  phase1-storage rust cargo <repo> <check|build|test|run> [args...]\n  phase1-storage lang roadmap\n\nsafety:\n  Read-only status commands are always available. Mutating storage, Git, and Rust host execution require:\n    PHASE1_SAFE_MODE=0 PHASE1_ALLOW_HOST_TOOLS=1\n\nstorage root:\n  PHASE1_STORAGE_ROOT overrides the default phase1.workspace directory.\n"
+    "phase1-storage // guarded storage, Git, Rust, and language roadmap helper\n\nusage:\n  phase1-storage storage status\n  phase1-storage storage init\n  phase1-storage storage list\n  phase1-storage git clone <https-url> [name]\n  phase1-storage git status <name>\n  phase1-storage git pull <name>\n  phase1-storage rust version\n  phase1-storage rust run <file.rs inside storage | inline-code>\n  phase1-storage rust init <name>\n  phase1-storage rust cargo <repo> <check|build|test|run> [safe cargo args...]\n  phase1-storage lang roadmap\n\nsafety:\n  Read-only status commands are always available. Mutating storage, Git, and Rust host execution require:\n    PHASE1_SAFE_MODE=0 PHASE1_ALLOW_HOST_TOOLS=1\n  Git clone accepts HTTPS remotes by default. Plain http:// and git:// remotes are blocked.\n  SSH remotes require PHASE1_ALLOW_SSH_GIT=1. Credentials in remote URLs are rejected.\n  Cargo passthrough blocks manifest-path, config, target-dir, nightly -Z, absolute paths, and parent traversal.\n\nstorage root:\n  PHASE1_STORAGE_ROOT overrides the default phase1.workspace directory.\n"
         .to_string()
 }
 
@@ -76,7 +108,7 @@ fn git(args: &[String]) -> Result<String, String> {
             require_host_tools("git clone")?;
             let url = args
                 .get(1)
-                .ok_or("usage: phase1-storage git clone <url> [name]")?;
+                .ok_or("usage: phase1-storage git clone <https-url> [name]")?;
             validate_git_url(url)?;
             let name = match args.get(2) {
                 Some(name) => validate_repo_name(name)?,
@@ -100,7 +132,8 @@ fn git(args: &[String]) -> Result<String, String> {
                 .arg(&destination);
             let output = run_command(cmd, COMMAND_TIMEOUT)?;
             Ok(format!(
-                "git: cloned {url}\nrepo: {}\n{}",
+                "git: cloned {}\nrepo: {}\n{}",
+                display_git_remote(url),
                 destination.display(),
                 format_output(output)
             ))
@@ -157,7 +190,7 @@ fn rust(args: &[String]) -> Result<String, String> {
             require_host_tools("rust run")?;
             let source = args
                 .get(1)
-                .ok_or("usage: phase1-storage rust run <file.rs | inline-code>")?;
+                .ok_or("usage: phase1-storage rust run <file.rs inside storage | inline-code>")?;
             run_rust_source(source)
         }
         "init" | "new" => {
@@ -193,12 +226,13 @@ fn rust(args: &[String]) -> Result<String, String> {
         "cargo" => {
             require_host_tools("cargo")?;
             let repo = repo_path(args.get(1).ok_or(
-                "usage: phase1-storage rust cargo <repo> <check|build|test|run> [args...]",
+                "usage: phase1-storage rust cargo <repo> <check|build|test|run> [safe cargo args...]",
             )?)?;
             let subcommand = args.get(2).ok_or(
-                "usage: phase1-storage rust cargo <repo> <check|build|test|run> [args...]",
+                "usage: phase1-storage rust cargo <repo> <check|build|test|run> [safe cargo args...]",
             )?;
             validate_cargo_subcommand(subcommand)?;
+            validate_cargo_args(&args[3..])?;
             let mut cmd = Command::new("cargo");
             cmd.arg(subcommand).args(&args[3..]).current_dir(repo);
             Ok(format_output(run_command(cmd, Duration::from_secs(120))?))
@@ -228,7 +262,7 @@ fn storage_status() -> Result<String, String> {
         0
     };
     Ok(format!(
-        "storage root : {}\nexists       : {}\nrepos        : {}\nhost tools   : {}\n",
+        "storage root : {}\nexists       : {}\nrepos        : {}\nhost tools   : {}\ngit ssh      : {}\n",
         root.display(),
         if exists { "yes" } else { "no" },
         repo_count,
@@ -236,7 +270,8 @@ fn storage_status() -> Result<String, String> {
             "enabled"
         } else {
             "guarded"
-        }
+        },
+        if ssh_git_allowed() { "enabled" } else { "disabled" }
     ))
 }
 
@@ -278,7 +313,8 @@ fn list_repositories() -> Result<String, String> {
 fn run_rust_source(source: &str) -> Result<String, String> {
     ensure_storage_tree()?;
     let code = if Path::new(source).exists() {
-        fs::read_to_string(source).map_err(|err| err.to_string())?
+        let source_path = validate_workspace_source_path(source)?;
+        fs::read_to_string(source_path).map_err(|err| err.to_string())?
     } else {
         source.to_string()
     };
@@ -343,16 +379,56 @@ fn repo_path(name: &str) -> Result<PathBuf, String> {
 }
 
 fn validate_git_url(url: &str) -> Result<(), String> {
-    let allowed = url.starts_with("https://")
-        || url.starts_with("http://")
-        || url.starts_with("git://")
-        || url.starts_with("ssh://")
-        || url.starts_with("git@");
-    if allowed && !url.contains(' ') && !url.contains('\n') && !url.contains('\r') {
-        Ok(())
-    } else {
-        Err("git clone: URL must be a normal git remote URL".to_string())
+    if url.trim() != url || url.chars().any(|ch| ch.is_whitespace() || ch == '\0') {
+        return Err("git clone: URL must not contain whitespace or control characters".to_string());
     }
+    if url.is_empty() || url.len() > 2048 {
+        return Err("git clone: invalid URL length".to_string());
+    }
+    if contains_url_credentials(url) {
+        return Err("git clone: credentials must not be embedded in remote URLs".to_string());
+    }
+    if url.starts_with("https://") {
+        Ok(())
+    } else if url.starts_with("http://") {
+        Err("git clone: plaintext http:// remotes are blocked; use https://".to_string())
+    } else if url.starts_with("git://") {
+        Err("git clone: unauthenticated git:// remotes are blocked; use https://".to_string())
+    } else if url.starts_with("ssh://") || url.starts_with("git@") {
+        if ssh_git_allowed() {
+            Ok(())
+        } else {
+            Err("git clone: SSH remotes require PHASE1_ALLOW_SSH_GIT=1".to_string())
+        }
+    } else {
+        Err("git clone: only https:// remotes are allowed by default".to_string())
+    }
+}
+
+fn contains_url_credentials(url: &str) -> bool {
+    let Some(proto_pos) = url.find("://") else {
+        return false;
+    };
+    let auth_start = proto_pos + 3;
+    let host_end = url[auth_start..]
+        .find('/')
+        .map(|idx| auth_start + idx)
+        .unwrap_or(url.len());
+    url[auth_start..host_end].contains('@')
+}
+
+fn display_git_remote(url: &str) -> String {
+    if url.starts_with("https://") {
+        url.to_string()
+    } else if url.starts_with("ssh://") || url.starts_with("git@") {
+        "[ssh remote]".to_string()
+    } else {
+        "[remote]".to_string()
+    }
+}
+
+fn ssh_git_allowed() -> bool {
+    env::var("PHASE1_ALLOW_SSH_GIT").ok().as_deref() == Some("1")
 }
 
 fn derive_repo_name(url: &str) -> Result<String, String> {
@@ -379,6 +455,28 @@ fn validate_repo_name(name: &str) -> Result<String, String> {
     }
 }
 
+fn validate_workspace_source_path(raw: &str) -> Result<PathBuf, String> {
+    if raw.chars().any(|ch| ch == '\0' || ch == '\n' || ch == '\r') {
+        return Err("rust run: source path contains invalid control characters".to_string());
+    }
+    let path = Path::new(raw);
+    if path
+        .components()
+        .any(|component| matches!(component, Component::ParentDir))
+    {
+        return Err("rust run: parent traversal is not allowed".to_string());
+    }
+    let canonical = path.canonicalize().map_err(|err| err.to_string())?;
+    let root = storage_root()
+        .canonicalize()
+        .map_err(|err| format!("rust run: could not resolve storage root: {err}"))?;
+    if canonical.starts_with(&root) {
+        Ok(canonical)
+    } else {
+        Err("rust run: source files must be inside the phase1 storage root".to_string())
+    }
+}
+
 fn cargo_package_name(name: &str) -> String {
     name.chars()
         .map(|ch| if ch == '.' { '-' } else { ch })
@@ -390,6 +488,34 @@ fn validate_cargo_subcommand(subcommand: &str) -> Result<(), String> {
         "check" | "build" | "test" | "run" => Ok(()),
         other => Err(format!("cargo subcommand not allowed here: {other}")),
     }
+}
+
+fn validate_cargo_args(args: &[String]) -> Result<(), String> {
+    for arg in args {
+        if arg.chars().any(|ch| ch == '\0' || ch == '\n' || ch == '\r') {
+            return Err("cargo argument contains invalid control characters".to_string());
+        }
+        if matches!(
+            arg.as_str(),
+            "--manifest-path" | "--config" | "--target-dir" | "-Z"
+        ) || arg.starts_with("--manifest-path=")
+            || arg.starts_with("--config=")
+            || arg.starts_with("--target-dir=")
+            || arg.starts_with("-Z")
+        {
+            return Err(format!("cargo argument not allowed here: {arg}"));
+        }
+        if arg == ".."
+            || arg.starts_with("../")
+            || arg.starts_with('/')
+            || arg.contains("/../")
+            || arg.contains("..\\")
+            || arg.contains("\\..\\")
+        {
+            return Err("cargo arguments must stay inside the selected workspace".to_string());
+        }
+    }
+    Ok(())
 }
 
 fn require_host_tools(command: &str) -> Result<(), String> {
@@ -448,20 +574,77 @@ fn format_output(output: Output) -> String {
 }
 
 fn sanitize_output(raw: &str) -> String {
-    raw.lines()
-        .map(|line| {
-            if line.to_ascii_lowercase().contains("token=")
-                || line.to_ascii_lowercase().contains("password=")
-                || line.to_ascii_lowercase().contains("authorization:")
-            {
-                "[redacted sensitive output]".to_string()
-            } else {
-                line.to_string()
-            }
-        })
+    let mut out = raw.lines().map(sanitize_line).collect::<Vec<_>>().join("\n");
+    if raw.ends_with('\n') || !out.is_empty() {
+        out.push('\n');
+    }
+    out
+}
+
+fn sanitize_line(line: &str) -> String {
+    if line_has_sensitive_header(line) {
+        return "[redacted sensitive output]".to_string();
+    }
+    line.split_whitespace()
+        .map(sanitize_token)
         .collect::<Vec<_>>()
-        .join("\n")
-        + "\n"
+        .join(" ")
+}
+
+fn sanitize_token(token: &str) -> String {
+    let lower = token.to_ascii_lowercase();
+    if looks_like_assignment_secret(token)
+        || TOKEN_PREFIXES.iter().any(|prefix| lower.starts_with(prefix))
+        || looks_like_long_bearer(token)
+    {
+        return "[redacted sensitive output]".to_string();
+    }
+    if let Some(redacted) = sanitize_url_credentials(token) {
+        return redacted;
+    }
+    token.to_string()
+}
+
+fn looks_like_assignment_secret(token: &str) -> bool {
+    let Some((key, value)) = token.split_once('=') else {
+        return false;
+    };
+    !value.is_empty()
+        && SECRET_KEY_MARKERS
+            .iter()
+            .any(|marker| key.to_ascii_lowercase().contains(marker))
+}
+
+fn line_has_sensitive_header(line: &str) -> bool {
+    let lower = line.trim_start().to_ascii_lowercase();
+    lower.starts_with("authorization:")
+        || lower.starts_with("proxy-authorization:")
+        || lower.starts_with("x-api-key:")
+        || lower.starts_with("cookie:")
+        || lower.starts_with("set-cookie:")
+}
+
+fn looks_like_long_bearer(token: &str) -> bool {
+    token.len() >= 40
+        && token
+            .chars()
+            .all(|ch| ch.is_ascii_alphanumeric() || matches!(ch, '_' | '-' | '.' | '=' | '/'))
+        && token.chars().any(|ch| ch.is_ascii_uppercase())
+        && token.chars().any(|ch| ch.is_ascii_lowercase())
+        && token.chars().any(|ch| ch.is_ascii_digit())
+}
+
+fn sanitize_url_credentials(token: &str) -> Option<String> {
+    let proto_pos = token.find("://")?;
+    let auth_start = proto_pos + 3;
+    let at_offset = token[auth_start..].find('@')?;
+    let at = auth_start + at_offset;
+    if at == auth_start {
+        return None;
+    }
+    let mut redacted = token.to_string();
+    redacted.replace_range(auth_start..at, "[redacted-credential]");
+    Some(redacted)
 }
 
 fn first_line(text: &str) -> String {
@@ -487,7 +670,10 @@ fn flush_stdout() {
 
 #[cfg(test)]
 mod tests {
-    use super::{derive_repo_name, language_roadmap, sanitize_output, validate_repo_name};
+    use super::{
+        derive_repo_name, language_roadmap, sanitize_output, validate_cargo_args,
+        validate_git_url, validate_repo_name,
+    };
 
     #[test]
     fn derives_safe_repo_names_from_common_git_urls() {
@@ -509,12 +695,38 @@ mod tests {
     }
 
     #[test]
+    fn rejects_unsafe_git_urls_by_default() {
+        std::env::remove_var("PHASE1_ALLOW_SSH_GIT");
+        assert!(validate_git_url("https://github.com/Bryforge/phase1.git").is_ok());
+        assert!(validate_git_url("http://github.com/Bryforge/phase1.git").is_err());
+        assert!(validate_git_url("git://github.com/Bryforge/phase1.git").is_err());
+        assert!(validate_git_url("https://token@example.com/repo.git").is_err());
+        assert!(validate_git_url("git@github.com:Bryforge/phase1.git").is_err());
+        std::env::set_var("PHASE1_ALLOW_SSH_GIT", "1");
+        assert!(validate_git_url("git@github.com:Bryforge/phase1.git").is_ok());
+        std::env::remove_var("PHASE1_ALLOW_SSH_GIT");
+    }
+
+    #[test]
+    fn cargo_args_stay_inside_workspace() {
+        assert!(validate_cargo_args(&["--release".to_string()]).is_ok());
+        assert!(validate_cargo_args(&["--manifest-path".to_string(), "../Cargo.toml".to_string()]).is_err());
+        assert!(validate_cargo_args(&["--config=net.git-fetch-with-cli=true".to_string()]).is_err());
+        assert!(validate_cargo_args(&["/tmp/outside".to_string()]).is_err());
+        assert!(validate_cargo_args(&["-Zunstable-options".to_string()]).is_err());
+    }
+
+    #[test]
     fn redacts_sensitive_output_markers() {
-        let out = sanitize_output("ok\ntoken=secret\nAuthorization: bearer nope\n");
+        let out = sanitize_output(
+            "ok\ntoken=secret\nAuthorization: bearer nope\nghp_example\nhttps://user:pass@example.com/repo.git\n",
+        );
         assert!(out.contains("ok"));
         assert!(out.contains("[redacted sensitive output]"));
+        assert!(out.contains("https://[redacted-credential]@example.com/repo.git"));
         assert!(!out.contains("secret"));
         assert!(!out.contains("bearer nope"));
+        assert!(!out.contains("ghp_example"));
     }
 
     #[test]
