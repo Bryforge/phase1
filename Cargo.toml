@@ -28,5 +28,5 @@ unnecessary_lazy_evaluations = "allow"
 [dependencies]
 
 [workspace]
-members = [".", "phase1-core"]
+members = [".", "phase1-core", "xtask"]
 resolver = "2"
