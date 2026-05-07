@@ -66,7 +66,9 @@ fn gina_reports_optimization_and_consistency_baseline() {
 fn gina_forbids_untrusted_future_provider_defaults() {
     let out = wasm::execute_plugin(Path::new("plugins"), "gina", &["provider".to_string()]);
     assert!(out.contains("future provider-backed AI must require explicit opt-in policy gates"));
-    assert!(out.contains("credentials, tokens, keys, cookies, and recovery codes must never be stored"));
+    assert!(
+        out.contains("credentials, tokens, keys, cookies, and recovery codes must never be stored")
+    );
     assert!(out.contains("offline"));
     assert!(out.contains("sandboxed"));
     assert!(out.contains("security-first"));
