@@ -13,13 +13,13 @@
   <img src="assets/phase1-rainbow-logo.svg" alt="Phase1 rainbow neon P app icon" width="180">
 </p>
 
-**Phase1** is a Rust-built, terminal-first educational virtual operating-system console. It runs as a safe userspace simulator while modeling practical OS and cybersecurity concepts: boot profiles, a virtual kernel, a VFS, process scheduling, `/proc`, `/dev`, `/var/log`, PCIe-style hardware views, guarded networking, command capability metadata, shell history, pipelines, runtime management, update tooling, and local operations logging.
+**Phase1** is a Rust-built, terminal-first educational virtual operating-system console. It runs as a safe userspace simulator while modeling practical OS and cybersecurity concepts: boot profiles, a virtual kernel, a VFS, process scheduling, `/proc`, `/dev`, `/var/log`, PCIe-style hardware views, guarded networking, command capability metadata, shell history, pipelines, runtime management, update tooling, local operations logging, and a guarded terminal browser.
 
 Phase1 is designed to feel like a futuristic hacker/operator console while staying intentionally safe by default.
 
 ## Current status
 
-- Current package version on `master`: **v3.10.8-dev**
+- Current package version on `master`: **v3.10.9-dev**
 - Latest tagged release: **v3.10.6**
 - Current development channel: **bleeding-edge**
 - Stable compatibility base: **v3.6.0**
@@ -72,7 +72,7 @@ PHASE1_ALLOW_HOST_TOOLS=1
 PHASE1_BLEEDING_EDGE=1
 ```
 
-Use it when you want Python, Rust/lang, C, plugins, or other guarded host runtime tools to work without manually toggling boot options.
+Use it when you want Python, Rust/lang, C, plugins, browser/network inspection, or other guarded host runtime tools to work without manually toggling boot options.
 
 ## First commands to try
 
@@ -92,10 +92,13 @@ dash
 ls /
 avim hello.py
 lang support
+browser about
+browser phase1
+browser example.com
 update protocol
 ```
 
-To run Python or other local language runtimes inside Phase1, use the runtime launcher above or start from boot with host trust enabled:
+To run Python, browser/network inspection, or other local host-backed tools inside Phase1, use the runtime launcher above or start from boot with host trust enabled:
 
 ```text
 4    # SHIELD off
@@ -109,6 +112,9 @@ Then:
 py hello.py
 lang run python hello.py
 lang run rust main.rs
+browser https://example.com
+ping example.com
+wifi-scan
 ```
 
 ## In-system quick start: `/home/readme.txt`
@@ -133,6 +139,7 @@ It covers:
 - basic VFS file workflow
 - AVIM editor controls
 - how to enable Python and language runtimes
+- browser and network safety gates
 - pipelines, audit, and ops logging
 - persistence / VAULT mode notes
 - SHIELD and TRUST HOST reminders
@@ -209,6 +216,59 @@ Host network mutation remains separately guarded with:
 ```bash
 PHASE1_ALLOW_HOST_NETWORK_CHANGES=1
 ```
+
+### Optimized network stack
+
+The network module is optimized for guarded host inspection and safe terminal output:
+
+- 2-second refresh cache to avoid repeatedly spawning host network probes during dashboards/status calls
+- BTreeMap-based interface coalescing for stable, sorted output
+- Linux `ip -o addr show` parsing with IPv4-first display, MAC lookup, and operstate lookup
+- Linux WiFi metadata from `nmcli` or `iwgetid` when available
+- macOS `ifconfig` parsing with WiFi device and current SSID detection
+- bounded command output with truncation markers
+- stricter host validation for `ping`
+- SSID sanitization and dry-run WiFi connection by default
+- separate mutation gate for host network changes
+
+Useful commands:
+
+```text
+ifconfig
+iwconfig
+nmcli
+wifi-scan
+wifi-connect "SSID Name"
+ping example.com
+```
+
+### Guarded terminal browser
+
+The browser is now a stronger terminal-reader browser rather than a plain curl dump:
+
+- accepts `browser example.com` and normalizes it to HTTPS
+- HTTP/HTTPS only; URL credentials are blocked
+- curl fetches are bounded by connect timeout, total timeout, redirect limit, max download size, and protocol restriction
+- compressed responses are supported
+- page status, content type, final URL, and title are shown
+- HTML renderer strips script/style/noscript/svg/canvas/iframe content
+- headings, paragraphs, lists, images with alt text, and links are rendered into readable terminal text
+- links are indexed and listed after the page body
+- HTML entities, including numeric entities, are decoded
+- body text is truncated safely for terminal readability
+- cookies and JavaScript are intentionally not executed or persisted
+
+Useful commands:
+
+```text
+browser about
+browser phase1
+browser example.com
+browser https://example.com
+browser https://github.com/Bryforge/phase1
+```
+
+Browser use is still host-backed, so enable SHIELD off + TRUST HOST first or launch through `scripts/phase1-runtimes.sh`.
 
 ### Virtual OS simulation
 
@@ -390,8 +450,11 @@ Networking, browser, and host-backed tools:
 ```text
 ifconfig
 iwconfig
+nmcli
 wifi-scan
 ping example.com
+browser about
+browser example.com
 browser https://example.com
 py hello.py
 lang run python hello.py
@@ -520,8 +583,8 @@ For a dev/edge patch, keep the `-dev` suffix:
 ```bash
 git status
 git log -1 --oneline
-git tag v3.10.8-dev
-git push origin v3.10.8-dev
+git tag v3.10.9-dev
+git push origin v3.10.9-dev
 ```
 
 For a stable promotion, remove `-dev`, run the full validation suite again, then tag the promoted version.
@@ -537,6 +600,8 @@ RELEASE_NOTES_3.10.6.md
 Phase1 is an educational simulator. It should never need your GitHub password, personal access token, SSH private key, browser cookies, Apple ID, email password, or recovery codes.
 
 Host-backed commands are explicit and guarded. Runtime state files such as `phase1.state`, `phase1.history`, and `phase1.log` are local operational artifacts. Do not publish them if they include sensitive local activity.
+
+The Phase1 browser is intentionally a safe terminal reader, not a cookie/session browser. It does not run JavaScript, persist cookies, or store browser credentials.
 
 See:
 
