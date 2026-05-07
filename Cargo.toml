@@ -5,7 +5,7 @@ edition = "2021"
 default-run = "phase1"
 authors = ["Chase Bryan"]
 description = "Terminal-first educational virtual OS console in Rust."
-license = "GPL-3.0"
+license = "GPL-3.0-only"
 readme = "README.md"
 
 [profile.release]
