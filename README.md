@@ -95,8 +95,13 @@ Use `:help` inside `avim` for movement, edit, search, save, and quit commands.
 ```bash
 cargo fmt --all -- --check
 cargo check --all-targets
+cargo clippy --all-targets -- -D warnings
 cargo test --all-targets
 ```
+
+`cargo test --all-targets` includes unit tests plus scripted smoke tests for the main Phase1 shell and the guarded `phase1-storage` helper.
+
+CI runs the same quality gate on pull requests, `master`, `main`, `release/**`, and manual dispatch. It also runs RustSec advisory checks and dependency policy validation.
 
 ## Enable Python, browser, network inspection, and runtimes
 
