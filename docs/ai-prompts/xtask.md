@@ -15,18 +15,22 @@ Files to inspect first:
 
 Requirements:
 - Keep xtask commands simple, explicit, and cross-platform where practical.
-- Start with wrappers for fmt, check, test, full validation, docs, release prep, and security review.
+- Start with wrappers for fmt, check, test, full validation, and docs.
 - Do not hide failures; return non-zero exit codes on command failure.
 - Do not add network or host mutation behavior unless explicitly requested and policy documented.
 - Document every xtask command in the PR body.
 
-Preferred commands:
+Current baseline commands:
 - cargo xtask fmt
 - cargo xtask check
 - cargo xtask test
 - cargo xtask validate
 - cargo xtask docs
-- cargo xtask security
+
+Future candidates:
+- cargo xtask release-prep
+- cargo xtask docs-site
+- cargo xtask review-checklist
 
 Deliver:
 - Command list
