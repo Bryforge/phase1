@@ -1,6 +1,6 @@
 [package]
 name = "phase1"
-version = "3.10.9-dev"
+version = "4.0.0-dev"
 edition = "2021"
 default-run = "phase1"
 authors = ["Chase Bryan"]
