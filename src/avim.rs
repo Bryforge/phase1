@@ -77,7 +77,14 @@ pub fn edit(vfs: &mut Vfs, args: &[String]) {
         undo: Vec::new(),
     };
     clamp_cursor(&mut state);
-    println!("{}", paint("avim: advanced VFS editor // simple modal editing", BOLD, CYAN));
+    println!(
+        "{}",
+        paint(
+            "avim: advanced VFS editor // simple modal editing",
+            BOLD,
+            CYAN
+        )
+    );
     println!(
         "{}",
         paint(
@@ -205,7 +212,11 @@ fn handle_edit_action(state: &mut AvimState, command: &str, rest: &str) -> bool 
     let lower = command.to_ascii_lowercase();
     if command == "I" || command == "O" || matches!(lower.as_str(), "before") {
         if rest.is_empty() {
-            enter_insert(state, EditAction::NewLineBefore, "type a new line before the cursor; Esc cancels");
+            enter_insert(
+                state,
+                EditAction::NewLineBefore,
+                "type a new line before the cursor; Esc cancels",
+            );
         } else {
             insert_line(state, state.cursor, rest.to_string());
         }
@@ -215,7 +226,11 @@ fn handle_edit_action(state: &mut AvimState, command: &str, rest: &str) -> bool 
     match lower.as_str() {
         "i" | "insert" => {
             if rest.is_empty() {
-                enter_insert(state, EditAction::InsertAtCursor, "type text to insert at the pink cursor; Esc cancels");
+                enter_insert(
+                    state,
+                    EditAction::InsertAtCursor,
+                    "type text to insert at the pink cursor; Esc cancels",
+                );
             } else {
                 insert_text_at_cursor(state, rest, false);
             }
@@ -223,7 +238,11 @@ fn handle_edit_action(state: &mut AvimState, command: &str, rest: &str) -> bool 
         }
         "a" | "append" => {
             if rest.is_empty() {
-                enter_insert(state, EditAction::AppendAtCursor, "type text to append after the pink cursor; Esc cancels");
+                enter_insert(
+                    state,
+                    EditAction::AppendAtCursor,
+                    "type text to append after the pink cursor; Esc cancels",
+                );
             } else {
                 insert_text_at_cursor(state, rest, true);
             }
@@ -231,7 +250,11 @@ fn handle_edit_action(state: &mut AvimState, command: &str, rest: &str) -> bool 
         }
         "e" | "edit" | "r" | "replace" => {
             if rest.is_empty() {
-                enter_insert(state, EditAction::ReplaceLine, "type replacement text for the selected line; Esc cancels");
+                enter_insert(
+                    state,
+                    EditAction::ReplaceLine,
+                    "type replacement text for the selected line; Esc cancels",
+                );
             } else {
                 replace_current_line(state, rest.to_string());
             }
@@ -242,7 +265,11 @@ fn handle_edit_action(state: &mut AvimState, command: &str, rest: &str) -> bool 
             if rest.is_empty() {
                 state.cursor = idx;
                 state.column = 0;
-                enter_insert(state, EditAction::NewLineAfter, "type a new line after the cursor; Esc cancels");
+                enter_insert(
+                    state,
+                    EditAction::NewLineAfter,
+                    "type a new line after the cursor; Esc cancels",
+                );
             } else {
                 insert_line(state, idx, rest.to_string());
             }
@@ -269,7 +296,11 @@ fn handle_insert(state: &mut AvimState, input: &str) {
         EditAction::InsertAtCursor => insert_text_at_cursor(state, input, false),
         EditAction::AppendAtCursor => insert_text_at_cursor(state, input, true),
         EditAction::NewLineBefore => insert_line(state, state.cursor, input.to_string()),
-        EditAction::NewLineAfter => insert_line(state, (state.cursor + 1).min(state.lines.len()), input.to_string()),
+        EditAction::NewLineAfter => insert_line(
+            state,
+            (state.cursor + 1).min(state.lines.len()),
+            input.to_string(),
+        ),
     }
     state.mode = Mode::Normal;
 }
@@ -285,7 +316,11 @@ fn handle_command(vfs: &mut Vfs, state: &mut AvimState, command: &str) -> bool {
     match command {
         "q" | "quit" | "exit" => {
             if state.dirty {
-                render_status(state, "unsaved changes; use :wq to save or :q! to discard", YELLOW);
+                render_status(
+                    state,
+                    "unsaved changes; use :wq to save or :q! to discard",
+                    YELLOW,
+                );
                 false
             } else {
                 println!("avim: closed {}", state.filename);
@@ -367,7 +402,11 @@ fn save(vfs: &mut Vfs, state: &mut AvimState) {
     match vfs.write_file(&state.filename, &content, false) {
         Ok(()) => {
             state.dirty = false;
-            render_status(state, &format!("wrote {} ({} bytes)", state.filename, content.len()), GREEN);
+            render_status(
+                state,
+                &format!("wrote {} ({} bytes)", state.filename, content.len()),
+                GREEN,
+            );
         }
         Err(err) => println!("avim: write failed: {err}"),
     }
@@ -405,7 +444,11 @@ fn move_word_forward(state: &mut AvimState) {
     };
     let mut seen_space = false;
     let mut next = current_line_len(state);
-    for (idx, ch) in line.chars().enumerate().skip(state.column.saturating_add(1)) {
+    for (idx, ch) in line
+        .chars()
+        .enumerate()
+        .skip(state.column.saturating_add(1))
+    {
         if ch.is_whitespace() {
             seen_space = true;
         } else if seen_space {
@@ -425,7 +468,10 @@ fn move_word_back(state: &mut AvimState) {
         set_column(state, 0);
         return;
     }
-    let mut idx = state.column.saturating_sub(1).min(chars.len().saturating_sub(1));
+    let mut idx = state
+        .column
+        .saturating_sub(1)
+        .min(chars.len().saturating_sub(1));
     while idx > 0 && chars[idx].is_whitespace() {
         idx -= 1;
     }
@@ -629,7 +675,7 @@ fn read_file_below_cursor(vfs: &Vfs, state: &mut AvimState, path: &str) {
         return;
     }
     match vfs.cat(path) {
-        Some(content) if content.len() <= MAX_FILE_BYTES => {
+        Ok(content) if content.len() <= MAX_FILE_BYTES => {
             push_undo(state);
             let mut lines = content_to_lines(&content);
             let idx = (state.cursor + 1).min(state.lines.len());
@@ -641,8 +687,8 @@ fn read_file_below_cursor(vfs: &Vfs, state: &mut AvimState, path: &str) {
             state.dirty = true;
             render(state);
         }
-        Some(_) => render_status(state, "read blocked: source file is too large", RED),
-        None => render_status(state, &format!("read failed: {path} not found"), RED),
+        Ok(_) => render_status(state, "read blocked: source file is too large", RED),
+        Err(err) => render_status(state, &format!("read failed: {err}"), RED),
     }
 }
 
@@ -664,8 +710,14 @@ fn render(state: &AvimState) {
         state.column + 1,
         short_clock_utc()
     );
-    println!("{}", paint(&format!("╭─ {title}"), BOLD, mode_color(state.mode)));
-    println!("{}", paint(&format!("│ {}", mode_hint(state.mode)), DIM, CYAN));
+    println!(
+        "{}",
+        paint(&format!("╭─ {title}"), BOLD, mode_color(state.mode))
+    );
+    println!(
+        "{}",
+        paint(&format!("│ {}", mode_hint(state.mode)), DIM, CYAN)
+    );
     let width = terminal_width().saturating_sub(12).clamp(24, 120);
     let start = state.cursor.saturating_sub(6);
     let end = (state.cursor + 7).min(state.lines.len());
@@ -691,10 +743,21 @@ fn render(state: &AvimState) {
                 rendered
             );
         } else {
-            println!("{marker} {} {}", paint(&line_no, DIM, BLUE), paint(&rendered, DIM, RESET));
+            println!(
+                "{marker} {} {}",
+                paint(&line_no, DIM, BLUE),
+                paint(&rendered, DIM, RESET)
+            );
         }
     }
-    println!("{}", paint("╰─ Tab completes · Esc/escape returns NORMAL · :help lists commands", DIM, CYAN));
+    println!(
+        "{}",
+        paint(
+            "╰─ Tab completes · Esc/escape returns NORMAL · :help lists commands",
+            DIM,
+            CYAN
+        )
+    );
 }
 
 fn render_status(state: &AvimState, message: &str, color: &str) {
@@ -775,24 +838,70 @@ fn complete_avim_input(state: &AvimState, input: &str) {
         .trim_start_matches(':');
     let matches = avim_completion_matches(prefix);
     match matches.as_slice() {
-        [] => render_status(state, &format!("tab complete: no matches for '{prefix}'"), YELLOW),
+        [] => render_status(
+            state,
+            &format!("tab complete: no matches for '{prefix}'"),
+            YELLOW,
+        ),
         [only] => render_status(state, &format!("tab complete: {only}"), CYAN),
-        _ => render_status(state, &format!("tab matches for '{prefix}': {}", matches.join(" ")), CYAN),
+        _ => render_status(
+            state,
+            &format!("tab matches for '{prefix}': {}", matches.join(" ")),
+            CYAN,
+        ),
     }
 }
 
 fn avim_completion_matches(prefix: &str) -> Vec<String> {
     let options = [
-        "i", "insert", "a", "append", "e", "edit", "replace", "before", "after", "left",
-        "right", "up", "down", "home", "end", "word", "back", "delete", "delete-char",
-        "copy", "yank", "paste", "undo", "search", "next", "save", "quit", "exit", "discard",
-        "help", "security", "set", "set number", "set nonumber", ":w", ":wq", ":q", ":q!",
-        ":help", ":read", ":%s/old/new/g",
+        "i",
+        "insert",
+        "a",
+        "append",
+        "e",
+        "edit",
+        "replace",
+        "before",
+        "after",
+        "left",
+        "right",
+        "up",
+        "down",
+        "home",
+        "end",
+        "word",
+        "back",
+        "delete",
+        "delete-char",
+        "copy",
+        "yank",
+        "paste",
+        "undo",
+        "search",
+        "next",
+        "save",
+        "quit",
+        "exit",
+        "discard",
+        "help",
+        "security",
+        "set",
+        "set number",
+        "set nonumber",
+        ":w",
+        ":wq",
+        ":q",
+        ":q!",
+        ":help",
+        ":read",
+        ":%s/old/new/g",
     ];
     let mut matches = options
         .iter()
         .copied()
-        .filter(|candidate| candidate.starts_with(prefix) || candidate.trim_start_matches(':').starts_with(prefix))
+        .filter(|candidate| {
+            candidate.starts_with(prefix) || candidate.trim_start_matches(':').starts_with(prefix)
+        })
         .map(str::to_string)
         .collect::<Vec<_>>();
     matches.sort();
@@ -824,7 +933,7 @@ fn mode_name(mode: Mode) -> &'static str {
 fn mode_hint(mode: Mode) -> &'static str {
     match mode {
         Mode::Normal => "i/a insert text | e replace line | h/l cursor | up/down lines | :wq save | Tab commands",
-        Mode::Insert => "type text for pending edit | Esc or escape cancels to NORMAL",
+        Mode::Insert => "Esc/escape cancels | type text for pending edit",
         Mode::Command => "w q wq help read search set | Esc returns NORMAL | Tab commands",
     }
 }
@@ -840,7 +949,11 @@ fn mode_color(mode: Mode) -> &'static str {
 fn escape_to_normal(state: &mut AvimState) {
     state.mode = Mode::Normal;
     state.pending_edit = None;
-    render_status(state, "NORMAL mode; use i text, a text, e text, h/l, up/down, :wq, or :help", CYAN);
+    render_status(
+        state,
+        "NORMAL mode; use i text, a text, e text, h/l, up/down, :wq, or :help",
+        CYAN,
+    );
 }
 
 fn is_escape_input(input: &str) -> bool {
@@ -855,20 +968,26 @@ fn is_escape_input(input: &str) -> bool {
 fn print_help() {
     println!("{}", paint("avim help", BOLD, CYAN));
     println!("  cursor: h/left, l/right, 0/home, $/end, w next word, b previous word");
-    println!("  edit  : i text inserts at cursor, a text appends after cursor, e text replaces line");
+    println!(
+        "  edit  : i text inserts at cursor, a text appends after cursor, e text replaces line"
+    );
     println!("  lines : o text opens below, O text or before text opens above, dd deletes, yy copies, p pastes");
     println!("  fixup : x deletes char under cursor, backspace deletes before cursor, u undo");
     println!("  move  : up/down, j/k, pgup/pgdn, gg/G, :n 12, :12");
     println!("  search: /text, n repeat, :search text, :%s/old/new/g substitute");
     println!("  save  : :w writes; :wq writes and exits; :q refuses dirty exit; :q! discards");
-    println!("  tab   : press Tab in avim for command suggestions; shell Tab completes avim file names");
+    println!(
+        "  tab   : press Tab in avim for command suggestions; shell Tab completes avim file names"
+    );
 }
 
 fn print_security_model() {
     println!("{}", paint("avim security model", BOLD, BLUE));
     println!("  edits stay inside the Phase1 VFS");
     println!("  no shell escapes, host editor launch, modelines, plugins, network fetches, or background jobs");
-    println!("  file size is capped; unsafe traversal paths are rejected; save/discard is explicit");
+    println!(
+        "  file size is capped; unsafe traversal paths are rejected; save/discard is explicit"
+    );
 }
 
 fn content_to_lines(content: &str) -> Vec<String> {
@@ -943,7 +1062,10 @@ fn split_command(input: &str) -> (&str, &str) {
 }
 
 fn current_line_len(state: &AvimState) -> usize {
-    state.lines.get(state.cursor).map_or(0, |line| char_len(line))
+    state
+        .lines
+        .get(state.cursor)
+        .map_or(0, |line| char_len(line))
 }
 
 fn clamp_cursor(state: &mut AvimState) {

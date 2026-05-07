@@ -17,10 +17,8 @@ fn run_phase1_raw(input: &str) -> String {
         .map(|duration| duration.as_nanos())
         .unwrap_or(0);
     let seq = RUN_COUNTER.fetch_add(1, Ordering::Relaxed);
-    let run_dir = std::env::temp_dir().join(format!(
-        "phase1-bleeding-{}-{nonce}-{seq}",
-        process::id()
-    ));
+    let run_dir =
+        std::env::temp_dir().join(format!("phase1-bleeding-{}-{nonce}-{seq}", process::id()));
     let _ = fs::remove_dir_all(&run_dir);
     fs::create_dir_all(&run_dir).expect("create bleeding test dir");
 

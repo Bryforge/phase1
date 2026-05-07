@@ -630,7 +630,9 @@ impl Kernel {
             audit: AuditLog::new(),
             booted: Instant::now(),
         };
-        kernel.audit.record(format!("kernel.boot version={VERSION}"));
+        kernel
+            .audit
+            .record(format!("kernel.boot version={VERSION}"));
         kernel
     }
 
