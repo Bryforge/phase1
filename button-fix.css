@@ -52,9 +52,32 @@
   transform: translateY(1px) scale(0.99);
 }
 
-/* Founder-card cleanup: the page should present one clear Founder Profile label, not duplicate role labels. */
-.profile-label {
+/* Founder-section cleanup: present one clear Founder profile label, not stacked role labels. */
+.profile-label,
+.founder-copy > .eyebrow {
   display: none !important;
+}
+
+.founder-copy h2 {
+  color: var(--text) !important;
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  animation: none !important;
+}
+
+.founder-copy h2::before {
+  content: "Founder profile";
+  display: block;
+  margin: 0 0 12px;
+  color: var(--cyan);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  text-shadow: 0 0 18px rgba(35, 247, 255, 0.5);
 }
 
 /* Phase1 visual identity: the prompt cursor is intentionally blinking pink/magenta. */
@@ -65,6 +88,87 @@
   animation: blink 0.9s steps(2, start) infinite !important;
 }
 
-.founder-copy > .eyebrow::after {
-  content: "";
+/* Mobile readability: keep the design, but stop headings from fragmenting. */
+@media (max-width: 860px) {
+  h1,
+  .section-heading h2,
+  .founder-copy h2,
+  .support-card h2 {
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+    hyphens: none !important;
+    text-wrap: balance;
+  }
+
+  h1 {
+    font-size: clamp(2.05rem, 11vw, 3.35rem) !important;
+    line-height: 1.02 !important;
+    letter-spacing: -0.045em !important;
+  }
+
+  .section-heading h2,
+  .support-card h2 {
+    font-size: clamp(1.8rem, 8vw, 2.7rem) !important;
+    line-height: 1.08 !important;
+    letter-spacing: -0.035em !important;
+  }
+
+  .founder-copy h2 {
+    font-size: clamp(1.7rem, 7.4vw, 2.45rem) !important;
+    line-height: 1.1 !important;
+    letter-spacing: -0.025em !important;
+  }
+
+  .eyebrow,
+  .card-kicker,
+  .timeline-status,
+  .founder-copy h2::before {
+    letter-spacing: 0.12em !important;
+  }
+
+  .hero-text,
+  .section-heading p,
+  .feature-card p,
+  .roadmap p,
+  .founder p,
+  .support-card p,
+  .footer p {
+    font-size: 0.98rem;
+    line-height: 1.62 !important;
+  }
+
+  .feature-card,
+  .bryforge-card,
+  .support-card,
+  .timeline li {
+    padding: 18px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .site-shell {
+    width: min(100% - 16px, 720px) !important;
+  }
+
+  .hero {
+    padding: 20px !important;
+  }
+
+  h1 {
+    font-size: clamp(1.9rem, 10vw, 2.7rem) !important;
+    letter-spacing: -0.032em !important;
+  }
+
+  .section-heading h2,
+  .support-card h2 {
+    font-size: clamp(1.55rem, 7.5vw, 2.2rem) !important;
+  }
+
+  .founder-copy h2 {
+    font-size: clamp(1.45rem, 7vw, 2.05rem) !important;
+  }
+
+  .hero-actions {
+    gap: 10px !important;
+  }
 }

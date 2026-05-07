@@ -71,7 +71,34 @@ fn styles_cover_terminal_roadmap_mobile_and_reveal_states() {
 }
 
 #[test]
-fn site_js_implements_canvas_terminal_and_progressive_enhancement() {
+fn website_mobile_fix_prevents_fragmented_headings_and_duplicate_creator_labels() {
+    let fix_css = read("button-fix.css");
+    assert_contains_all(
+        &fix_css,
+        &[
+            "Founder-section cleanup",
+            "Founder profile",
+            ".profile-label,",
+            ".founder-copy > .eyebrow",
+            "overflow-wrap: normal",
+            "word-break: normal",
+            "text-wrap: balance",
+            "Mobile readability",
+        ],
+    );
+    assert_not_contains_any(
+        &fix_css,
+        &[
+            "Builder profile",
+            "builder profile",
+            "Created by Chase Bryan",
+            "Creator-section cleanup",
+        ],
+    );
+}
+
+#[test]
+fn site_js_implements_canvas_terminal_progressive_enhancement_and_performance_guards() {
     let js = read("site.js");
     assert_contains_all(
         &js,
@@ -80,13 +107,22 @@ fn site_js_implements_canvas_terminal_and_progressive_enhancement() {
             "demoResponses",
             "wiki-quick",
             "phase1 // advanced operator kernel",
+            "stable: v4.0.0",
+            "previous stable: v3.10.9",
             "safe mode: on",
             "setupNavigation",
             "setupReveals",
             "IntersectionObserver",
             "prefers-reduced-motion: reduce",
+            "scheduleResize",
+            "handleVisibilityChange",
+            "document.hidden",
+            "startAnimation",
+            "stopAnimation",
+            "desktop ? 180 : 210",
         ],
     );
+    assert_not_contains_any(&js, &["edge: v4.0.0-dev"]);
 }
 
 fn read(path: &str) -> String {
@@ -103,7 +139,7 @@ fn assert_not_contains_any(text: &str, needles: &[&str]) {
     for needle in needles {
         assert!(
             !text.contains(needle),
-            "unexpected external dependency {needle:?}"
+            "unexpected text or dependency {needle:?}"
         );
     }
 }

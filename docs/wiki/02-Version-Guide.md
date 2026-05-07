@@ -1,13 +1,13 @@
 # Version Guide
 
-![Edge](https://img.shields.io/badge/edge-v3.10.9--dev-00d8ff) ![Stable](https://img.shields.io/badge/stable-v3.10.7-39ff88) ![Base](https://img.shields.io/badge/compatibility-v3.6.0-7f8cff)
+![Stable](https://img.shields.io/badge/stable-v4.0.0-39ff88) ![Previous Stable](https://img.shields.io/badge/previous%20stable-v3.10.9-7f8cff) ![Base](https://img.shields.io/badge/compatibility-v3.6.0-7f8cff)
 
-Phase1 has three version concepts that users may see.
+Phase1 has three release concepts that users may see.
 
 | Name | Current value | Meaning |
 | --- | --- | --- |
-| Edge build | `v3.10.9-dev` | Current `master` development version |
-| Stable release | `v3.10.7` | Latest tagged non-dev release line |
+| Stable release | `v4.0.0` | Current tagged non-dev release line |
+| Previous stable | `v3.10.9` | Previous stable reference line |
 | Compatibility base | `v3.6.0` | Historical stable base used by compatibility comparisons |
 
 ## Runtime version behavior
@@ -37,37 +37,37 @@ exit / shutdown banner    shutdown: phase1 <CARGO_PKG_VERSION>
 > cat readme.txt
 > ```
 
-## Edge release policy
-
-Use an edge release when the version ends in `-dev` or when new behavior is still being validated.
-
-Examples:
-
-```text
-v3.10.8-dev
-v3.10.9-dev
-```
-
-Edge builds are best for testing:
-
-- browser improvements
-- network stack changes
-- terminal raw input changes
-- new UI modes
-- update workflow changes
-- documentation changes that follow active development
-
 ## Stable release policy
 
 Use a stable release when the version has no `-dev` suffix and has passed the full validation suite.
 
-Example:
+Current stable release:
 
 ```text
-v3.10.7
+v4.0.0
 ```
 
-Stable builds are best for demos, README screenshots, public posts, and tagged release notes.
+Stable builds are best for demos, README screenshots, public posts, tagged release notes, and normal users.
+
+## Previous stable line
+
+The previous stable reference line remains:
+
+```text
+v3.10.9
+```
+
+Use this when comparing the current stable behavior against the earlier stable series.
+
+## Compatibility base
+
+The long-term compatibility base remains:
+
+```text
+v3.6.0
+```
+
+It is used for historical comparison and compatibility language.
 
 ## Check the current package version
 
@@ -84,23 +84,28 @@ version
 cat /proc/version
 ```
 
-## Promote edge to stable
+## Promote a release candidate to stable
 
 > [!IMPORTANT]
-> Only promote after formatting and tests pass.
+> Only promote after formatting, Clippy, tests, audit, and dependency policy checks pass.
 
 ```bash
 cargo fmt --all -- --check
 cargo check --all-targets
+cargo clippy --all-targets -- -D warnings
 cargo test --all-targets
+cargo audit
+cargo deny check
 ```
 
-Then remove the `-dev` suffix from `Cargo.toml`, update `Cargo.lock`, update README/wiki version references, run validation again, commit, and tag.
+Then remove the `-dev` suffix from `Cargo.toml`, update `Cargo.lock`, update README/wiki/version references, run validation again, commit, and tag.
+
+Current stable tagging example:
 
 ```bash
 git status
 git log -1 --oneline
-git tag v3.10.9
+git tag v4.0.0
 git push origin master
-git push origin v3.10.9
+git push origin v4.0.0
 ```

@@ -1,7 +1,7 @@
 name=wiki-quick
 capability=none
 stdout=PHASE1 WIKI: QUICK START
-stdout=Version scope: edge v3.10.9-dev, stable v3.10.7
+stdout=Version scope: stable v4.0.0, previous stable v3.10.9, base v3.6.0
 stdout=
 stdout=TRY THIS ON THE HOST
 stdout=  git clone https://github.com/Bryforge/phase1.git

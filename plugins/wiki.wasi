@@ -1,7 +1,7 @@
 name=wiki
 capability=none
 stdout=PHASE1 IN-SYSTEM WIKI
-stdout=Manual target: edge v3.10.9-dev | stable v3.10.7 | base v3.6.0
+stdout=Manual target: stable v4.0.0 | previous stable v3.10.9 | base v3.6.0
 stdout=
 stdout=This wiki is readable inside Phase1 through sandboxed WASI-lite commands. It does not require host tools.
 stdout=
