@@ -6,13 +6,13 @@ fn homepage_includes_phase_b_landing_sections() {
     assert_contains_all(
         &html,
         &[
-            "Try the Phase1 prompt before you clone it.",
+            "Try the phase1 prompt before you clone it.",
             "Clone &amp; run",
             "Try the console",
             "Everything feels like a console",
             "From landing page to full public front door.",
-            "Fuel Phase1 and the Bryforge roadmap.",
-            "Phase1 is a terminal-first advanced operator kernel",
+            "Fuel phase1 and the Bryforge roadmap.",
+            "phase1 is a terminal-first advanced operator kernel",
         ],
     );
 }
@@ -23,6 +23,7 @@ fn homepage_preserves_project_identity_and_metadata() {
     assert_contains_all(
         &html,
         &[
+            "name\": \"phase1\"",
             "Chase Bryan",
             "Bryforge",
             "GPL-3.0",
@@ -78,6 +79,7 @@ fn site_js_implements_canvas_terminal_and_progressive_enhancement() {
             "setupTerminalDemo",
             "demoResponses",
             "wiki-quick",
+            "phase1 // advanced operator kernel",
             "safe mode: on",
             "setupNavigation",
             "setupReveals",
