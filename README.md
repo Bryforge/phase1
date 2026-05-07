@@ -17,6 +17,8 @@
   <a href="WIKI_ROADMAP.md">Website + wiki roadmap</a>
   ·
   <a href="base1/README.md">Base1 secure host foundation</a>
+  ·
+  <a href="AI_GINA.md">Gina AI</a>
 </p>
 
 ![Stable](https://img.shields.io/badge/stable-v4.0.0-39ff88) ![Previous Stable](https://img.shields.io/badge/previous%20stable-v3.10.9-7f8cff) ![Rust](https://img.shields.io/badge/language-Rust-ff8a00) ![Security](https://img.shields.io/badge/default-safe%20mode%20on-39ff88) ![Base1](https://img.shields.io/badge/base1-secure%20host%20foundation-8a5cff)
@@ -43,6 +45,7 @@ It uses a dark live-space background, moving rainbow visuals, the Phase1 neon lo
 | Previous stable | `v3.10.9` | Previous stable reference line |
 | Compatibility base | `v3.6.0` | Historical comparison base |
 | Base1 | `foundation` | Secure host design for Raspberry Pi and X200 targets |
+| Gina AI | `offline baseline` | Safe Phase1 AI integration assistant |
 
 The package version is the booted Phase1 version. Boot, ready line, `/proc/version`, dashboard, audit boot record, `/home/readme.txt`, and shutdown dynamically reflect `CARGO_PKG_VERSION`.
 
@@ -65,7 +68,24 @@ version --compare
 security
 sysinfo
 roadmap
+gina
+ai gina
 ```
+
+## Gina AI integration
+
+Gina is the Phase1 AI integration assistant. The first implementation is a safe offline WASI-lite plugin that establishes the command surface without enabling host shell access, host networking, external provider calls, or credential access.
+
+Inside Phase1:
+
+```text
+gina
+ai gina
+wasm inspect gina
+wasm run gina status
+```
+
+Full guide: [`AI_GINA.md`](AI_GINA.md).
 
 ## Base1 secure host foundation
 
@@ -133,6 +153,7 @@ Use `:help` inside `avim` for movement, edit, search, save, and quit commands.
 - Improve Linux color fallback for older systems such as ThinkPad X200 running Trisquel.
 - Improve Raspberry Pi 5 default OS text and color compatibility.
 - Add Base1 compatibility around secure Raspberry Pi and X200 host profiles.
+- Add Gina as the safe offline Phase1 AI integration baseline.
 - Improve the public website with clearer creator labeling, mobile readability, and desktop animation performance guards.
 - Harden `phase1-storage` output redaction for common secret and URL-credential patterns.
 
@@ -156,7 +177,7 @@ cargo audit
 cargo deny check
 ```
 
-`cargo test --all-targets` includes unit tests plus scripted smoke tests for the main Phase1 shell, the guarded `phase1-storage` helper, the website, release metadata, and the Base1 secure host foundation files.
+`cargo test --all-targets` includes unit tests plus scripted smoke tests for the main Phase1 shell, the guarded `phase1-storage` helper, the website, release metadata, the Gina AI plugin baseline, and the Base1 secure host foundation files.
 
 CI runs the same quality gate on pull requests, `master`, `main`, `release/**`, and manual dispatch. It also installs and runs RustSec advisory checks and dependency policy validation.
 
@@ -191,6 +212,8 @@ The public website/wiki roadmap lives in [`WIKI_ROADMAP.md`](WIKI_ROADMAP.md).
 Phase1 is an educational simulator. It should never need your GitHub password, personal access token, SSH private key, browser cookies, Apple ID, email password, or recovery codes.
 
 Host-backed commands are explicit and guarded. Runtime files such as `phase1.state`, `phase1.history`, and `phase1.log` are local operational artifacts.
+
+Gina is offline by default. The baseline Gina integration does not enable host shell access, host networking, external model calls, credential storage, or browser cookie access.
 
 Base1 is a secure host foundation, not a destructive installer. Its first tooling is intentionally read-only and compatibility-focused. Base1 security claims should remain conservative until backed by repeatable builds, audits, and hardware validation.
 
