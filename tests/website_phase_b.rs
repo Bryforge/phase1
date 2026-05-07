@@ -90,7 +90,7 @@ fn website_mobile_fix_prevents_fragmented_headings_and_duplicate_creator_labels(
 }
 
 #[test]
-fn site_js_implements_canvas_terminal_and_progressive_enhancement() {
+fn site_js_implements_canvas_terminal_progressive_enhancement_and_performance_guards() {
     let js = read("site.js");
     assert_contains_all(
         &js,
@@ -104,6 +104,12 @@ fn site_js_implements_canvas_terminal_and_progressive_enhancement() {
             "setupReveals",
             "IntersectionObserver",
             "prefers-reduced-motion: reduce",
+            "scheduleResize",
+            "handleVisibilityChange",
+            "document.hidden",
+            "startAnimation",
+            "stopAnimation",
+            "desktop ? 180 : 210",
         ],
     );
 }
