@@ -19,6 +19,8 @@
   <a href="base1/README.md">Base1 secure host foundation</a>
   ·
   <a href="AI_GINA.md">Gina AI</a>
+  ·
+  <a href="AI_GINA_ROADMAP.md">Gina roadmap</a>
 </p>
 
 ![Stable](https://img.shields.io/badge/stable-v4.0.0-39ff88) ![Previous Stable](https://img.shields.io/badge/previous%20stable-v3.10.9-7f8cff) ![Rust](https://img.shields.io/badge/language-Rust-ff8a00) ![Security](https://img.shields.io/badge/default-safe%20mode%20on-39ff88) ![Base1](https://img.shields.io/badge/base1-secure%20host%20foundation-8a5cff)
@@ -85,7 +87,7 @@ wasm inspect gina
 wasm run gina status
 ```
 
-Full guide: [`AI_GINA.md`](AI_GINA.md).
+Full guide: [`AI_GINA.md`](AI_GINA.md). Roadmap: [`AI_GINA_ROADMAP.md`](AI_GINA_ROADMAP.md).
 
 ## Base1 secure host foundation
 
