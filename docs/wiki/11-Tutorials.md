@@ -1,6 +1,6 @@
 # Tutorials
 
-![Tutorials](https://img.shields.io/badge/tutorials-TRY%20THIS-00d8ff) ![Edge](https://img.shields.io/badge/edge-v3.10.9--dev-39ff88) ![Stable](https://img.shields.io/badge/stable-v3.10.7-ffcc00)
+![Tutorials](https://img.shields.io/badge/tutorials-TRY%20THIS-00d8ff) ![Stable](https://img.shields.io/badge/stable-v4.0.0-39ff88) ![Previous Stable](https://img.shields.io/badge/previous%20stable-v3.10.9-7f8cff)
 
 These tutorials are designed for a new Phase1 user. Run them in order or jump to the workflow you need.
 
@@ -276,7 +276,10 @@ From the host:
 git pull origin master
 cargo fmt --all -- --check
 cargo check --all-targets
+cargo clippy --all-targets -- -D warnings
 cargo test --all-targets
+cargo audit
+cargo deny check
 cargo run
 ```
 
@@ -285,12 +288,15 @@ Expected result:
 ```text
 format passes
 compile passes
+clippy passes
 tests pass
+audit passes
+dependency policy passes
 Phase1 boots
 shutdown reports the current package version
 ```
 
-## Tutorial 11: Prepare a release candidate
+## Tutorial 11: Prepare a stable release
 
 From the host:
 
@@ -299,17 +305,20 @@ git status
 git log -1 --oneline
 cargo fmt --all -- --check
 cargo check --all-targets
+cargo clippy --all-targets -- -D warnings
 cargo test --all-targets
+cargo audit
+cargo deny check
 ```
 
-For an edge build, keep the `-dev` suffix:
+For a stable build, remove `-dev`, update docs and in-system wiki fixtures, validate again, commit, tag, and push.
+
+Current stable target:
 
 ```bash
-git tag v3.10.9-dev
-git push origin v3.10.9-dev
+git tag v4.0.0
+git push origin v4.0.0
 ```
-
-For a stable build, remove `-dev`, update docs, validate again, commit, tag, and push.
 
 ## Tutorial 12: Publish manual pages to the native wiki
 
@@ -321,7 +330,7 @@ git clone https://github.com/Bryforge/phase1.wiki.git phase1.wiki
 rsync -av --delete phase1/docs/wiki/ phase1.wiki/
 cd phase1.wiki
 git add .
-git commit -m "Update Phase1 user manual"
+git commit -m "Update Phase1 user manual for v4.0.0"
 git push origin master
 ```
 
