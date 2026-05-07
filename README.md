@@ -15,11 +15,15 @@
   <a href="https://bryforge.github.io/phase1/"><strong>Open the Phase1 website</strong></a>
   ·
   <a href="WIKI_ROADMAP.md">Website + wiki roadmap</a>
+  ·
+  <a href="base1/README.md">Base1 secure host foundation</a>
 </p>
 
-![Edge](https://img.shields.io/badge/edge-v4.0.0--dev-00d8ff) ![Stable](https://img.shields.io/badge/stable-v3.10.9-39ff88) ![Rust](https://img.shields.io/badge/language-Rust-ff8a00) ![Security](https://img.shields.io/badge/default-safe%20mode%20on-39ff88)
+![Edge](https://img.shields.io/badge/edge-v4.0.0--dev-00d8ff) ![Stable](https://img.shields.io/badge/stable-v3.10.9-39ff88) ![Rust](https://img.shields.io/badge/language-Rust-ff8a00) ![Security](https://img.shields.io/badge/default-safe%20mode%20on-39ff88) ![Base1](https://img.shields.io/badge/base1-secure%20host%20foundation-8a5cff)
 
 Phase1 is a Rust-built, terminal-first educational virtual operating-system console. It models boot profiles, a virtual kernel, a VFS, process scheduling, `/proc`, `/dev`, `/var/log`, guarded networking, command capability metadata, pipelines, update tooling, runtime management, and a guarded terminal browser.
+
+Base1 is the planned secure hardware host foundation for Phase1 on Raspberry Pi and ThinkPad X200-class systems. Its mission is to keep the host bootable, recoverable, and protected if Phase1 is damaged, corrupted, or reset.
 
 ## Website
 
@@ -38,6 +42,7 @@ It uses a dark live-space background, moving rainbow visuals, the Phase1 neon lo
 | Edge | `v4.0.0-dev` | Current `master` development build |
 | Stable | `v3.10.9` | Current stable reference line |
 | Compatibility base | `v3.6.0` | Historical comparison base |
+| Base1 | `foundation` | Secure host design for Raspberry Pi and X200 targets |
 
 The package version is the booted Phase1 version. Boot, ready line, `/proc/version`, dashboard, audit boot record, `/home/readme.txt`, and shutdown dynamically reflect `CARGO_PKG_VERSION`.
 
@@ -61,6 +66,26 @@ security
 sysinfo
 roadmap
 ```
+
+## Base1 secure host foundation
+
+Base1 is designed as the real-hardware host layer below Phase1. It treats Phase1 as a contained workload and keeps host boot files, host packages, host secrets, recovery paths, and security policy outside Phase1 control.
+
+Start here:
+
+- [`base1/README.md`](base1/README.md) - Base1 overview.
+- [`base1/SECURITY_MODEL.md`](base1/SECURITY_MODEL.md) - threat model and security architecture.
+- [`base1/HARDWARE_TARGETS.md`](base1/HARDWARE_TARGETS.md) - Raspberry Pi and X200 target matrix.
+- [`base1/PHASE1_COMPATIBILITY.md`](base1/PHASE1_COMPATIBILITY.md) - Base1 and Phase1 compatibility contract.
+- [`base1/ROADMAP.md`](base1/ROADMAP.md) - staged Base1 roadmap.
+
+First safe checks:
+
+```bash
+sh scripts/base1-preflight.sh
+```
+
+The preflight checker is read-only. It reports readiness and warnings without changing the host.
 
 ## In-system wiki
 
@@ -107,6 +132,7 @@ Use `:help` inside `avim` for movement, edit, search, save, and quit commands.
 - Improve logical wrapping for narrow terminals.
 - Improve Linux color fallback for older systems such as ThinkPad X200 running Trisquel.
 - Improve Raspberry Pi 5 default OS text and color compatibility.
+- Build Base1 compatibility around secure Raspberry Pi and X200 host profiles.
 
 ## Run checks
 
@@ -128,7 +154,7 @@ cargo audit
 cargo deny check
 ```
 
-`cargo test --all-targets` includes unit tests plus scripted smoke tests for the main Phase1 shell and the guarded `phase1-storage` helper.
+`cargo test --all-targets` includes unit tests plus scripted smoke tests for the main Phase1 shell, the guarded `phase1-storage` helper, and the Base1 secure host foundation files.
 
 CI runs the same quality gate on pull requests, `master`, `main`, `release/**`, and manual dispatch. It also installs and runs RustSec advisory checks and dependency policy validation.
 
@@ -163,6 +189,8 @@ The public website/wiki roadmap lives in [`WIKI_ROADMAP.md`](WIKI_ROADMAP.md).
 Phase1 is an educational simulator. It should never need your GitHub password, personal access token, SSH private key, browser cookies, Apple ID, email password, or recovery codes.
 
 Host-backed commands are explicit and guarded. Runtime files such as `phase1.state`, `phase1.history`, and `phase1.log` are local operational artifacts.
+
+Base1 is a secure host foundation, not a destructive installer. Its first tooling is intentionally read-only and compatibility-focused. Base1 security claims should remain conservative until backed by repeatable builds, audits, and hardware validation.
 
 ## License
 

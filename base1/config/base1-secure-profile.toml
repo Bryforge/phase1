@@ -1,0 +1,83 @@
+# Base1 secure-default profile
+#
+# This is a declarative foundation profile, not an installer. Tools should read
+# this file to print plans, validate readiness, and generate target-specific
+# configs only after explicit operator approval.
+
+[base1]
+name = "base1"
+profile = "secure-default"
+phase1_contract = "0.1"
+status = "foundation"
+default_hardware_target = "generic"
+
+[targets.raspberry_pi]
+enabled = true
+arch_family = "arm"
+role = "dedicated-phase1-terminal-node"
+console_profile = "conservative-color"
+default_network = "deny-inbound"
+recommended_mode = "service-or-interactive"
+
+[targets.x200]
+enabled = true
+arch_family = "x86_64"
+role = "durable-offline-first-operator-console"
+console_profile = "legacy-terminal"
+default_network = "deny-inbound"
+recommended_mode = "interactive-or-service"
+
+[phase1]
+install_dir = "/opt/phase1"
+workspace_dir = "/var/lib/phase1/workspace"
+runtime_dir = "/run/phase1"
+host_log_dir = "/var/log/phase1-host"
+default_safe_mode = true
+default_allow_host_tools = false
+runtime_user = "phase1"
+runtime_group = "phase1"
+
+[security]
+treat_phase1_as_untrusted_workload = true
+require_explicit_maintenance_mode = true
+allow_passwordless_host_mutation = false
+allow_phase1_to_manage_boot = false
+allow_phase1_to_manage_packages = false
+allow_phase1_to_manage_firewall = false
+allow_phase1_to_read_host_secrets = false
+default_inbound_network = "deny"
+ssh_default = "disabled"
+logs_outside_phase1_workspace = true
+
+[filesystem]
+root_strategy = "minimal-host-first-rollback-later"
+phase1_workspace_separate_from_system = true
+protect_boot_paths = true
+protect_package_paths = true
+protect_service_paths = true
+protect_host_key_paths = true
+
+[observability]
+record_phase1_start_stop = true
+record_maintenance_mode = true
+record_host_mutation_plan = true
+record_network_profile_changes = true
+redact_secrets = true
+
+[preflight]
+mode = "read-only"
+check_architecture = true
+check_kernel = true
+check_memory = true
+check_disk_space = true
+check_phase1_user = true
+check_workspace_path = true
+check_inbound_network_hint = true
+check_required_tools = false
+
+[future]
+image_builder = "planned"
+rollback_layout = "planned"
+signed_phase1_release_flow = "planned"
+offline_update_media = "planned"
+integration_tests = "planned"
