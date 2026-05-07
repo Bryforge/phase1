@@ -1,13 +1,14 @@
 # Phase1 Terminal Roadmap
 
-Phase1 Terminal is the dedicated Linux/macOS launcher, profile, config, and future terminal experience for Phase1.
+Phase1 Terminal is the dedicated Linux/macOS launcher, profile, config, color, quality, and future terminal experience for Phase1.
 
-The implementation has moved beyond a basic launcher. Phase1 Terminal now installs `phase1-terminal`, applies safe defaults, discovers a Phase1 checkout or binary, launches Phase1 through the best available path, manages allowlisted config, provides profiles, exposes doctor JSON, supports dry-run install/uninstall, and adds Gina-aware launch shortcuts. This roadmap defines the remaining path from management layer to a more complete Phase1-native terminal experience.
+The implementation has moved beyond a basic launcher. Phase1 Terminal now installs `phase1-terminal`, applies safe defaults, discovers a Phase1 checkout or binary, launches Phase1 through the best available path, manages allowlisted config, provides profiles, detects color capabilities, previews palettes, exposes doctor JSON, supports dry-run install/uninstall, runs self-tests and benchmark smoke tests, and adds Gina-aware launch shortcuts. This roadmap defines the remaining path from management layer to a more complete Phase1-native terminal experience.
 
 ## Guiding principles
 
 - Keep Phase1 safe by default.
 - Preserve Linux and macOS support equally.
+- Make Phase1 beautiful where color is available and readable where mono output is preferred.
 - Do not enable host trust, host networking, or host mutation from the terminal launcher.
 - Prefer deterministic, testable shell scripts before larger native rewrites.
 - Make every installer reversible and inspectable.
@@ -32,12 +33,17 @@ Implemented in the current Phase1 Terminal PR:
 - `phase1-terminal version`.
 - Allowlisted `phase1-terminal config show|set|reset`.
 - Safe profiles through `phase1-terminal profile list|show|apply`.
+- Advanced color commands: `colors detect`, `colors swatches`, `theme list`, `theme preview`.
+- Phase1 color environment export: `PHASE1_THEME`, `PHASE1_COLOR_MODE`, `PHASE1_TERMINAL_DETECTED_COLOR_MODE`, `PHASE1_TERMINAL_BANNER`.
 - Session modes: `run`, `safe`, `dev`, `demo`, `base1`.
 - Gina/security shortcuts: `gina`, `security`.
 - Management helpers: `build`, `check`, `logs`.
+- Quality command: `selftest`.
+- Performance command: `benchmark`.
 - Installer dry-run mode.
 - Uninstaller dry-run mode.
 - CI validation through `scripts/test-phase1-terminal.sh`.
+- Test plan: `TERMINAL_TEST_CASES.md`.
 
 ## Phase 1 — Installer hardening
 
@@ -72,16 +78,20 @@ phase1-terminal doctor --json
 phase1-terminal env
 ```
 
-## Phase 2 — Profile and UX polish
+## Phase 2 — Profile, color, and UX polish
 
 Goal: make Phase1 Terminal feel like a dedicated Phase1 environment instead of a generic shell wrapper.
 
-Status: partially implemented.
+Status: mostly implemented.
 
 Implemented:
 
 - generated terminal title.
 - profile system.
+- color capability detection.
+- mono fallback with `NO_COLOR=1` or `PHASE1_COLOR_MODE=mono`.
+- theme previews and swatches.
+- color/theme environment export into Phase1.
 - config presets through profile application:
   - `cyber`
   - `matrix`
@@ -90,6 +100,8 @@ Implemented:
   - `safe`
   - `developer`
   - `base1`
+  - `ice`
+  - `crimson`
 - `phase1-terminal config show`.
 - `phase1-terminal config set KEY=VALUE` with safe allowlisted keys.
 - `phase1-terminal config reset`.
@@ -99,12 +111,15 @@ Remaining work:
 - Add Linux desktop icon once a stable icon asset is selected.
 - Add macOS profile import instructions with screenshots or text walkthrough.
 - Add shell completion files for bash/zsh/fish.
-- Add first-run banner that can be disabled.
+- Add first-run banner rendering inside the launcher.
 - Add profile-specific docs examples.
 
 Acceptance checks:
 
 ```bash
+phase1-terminal colors detect
+phase1-terminal theme preview all
+NO_COLOR=1 phase1-terminal theme preview all
 phase1-terminal config show
 phase1-terminal config set PHASE1_THEME=cyber
 phase1-terminal config reset
@@ -149,7 +164,35 @@ phase1-terminal check
 phase1-terminal logs
 ```
 
-## Phase 4 — Gina-aware terminal workflows
+## Phase 4 — Quality and performance layer
+
+Goal: make Phase1 Terminal self-checking and performance-aware.
+
+Status: partially implemented.
+
+Implemented:
+
+- `phase1-terminal selftest`.
+- `phase1-terminal benchmark [iterations]`.
+- CI validation for self-test and benchmark smoke.
+- `TERMINAL_TEST_CASES.md` quality/performance test plan.
+
+Remaining work:
+
+- Add machine-readable benchmark JSON.
+- Add startup-path timing for source, debug binary, release binary, and PATH binary modes.
+- Add temporary-prefix install/uninstall tests.
+- Add benchmark thresholds once real device baselines exist.
+
+Acceptance checks:
+
+```bash
+phase1-terminal selftest
+phase1-terminal benchmark 25
+sh scripts/test-phase1-terminal.sh
+```
+
+## Phase 5 — Gina-aware terminal workflows
 
 Goal: integrate Phase1 Terminal with Gina while preserving offline/sandboxed defaults.
 
@@ -179,7 +222,7 @@ phase1-terminal gina
 phase1-terminal security
 ```
 
-## Phase 5 — Packaging
+## Phase 6 — Packaging
 
 Goal: make Phase1 Terminal installable through common packaging flows without requiring users to manually copy scripts.
 
@@ -203,7 +246,7 @@ phase1-terminal doctor
 sh scripts/uninstall-phase1-terminal.sh --dry-run
 ```
 
-## Phase 6 — Native terminal application exploration
+## Phase 7 — Native terminal application exploration
 
 Goal: decide whether Phase1 needs a real terminal emulator or should remain a launcher/profile layer.
 
@@ -231,8 +274,12 @@ Every terminal change should include at least one of:
 - installer dry-run validation
 - uninstaller dry-run validation
 - doctor output validation
+- color detection validation
+- theme preview validation
 - config parser validation
 - profile validation
+- self-test validation
+- benchmark smoke validation
 - docs update
 - CI workflow coverage
 
@@ -246,9 +293,10 @@ Future validation commands:
 
 ```bash
 phase1-terminal doctor --json
-phase1-terminal config show
-phase1-terminal profile list
-sh scripts/uninstall-phase1-terminal.sh --dry-run
+phase1-terminal colors detect
+phase1-terminal theme preview all
+phase1-terminal selftest
+phase1-terminal benchmark 25
 ```
 
 ## Security requirements
@@ -272,9 +320,11 @@ Phase1 Terminal is successful when:
 - Linux and macOS users can install it with one command.
 - `phase1-terminal doctor` clearly diagnoses environment problems.
 - `phase1-terminal doctor --json` supports machine-readable checks.
+- Phase1 receives color/theme settings reliably.
+- theme previews are beautiful on color terminals and readable in mono fallback.
 - the launcher starts Phase1 consistently from source or binary installs.
 - safe profiles are easy to apply.
 - safe defaults are preserved.
 - Gina security guidance is discoverable.
 - uninstall/upgrade paths are documented and tested.
-- CI catches script, asset, and documentation regressions.
+- CI catches script, color, asset, and documentation regressions.
