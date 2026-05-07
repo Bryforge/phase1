@@ -52,10 +52,13 @@
   transform: translateY(1px) scale(0.99);
 }
 
-/* Founder-section cleanup: present one clear Founder profile label, not stacked role labels. */
-.profile-label,
-.founder-copy > .eyebrow {
+/* Founder-section cleanup: keep the real Founder profile label and prevent generated duplicates. */
+.profile-label {
   display: none !important;
+}
+
+.founder-copy > .eyebrow {
+  display: block !important;
 }
 
 .founder-copy h2 {
@@ -67,17 +70,8 @@
 }
 
 .founder-copy h2::before {
-  content: "Founder profile";
-  display: block;
-  margin: 0 0 12px;
-  color: var(--cyan);
-  font-family: var(--mono);
-  font-size: 0.78rem;
-  font-weight: 900;
-  letter-spacing: 0.18em;
-  line-height: 1.4;
-  text-transform: uppercase;
-  text-shadow: 0 0 18px rgba(35, 247, 255, 0.5);
+  content: none !important;
+  display: none !important;
 }
 
 /* Phase1 visual identity: the prompt cursor is intentionally blinking pink/magenta. */
