@@ -4,7 +4,7 @@ use std::path::{Path, PathBuf};
 use std::process;
 use std::time::{Duration, Instant};
 
-pub const VERSION: &str = "3.6.0";
+pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 const MAX_PROCESSES: usize = 64;
 const AUDIT_LIMIT: usize = 256;
 
@@ -630,7 +630,7 @@ impl Kernel {
             audit: AuditLog::new(),
             booted: Instant::now(),
         };
-        kernel.audit.record("kernel.boot version=3.6.0");
+        kernel.audit.record(format!("kernel.boot version={VERSION}"));
         kernel
     }
 
@@ -711,11 +711,57 @@ fn procfs(uptime: u64) -> VfsNode {
 
 fn homefs() -> VfsNode {
     let mut children = HashMap::new();
-    children.insert(
-        "readme.txt".to_string(),
-        file(format!("phase1 {}\nType help to begin.\n", VERSION), 0o644),
-    );
+    children.insert("readme.txt".to_string(), file(home_readme(), 0o644));
     dir(children, 0o777)
+}
+
+fn home_readme() -> String {
+    let bold = "\x1b[1m";
+    let reset = "\x1b[0m";
+    let cyan = "\x1b[36m";
+    let green = "\x1b[32m";
+    let yellow = "\x1b[33m";
+    let magenta = "\x1b[35m";
+    let dim = "\x1b[2m";
+
+    format!(
+        "{bold}{cyan}PHASE1 QUICK START{reset}\n\
+{dim}This /home/readme.txt reflects the Phase1 build currently booted: v{VERSION}.{reset}\n\n\
+{bold}{green}1. Explore the system{reset}\n\
+  help                  show the command map\n\
+  version --compare     compare the current build with stable\n\
+  roadmap               show completed feature tracks\n\
+  sysinfo               show the current virtual machine profile\n\
+  security              show SHIELD/TRUST HOST state\n\n\
+{bold}{green}2. Work with files{reset}\n\
+  ls /                  list virtual mounts\n\
+  pwd                   show current VFS path\n\
+  echo hello > note.txt write a file\n\
+  cat note.txt          read it back\n\
+  cat readme.txt        read this color quick start again\n\n\
+{bold}{green}3. Edit code with avim{reset}\n\
+  avim hello.py         open the modal VFS editor\n\
+  i                     INSERT mode\n\
+  Esc                   NORMAL mode\n\
+  :wq                   save and quit\n\n\
+{bold}{green}4. Enable Python and language runtimes{reset}\n\
+  Safe boot blocks host tools by default. To run Python/Rust/C/plugins:\n\
+  boot selector: press 4 to turn SHIELD off, press t to enable TRUST HOST, then press 1.\n\
+  host shell:    ./scripts/phase1-runtimes.sh\n\
+  examples:      py hello.py | lang support | lang run python hello.py\n\n\
+{bold}{green}5. Use pipelines and diagnostics{reset}\n\
+  history | tail -5\n\
+  ps | grep phase1\n\
+  audit\n\
+  opslog status\n\
+  opslog tail\n\n\
+{bold}{yellow}Persistence notes{reset}\n\
+  Press p in the boot selector to enable VAULT mode. /home files persist to phase1.state.\n\
+  Persistent history is sanitized before writing phase1.history. Do not store real secrets.\n\n\
+{bold}{magenta}Operator reminder{reset}\n\
+  SHIELD on = safest mode. TRUST HOST only allows local host tools after SHIELD is off.\n\
+  phase1://root ~ #\n"
+    )
 }
 
 fn etcfs() -> VfsNode {
@@ -741,7 +787,7 @@ fn varfs() -> VfsNode {
     let mut log = HashMap::new();
     log.insert(
         "boot.log".to_string(),
-        file("phase1 boot nominal\n".to_string(), 0o644),
+        file(format!("phase1 {VERSION} boot nominal\n"), 0o644),
     );
     let mut var = HashMap::new();
     var.insert("log".to_string(), dir(log, 0o755));
@@ -860,10 +906,20 @@ mod tests {
         kernel.sys_write("/home/a.txt", "hello", false).unwrap();
         let audit = kernel.audit.dump();
         assert!(audit.contains("sys.write"));
+        assert!(audit.contains(VERSION));
     }
 
     #[test]
     fn release_version_is_current() {
-        assert_eq!(VERSION, "3.6.0");
+        assert_eq!(VERSION, env!("CARGO_PKG_VERSION"));
+    }
+
+    #[test]
+    fn home_readme_tracks_current_version() {
+        let vfs = Vfs::new();
+        let readme = vfs.cat("/home/readme.txt").unwrap();
+        assert!(readme.contains(VERSION));
+        assert!(readme.contains("PHASE1 QUICK START"));
+        assert!(readme.contains("cat readme.txt"));
     }
 }
