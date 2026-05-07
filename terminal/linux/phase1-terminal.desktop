@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Phase1 Terminal
+Comment=Launch the Phase1 terminal-first computing environment
+Exec=phase1-terminal
+Terminal=true
+Categories=Development;System;TerminalEmulator;
+Keywords=phase1;terminal;rust;os;shell;
+StartupNotify=false
