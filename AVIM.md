@@ -2,13 +2,16 @@
 
 `avim` is Phase1's native advanced modal editor. It is Vim-inspired, but it is an original Phase1 implementation built for the simulator's virtual filesystem and safety model.
 
+The current edge build is designed to be easier on small machines and mobile terminals: it shows a visible pink cursor, uses color-coded modes, supports line and character-level editing, and exposes simple command completion help from inside the editor.
+
 ## Goals
 
 - Provide a capable terminal editor from inside Phase1.
 - Keep editing inside the Phase1 VFS.
-- Avoid the risky surfaces that full host editors expose by default.
+- Make basic fixes easy after a first draft, not only full-line replacement.
+- Avoid risky host-editor surfaces by default.
 - Make save/discard behavior explicit.
-- Support practical modal-editing workflows on mobile and desktop terminals.
+- Support practical editing on older laptops, mobile shells, and desktop terminals.
 
 ## Usage
 
@@ -20,34 +23,60 @@ edit <file>
 
 The `vim` and `edit` aliases intentionally route to `avim`.
 
+## Fast path
+
+```text
+avim hello.py
+i print('hello')       insert text at the cursor
+a  # comment           append text after the cursor
+e print('fixed')       replace the current line
+o print('next')        open a line below
+:wq                    save and quit
+```
+
+`Esc`, `escape`, `normal`, and `cancel` all return to Normal mode. This matters on hardware where the physical Escape key is unreliable or encoded differently.
+
 ## Normal mode
 
 ```text
-i       enter insert mode on the current line
-a       enter insert mode on the current line
-o       open a line below and enter insert mode
-O       open a line above and enter insert mode
-j       move down one line
-k       move up one line
-gg      move to first line
-G       move to last line
-dd      delete current line and yank it
-yy      yank current line
-p       paste yanked line below
-u       undo
-/text   search forward for text
-n       repeat search
-:       enter command mode
+i text          insert text at the visible pink cursor
+a text          append text after the visible pink cursor
+e text          replace the selected line
+o text          open a new line below
+O text          open a new line above
+h / left        move cursor left
+l / right       move cursor right
+0 / home        move to beginning of line
+$ / end         move to end of line
+w               move forward by word
+b               move backward by word
+j / down        move down one line
+k / up          move up one line
+pgup / pgdn     move by 10 lines
+gg              move to first line
+G               move to last line
+x               delete character under cursor
+backspace       delete character before cursor
+dd              delete current line and yank it
+yy              yank current line
+p               paste yanked line below
+u               undo
+/text           search forward for text
+n               repeat search
+Tab             show avim command completions
+:               enter command mode
 ```
 
 ## Insert mode
 
-In this terminal-first build, insert mode replaces the current line with each submitted line. A single `.` or `<esc>` returns to normal mode.
+Insert mode is intentionally simple. When you enter `i`, `a`, `e`, `o`, or `O` without text, `avim` waits for one submitted line and applies the pending action.
 
 ```text
-hello world
-.
+i
+print('hello, world')
 ```
+
+Use `Esc`, `escape`, `normal`, or `cancel` to cancel a pending edit and return to Normal mode.
 
 ## Command mode
 
@@ -61,9 +90,28 @@ hello world
 :security       show the editor safety model
 :set number     show line numbers
 :set nonumber   hide line numbers
+:12             jump to line 12
+:n 12           jump to line 12
+:search text    search forward
 :%s/old/new/g   substitute text across the buffer
-:r <file>       read another VFS file below the cursor
+:read <file>    read another VFS file below the cursor
 ```
+
+## Completion behavior
+
+- Shell-level Tab completes `avim` itself and common VFS file names before the editor opens.
+- Inside `avim`, pressing Tab or typing a command containing a tab prints matching editor commands.
+- Completion suggestions include editing, movement, save, search, read, set, and security commands.
+
+## Color model
+
+- Cyan: Normal mode and navigation status.
+- Pink/magenta: Insert/edit actions and the visible cursor.
+- Yellow: Command mode and warnings.
+- Red: invalid commands or blocked actions.
+- Green: successful writes.
+
+Set `NO_COLOR=1` or `PHASE1_NO_COLOR=1` to disable ANSI color output.
 
 ## Security model
 

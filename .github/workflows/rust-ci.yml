@@ -4,7 +4,10 @@ on:
   pull_request:
     branches: [master, main]
   push:
-    branches: ["release/**"]
+    branches:
+      - master
+      - main
+      - "release/**"
   workflow_dispatch:
 
 concurrency:
@@ -21,7 +24,7 @@ jobs:
 
       - name: Install stable Rust toolchain
         run: |
-          rustup toolchain install stable --profile minimal --component rustfmt clippy
+          rustup toolchain install stable --profile minimal --component rustfmt --component clippy
           rustup default stable
           rustc --version
           cargo --version
