@@ -76,8 +76,8 @@ fn website_mobile_fix_prevents_fragmented_headings_and_duplicate_creator_labels(
     assert_contains_all(
         &fix_css,
         &[
-            "Creator-section cleanup",
-            "Created by Chase Bryan",
+            "Founder-section cleanup",
+            "Founder profile",
             ".profile-label,",
             ".founder-copy > .eyebrow",
             "overflow-wrap: normal",
@@ -86,7 +86,15 @@ fn website_mobile_fix_prevents_fragmented_headings_and_duplicate_creator_labels(
             "Mobile readability",
         ],
     );
-    assert_not_contains_any(&fix_css, &["Builder profile", "builder profile"]);
+    assert_not_contains_any(
+        &fix_css,
+        &[
+            "Builder profile",
+            "builder profile",
+            "Created by Chase Bryan",
+            "Creator-section cleanup",
+        ],
+    );
 }
 
 #[test]
@@ -131,7 +139,7 @@ fn assert_not_contains_any(text: &str, needles: &[&str]) {
     for needle in needles {
         assert!(
             !text.contains(needle),
-            "unexpected external dependency {needle:?}"
+            "unexpected text or dependency {needle:?}"
         );
     }
 }
