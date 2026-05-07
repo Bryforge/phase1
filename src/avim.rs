@@ -1179,9 +1179,11 @@ mod tests {
     #[test]
     fn avim_cursor_render_has_visible_fallback() {
         std::env::set_var("NO_COLOR", "1");
+        std::env::set_var("PHASE1_NO_COLOR", "1");
         assert_eq!(render_line_with_cursor("abc", 1), "a|bc");
         assert_eq!(render_line_with_cursor("", 0), "|·");
         std::env::remove_var("NO_COLOR");
+        std::env::remove_var("PHASE1_NO_COLOR");
     }
 
     #[test]

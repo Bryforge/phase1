@@ -34,9 +34,7 @@ impl LinuxColorDepth {
             "16" | "ansi" | "ansi16" | "tty" | "console" | "linux" | "x200" | "trisquel" => {
                 Some(Self::Ansi16)
             }
-            "mono" | "off" | "none" | "dumb" | "serial" | "vt100" | "rpi-safe" => {
-                Some(Self::Mono)
-            }
+            "mono" | "off" | "none" | "dumb" | "serial" | "vt100" | "rpi-safe" => Some(Self::Mono),
             _ => None,
         }
     }
@@ -53,20 +51,20 @@ pub fn theme(shell: &mut Phase1Shell, args: &[String]) -> String {
     match args.first().map(String::as_str) {
         None | Some("status") | Some("show") => status(shell),
         Some("preview") | Some("swatch") | Some("swatches") => preview(detect()),
-        Some("apply") | Some("auto") | Some("on") => apply(shell, detect()),
-        Some("x200") | Some("trisquel") => apply(shell, LinuxColorDepth::Ansi16),
+        Some("apply") | Some("auto") | Some("on") => apply_with_pack(shell, "linux", detect()),
+        Some("x200") | Some("trisquel") => apply_with_pack(shell, "linux", LinuxColorDepth::Ansi16),
         Some("pi") | Some("raspi") | Some("raspberry-pi") | Some("raspberrypi") => {
-            apply(shell, raspberry_pi_default())
+            apply_with_pack(shell, "raspberry-pi", raspberry_pi_default())
         }
         Some("rpi5") | Some("pi5") | Some("raspberry-pi-5") | Some("safe-pi") => {
-            apply(shell, LinuxColorDepth::Mono)
+            apply_with_pack(shell, "raspberry-pi", LinuxColorDepth::Mono)
         }
         Some("off") | Some("reset") => {
             clear(shell);
             "theme linux: color pack disabled; existing palette remains active\n".to_string()
         }
         Some(raw) => match LinuxColorDepth::parse(raw) {
-            Some(depth) => apply(shell, depth),
+            Some(depth) => apply_with_pack(shell, "linux", depth),
             None => format!("theme linux: unknown option '{raw}'\nusage: theme linux [status|preview|apply|truecolor|256|ansi|mono|x200|raspberry-pi|rpi5|off]\n"),
         },
     }
@@ -107,12 +105,7 @@ pub fn status(shell: &Phase1Shell) -> String {
     )
 }
 
-fn apply(shell: &mut Phase1Shell, depth: LinuxColorDepth) -> String {
-    let pack_name = if rpi_compat_enabled() || platform_is_raspberry_pi() {
-        "raspberry-pi"
-    } else {
-        "linux"
-    };
+fn apply_with_pack(shell: &mut Phase1Shell, pack_name: &str, depth: LinuxColorDepth) -> String {
     std::env::set_var("PHASE1_COLOR_PACK", pack_name);
     std::env::set_var("PHASE1_COLOR_DEPTH", depth.name());
     shell
