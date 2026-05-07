@@ -2,7 +2,7 @@
 set -eu
 
 APP_NAME="Phase1 Terminal"
-VERSION="0.2.0"
+VERSION="0.3.0"
 CONFIG_FILE="${PHASE1_TERMINAL_CONFIG:-${XDG_CONFIG_HOME:-$HOME/.config}/phase1/terminal.env}"
 CONFIG_DIR=$(dirname "$CONFIG_FILE")
 
@@ -19,6 +19,12 @@ fi
 : "${PHASE1_ASCII:=0}"
 : "${PHASE1_TERMINAL_PROFILE:=default}"
 : "${PHASE1_TERMINAL_HINTS:=1}"
+: "${PHASE1_COLOR_MODE:=auto}"
+: "${PHASE1_TERMINAL_BANNER:=1}"
+: "${PHASE1_TERMINAL_PERF_BUDGET_MS:=500}"
+
+ESC=$(printf '\033')
+RESET="${ESC}[0m"
 
 print_help() {
     cat <<'EOF'
@@ -26,20 +32,18 @@ Phase1 Terminal
 
 Usage:
   phase1-terminal [run] [phase1 args...]
-  phase1-terminal safe
-  phase1-terminal dev
-  phase1-terminal demo
-  phase1-terminal base1
-  phase1-terminal gina
-  phase1-terminal security
-  phase1-terminal build
-  phase1-terminal check
-  phase1-terminal logs
+  phase1-terminal safe | dev | demo | base1
+  phase1-terminal gina | security
+  phase1-terminal build | check | logs
   phase1-terminal doctor [--verbose|--json]
+  phase1-terminal colors [detect|swatches]
+  phase1-terminal theme [list|preview NAME|preview all]
   phase1-terminal config show
   phase1-terminal config set KEY=VALUE
   phase1-terminal config reset
   phase1-terminal profile [list|show|apply NAME]
+  phase1-terminal selftest
+  phase1-terminal benchmark [iterations]
   phase1-terminal env
   phase1-terminal version
   phase1-terminal help
@@ -48,6 +52,7 @@ Environment:
   PHASE1_HOME              Path to the Phase1 repository or install root.
   PHASE1_TERMINAL_CONFIG   Optional config file path.
   PHASE1_THEME             Default terminal theme passed to Phase1.
+  PHASE1_COLOR_MODE        auto, truecolor, 256, ansi, or mono.
   PHASE1_SAFE_MODE         Defaults to 1.
   PHASE1_DEVICE_MODE       Defaults to desktop.
 
@@ -70,6 +75,164 @@ write_title() {
 
 json_escape() {
     printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'
+}
+
+terminal_color_count() {
+    if command -v tput >/dev/null 2>&1; then
+        tput colors 2>/dev/null || printf '0\n'
+    else
+        printf '0\n'
+    fi
+}
+
+detect_color_mode() {
+    if [ "${NO_COLOR:-}" != "" ]; then
+        echo "mono"
+        return 0
+    fi
+
+    case "$PHASE1_COLOR_MODE" in
+        truecolor|24bit) echo "truecolor" ;;
+        256|256color) echo "256" ;;
+        ansi|8|16) echo "ansi" ;;
+        mono|none|off|0) echo "mono" ;;
+        auto|"")
+            case "${COLORTERM:-}" in
+                *truecolor*|*24bit*) echo "truecolor"; return 0 ;;
+            esac
+            colors=$(terminal_color_count)
+            case "$colors" in
+                ''|*[!0-9]*) colors=0 ;;
+            esac
+            if [ "$colors" -ge 256 ]; then
+                echo "256"
+            elif [ "$colors" -ge 8 ]; then
+                echo "ansi"
+            else
+                case "${TERM:-}" in
+                    xterm*|screen*|tmux*|vt100*|ansi*) echo "ansi" ;;
+                    *) echo "mono" ;;
+                esac
+            fi
+            ;;
+        *) echo "auto" ;;
+    esac
+}
+
+color_enabled() {
+    mode=$(detect_color_mode)
+    [ "$mode" != "mono" ]
+}
+
+fg256() {
+    if color_enabled; then
+        printf '%s' "${ESC}[38;5;$1m"
+    fi
+}
+
+bg256() {
+    if color_enabled; then
+        printf '%s' "${ESC}[48;5;$1m"
+    fi
+}
+
+bold() {
+    if color_enabled; then
+        printf '%s' "${ESC}[1m"
+    fi
+}
+
+reset_color() {
+    if color_enabled; then
+        printf '%s' "$RESET"
+    fi
+}
+
+theme_codes() {
+    case "$1" in
+        matrix) echo "46 82 40 118" ;;
+        amber|base1) echo "214 220 178 94" ;;
+        mono|safe) echo "250 245 240 238" ;;
+        ice) echo "81 117 159 195" ;;
+        synthwave|developer) echo "201 99 45 213" ;;
+        crimson) echo "196 160 88 52" ;;
+        cyber|default|*) echo "51 45 201 118" ;;
+    esac
+}
+
+theme_list() {
+    cat <<'EOF'
+themes:
+  cyber
+  matrix
+  amber
+  mono
+  safe
+  developer
+  base1
+  ice
+  synthwave
+  crimson
+EOF
+}
+
+print_swatch() {
+    theme="$1"
+    set -- $(theme_codes "$theme")
+    a="$1"; b="$2"; c="$3"; d="$4"
+    printf '%-10s ' "$theme"
+    if color_enabled; then
+        bg256 "$a"; printf '  '; reset_color
+        bg256 "$b"; printf '  '; reset_color
+        bg256 "$c"; printf '  '; reset_color
+        bg256 "$d"; printf '  '; reset_color
+        printf ' '
+        fg256 "$a"; printf 'Phase'; reset_color
+        fg256 "$b"; printf '1 '; reset_color
+        fg256 "$c"; printf 'Terminal'; reset_color
+    else
+        printf '[%s %s %s %s] Phase1 Terminal' "$a" "$b" "$c" "$d"
+    fi
+    printf '\n'
+}
+
+theme_preview() {
+    target="${1:-$PHASE1_THEME}"
+    if [ "$target" = "all" ]; then
+        for theme in cyber matrix amber mono safe developer base1 ice synthwave crimson; do
+            print_swatch "$theme"
+        done
+        return 0
+    fi
+    print_swatch "$target"
+    printf 'theme       : %s\n' "$target"
+    printf 'color mode  : %s\n' "$(detect_color_mode)"
+    printf 'phase1 env  : PHASE1_THEME=%s PHASE1_COLOR_MODE=%s\n' "$target" "$(detect_color_mode)"
+}
+
+colors_cmd() {
+    sub="${1:-detect}"
+    case "$sub" in
+        detect)
+            cat <<EOF
+Phase1 Terminal color detection
+configured : $PHASE1_COLOR_MODE
+detected   : $(detect_color_mode)
+TERM       : ${TERM:-}
+COLORTERM  : ${COLORTERM:-}
+NO_COLOR   : ${NO_COLOR:-}
+tput colors: $(terminal_color_count)
+theme      : $PHASE1_THEME
+EOF
+            ;;
+        swatches|preview)
+            theme_preview all
+            ;;
+        *)
+            echo "usage: phase1-terminal colors [detect|swatches]" >&2
+            exit 1
+            ;;
+    esac
 }
 
 find_phase1_home() {
@@ -127,11 +290,15 @@ PHASE1_TERMINAL_CONFIG=$CONFIG_FILE
 PHASE1_TERMINAL_PROFILE=$PHASE1_TERMINAL_PROFILE
 PHASE1_HOME=${PHASE1_HOME:-}
 PHASE1_THEME=$PHASE1_THEME
+PHASE1_COLOR_MODE=$PHASE1_COLOR_MODE
+PHASE1_DETECTED_COLOR_MODE=$(detect_color_mode)
+PHASE1_TERMINAL_BANNER=$PHASE1_TERMINAL_BANNER
 PHASE1_SAFE_MODE=$PHASE1_SAFE_MODE
 PHASE1_MOBILE_MODE=$PHASE1_MOBILE_MODE
 PHASE1_DEVICE_MODE=$PHASE1_DEVICE_MODE
 PHASE1_ASCII=$PHASE1_ASCII
 PHASE1_TERMINAL_HINTS=$PHASE1_TERMINAL_HINTS
+PHASE1_TERMINAL_PERF_BUDGET_MS=$PHASE1_TERMINAL_PERF_BUDGET_MS
 EOF
 }
 
@@ -147,11 +314,14 @@ PHASE1_HOME="${PHASE1_HOME:-}"
 PHASE1_TERMINAL_TITLE="$PHASE1_TERMINAL_TITLE"
 PHASE1_TERMINAL_PROFILE="$PHASE1_TERMINAL_PROFILE"
 PHASE1_THEME="$PHASE1_THEME"
+PHASE1_COLOR_MODE="$PHASE1_COLOR_MODE"
+PHASE1_TERMINAL_BANNER="$PHASE1_TERMINAL_BANNER"
 PHASE1_SAFE_MODE="$PHASE1_SAFE_MODE"
 PHASE1_MOBILE_MODE="$PHASE1_MOBILE_MODE"
 PHASE1_DEVICE_MODE="$PHASE1_DEVICE_MODE"
 PHASE1_ASCII="$PHASE1_ASCII"
 PHASE1_TERMINAL_HINTS="$PHASE1_TERMINAL_HINTS"
+PHASE1_TERMINAL_PERF_BUDGET_MS="$PHASE1_TERMINAL_PERF_BUDGET_MS"
 EOF
 }
 
@@ -167,7 +337,7 @@ config_show() {
 config_set() {
     pair="${1:-}"
     case "$pair" in
-        PHASE1_HOME=*|PHASE1_TERMINAL_TITLE=*|PHASE1_TERMINAL_PROFILE=*|PHASE1_THEME=*|PHASE1_SAFE_MODE=*|PHASE1_MOBILE_MODE=*|PHASE1_DEVICE_MODE=*|PHASE1_ASCII=*|PHASE1_TERMINAL_HINTS=*)
+        PHASE1_HOME=*|PHASE1_TERMINAL_TITLE=*|PHASE1_TERMINAL_PROFILE=*|PHASE1_THEME=*|PHASE1_COLOR_MODE=*|PHASE1_TERMINAL_BANNER=*|PHASE1_SAFE_MODE=*|PHASE1_MOBILE_MODE=*|PHASE1_DEVICE_MODE=*|PHASE1_ASCII=*|PHASE1_TERMINAL_HINTS=*|PHASE1_TERMINAL_PERF_BUDGET_MS=*)
             key=${pair%%=*}
             value=${pair#*=}
             case "$key" in
@@ -175,11 +345,14 @@ config_set() {
                 PHASE1_TERMINAL_TITLE) PHASE1_TERMINAL_TITLE=$value ;;
                 PHASE1_TERMINAL_PROFILE) PHASE1_TERMINAL_PROFILE=$value ;;
                 PHASE1_THEME) PHASE1_THEME=$value ;;
+                PHASE1_COLOR_MODE) PHASE1_COLOR_MODE=$value ;;
+                PHASE1_TERMINAL_BANNER) PHASE1_TERMINAL_BANNER=$value ;;
                 PHASE1_SAFE_MODE) PHASE1_SAFE_MODE=$value ;;
                 PHASE1_MOBILE_MODE) PHASE1_MOBILE_MODE=$value ;;
                 PHASE1_DEVICE_MODE) PHASE1_DEVICE_MODE=$value ;;
                 PHASE1_ASCII) PHASE1_ASCII=$value ;;
                 PHASE1_TERMINAL_HINTS) PHASE1_TERMINAL_HINTS=$value ;;
+                PHASE1_TERMINAL_PERF_BUDGET_MS) PHASE1_TERMINAL_PERF_BUDGET_MS=$value ;;
             esac
             write_config
             echo "config: set $key"
@@ -190,8 +363,9 @@ config_set() {
             ;;
         *)
             echo "config: unsupported key. Allowed keys:" >&2
-            echo "  PHASE1_HOME PHASE1_TERMINAL_TITLE PHASE1_TERMINAL_PROFILE PHASE1_THEME" >&2
-            echo "  PHASE1_SAFE_MODE PHASE1_MOBILE_MODE PHASE1_DEVICE_MODE PHASE1_ASCII PHASE1_TERMINAL_HINTS" >&2
+            echo "  PHASE1_HOME PHASE1_TERMINAL_TITLE PHASE1_TERMINAL_PROFILE PHASE1_THEME PHASE1_COLOR_MODE" >&2
+            echo "  PHASE1_TERMINAL_BANNER PHASE1_SAFE_MODE PHASE1_MOBILE_MODE PHASE1_DEVICE_MODE" >&2
+            echo "  PHASE1_ASCII PHASE1_TERMINAL_HINTS PHASE1_TERMINAL_PERF_BUDGET_MS" >&2
             exit 1
             ;;
     esac
@@ -201,11 +375,14 @@ config_reset() {
     PHASE1_TERMINAL_TITLE="$APP_NAME"
     PHASE1_TERMINAL_PROFILE="default"
     PHASE1_THEME="cyber"
+    PHASE1_COLOR_MODE="auto"
+    PHASE1_TERMINAL_BANNER="1"
     PHASE1_SAFE_MODE="1"
     PHASE1_MOBILE_MODE="0"
     PHASE1_DEVICE_MODE="desktop"
     PHASE1_ASCII="0"
     PHASE1_TERMINAL_HINTS="1"
+    PHASE1_TERMINAL_PERF_BUDGET_MS="500"
     write_config
     echo "config: reset $CONFIG_FILE"
 }
@@ -213,14 +390,16 @@ config_reset() {
 profile_list() {
     cat <<'EOF'
 profiles:
-  default    cyber theme, safe desktop defaults
+  default    cyber theme, auto color, safe desktop defaults
   cyber      neon/cyber Phase1 defaults
-  matrix     matrix theme with safe desktop defaults
-  amber      amber theme with safe desktop defaults
+  matrix     matrix green console palette
+  amber      warm amber hardware-console palette
   mono       ASCII/mono-friendly safe profile
   safe       conservative safe-mode profile
-  developer  developer-friendly theme, still safe by default
+  developer  synthwave developer-friendly safe profile
   base1      Base1-focused safe profile
+  ice        cool blue high-contrast palette
+  crimson    red defensive/security palette
 EOF
 }
 
@@ -228,19 +407,23 @@ apply_profile_vars() {
     name="$1"
     case "$name" in
         default|cyber)
-            PHASE1_TERMINAL_PROFILE="$name"; PHASE1_THEME="cyber"; PHASE1_SAFE_MODE="1"; PHASE1_ASCII="0"; PHASE1_DEVICE_MODE="desktop" ;;
+            PHASE1_TERMINAL_PROFILE="$name"; PHASE1_THEME="cyber"; PHASE1_COLOR_MODE="auto"; PHASE1_SAFE_MODE="1"; PHASE1_ASCII="0"; PHASE1_DEVICE_MODE="desktop" ;;
         matrix)
-            PHASE1_TERMINAL_PROFILE="matrix"; PHASE1_THEME="matrix"; PHASE1_SAFE_MODE="1"; PHASE1_ASCII="0"; PHASE1_DEVICE_MODE="desktop" ;;
+            PHASE1_TERMINAL_PROFILE="matrix"; PHASE1_THEME="matrix"; PHASE1_COLOR_MODE="auto"; PHASE1_SAFE_MODE="1"; PHASE1_ASCII="0"; PHASE1_DEVICE_MODE="desktop" ;;
         amber)
-            PHASE1_TERMINAL_PROFILE="amber"; PHASE1_THEME="amber"; PHASE1_SAFE_MODE="1"; PHASE1_ASCII="0"; PHASE1_DEVICE_MODE="desktop" ;;
+            PHASE1_TERMINAL_PROFILE="amber"; PHASE1_THEME="amber"; PHASE1_COLOR_MODE="auto"; PHASE1_SAFE_MODE="1"; PHASE1_ASCII="0"; PHASE1_DEVICE_MODE="desktop" ;;
         mono)
-            PHASE1_TERMINAL_PROFILE="mono"; PHASE1_THEME="mono"; PHASE1_SAFE_MODE="1"; PHASE1_ASCII="1"; PHASE1_DEVICE_MODE="desktop" ;;
+            PHASE1_TERMINAL_PROFILE="mono"; PHASE1_THEME="mono"; PHASE1_COLOR_MODE="mono"; PHASE1_SAFE_MODE="1"; PHASE1_ASCII="1"; PHASE1_DEVICE_MODE="desktop" ;;
         safe)
-            PHASE1_TERMINAL_PROFILE="safe"; PHASE1_THEME="cyber"; PHASE1_SAFE_MODE="1"; PHASE1_ASCII="0"; PHASE1_DEVICE_MODE="desktop" ;;
+            PHASE1_TERMINAL_PROFILE="safe"; PHASE1_THEME="cyber"; PHASE1_COLOR_MODE="auto"; PHASE1_SAFE_MODE="1"; PHASE1_ASCII="0"; PHASE1_DEVICE_MODE="desktop" ;;
         developer|dev)
-            PHASE1_TERMINAL_PROFILE="developer"; PHASE1_THEME="synthwave"; PHASE1_SAFE_MODE="1"; PHASE1_ASCII="0"; PHASE1_DEVICE_MODE="desktop" ;;
+            PHASE1_TERMINAL_PROFILE="developer"; PHASE1_THEME="synthwave"; PHASE1_COLOR_MODE="auto"; PHASE1_SAFE_MODE="1"; PHASE1_ASCII="0"; PHASE1_DEVICE_MODE="desktop" ;;
         base1)
-            PHASE1_TERMINAL_PROFILE="base1"; PHASE1_THEME="amber"; PHASE1_SAFE_MODE="1"; PHASE1_ASCII="0"; PHASE1_DEVICE_MODE="base1" ;;
+            PHASE1_TERMINAL_PROFILE="base1"; PHASE1_THEME="amber"; PHASE1_COLOR_MODE="auto"; PHASE1_SAFE_MODE="1"; PHASE1_ASCII="0"; PHASE1_DEVICE_MODE="base1" ;;
+        ice)
+            PHASE1_TERMINAL_PROFILE="ice"; PHASE1_THEME="ice"; PHASE1_COLOR_MODE="auto"; PHASE1_SAFE_MODE="1"; PHASE1_ASCII="0"; PHASE1_DEVICE_MODE="desktop" ;;
+        crimson)
+            PHASE1_TERMINAL_PROFILE="crimson"; PHASE1_THEME="crimson"; PHASE1_COLOR_MODE="auto"; PHASE1_SAFE_MODE="1"; PHASE1_ASCII="0"; PHASE1_DEVICE_MODE="desktop" ;;
         *)
             echo "profile: unknown profile '$name'" >&2
             profile_list >&2
@@ -273,6 +456,8 @@ doctor_text() {
     echo "system : $(uname -s 2>/dev/null || echo unknown)"
     echo "config : $CONFIG_FILE"
     echo "profile: $PHASE1_TERMINAL_PROFILE"
+    echo "theme  : $PHASE1_THEME"
+    echo "color  : $(detect_color_mode)"
 
     if phase1_home=$(find_phase1_home); then
         echo "home   : $phase1_home"
@@ -300,10 +485,13 @@ doctor_text() {
     fi
 
     if [ "$verbose" = "1" ]; then
-        echo "theme  : $PHASE1_THEME"
+        echo "term   : ${TERM:-}"
+        echo "colort : ${COLORTERM:-}"
+        echo "tput   : $(terminal_color_count)"
         echo "safe   : $PHASE1_SAFE_MODE"
         echo "device : $PHASE1_DEVICE_MODE"
         echo "ascii  : $PHASE1_ASCII"
+        echo "banner : $PHASE1_TERMINAL_BANNER"
         echo "hints  : $PHASE1_TERMINAL_HINTS"
         if phase1_home=$(find_phase1_home); then
             if [ -f "$phase1_home/plugins/gina.wasm" ] || [ -f "$phase1_home/plugins/gina.wasi" ]; then
@@ -328,6 +516,11 @@ doctor_json() {
     printf '  "version": "%s",\n' "$(json_escape "$VERSION")"
     printf '  "config": "%s",\n' "$(json_escape "$CONFIG_FILE")"
     printf '  "profile": "%s",\n' "$(json_escape "$PHASE1_TERMINAL_PROFILE")"
+    printf '  "theme": "%s",\n' "$(json_escape "$PHASE1_THEME")"
+    printf '  "configured_color_mode": "%s",\n' "$(json_escape "$PHASE1_COLOR_MODE")"
+    printf '  "detected_color_mode": "%s",\n' "$(json_escape "$(detect_color_mode)")"
+    printf '  "term": "%s",\n' "$(json_escape "${TERM:-}")"
+    printf '  "colorterm": "%s",\n' "$(json_escape "${COLORTERM:-}")"
     printf '  "home": "%s",\n' "$(json_escape "$home")"
     printf '  "binary": "%s",\n' "$(json_escape "$binary")"
     printf '  "cargo": "%s",\n' "$(json_escape "$cargo")"
@@ -343,6 +536,70 @@ doctor() {
         --verbose|-v|verbose) doctor_text 1 ;;
         *) doctor_text 0 ;;
     esac
+}
+
+now_s() {
+    date +%s 2>/dev/null || echo 0
+}
+
+selftest() {
+    failures=0
+    echo "Phase1 Terminal selftest"
+    for profile in cyber matrix amber mono safe developer base1 ice crimson; do
+        apply_profile_vars "$profile"
+        if [ "$PHASE1_TERMINAL_PROFILE" = "" ]; then
+            echo "fail: profile $profile"
+            failures=$((failures + 1))
+        fi
+    done
+    mode=$(detect_color_mode)
+    case "$mode" in
+        truecolor|256|ansi|mono|auto) echo "ok: color detection -> $mode" ;;
+        *) echo "fail: color detection -> $mode"; failures=$((failures + 1)) ;;
+    esac
+    if doctor_json | grep '"detected_color_mode"' >/dev/null 2>&1; then
+        echo "ok: doctor json includes color"
+    else
+        echo "fail: doctor json color"
+        failures=$((failures + 1))
+    fi
+    if theme_preview cyber >/dev/null 2>&1; then
+        echo "ok: theme preview"
+    else
+        echo "fail: theme preview"
+        failures=$((failures + 1))
+    fi
+    if [ "$failures" -eq 0 ]; then
+        echo "selftest: passed"
+        return 0
+    fi
+    echo "selftest: failed ($failures)"
+    return 1
+}
+
+benchmark() {
+    iterations="${1:-25}"
+    case "$iterations" in
+        ''|*[!0-9]*) iterations=25 ;;
+    esac
+    if [ "$iterations" -lt 1 ]; then
+        iterations=1
+    fi
+    start=$(now_s)
+    i=0
+    while [ "$i" -lt "$iterations" ]; do
+        detect_color_mode >/dev/null
+        doctor_json >/dev/null
+        theme_preview cyber >/dev/null
+        i=$((i + 1))
+    done
+    end=$(now_s)
+    elapsed=$((end - start))
+    echo "Phase1 Terminal benchmark"
+    echo "iterations: $iterations"
+    echo "elapsed_s : $elapsed"
+    echo "budget_ms : $PHASE1_TERMINAL_PERF_BUDGET_MS"
+    echo "status    : completed"
 }
 
 phase1_run_command() {
@@ -378,7 +635,10 @@ phase1_run_command() {
 
 run_phase1() {
     write_title
-    export PHASE1_THEME PHASE1_SAFE_MODE PHASE1_MOBILE_MODE PHASE1_DEVICE_MODE PHASE1_ASCII
+    detected_color=$(detect_color_mode)
+    export PHASE1_THEME PHASE1_COLOR_MODE PHASE1_TERMINAL_BANNER
+    export PHASE1_TERMINAL_DETECTED_COLOR_MODE="$detected_color"
+    export PHASE1_SAFE_MODE PHASE1_MOBILE_MODE PHASE1_DEVICE_MODE PHASE1_ASCII
     phase1_run_command "$@"
 }
 
@@ -485,6 +745,25 @@ case "$command_name" in
     doctor)
         shift || true
         doctor "${1:-}"
+        ;;
+    colors|color)
+        shift || true
+        colors_cmd "${1:-detect}"
+        ;;
+    theme)
+        shift || true
+        case "${1:-list}" in
+            list) theme_list ;;
+            preview) shift || true; theme_preview "${1:-$PHASE1_THEME}" ;;
+            *) echo "usage: phase1-terminal theme [list|preview NAME|preview all]" >&2; exit 1 ;;
+        esac
+        ;;
+    selftest)
+        selftest
+        ;;
+    benchmark|bench|perf)
+        shift || true
+        benchmark "${1:-25}"
         ;;
     env)
         print_env
