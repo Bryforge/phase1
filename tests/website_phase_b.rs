@@ -71,6 +71,25 @@ fn styles_cover_terminal_roadmap_mobile_and_reveal_states() {
 }
 
 #[test]
+fn website_mobile_fix_prevents_fragmented_headings_and_duplicate_creator_labels() {
+    let fix_css = read("button-fix.css");
+    assert_contains_all(
+        &fix_css,
+        &[
+            "Creator-section cleanup",
+            "Created by Chase Bryan",
+            ".profile-label,",
+            ".founder-copy > .eyebrow",
+            "overflow-wrap: normal",
+            "word-break: normal",
+            "text-wrap: balance",
+            "Mobile readability",
+        ],
+    );
+    assert_not_contains_any(&fix_css, &["Builder profile", "builder profile"]);
+}
+
+#[test]
 fn site_js_implements_canvas_terminal_and_progressive_enhancement() {
     let js = read("site.js");
     assert_contains_all(
