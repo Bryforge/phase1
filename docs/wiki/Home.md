@@ -25,6 +25,7 @@ Welcome to the Phase1 manual. This wiki source reflects the current edge build a
 8. [Updates, Releases, and Validation](08-Updates-Releases-and-Validation.md)
 9. [Troubleshooting](09-Troubleshooting.md)
 10. [Publish to GitHub Wiki](10-Publish-to-GitHub-Wiki.md)
+11. [Tutorials](11-Tutorials.md)
 
 ## What Phase1 is
 
@@ -61,6 +62,16 @@ Phase1 is a terminal-first virtual OS and advanced operator console written in R
 | Run browser reader | `browser example.com` |
 | Show language support | `lang support` |
 | Show update protocol | `update protocol` |
+
+## Tutorial paths
+
+| Path | Best first page |
+| --- | --- |
+| New user | [Quick Start](01-Quick-Start.md) |
+| Operator commands | [Command Manual](04-Command-Manual.md) |
+| Python/Rust/C | [Language Runtimes](07-Language-Runtimes.md) |
+| Browser/network | [Browser and Networking](06-Browser-and-Networking.md) |
+| Full guided labs | [Tutorials](11-Tutorials.md) |
 
 ## Manual maintenance rule
 
