@@ -38,9 +38,17 @@ fn homepage_preserves_project_identity_and_metadata() {
 }
 
 #[test]
-fn homepage_keeps_static_offline_friendly_dependency_posture() {
+fn homepage_keeps_static_offline_friendly_dependency_posture_and_cache_busts_assets() {
     let html = read("index.html");
-    assert_contains_all(&html, &["./styles.css", "./site.js", "./button-fix.css"]);
+    assert_contains_all(
+        &html,
+        &[
+            "./styles.css?v=4.0.0-stable-2",
+            "./button-fix.css?v=4.0.0-founder-profile-2",
+            "./button-fix.js?v=4.0.0-stable-2",
+            "./site.js?v=4.0.0-stable-2",
+        ],
+    );
     assert_not_contains_any(
         &html,
         &[
@@ -77,9 +85,11 @@ fn website_mobile_fix_prevents_fragmented_headings_and_duplicate_creator_labels(
         &fix_css,
         &[
             "Founder-section cleanup",
-            "Founder profile",
-            ".profile-label,",
+            "keep the real Founder profile label",
+            ".profile-label",
             ".founder-copy > .eyebrow",
+            "content: none !important",
+            "display: none !important",
             "overflow-wrap: normal",
             "word-break: normal",
             "text-wrap: balance",
@@ -93,6 +103,7 @@ fn website_mobile_fix_prevents_fragmented_headings_and_duplicate_creator_labels(
             "builder profile",
             "Created by Chase Bryan",
             "Creator-section cleanup",
+            "content: \"Founder profile\"",
         ],
     );
 }
