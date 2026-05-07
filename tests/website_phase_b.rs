@@ -62,6 +62,22 @@ fn homepage_keeps_static_offline_friendly_dependency_posture_and_cache_busts_ass
 }
 
 #[test]
+fn homepage_has_inline_founder_profile_guard() {
+    let html = read("index.html");
+    assert_contains_all(
+        &html,
+        &[
+            "founder-profile-inline-guard",
+            "#founder .profile-label",
+            "#founder .founder-copy > .eyebrow",
+            "#founder .founder-copy h2::before",
+            "content: none !important",
+            "display: none !important",
+        ],
+    );
+}
+
+#[test]
 fn styles_cover_terminal_roadmap_mobile_and_reveal_states() {
     let css = read("styles.css");
     assert_contains_all(
