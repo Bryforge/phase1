@@ -174,13 +174,13 @@ const demoResponses = {
   help: [
     "available demo commands:",
     "  help        show command list",
-    "  version     show Phase1 version track",
+    "  version     show phase1 version track",
     "  sysinfo     inspect simulated system profile",
     "  wiki-quick  open the quick operator guide",
     "  security    show safe-mode posture",
   ].join("\n"),
   version: [
-    "Phase1 // Advanced Operator Kernel",
+    "phase1 // advanced operator kernel",
     "edge: v4.0.0-dev",
     "stable: v3.10.9",
     "compatibility base: v3.6.0",
@@ -238,7 +238,7 @@ function setupTerminalDemo() {
   };
 
   print([
-    "Phase1 browser console demo",
+    "phase1 browser console demo",
     "safe mode: on // host tools: guarded",
     "type help, version, sysinfo, wiki-quick, security, or clear",
   ].join("\n"));
