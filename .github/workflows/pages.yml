@@ -8,7 +8,9 @@ on:
     paths:
       - "index.html"
       - "styles.css"
+      - "button-fix.css"
       - "site.js"
+      - "button-fix.js"
       - "WIKI_ROADMAP.md"
       - "assets/**"
       - ".nojekyll"
@@ -38,7 +40,7 @@ jobs:
         run: |
           rm -rf _site
           mkdir -p _site/assets
-          cp index.html styles.css site.js WIKI_ROADMAP.md .nojekyll _site/
+          cp index.html styles.css button-fix.css site.js button-fix.js WIKI_ROADMAP.md .nojekyll _site/
           cp assets/phase1-banner.svg _site/assets/phase1-banner.svg
 
       - name: Configure Pages
