@@ -51,3 +51,20 @@
 .roadmap-link:active {
   transform: translateY(1px) scale(0.99);
 }
+
+/* Founder-card cleanup: the page should present one clear Founder Profile label, not duplicate role labels. */
+.profile-label {
+  display: none !important;
+}
+
+/* Phase1 visual identity: the prompt cursor is intentionally blinking pink/magenta. */
+.terminal-chip .cursor,
+.cursor {
+  background: #ff3df2 !important;
+  box-shadow: 0 0 18px #ff3df2, 0 0 34px rgba(255, 61, 242, 0.72) !important;
+  animation: blink 0.9s steps(2, start) infinite !important;
+}
+
+.founder-copy > .eyebrow::after {
+  content: "";
+}
