@@ -10,6 +10,8 @@ phase1-terminal
 
 A shorter `terminal` alias can also be installed when safe.
 
+Roadmap: [`TERMINAL_ROADMAP.md`](TERMINAL_ROADMAP.md).
+
 ## Name
 
 The project name is **Phase1 Terminal**. The command is `phase1-terminal` because `terminal` can conflict with existing system tools, shell aliases, or user scripts. The installer can create `terminal` as an alias only when requested or when no existing command is found.
@@ -154,6 +156,12 @@ If no built binary exists, Phase1 Terminal falls back to:
 ```bash
 cargo run --
 ```
+
+## Roadmap
+
+The terminal roadmap covers installer hardening, profile UX, session management, Gina-aware workflows, packaging, and future native terminal exploration.
+
+Read: [`TERMINAL_ROADMAP.md`](TERMINAL_ROADMAP.md).
 
 ## Safety
 
