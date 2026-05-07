@@ -1,0 +1,65 @@
+# Phase1 on Base1 hardened service template
+#
+# Copy or generate this unit only after Base1 preflight and operator review.
+# It assumes Phase1 is installed at /opt/phase1/phase1 and runs as the
+# dedicated phase1 user with state under /var/lib/phase1.
+
+[Unit]
+Description=Phase1 terminal OS runtime on Base1
+Documentation=https://github.com/Bryforge/phase1
+After=local-fs.target network-online.target
+Wants=network-online.target
+ConditionPathExists=/opt/phase1/phase1
+ConditionPathIsDirectory=/var/lib/phase1/workspace
+
+[Service]
+Type=simple
+User=phase1
+Group=phase1
+WorkingDirectory=/var/lib/phase1
+Environment=BASE1_PROFILE=secure-default
+Environment=BASE1_HARDWARE_TARGET=generic
+Environment=BASE1_PHASE1_CONTRACT=0.1
+Environment=PHASE1_STORAGE_ROOT=/var/lib/phase1/workspace
+Environment=PHASE1_SAFE_MODE=1
+Environment=PHASE1_ALLOW_HOST_TOOLS=0
+ExecStart=/opt/phase1/phase1
+Restart=on-failure
+RestartSec=5s
+
+# Keep Phase1 contained as an application workload.
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/phase1 /run/phase1
+ReadOnlyPaths=/opt/phase1
+InaccessiblePaths=/boot /root
+LockPersonality=true
+MemoryDenyWriteExecute=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+RemoveIPC=true
+UMask=0077
+
+# Conservative syscall and namespace posture. These may need adjustment for
+# specific runtime features, but secure-default starts small.
+SystemCallArchitectures=native
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictNamespaces=true
+ProtectClock=true
+ProtectControlGroups=true
+ProtectKernelLogs=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ProtectProc=invisible
+ProcSubset=pid
+
+# Base1 should log supervision outside the Phase1 workspace.
+LogsDirectory=phase1-host
+RuntimeDirectory=phase1
+StateDirectory=phase1
+
+[Install]
+WantedBy=multi-user.target
