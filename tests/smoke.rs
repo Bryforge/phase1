@@ -98,7 +98,7 @@ fn assert_contains_all(output: &str, needles: &[&str]) {
 
 #[test]
 fn boot_help_man_and_completion_work() {
-    let output = run_phase1("help\ncomplete p\nman browser\nversion\nexit\n");
+    let output = run_phase1("help\ncomplete p\nman browser\nversion\ncat readme.txt\nexit\n");
     let package_version = format!("phase1 {}", env!("CARGO_PKG_VERSION"));
     assert_contains_all(
         &output,
@@ -112,6 +112,8 @@ fn boot_help_man_and_completion_work() {
             "browser",
             "usage      : browser <url|phase1|about>",
             &package_version,
+            "PHASE1 QUICK START",
+            "cat readme.txt",
         ],
     );
 }
@@ -268,6 +270,8 @@ fn roadmap_aliases_capabilities_and_dashboard_work() {
     let output = run_phase1_host_enabled(
         "commands\ncaps\ndash --compact\npy -c \"print('alias-ok')\"\nquit\n",
     );
+    let dashboard_version = format!("PHASE1 DASHBOARD v{}", env!("CARGO_PKG_VERSION"));
+    let shutdown_version = format!("shutdown: phase1 {}", env!("CARGO_PKG_VERSION"));
     assert_contains_all(
         &output,
         &[
@@ -276,14 +280,14 @@ fn roadmap_aliases_capabilities_and_dashboard_work() {
             "command        category capability",
             "wifi-connect",
             "grep",
-            "PHASE1 DASHBOARD v3.6.0",
+            &dashboard_version,
             "CORE  user=root",
             "PROC  tasks=",
             "HW    cr3=0x1000",
             "python",
             "PHASE1_ALLOW_HOST_TOOLS",
             "alias-ok",
-            "shutdown: phase1 3.6.0",
+            &shutdown_version,
         ],
     );
 }
@@ -334,10 +338,11 @@ fn proc_sys_audit_and_arch_commands_work() {
     let output = run_phase1(
         "cat /proc/version\ncat /proc/cpuinfo\nps\nspawn worker --background\njobs\ncr3\nloadcr3 0x2000\ncr3\npcide on\nloadcr3 0x2001\ncr4\nlspci\npcie\naudit\nexit\n",
     );
+    let proc_version = format!("phase1 {}", env!("CARGO_PKG_VERSION"));
     assert_contains_all(
         &output,
         &[
-            "phase1 3.6.0",
+            &proc_version,
             "phase1 virtual cpu",
             "phase1-shell",
             "spawned pid",
