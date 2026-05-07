@@ -99,6 +99,9 @@ fn assert_contains_all(text: &str, needles: &[&str]) {
 
 fn assert_not_contains_any(text: &str, needles: &[&str]) {
     for needle in needles {
-        assert!(!text.contains(needle), "unexpected external dependency {needle:?}");
+        assert!(
+            !text.contains(needle),
+            "unexpected external dependency {needle:?}"
+        );
     }
 }
