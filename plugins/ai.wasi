@@ -1,0 +1,7 @@
+name=Phase1 AI Gina
+capability=ai.offline
+stdout=gina: Phase1 AI integration layer is installed.
+stdout=mode: offline advisor and project-context bridge.
+stdout=scope: explain Phase1 commands, guide workflows, prepare prompts, and hand off future model integrations.
+stdout=safety: no host shell, no host network, no credential access, no external model call in this baseline.
+stdout=usage: ai gina | gina | wasm inspect ai | wasm run ai gina
