@@ -40,14 +40,6 @@ refresh_paths() {
     ALIAS_TARGET="$BIN_DIR/terminal"
 }
 
-say_do() {
-    if [ "$DRY_RUN" = "1" ]; then
-        echo "dry-run: $*"
-    else
-        "$@"
-    fi
-}
-
 while [ "$#" -gt 0 ]; do
     case "$1" in
         --prefix)
@@ -106,6 +98,8 @@ Would install: $LAUNCHER_SOURCE -> $LAUNCHER_TARGET
 Would config : $CONFIG_FILE
 Alias mode   : $CREATE_ALIAS
 Phase1 home  : $PHASE1_HOME_VALUE
+Color mode   : auto
+Theme        : cyber
 EOF
     exit 0
 fi
@@ -120,11 +114,14 @@ PHASE1_HOME="$PHASE1_HOME_VALUE"
 PHASE1_TERMINAL_TITLE="Phase1 Terminal"
 PHASE1_TERMINAL_PROFILE="default"
 PHASE1_THEME="cyber"
+PHASE1_COLOR_MODE="auto"
+PHASE1_TERMINAL_BANNER="1"
 PHASE1_SAFE_MODE="1"
 PHASE1_MOBILE_MODE="0"
 PHASE1_DEVICE_MODE="desktop"
 PHASE1_ASCII="0"
 PHASE1_TERMINAL_HINTS="1"
+PHASE1_TERMINAL_PERF_BUDGET_MS="500"
 EOF
 
 case "$CREATE_ALIAS" in
@@ -164,6 +161,8 @@ PATH    : $path_hint
 
 Try:
   phase1-terminal doctor --verbose
-  phase1-terminal profile list
+  phase1-terminal colors detect
+  phase1-terminal theme preview all
+  phase1-terminal selftest
   phase1-terminal gina
 EOF
