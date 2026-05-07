@@ -14,6 +14,7 @@ on:
       - "WIKI_ROADMAP.md"
       - "robots.txt"
       - "sitemap.xml"
+      - "wiki/**"
       - "assets/**"
       - ".nojekyll"
       - ".github/workflows/pages.yml"
@@ -41,9 +42,10 @@ jobs:
       - name: Build static site artifact
         run: |
           rm -rf _site
-          mkdir -p _site/assets
+          mkdir -p _site/assets _site/wiki
           cp index.html styles.css button-fix.css site.js button-fix.js WIKI_ROADMAP.md robots.txt sitemap.xml .nojekyll _site/
           cp assets/phase1-banner.svg _site/assets/phase1-banner.svg
+          cp wiki/index.html wiki/docs.css wiki/docs.js _site/wiki/
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
