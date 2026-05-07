@@ -30,12 +30,32 @@ sh terminal/bin/phase1-terminal version | grep 'phase1-terminal '
 
 echo "phase1-terminal env"
 sh terminal/bin/phase1-terminal env | grep 'PHASE1_TERMINAL_VERSION='
+sh terminal/bin/phase1-terminal env | grep 'PHASE1_DETECTED_COLOR_MODE='
 
 echo "phase1-terminal doctor --json"
 sh terminal/bin/phase1-terminal doctor --json | grep '"version"'
+sh terminal/bin/phase1-terminal doctor --json | grep '"detected_color_mode"'
+
+echo "phase1-terminal colors detect"
+sh terminal/bin/phase1-terminal colors detect | grep 'detected'
+
+echo "phase1-terminal colors swatches"
+sh terminal/bin/phase1-terminal colors swatches | grep 'cyber'
+
+echo "phase1-terminal theme list"
+sh terminal/bin/phase1-terminal theme list | grep 'themes:'
+
+echo "phase1-terminal theme preview matrix"
+sh terminal/bin/phase1-terminal theme preview matrix | grep 'matrix'
 
 echo "phase1-terminal profile list"
 sh terminal/bin/phase1-terminal profile list | grep 'profiles:'
+
+echo "phase1-terminal selftest"
+sh terminal/bin/phase1-terminal selftest | grep 'selftest: passed'
+
+echo "phase1-terminal benchmark"
+sh terminal/bin/phase1-terminal benchmark 2 | grep 'status    : completed'
 
 echo "phase1-terminal install dry-run"
 sh scripts/install-phase1-terminal.sh --dry-run --no-alias >/dev/null
