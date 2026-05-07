@@ -1,6 +1,6 @@
 # Publish to GitHub Wiki
 
-![Wiki Source](https://img.shields.io/badge/wiki%20source-docs%2Fwiki-00d8ff) ![Manual](https://img.shields.io/badge/manual-v3.10.9--dev-39ff88) ![Stable](https://img.shields.io/badge/stable-v3.10.7-ffcc00)
+![Wiki Source](https://img.shields.io/badge/wiki%20source-docs%2Fwiki-00d8ff) ![Manual](https://img.shields.io/badge/manual-v4.0.0-39ff88) ![Previous Stable](https://img.shields.io/badge/previous%20stable-v3.10.9-7f8cff)
 
 This repository stores the Phase1 wiki source in `docs/wiki/` so the manual can be reviewed, versioned, and tested with normal code changes.
 
@@ -45,7 +45,7 @@ Commit and push:
 cd phase1.wiki
 git status
 git add .
-git commit -m "Update Phase1 user manual"
+git commit -m "Update Phase1 user manual for v4.0.0"
 git push origin master
 ```
 
@@ -66,7 +66,7 @@ Use that script once the native wiki repository exists.
 | `Home.md` | Manual index and version matrix |
 | `_Sidebar.md` | GitHub Wiki sidebar |
 | `01-Quick-Start.md` | First-run tutorial |
-| `02-Version-Guide.md` | Edge, stable, and base version model |
+| `02-Version-Guide.md` | Stable and compatibility version model |
 | `03-Boot-Modes-and-Security.md` | Boot selector and guard model |
 | `04-Command-Manual.md` | Command reference by task |
 | `05-Files-Editors-and-Pipelines.md` | VFS, AVIM, and pipelines |
@@ -76,18 +76,25 @@ Use that script once the native wiki repository exists.
 | `09-Troubleshooting.md` | Common problems and fixes |
 | `10-Publish-to-GitHub-Wiki.md` | This publishing guide |
 | `11-Tutorials.md` | Guided learning paths |
+| `12-v4-Edge-Manual.md` | v4 stable manual; filename kept for compatibility |
 
 ## Version update checklist
 
-When promoting or bumping Phase1, update these docs:
+When promoting or bumping Phase1, update these docs and fixtures:
 
 ```text
+Cargo.toml
+Cargo.lock
 README.md
+site.js
 docs/wiki/Home.md
 docs/wiki/02-Version-Guide.md
 docs/wiki/08-Updates-Releases-and-Validation.md
 docs/wiki/10-Publish-to-GitHub-Wiki.md
 docs/wiki/11-Tutorials.md
+docs/wiki/12-v4-Edge-Manual.md
+plugins/wiki-version.wasi
+plugins/wiki-updates.wasi
 ```
 
 Then validate:
@@ -95,7 +102,10 @@ Then validate:
 ```bash
 cargo fmt --all -- --check
 cargo check --all-targets
+cargo clippy --all-targets -- -D warnings
 cargo test --all-targets
+cargo audit
+cargo deny check
 ```
 
 ## Color policy
