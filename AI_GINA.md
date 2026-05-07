@@ -4,6 +4,8 @@ Gina is the Phase1 AI integration assistant.
 
 This implementation is intentionally safe, offline, deterministic, and sandboxed. It establishes the Phase1 AI command surface while making cybersecurity, optimization, and consistency part of Gina's baseline contract.
 
+Roadmap: [`AI_GINA_ROADMAP.md`](AI_GINA_ROADMAP.md).
+
 ## Commands
 
 Inside Phase1:
@@ -97,6 +99,12 @@ sandbox: fs=virtual net=disabled host=blocked
 ```
 
 This is the correct baseline.
+
+## Roadmap
+
+The Gina AI roadmap covers native offline command work, safe context bridging, cybersecurity advising, optimization/consistency advising, ChatGPT project-management workflows, local model exploration, external provider policy gates, and Phase1 Terminal integration.
+
+Read: [`AI_GINA_ROADMAP.md`](AI_GINA_ROADMAP.md).
 
 ## Integration plan
 
