@@ -22,7 +22,7 @@ macro_rules! cmd {
 }
 
 pub const CATEGORIES: &[&str] = &[
-    "fs", "text", "proc", "net", "host", "dev", "arch", "sys", "user", "misc",
+    "fs", "text", "proc", "net", "host", "ai", "dev", "arch", "sys", "user", "misc",
 ];
 
 pub const COMMANDS: &[CommandSpec] = &[
@@ -63,6 +63,8 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("plugins", &["plugin"], "host", "plugins", "List Python and WASI-lite plugins in ./plugins.", "host.exec"),
     cmd!("wasm", &["wasi"], "host", "wasm [list|inspect|run|validate] [plugin]", "Run or inspect sandboxed WASI-lite plugins without host shell access.", "wasm.exec"),
     cmd!("update", &["upgrade"], "host", "update [plan|check|--execute|protocol|test] [latest|stable] [--build]", "Safely plan updates or run developer validation suites; protocol prints patch-versioning rules.", "host.exec"),
+    cmd!("ai", &[], "ai", "ai gina|security|optimize|consistency", "Run the offline Gina AI bridge with cybersecurity-first guidance and policy-gated future integration notes.", "ai.offline"),
+    cmd!("gina", &["assistant"], "ai", "gina [status|security|optimize|consistency]", "Run Gina, the offline Phase1 AI integration assistant focused on security, optimization, and consistency.", "ai.offline"),
     cmd!("ned", &["nano", "vi"], "host", "ned <file>", "Edit a VFS file with a small line editor.", "fs.write"),
     cmd!("avim", &["vim", "edit"], "dev", "avim <file>", "Advanced VFS-only modal editor with search, undo, yank/paste, substitute, and a security-focused no-shell-escape design.", "fs.write"),
     cmd!("lang", &["language", "runlang"], "dev", "lang [list|support|status|doctor|detect|run|security]", "Native guarded multi-language runtime manager for major open-source programming languages.", "host.exec"),
@@ -129,7 +131,7 @@ pub fn command_map() -> String {
             .join(" ");
         out.push_str(&format!("{:<5}: {}\n", category, names));
     }
-    out.push_str("\nquick : version --compare | roadmap | lang support | lang security | avim notes.rs | update test quick | update test full | theme list | theme matrix | pipeline | wasm list | update protocol | sysinfo\n");
+    out.push_str("\nquick : version --compare | roadmap | gina security | gina optimize | lang support | lang security | avim notes.rs | update test quick | update test full | theme list | theme matrix | pipeline | wasm list | update protocol | sysinfo\n");
     out
 }
 
@@ -180,6 +182,7 @@ pub fn capabilities_report() -> String {
 fn guard_status(capability: &str) -> &'static str {
     match capability {
         "none" => "open",
+        "ai.offline" => "offline/sandboxed",
         "host.exec" | "host.net" => "safe-mode + PHASE1_ALLOW_HOST_TOOLS",
         "wasm.exec" => "phase1-wasi sandbox",
         "net.admin" => "safe-mode + host-tools + network-change opt-in",
@@ -214,6 +217,7 @@ mod tests {
         assert_eq!(lookup("wasi").map(|cmd| cmd.name), Some("wasm"));
         assert_eq!(lookup("vim").map(|cmd| cmd.name), Some("avim"));
         assert_eq!(lookup("language").map(|cmd| cmd.name), Some("lang"));
+        assert_eq!(lookup("assistant").map(|cmd| cmd.name), Some("gina"));
     }
 
     #[test]
@@ -236,6 +240,7 @@ mod tests {
         assert_eq!(canonical_name("wasi"), Some("wasm"));
         assert_eq!(canonical_name("edit"), Some("avim"));
         assert_eq!(canonical_name("runlang"), Some("lang"));
+        assert_eq!(canonical_name("assistant"), Some("gina"));
     }
 
     #[test]
@@ -264,6 +269,9 @@ mod tests {
         assert!(map.contains("wasm"));
         assert!(map.contains("avim"));
         assert!(map.contains("lang"));
+        assert!(map.contains("ai"));
+        assert!(map.contains("gina"));
+        assert!(map.contains("gina security"));
     }
 
     #[test]
@@ -284,6 +292,9 @@ mod tests {
         assert!(avim.contains("modal editor"));
         let lang = man_page("lang").expect("lang man page");
         assert!(lang.contains("multi-language"));
+        let gina = man_page("gina").expect("gina man page");
+        assert!(gina.contains("offline Phase1 AI"));
+        assert!(gina.contains("ai.offline"));
     }
 
     #[test]
@@ -298,6 +309,9 @@ mod tests {
         assert!(completions("the").contains(&"theme"));
         assert!(completions("f").contains(&"find"));
         assert!(completions("g").contains(&"grep"));
+        assert!(completions("g").contains(&"gina"));
+        assert!(completions("a").contains(&"ai"));
+        assert!(completions("a").contains(&"assistant"));
         assert!(completions("u").contains(&"update"));
         assert!(completions("u").contains(&"upgrade"));
         assert!(completions("wa").contains(&"wasm"));
@@ -321,5 +335,8 @@ mod tests {
         assert!(report.contains("phase1-wasi sandbox"));
         assert!(report.contains("avim"));
         assert!(report.contains("lang"));
+        assert!(report.contains("gina"));
+        assert!(report.contains("ai.offline"));
+        assert!(report.contains("offline/sandboxed"));
     }
 }
