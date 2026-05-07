@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Phase1 // Advanced Operator Kernel</title>
+  <meta name="description" content="Phase1 is a terminal-first virtual OS / advanced operator console in Rust. Secure, private, powerful, open.">
+  <meta name="theme-color" content="#050711">
+  <meta property="og:title" content="Phase1 // Advanced Operator Kernel">
+  <meta property="og:description" content="A dark-space rainbow GitHub Pages home for Phase1.">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <canvas id="space" aria-hidden="true"></canvas>
+  <div class="aurora aurora-one" aria-hidden="true"></div>
+  <div class="aurora aurora-two" aria-hidden="true"></div>
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <header class="site-shell">
+    <nav class="nav glass-panel" aria-label="Primary navigation">
+      <a class="brand" href="#top" aria-label="Phase1 home">
+        <span class="brand-pip"></span>
+        <span>PHASE1</span>
+      </a>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#wiki-roadmap">Wiki Roadmap</a>
+        <a href="https://github.com/Bryforge/phase1">GitHub</a>
+      </div>
+    </nav>
+
+    <main id="top">
+      <section class="hero glass-panel" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">secure · private · powerful · open</p>
+          <h1 id="hero-title">Advanced Operator Kernel for a terminal-first future.</h1>
+          <p class="hero-text">
+            Phase1 is a Rust-built virtual OS console with a simulated kernel, VFS,
+            process table, audit log, guarded browser, runtime roadmap, and a safe-by-default operator shell.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="https://github.com/Bryforge/phase1">Open GitHub</a>
+            <a class="button button-secondary" href="#wiki-roadmap">View Wiki Plan</a>
+          </div>
+          <div class="terminal-chip" aria-label="Phase1 prompt preview">
+            <span>phase1://root ~ #</span><span class="cursor"></span>
+          </div>
+        </div>
+
+        <div class="logo-stage" aria-label="Phase1 rainbow logo">
+          <div class="orbit orbit-one"></div>
+          <div class="orbit orbit-two"></div>
+          <div class="orbit orbit-three"></div>
+          <img class="phase-logo" src="./assets/phase1-banner.svg" alt="Phase1 rainbow neon logo with advanced operator kernel text">
+        </div>
+      </section>
+
+      <section id="features" class="feature-grid" aria-label="Phase1 feature cards">
+        <article class="feature-card">
+          <span class="card-kicker">01</span>
+          <h2>Kernel simulation</h2>
+          <p>Boot profiles, virtual processes, /proc, PCIe flavor, CR3/CR4 commands, and an audit trail for operator visibility.</p>
+        </article>
+        <article class="feature-card">
+          <span class="card-kicker">02</span>
+          <h2>Safe host bridge</h2>
+          <p>Host-backed tools stay guarded behind safe-mode and explicit trust gates, with a secure default posture.</p>
+        </article>
+        <article class="feature-card">
+          <span class="card-kicker">03</span>
+          <h2>Terminal-first UX</h2>
+          <p>Neo Tokyo console visuals, mobile-friendly layout, command metadata, manuals, completions, and persistent state options.</p>
+        </article>
+      </section>
+
+      <section id="wiki-roadmap" class="roadmap glass-panel" aria-labelledby="roadmap-title">
+        <div class="section-heading">
+          <p class="eyebrow">website roadmap</p>
+          <h2 id="roadmap-title">Make this the main Phase1 home and wiki hub.</h2>
+          <p>
+            This site starts as a minimalist animated homepage and grows into the public docs center for Phase1.
+          </p>
+        </div>
+
+        <ol class="timeline">
+          <li>
+            <span class="timeline-dot"></span>
+            <div>
+              <h3>Phase A · Launch homepage</h3>
+              <p>Deploy the animated rainbow-space landing page from GitHub Pages with the Phase1 logo, hero, feature cards, and README link.</p>
+            </div>
+          </li>
+          <li>
+            <span class="timeline-dot"></span>
+            <div>
+              <h3>Phase B · Bring the wiki into the website</h3>
+              <p>Convert docs/wiki pages into first-class website routes: quick start, boot, commands, files, browser, languages, updates, tutorials, and troubleshooting.</p>
+            </div>
+          </li>
+          <li>
+            <span class="timeline-dot"></span>
+            <div>
+              <h3>Phase C · Add docs navigation and search</h3>
+              <p>Add a left-hand docs rail, keyboard-friendly search, command index cards, and deep links for every Phase1 command.</p>
+            </div>
+          </li>
+          <li>
+            <span class="timeline-dot"></span>
+            <div>
+              <h3>Phase D · Turn releases into story pages</h3>
+              <p>Add release notes, screenshots, operator profiles, runtime roadmap, and upgrade guides for stable and edge tracks.</p>
+            </div>
+          </li>
+          <li>
+            <span class="timeline-dot"></span>
+            <div>
+              <h3>Phase E · Make the website the main front door</h3>
+              <p>Use the GitHub Pages site as the public Phase1 homepage, with the README pointing here for demos, docs, and onboarding.</p>
+            </div>
+          </li>
+        </ol>
+
+        <a class="roadmap-link" href="./WIKI_ROADMAP.md">Open detailed wiki implementation roadmap →</a>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>PHASE1 // Advanced Operator Kernel</span>
+      <span>Built for terminal-first operators.</span>
+    </footer>
+  </header>
+
+  <script src="./site.js"></script>
+</body>
+</html>
