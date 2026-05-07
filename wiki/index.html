@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Phase1 Wiki // Bryforge Docs Hub</title>
+  <meta name="description" content="Phase1 wiki and docs hub by Bryforge: quick start, boot profiles, command index, VFS, browser safety, runtimes, updates, tutorials, sponsorship, and Bryforge information.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="theme-color" content="#050711">
+  <link rel="canonical" href="https://bryforge.github.io/phase1/wiki/">
+  <meta property="og:title" content="Phase1 Wiki // Bryforge Docs Hub">
+  <meta property="og:description" content="The public docs and roadmap hub for Phase1, the Rust-powered advanced operator kernel by Bryforge.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://bryforge.github.io/phase1/wiki/">
+  <meta property="og:image" content="https://bryforge.github.io/phase1/assets/phase1-banner.svg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Phase1 Wiki // Bryforge Docs Hub">
+  <meta name="twitter:description" content="Quick start, command index, boot profiles, runtimes, tutorials, and public roadmap for Phase1.">
+  <meta name="twitter:image" content="https://bryforge.github.io/phase1/assets/phase1-banner.svg">
+  <link rel="stylesheet" href="./docs.css">
+</head>
+<body>
+  <canvas id="docs-space" aria-hidden="true"></canvas>
+  <div class="docs-aura docs-aura-a" aria-hidden="true"></div>
+  <div class="docs-aura docs-aura-b" aria-hidden="true"></div>
+
+  <div class="docs-shell">
+    <aside class="docs-sidebar" aria-label="Phase1 wiki navigation">
+      <a class="docs-brand" href="../">
+        <span class="brand-dot"></span>
+        <span>PHASE1</span>
+      </a>
+      <p class="sidebar-label">Docs hub</p>
+      <nav>
+        <a href="#quick-start">Quick Start</a>
+        <a href="#boot">Boot Profiles</a>
+        <a href="#commands">Command Index</a>
+        <a href="#files">Files + VFS</a>
+        <a href="#browser">Browser + Safety</a>
+        <a href="#languages">Languages</a>
+        <a href="#updates">Updates</a>
+        <a href="#troubleshooting">Troubleshooting</a>
+        <a href="#tutorials">Tutorials</a>
+        <a href="#bryforge">Bryforge</a>
+        <a href="#sponsor">Sponsor</a>
+      </nav>
+      <a class="sidebar-button" href="https://github.com/Bryforge/phase1" target="_blank" rel="noopener noreferrer">Open GitHub</a>
+    </aside>
+
+    <main class="docs-main">
+      <section class="docs-hero panel" id="top">
+        <div>
+          <p class="eyebrow">public wiki · operator docs · roadmap designs</p>
+          <h1>Phase1 Wiki Hub</h1>
+          <p class="hero-text">
+            The public documentation center for Phase1: quick start, boot profiles, command design, VFS workflows,
+            browser safety, runtime support, tutorials, Bryforge, sponsorship, and the path toward a complete website wiki.
+          </p>
+          <div class="search-wrap" role="search">
+            <label for="docs-search">Search Phase1 docs</label>
+            <input id="docs-search" type="search" placeholder="Search commands, boot, storage, browser, Bryforge..." autocomplete="off">
+          </div>
+        </div>
+        <img src="../assets/phase1-banner.svg" alt="Phase1 neon rainbow logo" class="hero-logo">
+      </section>
+
+      <section class="quick-links" aria-label="Docs quick links">
+        <a class="quick-card" href="#quick-start" data-search="quick start install cargo run help wiki">
+          <span>01</span><strong>Start fast</strong><small>Install and boot Phase1.</small>
+        </a>
+        <a class="quick-card" href="#commands" data-search="commands help man completions pipeline shell">
+          <span>02</span><strong>Command map</strong><small>Operator shell reference.</small>
+        </a>
+        <a class="quick-card" href="#languages" data-search="language runtime rust python javascript typescript go java wasm">
+          <span>03</span><strong>Runtimes</strong><small>Language roadmap.</small>
+        </a>
+        <a class="quick-card" href="#bryforge" data-search="Bryforge startup software development company Chase Bryan">
+          <span>04</span><strong>Bryforge</strong><small>Company profile.</small>
+        </a>
+      </section>
+
+      <section id="quick-start" class="doc-section panel" data-search="quick start git clone cargo run help wiki security sysinfo roadmap">
+        <p class="eyebrow">quick start</p>
+        <h2>Boot Phase1 in minutes.</h2>
+        <div class="code-card"><code>git clone https://github.com/Bryforge/phase1.git<br>cd phase1<br>cargo run</code></div>
+        <p>Inside Phase1, start with <code>help</code>, <code>wiki</code>, <code>security</code>, <code>sysinfo</code>, and <code>roadmap</code>. The website docs mirror the in-system wiki and provide a public front door for new operators.</p>
+      </section>
+
+      <section id="boot" class="doc-section panel" data-search="boot profiles safe mode shield trust host storage browser network">
+        <p class="eyebrow">boot profiles</p>
+        <h2>Safe by default, powerful when trusted.</h2>
+        <div class="card-grid">
+          <article><h3>Secure boot</h3><p>Safe-mode defaults keep host-backed tools guarded until explicitly enabled.</p></article>
+          <article><h3>Trusted host</h3><p>Host integration is designed as a conscious operator decision, not a hidden default.</p></article>
+          <article><h3>Operator visibility</h3><p>Boot state, capabilities, and audit information are visible from the shell.</p></article>
+        </div>
+      </section>
+
+      <section id="commands" class="doc-section panel" data-search="command index help man cat echo ls cd grep wc head tail find browser storage lang update audit proc">
+        <p class="eyebrow">command index design</p>
+        <h2>Searchable command cards.</h2>
+        <div class="command-grid">
+          <article data-search="help man wiki commands"><kbd>help</kbd><p>List core commands and operator hints.</p></article>
+          <article data-search="cat echo ls cd cp mv rm mkdir files vfs"><kbd>vfs</kbd><p>Read, write, move, copy, and inspect virtual files.</p></article>
+          <article data-search="grep wc head tail find text pipeline"><kbd>text</kbd><p>Filter and inspect text through terminal-first workflows.</p></article>
+          <article data-search="security audit capabilities safe mode"><kbd>security</kbd><p>Review safe-mode, command capabilities, and audit posture.</p></article>
+          <article data-search="browser browse http html safe"><kbd>browse</kbd><p>Guarded terminal browser with strict safety defaults.</p></article>
+          <article data-search="storage git rust runtime repository"><kbd>storage</kbd><p>Guarded storage, Git, and Rust project helper workflow.</p></article>
+          <article data-search="lang support roadmap runtimes python javascript go java wasm"><kbd>lang</kbd><p>Language support and runtime implementation roadmap.</p></article>
+          <article data-search="update latest doctor execute guarded"><kbd>update</kbd><p>Safe update planning and guarded developer test paths.</p></article>
+        </div>
+      </section>
+
+      <section id="files" class="doc-section panel" data-search="files vfs home proc dev var log persistent state history">
+        <p class="eyebrow">files + VFS</p>
+        <h2>Designed like a learning OS workspace.</h2>
+        <p>Phase1 models a virtual filesystem with home files, generated system views, process data, logs, and optional persistence. The website docs will expand this into a visual VFS map and file workflow tutorials.</p>
+      </section>
+
+      <section id="browser" class="doc-section panel" data-search="browser network safety http https credentials scripts sandbox safe mode">
+        <p class="eyebrow">browser + network safety</p>
+        <h2>Guarded access instead of blind host execution.</h2>
+        <p>The browser and network sections explain scheme restrictions, safe-mode behavior, stripped active content, loopback fallbacks, and why Phase1 does not need passwords, private keys, or personal tokens.</p>
+      </section>
+
+      <section id="languages" class="doc-section panel" data-search="language runtimes rust python javascript typescript go java csharp swift webassembly wasm">
+        <p class="eyebrow">language runtime roadmap</p>
+        <h2>Major programming language support plan.</h2>
+        <div class="runtime-track">
+          <span>Rust</span><span>Python</span><span>JavaScript</span><span>TypeScript</span><span>Go</span><span>Java</span><span>C#</span><span>Swift</span><span>WebAssembly</span>
+        </div>
+      </section>
+
+      <section id="updates" class="doc-section panel" data-search="updates release notes stable edge version migration quality audit">
+        <p class="eyebrow">release story pages</p>
+        <h2>Stable, edge, and migration notes.</h2>
+        <p>The website roadmap now includes release story cards for stable and edge builds, migration notes, version comparison, quality score updates, and audit links.</p>
+      </section>
+
+      <section id="troubleshooting" class="doc-section panel" data-search="troubleshooting errors pages deploy github pages safe mode cargo rust terminal">
+        <p class="eyebrow">troubleshooting</p>
+        <h2>Common fixes, explained plainly.</h2>
+        <ul class="clean-list">
+          <li>GitHub Pages deployment and cache refreshes.</li>
+          <li>Safe-mode blocks and how to intentionally enable trusted host tools.</li>
+          <li>Rust toolchain, Clippy, cargo-audit, and cargo-deny checks.</li>
+          <li>Terminal display, mobile layout, and color fallback issues.</li>
+        </ul>
+      </section>
+
+      <section id="tutorials" class="doc-section panel" data-search="tutorials lessons walkthroughs terminal os storage git rust browser language">
+        <p class="eyebrow">tutorial hub</p>
+        <h2>Guided operator lessons.</h2>
+        <div class="card-grid">
+          <article><h3>First boot</h3><p>Run Phase1, inspect the system, and read the wiki from inside the shell.</p></article>
+          <article><h3>Build a VFS workflow</h3><p>Create files, pipe text, search content, and inspect generated system paths.</p></article>
+          <article><h3>Storage + Rust</h3><p>Use guarded storage helpers to initialize a workspace and create Rust projects.</p></article>
+        </div>
+      </section>
+
+      <section id="bryforge" class="doc-section panel" data-search="Bryforge startup software development company Chase Bryan apps infrastructure automation custom software">
+        <p class="eyebrow">Bryforge</p>
+        <h2>Startup software development company.</h2>
+        <p>Bryforge is a startup software development company founded by Chase Bryan. It focuses on ambitious engineering, fast iteration, developer-first systems, secure tools, automation, infrastructure, apps, and custom software products.</p>
+      </section>
+
+      <section id="sponsor" class="doc-section panel" data-search="sponsor buy me a coffee support phase1 bryforge">
+        <p class="eyebrow">support</p>
+        <h2>Sponsor Phase1 and Bryforge.</h2>
+        <p>Support helps fund continued work on Phase1, public docs, runtime support, safe storage/Git tooling, and future Bryforge software.</p>
+        <a class="coffee-link" href="https://www.buymeacoffee.com/bryforge" target="_blank" rel="noopener noreferrer">☕ Buy me a coffee</a>
+      </section>
+
+      <section class="doc-section panel" data-search="roadmap designs docs navigation search demos releases website front door">
+        <p class="eyebrow">implemented roadmap design</p>
+        <h2>What changed from roadmap to website.</h2>
+        <ol class="timeline-list">
+          <li><strong>Docs rail:</strong> persistent wiki navigation for the main public docs areas.</li>
+          <li><strong>Search:</strong> client-side filtering for sections and command cards.</li>
+          <li><strong>Command cards:</strong> visual command index starter design.</li>
+          <li><strong>Demo roadmap:</strong> tutorial and release story spaces are now part of the page layout.</li>
+          <li><strong>Company/support:</strong> Bryforge and sponsorship are integrated into the docs hub.</li>
+        </ol>
+      </section>
+    </main>
+  </div>
+
+  <script src="./docs.js"></script>
+</body>
+</html>
