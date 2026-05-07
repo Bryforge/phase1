@@ -1,0 +1,7 @@
+name=Gina
+capability=ai.offline
+stdout=gina: hello Chase. I am the Phase1 AI integration assistant.
+stdout=role: local project guide, workflow planner, and safe integration bridge.
+stdout=commands: ai gina, gina, wasm run gina status, wasm inspect gina.
+stdout=next: connect Gina to phase1-core context, docs, and optional external model providers behind explicit policy gates.
+stdout=safety: offline by default; no host shell, no host network, no secrets.
