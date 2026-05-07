@@ -28,14 +28,7 @@ fn cargo_metadata_is_promoted_to_stable() {
 
 #[test]
 fn release_metadata_is_consistent_across_public_docs() {
-    for path in [
-        "README.md",
-        "docs/wiki/Home.md",
-        "docs/wiki/02-Version-Guide.md",
-        "docs/wiki/08-Updates-Releases-and-Validation.md",
-        "plugins/wiki-version.wasi",
-        "plugins/wiki-updates.wasi",
-    ] {
+    for path in release_facing_files() {
         let text = read(path);
         assert!(
             text.contains(STABLE_VERSION),
@@ -52,10 +45,13 @@ fn release_metadata_is_consistent_across_public_docs() {
 fn compatibility_base_remains_documented() {
     for path in [
         "README.md",
+        "site.js",
         "docs/wiki/Home.md",
         "docs/wiki/02-Version-Guide.md",
+        "docs/wiki/12-v4-Edge-Manual.md",
+        "plugins/wiki.wasi",
+        "plugins/wiki-quick.wasi",
         "plugins/wiki-version.wasi",
-        "site.js",
     ] {
         let text = read(path);
         assert!(
@@ -75,17 +71,10 @@ fn website_demo_reports_stable_release() {
 
 #[test]
 fn stale_release_lines_are_removed_from_release_facing_files() {
-    for path in [
-        "Cargo.toml",
-        "Cargo.lock",
-        "README.md",
-        "site.js",
-        "docs/wiki/Home.md",
-        "docs/wiki/02-Version-Guide.md",
-        "docs/wiki/08-Updates-Releases-and-Validation.md",
-        "plugins/wiki-version.wasi",
-        "plugins/wiki-updates.wasi",
-    ] {
+    for path in release_facing_files()
+        .into_iter()
+        .chain(["Cargo.toml", "Cargo.lock", "site.js"])
+    {
         let text = read(path);
         assert!(
             !text.contains("v3.10.7"),
@@ -104,6 +93,22 @@ fn stale_release_lines_are_removed_from_release_facing_files() {
             "{path} still references development version 4.0.0-dev"
         );
     }
+}
+
+fn release_facing_files() -> [&'static str; 11] {
+    [
+        "README.md",
+        "docs/wiki/Home.md",
+        "docs/wiki/02-Version-Guide.md",
+        "docs/wiki/08-Updates-Releases-and-Validation.md",
+        "docs/wiki/10-Publish-to-GitHub-Wiki.md",
+        "docs/wiki/11-Tutorials.md",
+        "docs/wiki/12-v4-Edge-Manual.md",
+        "plugins/wiki.wasi",
+        "plugins/wiki-quick.wasi",
+        "plugins/wiki-version.wasi",
+        "plugins/wiki-updates.wasi",
+    ]
 }
 
 fn read(path: &str) -> String {
