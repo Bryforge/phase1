@@ -23,19 +23,19 @@ if [ ! -f terminal/macos/Phase1-Terminal.terminal ]; then
 fi
 
 echo "phase1-terminal help"
-terminal/bin/phase1-terminal help >/dev/null
+sh terminal/bin/phase1-terminal help >/dev/null
 
 echo "phase1-terminal version"
-terminal/bin/phase1-terminal version | grep 'phase1-terminal '
+sh terminal/bin/phase1-terminal version | grep 'phase1-terminal '
 
 echo "phase1-terminal env"
-terminal/bin/phase1-terminal env | grep 'PHASE1_TERMINAL_VERSION='
+sh terminal/bin/phase1-terminal env | grep 'PHASE1_TERMINAL_VERSION='
 
 echo "phase1-terminal doctor --json"
-terminal/bin/phase1-terminal doctor --json | grep '"version"'
+sh terminal/bin/phase1-terminal doctor --json | grep '"version"'
 
 echo "phase1-terminal profile list"
-terminal/bin/phase1-terminal profile list | grep 'profiles:'
+sh terminal/bin/phase1-terminal profile list | grep 'profiles:'
 
 echo "phase1-terminal install dry-run"
 sh scripts/install-phase1-terminal.sh --dry-run --no-alias >/dev/null
