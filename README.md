@@ -18,6 +18,8 @@
   ·
   <a href="base1/README.md">Base1 secure host foundation</a>
   ·
+  <a href="QUALITY.md">Quality system</a>
+  ·
   <a href="TERMINAL.md">Phase1 Terminal</a>
 </p>
 
@@ -45,6 +47,8 @@ It uses a dark live-space background, moving rainbow visuals, the Phase1 neon lo
 | Previous stable | `v3.10.9` | Previous stable reference line |
 | Compatibility base | `v3.6.0` | Historical comparison base |
 | Base1 | `foundation` | Secure host design for Raspberry Pi and X200 targets |
+| Quality | `managed` | Scorecard, gates, scripts, and CI workflow |
+| Phase1 Terminal | `advanced` | Linux/macOS launcher, profiles, colors, diagnostics, tests |
 
 The package version is the booted Phase1 version. Boot, ready line, `/proc/version`, dashboard, audit boot record, `/home/readme.txt`, and shutdown dynamically reflect `CARGO_PKG_VERSION`.
 
@@ -71,7 +75,7 @@ roadmap
 
 ## Phase1 Terminal
 
-Phase1 Terminal is the dedicated launcher/profile layer for Linux and macOS. It installs the `phase1-terminal` command, loads Phase1-specific defaults, discovers the Phase1 checkout or binary, and can add native Linux/macOS launch integrations.
+Phase1 Terminal is the dedicated launcher/profile/color layer for Linux and macOS. It installs the `phase1-terminal` command, loads Phase1-specific defaults, discovers the Phase1 checkout or binary, previews palettes, exports color/theme settings, and can add native Linux/macOS launch integrations.
 
 Install on Linux:
 
@@ -88,11 +92,37 @@ sh scripts/install-phase1-terminal-macos.sh
 Then run:
 
 ```bash
-phase1-terminal doctor
+phase1-terminal doctor --verbose
+phase1-terminal theme preview all
+phase1-terminal selftest
 phase1-terminal
 ```
 
-Full guide: [`TERMINAL.md`](TERMINAL.md).
+Full guide: [`TERMINAL.md`](TERMINAL.md). Test cases: [`TERMINAL_TEST_CASES.md`](TERMINAL_TEST_CASES.md).
+
+## Quality management
+
+Phase1 includes a repeatable quality management system with policy, scorecard, validation scripts, CI checks, and tests.
+
+Start here:
+
+- [`QUALITY.md`](QUALITY.md) - quality policy, gates, score model, and ownership areas.
+- [`QUALITY_SCORECARD.md`](QUALITY_SCORECARD.md) - score interpretation and scoring areas.
+- [`scripts/quality-score.sh`](scripts/quality-score.sh) - deterministic repository health score.
+- [`scripts/quality-check.sh`](scripts/quality-check.sh) - quick/full quality gates.
+
+Run:
+
+```bash
+sh scripts/quality-score.sh
+sh scripts/quality-check.sh quick
+```
+
+Before release:
+
+```bash
+sh scripts/quality-check.sh full
+```
 
 ## Base1 secure host foundation
 
@@ -160,8 +190,10 @@ Use `:help` inside `avim` for movement, edit, search, save, and quit commands.
 - Improve Linux color fallback for older systems such as ThinkPad X200 running Trisquel.
 - Improve Raspberry Pi 5 default OS text and color compatibility.
 - Add Base1 compatibility around secure Raspberry Pi and X200 host profiles.
+- Add Phase1 Terminal as the Linux/macOS launcher, profile, color, diagnostics, and test layer.
 - Improve the public website with clearer creator labeling, mobile readability, and desktop animation performance guards.
 - Harden `phase1-storage` output redaction for common secret and URL-credential patterns.
+- Manage quality through repeatable scripts, scorecards, tests, and CI.
 
 ## Run checks
 
@@ -175,6 +207,12 @@ cargo install cargo-deny --locked
 Then run the full quality gate:
 
 ```bash
+sh scripts/quality-check.sh full
+```
+
+The Rust-specific gate remains:
+
+```bash
 cargo fmt --all -- --check
 cargo check --all-targets
 cargo clippy --all-targets -- -D warnings
@@ -183,9 +221,9 @@ cargo audit
 cargo deny check
 ```
 
-`cargo test --all-targets` includes unit tests plus scripted smoke tests for the main Phase1 shell, the guarded `phase1-storage` helper, the website, release metadata, and the Base1 secure host foundation files.
+`cargo test --all-targets` includes unit tests plus scripted smoke tests for the main Phase1 shell, the guarded `phase1-storage` helper, the website, release metadata, quality system files, Phase1 Terminal, and the Base1 secure host foundation files.
 
-CI runs the same quality gate on pull requests, `master`, `main`, `release/**`, and manual dispatch. It also installs and runs RustSec advisory checks and dependency policy validation.
+CI runs Rust validation, security validation, CodeQL, and the quality management workflow on pull requests and branch pushes.
 
 ## Enable Python, browser, network inspection, and runtimes
 
@@ -218,6 +256,8 @@ The public website/wiki roadmap lives in [`WIKI_ROADMAP.md`](WIKI_ROADMAP.md).
 Phase1 is an educational simulator. It should never need your GitHub password, personal access token, SSH private key, browser cookies, Apple ID, email password, or recovery codes.
 
 Host-backed commands are explicit and guarded. Runtime files such as `phase1.state`, `phase1.history`, and `phase1.log` are local operational artifacts.
+
+Phase1 Terminal preserves safe defaults, uses allowlisted config mutation, and supports mono color fallback.
 
 Base1 is a secure host foundation, not a destructive installer. Its first tooling is intentionally read-only and compatibility-focused. Base1 security claims should remain conservative until backed by repeatable builds, audits, and hardware validation.
 
