@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Window Settings</key>
+  <array>
+    <dict>
+      <key>name</key>
+      <string>Phase1 Terminal</string>
+      <key>CommandString</key>
+      <string>phase1-terminal</string>
+      <key>RunCommandAsShell</key>
+      <false/>
+      <key>Font</key>
+      <data>
+      YnBsaXN0MDDUAQIDBAUGGBlYJHZlcnNpb25YJG9iamVjdHNaJGFyY2hpdmVy
+      VCR0b3ASAAGGoKQHCAcIClUkbnVsbNQKCwwNDg8QERJVTlNpemVWTlNOYW1lViRj
+      bGFzc0BmAAAAAAAAGEAqXU0ZTW9uby1SZWd1bGFy0hMUFRZaJGNsYXNzbmFtZVgk
+      Y2xhc3Nlc1ZOU0ZvbnSiFRdYTlNPYmplY3RfEA9OU0tleWVkQXJjaGl2ZXLRGhtU
+      cm9vdIABEAAIABEAGgAkACkAMgA3AD0AQwBKAFEAUwBVAFcAXABiAG0AfwCOAJAA
+      kgCUAKQArQC2AAAAAAAAAgEAAAAAAAAAHAAAAAAAAAAAAAAAAAAAAL8=
+      </data>
+      <key>ProfileCurrentVersion</key>
+      <real>2.07</real>
+      <key>type</key>
+      <string>Window Settings</string>
+    </dict>
+  </array>
+</dict>
+</plist>
