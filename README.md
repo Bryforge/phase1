@@ -17,6 +17,8 @@
   <a href="WIKI_ROADMAP.md">Website + wiki roadmap</a>
   ·
   <a href="base1/README.md">Base1 secure host foundation</a>
+  ·
+  <a href="TERMINAL.md">Phase1 Terminal</a>
 </p>
 
 ![Stable](https://img.shields.io/badge/stable-v4.0.0-39ff88) ![Previous Stable](https://img.shields.io/badge/previous%20stable-v3.10.9-7f8cff) ![Rust](https://img.shields.io/badge/language-Rust-ff8a00) ![Security](https://img.shields.io/badge/default-safe%20mode%20on-39ff88) ![Base1](https://img.shields.io/badge/base1-secure%20host%20foundation-8a5cff)
@@ -66,6 +68,31 @@ security
 sysinfo
 roadmap
 ```
+
+## Phase1 Terminal
+
+Phase1 Terminal is the dedicated launcher/profile layer for Linux and macOS. It installs the `phase1-terminal` command, loads Phase1-specific defaults, discovers the Phase1 checkout or binary, and can add native Linux/macOS launch integrations.
+
+Install on Linux:
+
+```bash
+sh scripts/install-phase1-terminal-linux.sh
+```
+
+Install on macOS:
+
+```bash
+sh scripts/install-phase1-terminal-macos.sh
+```
+
+Then run:
+
+```bash
+phase1-terminal doctor
+phase1-terminal
+```
+
+Full guide: [`TERMINAL.md`](TERMINAL.md).
 
 ## Base1 secure host foundation
 
