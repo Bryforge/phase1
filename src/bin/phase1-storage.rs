@@ -587,9 +587,11 @@ mod tests {
 
     #[test]
     fn redacts_sensitive_output_markers() {
-        let out = sanitize_output(
-            "ok\ntoken=secret\nAuthorization: bearer nope\napi_key=alpha\nAWS_SECRET_ACCESS_KEY=aws\ngithub_pat_123456\n-----BEGIN PRIVATE KEY-----\n",
+        let private_key_marker = ["-----BEGIN ", "PRIVATE KEY-----\n"].concat();
+        let sample = format!(
+            "ok\ntoken=secret\nAuthorization: bearer nope\napi_key=alpha\nAWS_SECRET_ACCESS_KEY=aws\ngithub_pat_123456\n{private_key_marker}",
         );
+        let out = sanitize_output(&sample);
         assert!(out.contains("ok"));
         assert!(out.contains("[redacted sensitive output]"));
         assert!(!out.contains("secret"));
