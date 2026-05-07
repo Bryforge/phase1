@@ -1,16 +1,12 @@
 # Phase1
 
 <p align="center">
-  <img src="assets/phase1-banner.svg" alt="Phase1 minimal neon cyberdeck banner" width="820">
+  <img src="assets/phase1-banner.svg" alt="Phase1 neon advertisement logo" width="760">
 </p>
 
 <p align="center">
   <strong>Terminal-first virtual OS / advanced operator console in Rust.</strong><br>
   Simulated kernel. VFS. Process table. Audit log. Secure-by-default shell. Futuristic Neo Tokyo UI.
-</p>
-
-<p align="center">
-  <img src="assets/phase1-rainbow-logo.svg" alt="Phase1 rainbow neon P app icon" width="180">
 </p>
 
 **Phase1** is a Rust-built, terminal-first educational virtual operating-system console. It runs as a safe userspace simulator while modeling practical OS and cybersecurity concepts: boot profiles, a virtual kernel, a VFS, process scheduling, `/proc`, `/dev`, `/var/log`, PCIe-style hardware views, guarded networking, command capability metadata, shell history, pipelines, runtime management, update tooling, local operations logging, and a guarded terminal browser.
@@ -20,7 +16,7 @@ Phase1 is designed to feel like a futuristic hacker/operator console while stayi
 ## Current status
 
 - Current package version on `master`: **v3.10.9-dev**
-- Latest tagged release: **v3.10.6**
+- Latest tagged release: **v3.10.7**
 - Current development channel: **bleeding-edge**
 - Stable compatibility base: **v3.6.0**
 - Default branch: **master**
@@ -28,7 +24,7 @@ Phase1 is designed to feel like a futuristic hacker/operator console while stayi
 - Default security posture: **safe mode on, host tools off**
 - Version scheme: **MAJOR.MINOR.PATCH[-dev]**
 
-The package/application version is now the booted system version. The boot screen, ready line, `/proc/version`, dashboard, audit boot record, in-system quick start, and shutdown banner dynamically reflect `CARGO_PKG_VERSION`. Stable comparison still references the historical stable base where relevant.
+The package/application version is the booted system version. The boot screen, ready line, `/proc/version`, dashboard, audit boot record, in-system quick start, and shutdown banner dynamically reflect `CARGO_PKG_VERSION`. Stable comparison still references the historical stable base where relevant.
 
 Patch builds ending in `-dev` should be treated as bleeding-edge until promoted and tagged.
 
@@ -148,7 +144,7 @@ Because it is inside `/home`, editing it in persistent VAULT mode can override t
 
 ## Version behavior
 
-Phase1 now dynamically reports the active package version in runtime surfaces:
+Phase1 dynamically reports the active package version in runtime surfaces:
 
 ```text
 boot card version        v<CARGO_PKG_VERSION>
@@ -177,8 +173,7 @@ cat readme.txt
 ### Advanced Operator Console UI
 
 - Neo Tokyo / futuristic terminal interface
-- Minimal neon banner in `assets/phase1-banner.svg`
-- Rainbow P app icon/logo in `assets/phase1-rainbow-logo.svg`
+- Premium neon advertisement logo in `assets/phase1-banner.svg`
 - Static boot timestamp to avoid redraw glitches on older/narrow terminals
 - Host-aware boot defaults for laptop, desktop, mobile, ASCII, and color terminals
 - Laptop and desktop UI modes
@@ -269,6 +264,16 @@ browser https://github.com/Bryforge/phase1
 ```
 
 Browser use is still host-backed, so enable SHIELD off + TRUST HOST first or launch through `scripts/phase1-runtimes.sh`.
+
+### Terminal idle-enter guard
+
+Phase1 includes a raw-input idle guard for terminals that may send a stale Enter when a mobile SSH session wakes or returns from another screen.
+
+- enabled by default
+- ignores suspicious stale empty Enter events after idle/resume-style gaps
+- can be disabled when a terminal does not need the protection
+
+This is mainly for Termius/mobile SSH behavior, but it is safe for normal shells.
 
 ### Virtual OS simulation
 
@@ -612,19 +617,13 @@ SECURITY_REVIEW.md
 
 ## Project assets
 
-Brand banner:
+Primary README advertisement logo:
 
 ```text
 assets/phase1-banner.svg
 ```
 
-App icon / logo:
-
-```text
-assets/phase1-rainbow-logo.svg
-```
-
-Splash / UI assets may also live in `assets/`.
+Additional app-icon/logo assets may also live in `assets/`, but the README now uses the single advertisement logo above for brand consistency.
 
 ## License
 
