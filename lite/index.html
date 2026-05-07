@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Phase1 Lite</title>
+  <meta name="description" content="A lightweight fallback version of the Phase1 website for Raspberry Pi, older laptops, low-power browsers, and reduced-motion environments.">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#02030a">
+  <link rel="canonical" href="https://bryforge.github.io/phase1/lite/">
+  <link rel="stylesheet" href="./lite.css">
+</head>
+<body>
+  <header class="shell">
+    <nav class="nav" aria-label="Lite navigation">
+      <a class="brand" href="../">PHASE1</a>
+      <div class="links">
+        <a href="../">Full site</a>
+        <a href="../wiki/">Wiki</a>
+        <a href="https://github.com/Bryforge/phase1">GitHub</a>
+        <a href="https://www.buymeacoffee.com/bryforge">Support</a>
+      </div>
+    </nav>
+
+    <main>
+      <section class="panel intro">
+        <div>
+          <p class="eyebrow">lite mode · Raspberry Pi friendly · no canvas</p>
+          <h1>Phase1 without the heavy visuals.</h1>
+          <p class="lead">This fallback keeps the Phase1 identity while removing the animation stack: no canvas, no particle loop, no moving scanlines, and no required JavaScript.</p>
+          <div class="actions">
+            <a class="button primary" href="../wiki/">Open Wiki Hub</a>
+            <a class="button" href="https://github.com/Bryforge/phase1">Open GitHub</a>
+            <a class="button" href="../">Return to Full Site</a>
+          </div>
+        </div>
+        <div class="mark">P1</div>
+      </section>
+
+      <section class="grid">
+        <article class="card"><span>01</span><h2>Virtual OS console</h2><p>Rust-built shell, simulated kernel, VFS, process views, and operator-style commands.</p></article>
+        <article class="card"><span>02</span><h2>Safe by default</h2><p>Guarded host tools, visible capabilities, audit mindset, and explicit trust gates.</p></article>
+        <article class="card"><span>03</span><h2>Docs first</h2><p>Quick start, command map, runtime roadmap, tutorials, and troubleshooting in the wiki hub.</p></article>
+      </section>
+
+      <section class="panel">
+        <p class="eyebrow">quick start</p>
+        <h2>Run Phase1 locally.</h2>
+        <pre><code>git clone https://github.com/Bryforge/phase1.git
+cd phase1
+cargo run</code></pre>
+        <p>Inside Phase1, start with <code>help</code>, <code>wiki</code>, <code>security</code>, <code>sysinfo</code>, and <code>roadmap</code>.</p>
+      </section>
+
+      <section class="panel">
+        <p class="eyebrow">useful commands</p>
+        <h2>Start with these.</h2>
+        <div class="command-list">
+          <code>help</code><span>show commands and shell hints</span>
+          <code>wiki</code><span>open the in-system docs overview</span>
+          <code>security</code><span>review guardrails and defaults</span>
+          <code>avim &lt;file&gt;</code><span>edit VFS files in the native editor</span>
+          <code>storage status</code><span>inspect guarded storage settings</span>
+          <code>lang roadmap</code><span>view runtime support planning</span>
+        </div>
+      </section>
+
+      <section class="panel">
+        <p class="eyebrow">founder profile</p>
+        <h2>Built by Chase Bryan and Bryforge.</h2>
+        <p>Phase1 is the flagship Bryforge build: a terminal-first system experiment for learning, operator workflows, virtual OS ideas, and developer tooling.</p>
+        <a class="button primary" href="https://www.buymeacoffee.com/bryforge">Buy me a coffee</a>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>PHASE1 Lite</span>
+      <span><a href="../?full=1">Full animated site</a></span>
+    </footer>
+  </header>
+</body>
+</html>
