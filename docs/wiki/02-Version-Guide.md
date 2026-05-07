@@ -1,13 +1,13 @@
 # Version Guide
 
-![Edge](https://img.shields.io/badge/edge-v3.10.9--dev-00d8ff) ![Stable](https://img.shields.io/badge/stable-v3.10.7-39ff88) ![Base](https://img.shields.io/badge/compatibility-v3.6.0-7f8cff)
+![Edge](https://img.shields.io/badge/edge-v4.0.0--dev-00d8ff) ![Stable](https://img.shields.io/badge/stable-v3.10.9-39ff88) ![Base](https://img.shields.io/badge/compatibility-v3.6.0-7f8cff)
 
 Phase1 has three version concepts that users may see.
 
 | Name | Current value | Meaning |
 | --- | --- | --- |
-| Edge build | `v3.10.9-dev` | Current `master` development version |
-| Stable release | `v3.10.7` | Latest tagged non-dev release line |
+| Edge build | `v4.0.0-dev` | Current `master` development version |
+| Stable release | `v3.10.9` | Latest tagged non-dev release line |
 | Compatibility base | `v3.6.0` | Historical stable base used by compatibility comparisons |
 
 ## Runtime version behavior
@@ -41,11 +41,10 @@ exit / shutdown banner    shutdown: phase1 <CARGO_PKG_VERSION>
 
 Use an edge release when the version ends in `-dev` or when new behavior is still being validated.
 
-Examples:
+Current edge example:
 
 ```text
-v3.10.8-dev
-v3.10.9-dev
+v4.0.0-dev
 ```
 
 Edge builds are best for testing:
@@ -56,15 +55,16 @@ Edge builds are best for testing:
 - new UI modes
 - update workflow changes
 - documentation changes that follow active development
+- Base1 integration work before stable promotion
 
 ## Stable release policy
 
 Use a stable release when the version has no `-dev` suffix and has passed the full validation suite.
 
-Example:
+Current stable release:
 
 ```text
-v3.10.7
+v3.10.9
 ```
 
 Stable builds are best for demos, README screenshots, public posts, and tagged release notes.
@@ -87,20 +87,25 @@ cat /proc/version
 ## Promote edge to stable
 
 > [!IMPORTANT]
-> Only promote after formatting and tests pass.
+> Only promote after formatting, Clippy, tests, audit, and dependency policy checks pass.
 
 ```bash
 cargo fmt --all -- --check
 cargo check --all-targets
+cargo clippy --all-targets -- -D warnings
 cargo test --all-targets
+cargo audit
+cargo deny check
 ```
 
 Then remove the `-dev` suffix from `Cargo.toml`, update `Cargo.lock`, update README/wiki version references, run validation again, commit, and tag.
 
+Future v4 promotion example:
+
 ```bash
 git status
 git log -1 --oneline
-git tag v3.10.9
+git tag v4.0.0
 git push origin master
-git push origin v3.10.9
+git push origin v4.0.0
 ```
