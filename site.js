@@ -6,6 +6,7 @@ let width = 0;
 let height = 0;
 let stars = [];
 let comets = [];
+let animationFrame = 0;
 
 function resize() {
   const ratio = Math.min(window.devicePixelRatio || 1, 2);
@@ -17,9 +18,10 @@ function resize() {
   canvas.style.height = `${height}px`;
   ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
 
-  const starCount = Math.min(220, Math.floor((width * height) / 6200));
+  const density = prefersReducedMotion ? 12000 : 6200;
+  const starCount = Math.min(prefersReducedMotion ? 90 : 220, Math.floor((width * height) / density));
   stars = Array.from({ length: starCount }, () => makeStar(true));
-  comets = Array.from({ length: 3 }, (_, idx) => makeComet(idx));
+  comets = Array.from({ length: prefersReducedMotion ? 0 : 3 }, (_, idx) => makeComet(idx));
 }
 
 function makeStar(randomizeY = false) {
@@ -63,10 +65,12 @@ function drawNebula(time) {
 }
 
 function drawStar(star, time) {
-  star.x += star.vx;
-  star.y += star.vy;
-  star.pulse += 0.018;
-  star.hue = (star.hue + 0.08) % 360;
+  if (!prefersReducedMotion) {
+    star.x += star.vx;
+    star.y += star.vy;
+    star.pulse += 0.018;
+    star.hue = (star.hue + 0.08) % 360;
+  }
 
   if (star.y > height + 10 || star.x < -10 || star.x > width + 10) {
     Object.assign(star, makeStar(false));
@@ -122,9 +126,143 @@ function frame(time) {
     }
   }
 
-  requestAnimationFrame(frame);
+  animationFrame = requestAnimationFrame(frame);
+}
+
+function setupNavigation() {
+  const toggle = document.querySelector(".nav-toggle");
+  const links = document.getElementById("nav-links");
+  if (!toggle || !links) return;
+
+  toggle.addEventListener("click", () => {
+    const expanded = toggle.getAttribute("aria-expanded") === "true";
+    toggle.setAttribute("aria-expanded", String(!expanded));
+    links.classList.toggle("is-open", !expanded);
+  });
+
+  links.addEventListener("click", (event) => {
+    if (event.target instanceof HTMLAnchorElement) {
+      toggle.setAttribute("aria-expanded", "false");
+      links.classList.remove("is-open");
+    }
+  });
+}
+
+function setupReveals() {
+  const revealEls = Array.from(document.querySelectorAll(".reveal"));
+  if (prefersReducedMotion || !("IntersectionObserver" in window)) {
+    revealEls.forEach((el) => el.classList.add("is-visible"));
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      }
+    },
+    { threshold: 0.14 },
+  );
+
+  revealEls.forEach((el) => observer.observe(el));
+}
+
+const demoResponses = {
+  help: [
+    "available demo commands:",
+    "  help        show command list",
+    "  version     show Phase1 version track",
+    "  sysinfo     inspect simulated system profile",
+    "  wiki-quick  open the quick operator guide",
+    "  security    show safe-mode posture",
+  ].join("\n"),
+  version: [
+    "Phase1 // Advanced Operator Kernel",
+    "edge: v4.0.0-dev",
+    "stable: v3.10.9",
+    "compatibility base: v3.6.0",
+    "language: Rust",
+  ].join("\n"),
+  sysinfo: [
+    "system: phase1 virtual OS console",
+    "kernel: simulated operator kernel",
+    "vfs: online",
+    "process table: available",
+    "audit log: enabled",
+    "browser: guarded",
+  ].join("\n"),
+  "wiki-quick": [
+    "wiki-quick:",
+    "  1. clone the repo",
+    "  2. run cargo run",
+    "  3. type help, security, sysinfo, wiki",
+    "  4. keep safe mode on unless you trust the host workflow",
+  ].join("\n"),
+  security: [
+    "security posture:",
+    "  safe mode: on by default",
+    "  host tools: guarded",
+    "  secrets: never required for normal use",
+    "  values: secure · private · powerful · open",
+  ].join("\n"),
+  clear: "",
+};
+
+function setupTerminalDemo() {
+  const form = document.getElementById("terminal-form");
+  const input = document.getElementById("terminal-input");
+  const output = document.getElementById("terminal-output");
+  const quickCommands = document.querySelectorAll("[data-command]");
+  if (!form || !input || !output) return;
+
+  const history = [];
+
+  const print = (text) => {
+    output.textContent = text;
+    output.scrollTop = output.scrollHeight;
+  };
+
+  const append = (command, response) => {
+    if (command === "clear") {
+      history.length = 0;
+      print("phase1 demo reset. type help to begin.");
+      return;
+    }
+
+    history.push(`phase1://root ~ # ${command}`);
+    history.push(response || `unknown command: ${command}\ntype help for available demo commands.`);
+    print(history.slice(-18).join("\n\n"));
+  };
+
+  print([
+    "Phase1 browser console demo",
+    "safe mode: on // host tools: guarded",
+    "type help, version, sysinfo, wiki-quick, security, or clear",
+  ].join("\n"));
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const command = input.value.trim().toLowerCase();
+    if (!command) return;
+    append(command, demoResponses[command]);
+    input.value = "";
+  });
+
+  quickCommands.forEach((button) => {
+    button.addEventListener("click", () => {
+      const command = button.getAttribute("data-command") || "help";
+      append(command, demoResponses[command]);
+    });
+  });
 }
 
 resize();
-requestAnimationFrame(frame);
-window.addEventListener("resize", resize);
+setupNavigation();
+setupReveals();
+setupTerminalDemo();
+animationFrame = requestAnimationFrame(frame);
+window.addEventListener("resize", resize, { passive: true });
+window.addEventListener("pagehide", () => cancelAnimationFrame(animationFrame));
