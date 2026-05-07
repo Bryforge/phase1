@@ -36,15 +36,16 @@ fn validate() -> Result<(), String> {
 }
 
 fn security_review() -> Result<(), String> {
-    println!("phase1 security review checklist");
-    println!("- inspect src/policy.rs for safe-mode and host-tool gates");
-    println!("- inspect src/ops_log.rs and src/history.rs for credential redaction");
-    println!("- inspect src/registry.rs for command capability metadata");
-    println!("- inspect SECURITY.md and SECURITY_REVIEW.md for user-facing claims");
-    println!("- confirm host network mutation paths require explicit opt-in");
-    println!("- confirm VFS-only editors do not gain host shell escape paths");
+    println!("phase1 review checklist");
+    println!("- inspect policy gates");
+    println!("- inspect log and history redaction");
+    println!("- inspect command capability metadata");
+    println!("- inspect user-facing safety docs");
     println!();
-    run("cargo", &["test", "--workspace", "policy", "history", "ops_log"])
+    run("cargo", &["test", "--workspace", "policy"])?;
+    run("cargo", &["test", "--workspace", "history"])?;
+    run("cargo", &["test", "--workspace", "ops_log"])?;
+    Ok(())
 }
 
 fn run(program: &str, args: &[&str]) -> Result<(), String> {
@@ -70,6 +71,6 @@ fn print_help() {
     println!("  check     cargo check --workspace --all-targets");
     println!("  test      cargo test --workspace --all-targets");
     println!("  docs      cargo doc --workspace --no-deps");
-    println!("  security  print security checklist and run targeted tests");
+    println!("  security  print review checklist and run targeted tests");
     println!("  validate  run fmt, check, and test");
 }
