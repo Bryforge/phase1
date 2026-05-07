@@ -160,7 +160,10 @@ impl Browser {
                 out.push_str(&format!("  [{}] {} -> {}\n", idx + 1, label, link.url));
             }
             if rendered.links.len() > 25 {
-                out.push_str(&format!("  ... {} more links omitted\n", rendered.links.len() - 25));
+                out.push_str(&format!(
+                    "  ... {} more links omitted\n",
+                    rendered.links.len() - 25
+                ));
             }
         }
 
@@ -286,7 +289,8 @@ impl Browser {
             link.label = cleanup_inline(&decode_entities(&link.label));
         }
         page.links.retain(|link| !link.url.trim().is_empty());
-        page.links.dedup_by(|a, b| a.url == b.url && a.label == b.label);
+        page.links
+            .dedup_by(|a, b| a.url == b.url && a.label == b.label);
 
         if page.text.trim().is_empty() {
             page.text = "browser: fetched page but no readable text was found".to_string();
@@ -294,6 +298,7 @@ impl Browser {
         page
     }
 
+    #[cfg(test)]
     fn render_text(&self, html: &str) -> String {
         self.render_html(html, "https://phase1.local/").text
     }
@@ -327,7 +332,10 @@ fn normalize_url(raw: &str) -> Result<String, String> {
         return Err("only http:// and https:// URLs are allowed".to_string());
     }
     if url_authority(&normalized).is_some_and(|authority| authority.contains('@')) {
-        return Err("URL credentials are blocked; do not put usernames, passwords, or tokens in browser URLs".to_string());
+        return Err(
+            "URL credentials are blocked; do not put usernames, passwords, or tokens in browser URLs"
+                .to_string(),
+        );
     }
     match url_authority(&normalized) {
         Some(authority) if !authority.trim().is_empty() => Ok(normalized),
@@ -426,7 +434,9 @@ fn attr_value(tag: &str, wanted: &str) -> Option<String> {
             return stripped.split_once('"').map(|(value, _)| value.to_string());
         }
         if let Some(stripped) = rest.strip_prefix('\'') {
-            return stripped.split_once('\'').map(|(value, _)| value.to_string());
+            return stripped
+                .split_once('\'')
+                .map(|(value, _)| value.to_string());
         }
         return Some(
             rest.split_whitespace()
@@ -439,7 +449,10 @@ fn attr_value(tag: &str, wanted: &str) -> Option<String> {
 }
 
 fn is_skip_tag(name: &str) -> bool {
-    matches!(name, "script" | "style" | "noscript" | "svg" | "canvas" | "iframe")
+    matches!(
+        name,
+        "script" | "style" | "noscript" | "svg" | "canvas" | "iframe"
+    )
 }
 
 fn is_heading_tag(name: &str) -> bool {
@@ -595,7 +608,10 @@ fn resolve_link(base_url: &str, href: &str) -> Option<String> {
         return Some(href.to_string());
     }
     if let Some(stripped) = href.strip_prefix("//") {
-        let scheme = base_url.split_once("://").map(|(scheme, _)| scheme).unwrap_or("https");
+        let scheme = base_url
+            .split_once("://")
+            .map(|(scheme, _)| scheme)
+            .unwrap_or("https");
         return Some(format!("{scheme}://{stripped}"));
     }
     let origin = url_origin(base_url)?;
