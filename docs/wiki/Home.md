@@ -26,6 +26,7 @@ Welcome to the Phase1 manual. This wiki source reflects the current edge build a
 9. [Troubleshooting](09-Troubleshooting.md)
 10. [Publish to GitHub Wiki](10-Publish-to-GitHub-Wiki.md)
 11. [Tutorials](11-Tutorials.md)
+12. [In-System Wiki](12-In-System-Wiki.md)
 
 ## What Phase1 is
 
@@ -42,6 +43,8 @@ Phase1 is a terminal-first virtual OS and advanced operator console written in R
 > ```text
 > help
 > cat readme.txt
+> wiki
+> wiki-quick
 > version --compare
 > security
 > roadmap
@@ -53,6 +56,8 @@ Phase1 is a terminal-first virtual OS and advanced operator console written in R
 | --- | --- |
 | Show command map | `help` |
 | Read in-system guide | `cat readme.txt` |
+| Open in-system wiki index | `wiki` |
+| Open in-system wiki quick start | `wiki-quick` |
 | Check current version | `version` |
 | Compare stable and edge | `version --compare` |
 | Inspect security posture | `security` |
@@ -68,6 +73,7 @@ Phase1 is a terminal-first virtual OS and advanced operator console written in R
 | Path | Best first page |
 | --- | --- |
 | New user | [Quick Start](01-Quick-Start.md) |
+| In-system wiki commands | [In-System Wiki](12-In-System-Wiki.md) |
 | Operator commands | [Command Manual](04-Command-Manual.md) |
 | Python/Rust/C | [Language Runtimes](07-Language-Runtimes.md) |
 | Browser/network | [Browser and Networking](06-Browser-and-Networking.md) |
@@ -75,4 +81,4 @@ Phase1 is a terminal-first virtual OS and advanced operator console written in R
 
 ## Manual maintenance rule
 
-When the Cargo package version changes, update this manual version matrix, README status, and release workflow examples together.
+When the Cargo package version changes, update this manual version matrix, README status, in-system `wiki-*` pages, and release workflow examples together.
