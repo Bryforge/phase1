@@ -1,13 +1,13 @@
 # Phase1 User Manual
 
-![Edge](https://img.shields.io/badge/edge-v4.0.0--dev-00d8ff) ![Stable](https://img.shields.io/badge/stable-v3.10.9-39ff88) ![Base](https://img.shields.io/badge/compatibility-v3.6.0-7f8cff)
+![Stable](https://img.shields.io/badge/stable-v4.0.0-39ff88) ![Previous Stable](https://img.shields.io/badge/previous%20stable-v3.10.9-7f8cff) ![Base](https://img.shields.io/badge/compatibility-v3.6.0-7f8cff)
 
-Welcome to the Phase1 manual. This wiki source reflects the current edge build and the current stable release line.
+Welcome to the Phase1 manual. This wiki source reflects the current stable release and the historical compatibility line.
 
 | Track | Version | Use it for |
 | --- | --- | --- |
-| Edge | `v4.0.0-dev` | Active development, editor reliability, terminal readability, Linux/Raspberry Pi compatibility |
-| Stable | `v3.10.9` | Stable reference usage and general demos |
+| Stable | `v4.0.0` | Current stable usage, public demos, website, docs, and release notes |
+| Previous stable | `v3.10.9` | Previous stable reference usage and compatibility checks |
 | Compatibility base | `v3.6.0` | Historical stable comparison shown by some in-app version checks |
 
 > [!NOTE]
@@ -27,11 +27,11 @@ Welcome to the Phase1 manual. This wiki source reflects the current edge build a
 10. [Publish to GitHub Wiki](10-Publish-to-GitHub-Wiki.md)
 11. [Tutorials](11-Tutorials.md)
 12. [In-System Wiki](12-In-System-Wiki.md)
-13. [v4 Edge Manual](12-v4-Edge-Manual.md)
+13. [v4 Stable Manual](12-v4-Edge-Manual.md)
 
 ## What Phase1 is
 
-Phase1 is a terminal-first virtual OS and advanced operator console written in Rust. It includes a simulated kernel, virtual filesystem, process table, audit log, guarded browser, guarded network inspection, language runtime manager, storage helper, update protocol, modal editor, and Neo Tokyo style terminal interface.
+Phase1 is a terminal-first virtual OS and advanced operator console written in Rust. It includes a simulated kernel, virtual filesystem, process table, audit log, guarded browser, guarded network inspection, language runtime manager, storage helper, update protocol, modal editor, Base1 secure-host foundation, and Neo Tokyo style terminal interface.
 
 ## Core rules
 
@@ -60,7 +60,7 @@ Phase1 is a terminal-first virtual OS and advanced operator console written in R
 | Open in-system wiki index | `wiki` |
 | Open in-system wiki quick start | `wiki-quick` |
 | Check current version | `version` |
-| Compare stable and edge | `version --compare` |
+| Compare stable and previous lines | `version --compare` |
 | Inspect security posture | `security` |
 | Show dashboard | `dash` |
 | Show system info | `sysinfo` |
@@ -75,7 +75,7 @@ Phase1 is a terminal-first virtual OS and advanced operator console written in R
 | Path | Best first page |
 | --- | --- |
 | New user | [Quick Start](01-Quick-Start.md) |
-| v4 edge | [v4 Edge Manual](12-v4-Edge-Manual.md) |
+| v4 stable | [v4 Stable Manual](12-v4-Edge-Manual.md) |
 | In-system wiki commands | [In-System Wiki](12-In-System-Wiki.md) |
 | Operator commands | [Command Manual](04-Command-Manual.md) |
 | Python/Rust/C | [Language Runtimes](07-Language-Runtimes.md) |
@@ -84,4 +84,4 @@ Phase1 is a terminal-first virtual OS and advanced operator console written in R
 
 ## Manual maintenance rule
 
-When the Cargo package version changes, update this manual version matrix, README status, in-system `wiki-*` pages, and release workflow examples together.
+When the Cargo package version changes, update this manual version matrix, README status, in-system `wiki-*` pages, website demo output, and release workflow examples together.
