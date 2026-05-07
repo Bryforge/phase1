@@ -11,7 +11,7 @@ pub fn edit(vfs: &mut Vfs, filename: &str) {
     let mut buffer = vfs.cat(filename).unwrap_or_default();
 
     println!("ned: editing {}", filename);
-    println!("Commands: single '.' or ':wq' saves and exits; ':q' exits without saving.");
+    println!("Commands: single '.' or ':wq' saves the VFS file and exits; ':w' saves without exiting; ':q' exits without saving.");
     if !buffer.is_empty() {
         println!("--- current content ---");
         print!("{}", buffer);
@@ -34,10 +34,17 @@ pub fn edit(vfs: &mut Vfs, filename: &str) {
         let trimmed = line.trim_end_matches(['\r', '\n']);
 
         match trimmed {
-            "." | ":wq" => match vfs.write_file(filename, &buffer, false) {
+            ":w" => match vfs.write_file(filename, &buffer, false) {
                 Ok(_) => println!("Saved {}", filename),
                 Err(e) => println!("Save failed: {}", e),
             },
+            "." | ":wq" => {
+                match vfs.write_file(filename, &buffer, false) {
+                    Ok(_) => println!("Saved {}", filename),
+                    Err(e) => println!("Save failed: {}", e),
+                }
+                return;
+            }
             ":q" => {
                 println!("Exited without saving");
                 return;
@@ -48,7 +55,5 @@ pub fn edit(vfs: &mut Vfs, filename: &str) {
                 continue;
             }
         }
-
-        return;
     }
 }
