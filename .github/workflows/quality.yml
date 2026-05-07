@@ -1,0 +1,45 @@
+name: Quality
+
+on:
+  pull_request:
+    branches: [master, main]
+  push:
+    branches: ["*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality-system:
+    name: quality-system
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install stable Rust toolchain
+        run: |
+          rustup toolchain install stable --profile minimal --component rustfmt --component clippy
+          rustup default stable
+          rustc --version
+          cargo --version
+
+      - name: Generate lockfile
+        run: cargo generate-lockfile
+
+      - name: Check quality files
+        run: sh scripts/quality-check.sh files
+
+      - name: Check script syntax
+        run: sh scripts/quality-check.sh scripts
+
+      - name: Generate quality score
+        run: sh scripts/quality-check.sh score
+
+      - name: Run quality system tests
+        run: cargo test --test quality_system
