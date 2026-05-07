@@ -10,7 +10,6 @@ fn main() -> ExitCode {
         "check" => run("cargo", &["check", "--workspace", "--all-targets"]),
         "test" => run("cargo", &["test", "--workspace", "--all-targets"]),
         "doc" | "docs" => run("cargo", &["doc", "--workspace", "--no-deps"]),
-        "security" => security_review(),
         "validate" | "all" => validate(),
         "help" | "-h" | "--help" => {
             print_help();
@@ -35,19 +34,6 @@ fn validate() -> Result<(), String> {
     Ok(())
 }
 
-fn security_review() -> Result<(), String> {
-    println!("phase1 review checklist");
-    println!("- inspect policy gates");
-    println!("- inspect log and history redaction");
-    println!("- inspect command capability metadata");
-    println!("- inspect user-facing safety docs");
-    println!();
-    run("cargo", &["test", "--workspace", "policy"])?;
-    run("cargo", &["test", "--workspace", "history"])?;
-    run("cargo", &["test", "--workspace", "ops_log"])?;
-    Ok(())
-}
-
 fn run(program: &str, args: &[&str]) -> Result<(), String> {
     println!("$ {} {}", program, args.join(" "));
     let status = Command::new(program)
@@ -58,7 +44,10 @@ fn run(program: &str, args: &[&str]) -> Result<(), String> {
     if status.success() {
         Ok(())
     } else {
-        Err(format!("command failed with status {status}: {program} {}", args.join(" ")))
+        Err(format!(
+            "command failed with status {status}: {program} {}",
+            args.join(" ")
+        ))
     }
 }
 
@@ -71,6 +60,5 @@ fn print_help() {
     println!("  check     cargo check --workspace --all-targets");
     println!("  test      cargo test --workspace --all-targets");
     println!("  docs      cargo doc --workspace --no-deps");
-    println!("  security  print review checklist and run targeted tests");
     println!("  validate  run fmt, check, and test");
 }
