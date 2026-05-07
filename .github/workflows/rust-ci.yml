@@ -38,6 +38,9 @@ jobs:
       - name: Run Clippy
         run: cargo clippy --all-targets -- -D warnings
 
+      - name: Validate Phase1 Terminal scripts
+        run: sh scripts/test-phase1-terminal.sh
+
       - name: Run tests
         run: cargo test --all-targets
 
