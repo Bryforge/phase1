@@ -1,0 +1,12 @@
+[package]
+name = "phase1-core"
+version = "4.0.0"
+edition = "2021"
+authors = ["Chase Bryan"]
+description = "Reusable Phase1 core library for Base1, automation, and AI-assisted tooling."
+license = "GPL-3.0-only"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
