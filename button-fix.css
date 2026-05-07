@@ -52,7 +52,7 @@
   transform: translateY(1px) scale(0.99);
 }
 
-/* Creator-section cleanup: present one clear creator story, not stacked labels. */
+/* Founder-section cleanup: present one clear Founder profile label, not stacked role labels. */
 .profile-label,
 .founder-copy > .eyebrow {
   display: none !important;
@@ -67,7 +67,7 @@
 }
 
 .founder-copy h2::before {
-  content: "Created by Chase Bryan";
+  content: "Founder profile";
   display: block;
   margin: 0 0 12px;
   color: var(--cyan);
