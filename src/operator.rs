@@ -436,7 +436,10 @@ mod tests {
         assert!(full.contains("controls: dash --compact"));
 
         let compact = dashboard(&mut shell, config(), &["--compact".to_string()]);
-        assert!(compact.contains("PHASE1 DASHBOARD v3.6.0"));
+        assert!(compact.contains(&format!(
+            "PHASE1 DASHBOARD v{}",
+            env!("CARGO_PKG_VERSION")
+        )));
         assert!(compact.contains("CORE  user=root"));
     }
 }
