@@ -4,6 +4,8 @@
 phase1.conf
 phase1.state
 .phase1_history
+phase1.history
+phase1.workspace/
 *.tmp
 *.log
 
@@ -11,15 +13,28 @@ phase1.state
 .env
 .env.*
 !.env.example
+.envrc
 *.pem
 *.key
 *.p12
 *.pfx
+*.asc
+*.gpg
+*.kdbx
+.netrc
+.npmrc
+.pypirc
+.cargo/credentials
+.cargo/credentials.toml
 id_rsa*
+id_dsa*
+id_ecdsa*
 id_ed25519*
 *_token*
 *_secret*
 *_password*
+*_credential*
+*credentials*
 
 # Editor and OS noise
 **/*.rs.bk
