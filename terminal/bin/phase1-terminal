@@ -2,7 +2,9 @@
 set -eu
 
 APP_NAME="Phase1 Terminal"
+VERSION="0.2.0"
 CONFIG_FILE="${PHASE1_TERMINAL_CONFIG:-${XDG_CONFIG_HOME:-$HOME/.config}/phase1/terminal.env}"
+CONFIG_DIR=$(dirname "$CONFIG_FILE")
 
 if [ -f "$CONFIG_FILE" ]; then
     # shellcheck disable=SC1090
@@ -15,6 +17,8 @@ fi
 : "${PHASE1_MOBILE_MODE:=0}"
 : "${PHASE1_DEVICE_MODE:=desktop}"
 : "${PHASE1_ASCII:=0}"
+: "${PHASE1_TERMINAL_PROFILE:=default}"
+: "${PHASE1_TERMINAL_HINTS:=1}"
 
 print_help() {
     cat <<'EOF'
@@ -22,8 +26,22 @@ Phase1 Terminal
 
 Usage:
   phase1-terminal [run] [phase1 args...]
-  phase1-terminal doctor
+  phase1-terminal safe
+  phase1-terminal dev
+  phase1-terminal demo
+  phase1-terminal base1
+  phase1-terminal gina
+  phase1-terminal security
+  phase1-terminal build
+  phase1-terminal check
+  phase1-terminal logs
+  phase1-terminal doctor [--verbose|--json]
+  phase1-terminal config show
+  phase1-terminal config set KEY=VALUE
+  phase1-terminal config reset
+  phase1-terminal profile [list|show|apply NAME]
   phase1-terminal env
+  phase1-terminal version
   phase1-terminal help
 
 Environment:
@@ -36,7 +54,12 @@ Environment:
 Notes:
   The installed command is phase1-terminal.
   The installer creates a terminal alias only when it is safe or explicitly requested.
+  Phase1 Terminal never enables host trust, network mutation, or external AI providers.
 EOF
+}
+
+version() {
+    echo "phase1-terminal $VERSION"
 }
 
 write_title() {
@@ -45,10 +68,16 @@ write_title() {
     fi
 }
 
+json_escape() {
+    printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'
+}
+
 find_phase1_home() {
     if [ "${PHASE1_HOME:-}" != "" ]; then
-        printf '%s\n' "$PHASE1_HOME"
-        return 0
+        if [ -f "$PHASE1_HOME/Cargo.toml" ] || [ -x "$PHASE1_HOME/phase1" ] || [ -x "$PHASE1_HOME/bin/phase1" ]; then
+            printf '%s\n' "$PHASE1_HOME"
+            return 0
+        fi
     fi
 
     if [ -f "Cargo.toml" ] && [ -d "src" ]; then
@@ -61,34 +90,201 @@ find_phase1_home() {
             printf '%s\n' "$candidate"
             return 0
         fi
+        if [ -x "$candidate/phase1" ] || [ -x "$candidate/bin/phase1" ]; then
+            printf '%s\n' "$candidate"
+            return 0
+        fi
     done
 
     return 1
 }
 
+phase1_binary_path() {
+    if phase1_home=$(find_phase1_home); then
+        for candidate in \
+            "$phase1_home/target/release/phase1" \
+            "$phase1_home/target/debug/phase1" \
+            "$phase1_home/bin/phase1" \
+            "$phase1_home/phase1"; do
+            if [ -x "$candidate" ]; then
+                printf '%s\n' "$candidate"
+                return 0
+            fi
+        done
+    fi
+    if command -v phase1 >/dev/null 2>&1; then
+        command -v phase1
+        return 0
+    fi
+    return 1
+}
+
 print_env() {
     cat <<EOF
+PHASE1_TERMINAL_VERSION=$VERSION
 PHASE1_TERMINAL_TITLE=$PHASE1_TERMINAL_TITLE
 PHASE1_TERMINAL_CONFIG=$CONFIG_FILE
+PHASE1_TERMINAL_PROFILE=$PHASE1_TERMINAL_PROFILE
 PHASE1_HOME=${PHASE1_HOME:-}
 PHASE1_THEME=$PHASE1_THEME
 PHASE1_SAFE_MODE=$PHASE1_SAFE_MODE
 PHASE1_MOBILE_MODE=$PHASE1_MOBILE_MODE
 PHASE1_DEVICE_MODE=$PHASE1_DEVICE_MODE
 PHASE1_ASCII=$PHASE1_ASCII
+PHASE1_TERMINAL_HINTS=$PHASE1_TERMINAL_HINTS
 EOF
 }
 
-doctor() {
+ensure_config_dir() {
+    mkdir -p "$CONFIG_DIR"
+}
+
+write_config() {
+    ensure_config_dir
+    cat > "$CONFIG_FILE" <<EOF
+# Phase1 Terminal config
+PHASE1_HOME="${PHASE1_HOME:-}"
+PHASE1_TERMINAL_TITLE="$PHASE1_TERMINAL_TITLE"
+PHASE1_TERMINAL_PROFILE="$PHASE1_TERMINAL_PROFILE"
+PHASE1_THEME="$PHASE1_THEME"
+PHASE1_SAFE_MODE="$PHASE1_SAFE_MODE"
+PHASE1_MOBILE_MODE="$PHASE1_MOBILE_MODE"
+PHASE1_DEVICE_MODE="$PHASE1_DEVICE_MODE"
+PHASE1_ASCII="$PHASE1_ASCII"
+PHASE1_TERMINAL_HINTS="$PHASE1_TERMINAL_HINTS"
+EOF
+}
+
+config_show() {
+    if [ -f "$CONFIG_FILE" ]; then
+        cat "$CONFIG_FILE"
+    else
+        echo "config: not found at $CONFIG_FILE"
+        echo "hint  : run phase1-terminal config reset"
+    fi
+}
+
+config_set() {
+    pair="${1:-}"
+    case "$pair" in
+        PHASE1_HOME=*|PHASE1_TERMINAL_TITLE=*|PHASE1_TERMINAL_PROFILE=*|PHASE1_THEME=*|PHASE1_SAFE_MODE=*|PHASE1_MOBILE_MODE=*|PHASE1_DEVICE_MODE=*|PHASE1_ASCII=*|PHASE1_TERMINAL_HINTS=*)
+            key=${pair%%=*}
+            value=${pair#*=}
+            case "$key" in
+                PHASE1_HOME) PHASE1_HOME=$value ;;
+                PHASE1_TERMINAL_TITLE) PHASE1_TERMINAL_TITLE=$value ;;
+                PHASE1_TERMINAL_PROFILE) PHASE1_TERMINAL_PROFILE=$value ;;
+                PHASE1_THEME) PHASE1_THEME=$value ;;
+                PHASE1_SAFE_MODE) PHASE1_SAFE_MODE=$value ;;
+                PHASE1_MOBILE_MODE) PHASE1_MOBILE_MODE=$value ;;
+                PHASE1_DEVICE_MODE) PHASE1_DEVICE_MODE=$value ;;
+                PHASE1_ASCII) PHASE1_ASCII=$value ;;
+                PHASE1_TERMINAL_HINTS) PHASE1_TERMINAL_HINTS=$value ;;
+            esac
+            write_config
+            echo "config: set $key"
+            ;;
+        "")
+            echo "usage: phase1-terminal config set KEY=VALUE" >&2
+            exit 1
+            ;;
+        *)
+            echo "config: unsupported key. Allowed keys:" >&2
+            echo "  PHASE1_HOME PHASE1_TERMINAL_TITLE PHASE1_TERMINAL_PROFILE PHASE1_THEME" >&2
+            echo "  PHASE1_SAFE_MODE PHASE1_MOBILE_MODE PHASE1_DEVICE_MODE PHASE1_ASCII PHASE1_TERMINAL_HINTS" >&2
+            exit 1
+            ;;
+    esac
+}
+
+config_reset() {
+    PHASE1_TERMINAL_TITLE="$APP_NAME"
+    PHASE1_TERMINAL_PROFILE="default"
+    PHASE1_THEME="cyber"
+    PHASE1_SAFE_MODE="1"
+    PHASE1_MOBILE_MODE="0"
+    PHASE1_DEVICE_MODE="desktop"
+    PHASE1_ASCII="0"
+    PHASE1_TERMINAL_HINTS="1"
+    write_config
+    echo "config: reset $CONFIG_FILE"
+}
+
+profile_list() {
+    cat <<'EOF'
+profiles:
+  default    cyber theme, safe desktop defaults
+  cyber      neon/cyber Phase1 defaults
+  matrix     matrix theme with safe desktop defaults
+  amber      amber theme with safe desktop defaults
+  mono       ASCII/mono-friendly safe profile
+  safe       conservative safe-mode profile
+  developer  developer-friendly theme, still safe by default
+  base1      Base1-focused safe profile
+EOF
+}
+
+apply_profile_vars() {
+    name="$1"
+    case "$name" in
+        default|cyber)
+            PHASE1_TERMINAL_PROFILE="$name"; PHASE1_THEME="cyber"; PHASE1_SAFE_MODE="1"; PHASE1_ASCII="0"; PHASE1_DEVICE_MODE="desktop" ;;
+        matrix)
+            PHASE1_TERMINAL_PROFILE="matrix"; PHASE1_THEME="matrix"; PHASE1_SAFE_MODE="1"; PHASE1_ASCII="0"; PHASE1_DEVICE_MODE="desktop" ;;
+        amber)
+            PHASE1_TERMINAL_PROFILE="amber"; PHASE1_THEME="amber"; PHASE1_SAFE_MODE="1"; PHASE1_ASCII="0"; PHASE1_DEVICE_MODE="desktop" ;;
+        mono)
+            PHASE1_TERMINAL_PROFILE="mono"; PHASE1_THEME="mono"; PHASE1_SAFE_MODE="1"; PHASE1_ASCII="1"; PHASE1_DEVICE_MODE="desktop" ;;
+        safe)
+            PHASE1_TERMINAL_PROFILE="safe"; PHASE1_THEME="cyber"; PHASE1_SAFE_MODE="1"; PHASE1_ASCII="0"; PHASE1_DEVICE_MODE="desktop" ;;
+        developer|dev)
+            PHASE1_TERMINAL_PROFILE="developer"; PHASE1_THEME="synthwave"; PHASE1_SAFE_MODE="1"; PHASE1_ASCII="0"; PHASE1_DEVICE_MODE="desktop" ;;
+        base1)
+            PHASE1_TERMINAL_PROFILE="base1"; PHASE1_THEME="amber"; PHASE1_SAFE_MODE="1"; PHASE1_ASCII="0"; PHASE1_DEVICE_MODE="base1" ;;
+        *)
+            echo "profile: unknown profile '$name'" >&2
+            profile_list >&2
+            exit 1
+            ;;
+    esac
+}
+
+profile_cmd() {
+    sub="${1:-show}"
+    case "$sub" in
+        list) profile_list ;;
+        show) echo "$PHASE1_TERMINAL_PROFILE" ;;
+        apply)
+            apply_profile_vars "${2:-}"
+            write_config
+            echo "profile: applied $PHASE1_TERMINAL_PROFILE"
+            ;;
+        *)
+            echo "usage: phase1-terminal profile [list|show|apply NAME]" >&2
+            exit 1
+            ;;
+    esac
+}
+
+doctor_text() {
+    verbose="${1:-0}"
     echo "Phase1 Terminal doctor"
+    echo "version: $VERSION"
     echo "system : $(uname -s 2>/dev/null || echo unknown)"
     echo "config : $CONFIG_FILE"
+    echo "profile: $PHASE1_TERMINAL_PROFILE"
 
     if phase1_home=$(find_phase1_home); then
         echo "home   : $phase1_home"
     else
         echo "home   : not found"
         echo "hint   : set PHASE1_HOME to your Phase1 repository path"
+    fi
+
+    if bin=$(phase1_binary_path); then
+        echo "binary : $bin"
+    else
+        echo "binary : not built/found"
     fi
 
     if command -v cargo >/dev/null 2>&1; then
@@ -103,17 +299,53 @@ doctor() {
         echo "rustc  : missing"
     fi
 
-    if command -v phase1 >/dev/null 2>&1; then
-        echo "phase1 : $(command -v phase1)"
-    else
-        echo "phase1 : no global phase1 command found; repository launch will use cargo"
+    if [ "$verbose" = "1" ]; then
+        echo "theme  : $PHASE1_THEME"
+        echo "safe   : $PHASE1_SAFE_MODE"
+        echo "device : $PHASE1_DEVICE_MODE"
+        echo "ascii  : $PHASE1_ASCII"
+        echo "hints  : $PHASE1_TERMINAL_HINTS"
+        if phase1_home=$(find_phase1_home); then
+            if [ -f "$phase1_home/plugins/gina.wasm" ] || [ -f "$phase1_home/plugins/gina.wasi" ]; then
+                echo "gina   : plugin present"
+            else
+                echo "gina   : plugin not found in $phase1_home/plugins"
+            fi
+        fi
     fi
 }
 
-run_phase1() {
-    write_title
-    export PHASE1_THEME PHASE1_SAFE_MODE PHASE1_MOBILE_MODE PHASE1_DEVICE_MODE PHASE1_ASCII
+doctor_json() {
+    home=""
+    binary=""
+    cargo=""
+    rustc_value=""
+    if home_value=$(find_phase1_home); then home=$home_value; fi
+    if binary_value=$(phase1_binary_path); then binary=$binary_value; fi
+    if command -v cargo >/dev/null 2>&1; then cargo=$(command -v cargo); fi
+    if command -v rustc >/dev/null 2>&1; then rustc_value=$(rustc --version 2>/dev/null || true); fi
+    printf '{\n'
+    printf '  "version": "%s",\n' "$(json_escape "$VERSION")"
+    printf '  "config": "%s",\n' "$(json_escape "$CONFIG_FILE")"
+    printf '  "profile": "%s",\n' "$(json_escape "$PHASE1_TERMINAL_PROFILE")"
+    printf '  "home": "%s",\n' "$(json_escape "$home")"
+    printf '  "binary": "%s",\n' "$(json_escape "$binary")"
+    printf '  "cargo": "%s",\n' "$(json_escape "$cargo")"
+    printf '  "rustc": "%s",\n' "$(json_escape "$rustc_value")"
+    printf '  "safe_mode": "%s",\n' "$(json_escape "$PHASE1_SAFE_MODE")"
+    printf '  "device_mode": "%s"\n' "$(json_escape "$PHASE1_DEVICE_MODE")"
+    printf '}\n'
+}
 
+doctor() {
+    case "${1:-}" in
+        --json|json) doctor_json ;;
+        --verbose|-v|verbose) doctor_text 1 ;;
+        *) doctor_text 0 ;;
+    esac
+}
+
+phase1_run_command() {
     if phase1_home=$(find_phase1_home); then
         cd "$phase1_home"
     elif command -v phase1 >/dev/null 2>&1; then
@@ -127,16 +359,86 @@ run_phase1() {
     if [ -x "target/release/phase1" ]; then
         exec "target/release/phase1" "$@"
     fi
-
     if [ -x "target/debug/phase1" ]; then
         exec "target/debug/phase1" "$@"
     fi
-
+    if [ -x "bin/phase1" ]; then
+        exec "bin/phase1" "$@"
+    fi
+    if [ -x "./phase1" ]; then
+        exec "./phase1" "$@"
+    fi
     if command -v cargo >/dev/null 2>&1; then
         exec cargo run -- "$@"
     fi
 
     echo "phase1-terminal: cargo is required when no built phase1 binary is present." >&2
+    exit 1
+}
+
+run_phase1() {
+    write_title
+    export PHASE1_THEME PHASE1_SAFE_MODE PHASE1_MOBILE_MODE PHASE1_DEVICE_MODE PHASE1_ASCII
+    phase1_run_command "$@"
+}
+
+run_profile() {
+    apply_profile_vars "$1"
+    shift || true
+    run_phase1 "$@"
+}
+
+run_with_hint() {
+    hint="$1"
+    shift || true
+    if [ "$PHASE1_TERMINAL_HINTS" = "1" ]; then
+        echo "Phase1 Terminal hint: inside Phase1, try: $hint"
+    fi
+    run_phase1 "$@"
+}
+
+build_phase1() {
+    if phase1_home=$(find_phase1_home); then
+        cd "$phase1_home"
+    else
+        echo "build: Phase1 home not found" >&2
+        exit 1
+    fi
+    if command -v cargo >/dev/null 2>&1; then
+        exec cargo build --release
+    fi
+    echo "build: cargo not found" >&2
+    exit 1
+}
+
+check_phase1() {
+    if phase1_home=$(find_phase1_home); then
+        cd "$phase1_home"
+    else
+        echo "check: Phase1 home not found" >&2
+        exit 1
+    fi
+    if command -v cargo >/dev/null 2>&1; then
+        cargo fmt --all -- --check
+        cargo check --all-targets
+        cargo test --all-targets
+        exit 0
+    fi
+    echo "check: cargo not found" >&2
+    exit 1
+}
+
+logs_phase1() {
+    if phase1_home=$(find_phase1_home); then
+        for file in "$phase1_home/phase1.log" "$phase1_home/phase1.history" "$phase1_home/phase1.state"; do
+            if [ -f "$file" ]; then
+                echo "==> $file"
+                tail -n 40 "$file"
+            fi
+        done
+        return 0
+    fi
+    echo "logs: Phase1 home not found" >&2
     exit 1
 }
 
@@ -146,11 +448,62 @@ case "$command_name" in
         shift || true
         run_phase1 "$@"
         ;;
+    safe)
+        shift || true
+        run_profile safe "$@"
+        ;;
+    dev|developer)
+        shift || true
+        run_profile developer "$@"
+        ;;
+    demo)
+        shift || true
+        PHASE1_TERMINAL_TITLE="Phase1 Terminal Demo"
+        run_profile cyber "$@"
+        ;;
+    base1)
+        shift || true
+        run_profile base1 "$@"
+        ;;
+    gina)
+        shift || true
+        run_with_hint "gina security" "$@"
+        ;;
+    security)
+        shift || true
+        run_with_hint "gina security" "$@"
+        ;;
+    build)
+        build_phase1
+        ;;
+    check|validate)
+        check_phase1
+        ;;
+    logs)
+        logs_phase1
+        ;;
     doctor)
-        doctor
+        shift || true
+        doctor "${1:-}"
         ;;
     env)
         print_env
+        ;;
+    config)
+        shift || true
+        case "${1:-show}" in
+            show) config_show ;;
+            set) shift || true; config_set "${1:-}" ;;
+            reset) config_reset ;;
+            *) echo "usage: phase1-terminal config [show|set KEY=VALUE|reset]" >&2; exit 1 ;;
+        esac
+        ;;
+    profile)
+        shift || true
+        profile_cmd "$@"
+        ;;
+    version|--version|-V)
+        version
         ;;
     help|--help|-h)
         print_help
