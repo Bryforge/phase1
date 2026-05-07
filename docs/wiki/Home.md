@@ -1,13 +1,13 @@
 # Phase1 User Manual
 
-![Edge](https://img.shields.io/badge/edge-v3.10.9--dev-00d8ff) ![Stable](https://img.shields.io/badge/stable-v3.10.7-39ff88) ![Base](https://img.shields.io/badge/compatibility-v3.6.0-7f8cff)
+![Edge](https://img.shields.io/badge/edge-v4.0.0--dev-00d8ff) ![Stable](https://img.shields.io/badge/stable-v3.10.9-39ff88) ![Base](https://img.shields.io/badge/compatibility-v3.6.0-7f8cff)
 
 Welcome to the Phase1 manual. This wiki source reflects the current edge build and the current stable release line.
 
 | Track | Version | Use it for |
 | --- | --- | --- |
-| Edge | `v3.10.9-dev` | Active development, browser/network improvements, idle-enter guard, current docs |
-| Stable | `v3.10.7` | Tagged stable release usage and general demos |
+| Edge | `v4.0.0-dev` | Active development, editor reliability, terminal readability, Linux/Raspberry Pi compatibility |
+| Stable | `v3.10.9` | Stable reference usage and general demos |
 | Compatibility base | `v3.6.0` | Historical stable comparison shown by some in-app version checks |
 
 > [!NOTE]
@@ -27,6 +27,7 @@ Welcome to the Phase1 manual. This wiki source reflects the current edge build a
 10. [Publish to GitHub Wiki](10-Publish-to-GitHub-Wiki.md)
 11. [Tutorials](11-Tutorials.md)
 12. [In-System Wiki](12-In-System-Wiki.md)
+13. [v4 Edge Manual](12-v4-Edge-Manual.md)
 
 ## What Phase1 is
 
@@ -63,7 +64,8 @@ Phase1 is a terminal-first virtual OS and advanced operator console written in R
 | Inspect security posture | `security` |
 | Show dashboard | `dash` |
 | Show system info | `sysinfo` |
-| Edit a file | `avim hello.py` |
+| Edit quickly | `ned notes.txt` |
+| Edit with avim | `avim hello.py` |
 | Run browser reader | `browser example.com` |
 | Show language support | `lang support` |
 | Show update protocol | `update protocol` |
@@ -73,6 +75,7 @@ Phase1 is a terminal-first virtual OS and advanced operator console written in R
 | Path | Best first page |
 | --- | --- |
 | New user | [Quick Start](01-Quick-Start.md) |
+| v4 edge | [v4 Edge Manual](12-v4-Edge-Manual.md) |
 | In-system wiki commands | [In-System Wiki](12-In-System-Wiki.md) |
 | Operator commands | [Command Manual](04-Command-Manual.md) |
 | Python/Rust/C | [Language Runtimes](07-Language-Runtimes.md) |
