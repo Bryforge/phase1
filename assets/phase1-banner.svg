@@ -1,58 +1,112 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 520" role="img" aria-labelledby="title desc">
-  <title id="title">Phase1 Minimal Neon Banner</title>
-  <desc id="desc">A minimal Phase1 cyberdeck banner with one central neon rainbow mark, a single PHASE1 wordmark, tagline, and terminal prompt.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1254 1254" role="img" aria-labelledby="title desc">
+  <title id="title">Phase1 Neon Advertisement Logo</title>
+  <desc id="desc">Premium Phase1 advertisement logo with neon rainbow circular tech ring, skyline, circuit detail, bold PHASE1 wordmark, operator kernel tagline, and terminal prompt.</desc>
   <defs>
-    <radialGradient id="bg" cx="50%" cy="42%" r="78%">
-      <stop offset="0%" stop-color="#101735"/>
-      <stop offset="58%" stop-color="#050919"/>
-      <stop offset="100%" stop-color="#01030a"/>
+    <radialGradient id="bg" cx="50%" cy="47%" r="72%">
+      <stop offset="0%" stop-color="#090d22"/>
+      <stop offset="55%" stop-color="#030611"/>
+      <stop offset="100%" stop-color="#00030a"/>
     </radialGradient>
-    <linearGradient id="rainbow" x1="7%" y1="17%" x2="96%" y2="81%">
-      <stop offset="0%" stop-color="#ff1f4b"/>
-      <stop offset="16%" stop-color="#ff8a00"/>
-      <stop offset="32%" stop-color="#fff200"/>
-      <stop offset="48%" stop-color="#39ff4f"/>
-      <stop offset="64%" stop-color="#00f0ff"/>
-      <stop offset="82%" stop-color="#2870ff"/>
-      <stop offset="100%" stop-color="#f026ff"/>
+    <linearGradient id="rainbow" x1="10%" y1="30%" x2="94%" y2="74%">
+      <stop offset="0%" stop-color="#ff184f"/>
+      <stop offset="14%" stop-color="#ff3a16"/>
+      <stop offset="27%" stop-color="#fff000"/>
+      <stop offset="43%" stop-color="#39ff34"/>
+      <stop offset="60%" stop-color="#00ffcb"/>
+      <stop offset="76%" stop-color="#1476ff"/>
+      <stop offset="100%" stop-color="#ff23ff"/>
     </linearGradient>
-    <filter id="glow" x="-35%" y="-45%" width="170%" height="190%">
-      <feGaussianBlur stdDeviation="10" result="blur"/>
-      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0.22  0 1 0 0 0.72  0 0 1 0 1  0 0 0 0.85 0" result="colorGlow"/>
-      <feMerge><feMergeNode in="colorGlow"/><feMergeNode in="SourceGraphic"/></feMerge>
+    <linearGradient id="word" x1="8%" y1="50%" x2="98%" y2="50%">
+      <stop offset="0%" stop-color="#ff2a23"/>
+      <stop offset="19%" stop-color="#ffd21a"/>
+      <stop offset="39%" stop-color="#55ff1e"/>
+      <stop offset="60%" stop-color="#08f0ff"/>
+      <stop offset="80%" stop-color="#3267ff"/>
+      <stop offset="100%" stop-color="#ff24fb"/>
+    </linearGradient>
+    <linearGradient id="circuit" x1="20%" y1="20%" x2="80%" y2="80%">
+      <stop offset="0%" stop-color="#fff000"/>
+      <stop offset="45%" stop-color="#4aff30"/>
+      <stop offset="70%" stop-color="#00eaff"/>
+      <stop offset="100%" stop-color="#a724ff"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="9" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0.22 0 1 0 0 0.85 0 0 1 0 1 0 0 0 0.9 0" result="color"/>
+      <feMerge><feMergeNode in="color"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
-    <filter id="softShadow" x="-20%" y="-35%" width="140%" height="170%">
-      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#000000" flood-opacity="0.65"/>
+    <filter id="heavyGlow" x="-55%" y="-55%" width="210%" height="210%">
+      <feGaussianBlur stdDeviation="18" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0.3 0 1 0 0 0.9 0 0 1 0 1 0 0 0 0.72 0" result="color"/>
+      <feMerge><feMergeNode in="color"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
+    <filter id="shadow" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="16" stdDeviation="22" flood-color="#000" flood-opacity="0.75"/>
+    </filter>
+    <clipPath id="upperCircle"><rect x="200" y="174" width="854" height="312"/></clipPath>
+    <clipPath id="lowerCircle"><rect x="206" y="600" width="848" height="303"/></clipPath>
   </defs>
 
-  <rect width="1600" height="520" rx="44" fill="url(#bg)"/>
+  <rect width="1254" height="1254" fill="url(#bg)"/>
+  <rect width="1254" height="1254" fill="#020511" opacity="0.52"/>
 
-  <g opacity="0.13" stroke="#8eeaff" stroke-width="1.4">
-    <path d="M120 105h1360M120 415h1360M255 70v380M1345 70v380"/>
-    <path d="M120 260h1360M800 70v380" opacity="0.55"/>
+  <g opacity="0.14" stroke="#284b78" stroke-width="1.5">
+    <path d="M160 430h934M160 544h934M160 662h934M160 776h934"/>
+    <path d="M305 225v694M627 165v760M950 225v694"/>
   </g>
 
-  <g transform="translate(800 247)" filter="url(#softShadow)">
-    <circle cx="0" cy="0" r="175" fill="none" stroke="url(#rainbow)" stroke-width="16" opacity="0.92" filter="url(#glow)"/>
-    <path d="M-182 22c58-85 130-129 216-133 56-3 105 6 146 28" fill="none" stroke="url(#rainbow)" stroke-width="13" stroke-linecap="round" opacity="0.85" filter="url(#glow)"/>
-    <g opacity="0.70" stroke="url(#rainbow)" stroke-linecap="round">
-      <path d="M-112 48h82l22 22h66" stroke-width="3" fill="none"/>
-      <path d="M112 48H30L8 70h-66" stroke-width="3" fill="none"/>
-      <path d="M-78 88h65M13 88h65" stroke-width="3"/>
-      <circle cx="-112" cy="48" r="4" fill="#fff200"/>
-      <circle cx="112" cy="48" r="4" fill="#00f0ff"/>
+  <g transform="translate(627 502)" filter="url(#shadow)">
+    <circle r="374" fill="none" stroke="#131d38" stroke-width="8" opacity="0.9"/>
+    <circle r="308" fill="none" stroke="#1f355c" stroke-width="2" opacity="0.8"/>
+    <circle r="253" fill="none" stroke="#2f466d" stroke-width="1.4" opacity="0.7"/>
+
+    <g filter="url(#heavyGlow)">
+      <circle r="356" fill="none" stroke="url(#rainbow)" stroke-width="22" stroke-linecap="round" stroke-dasharray="184 24 225 22 172 18 98 24" transform="rotate(-128)"/>
+      <circle r="396" fill="none" stroke="url(#rainbow)" stroke-width="7" stroke-linecap="round" stroke-dasharray="120 32 330 38 185 52 95 64" transform="rotate(-120)" opacity="0.96"/>
+      <circle r="322" fill="none" stroke="url(#rainbow)" stroke-width="6" stroke-linecap="round" stroke-dasharray="240 38 162 42 94 46" transform="rotate(-96)" opacity="0.76"/>
     </g>
   </g>
 
-  <g filter="url(#glow)">
-    <text x="800" y="255" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="128" font-weight="900" letter-spacing="10" fill="url(#rainbow)" stroke="#071024" stroke-width="6" paint-order="stroke fill">PHASE1</text>
-    <text x="800" y="326" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="800" letter-spacing="10" fill="url(#rainbow)">ADVANCED OPERATOR KERNEL</text>
-    <text x="800" y="371" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" letter-spacing="6" fill="url(#rainbow)">SECURE | PRIVATE | POWERFUL | OPEN</text>
+  <g clip-path="url(#upperCircle)" filter="url(#glow)" opacity="0.98">
+    <g transform="translate(302 296)" fill="none" stroke="url(#rainbow)" stroke-width="2">
+      <path d="M0 142v-42M18 142v-62M36 142v-30M54 142v-78M72 142v-51M92 142v-95M112 142v-66M134 142V30M158 142V66M184 142V10M210 142V-58M242 142V42M272 142V0M304 142V-26M336 142V-88M372 142V-152M412 142V-54M454 142V-126M494 142V-77M536 142V-120M582 142V-48M630 142V-91M674 142V-38"/>
+      <path d="M0 142h690" stroke-width="1.4" opacity="0.52"/>
+    </g>
+    <g transform="translate(280 214)" stroke="url(#rainbow)" stroke-width="2.1" fill="none" opacity="0.86">
+      <path d="M0 225h22V156h24v69h32V108h27v117h43V61h28v164h43V21h30v204h46V82h28v143h45V45h30v180h48V0h35v225h44V75h31v150h43V38h31v187h43V116h26v109h30V140h22v85"/>
+    </g>
   </g>
 
-  <g transform="translate(592 407)" filter="url(#softShadow)">
-    <rect width="416" height="50" rx="25" fill="#080d1d" stroke="#7cf8ff" stroke-width="2" opacity="0.96"/>
-    <text x="208" y="33" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="22" font-weight="800" letter-spacing="1" fill="#f6fbff">phase1://root ~ #</text>
+  <g clip-path="url(#lowerCircle)" filter="url(#glow)" opacity="0.92" stroke="url(#circuit)" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <g stroke-width="3">
+      <path d="M328 676h160l32 32h78"/><path d="M926 676H764l-31 32h-75"/>
+      <path d="M351 720h124l42 44h82"/><path d="M903 720H778l-42 44h-82"/>
+      <path d="M376 766h103l39 39h86"/><path d="M878 766H775l-39 39h-86"/>
+      <path d="M405 814h80l34 34h85"/><path d="M849 814h-80l-34 34h-85"/>
+      <path d="M496 630v246"/><path d="M626 609v291"/><path d="M758 630v246"/>
+      <path d="M582 635v94h45"/><path d="M672 635v94h-45"/>
+    </g>
+    <g fill="#061123" stroke-width="2.5">
+      <circle cx="328" cy="676" r="6"/><circle cx="926" cy="676" r="6"/>
+      <circle cx="351" cy="720" r="5"/><circle cx="903" cy="720" r="5"/>
+      <circle cx="376" cy="766" r="5"/><circle cx="878" cy="766" r="5"/>
+      <circle cx="405" cy="814" r="5"/><circle cx="849" cy="814" r="5"/>
+      <circle cx="496" cy="630" r="5"/><circle cx="758" cy="630" r="5"/>
+    </g>
+  </g>
+
+  <g filter="url(#heavyGlow)">
+    <rect x="128" y="460" width="998" height="154" rx="10" fill="#020511" opacity="0.38"/>
+    <text x="627" y="594" text-anchor="middle" font-family="Arial Black, Impact, Arial, Helvetica, sans-serif" font-size="164" font-weight="900" letter-spacing="8" fill="url(#word)" stroke="#050719" stroke-width="7" paint-order="stroke fill">PHASE1</text>
+  </g>
+
+  <g filter="url(#glow)" font-family="Arial, Helvetica, sans-serif" fill="url(#word)">
+    <text x="627" y="990" text-anchor="middle" font-size="30" font-weight="800" letter-spacing="18">ADVANCED OPERATOR KERNEL</text>
+    <text x="627" y="1045" text-anchor="middle" font-size="21" font-weight="800" letter-spacing="15">SECURE | PRIVATE | POWERFUL | OPEN</text>
+  </g>
+
+  <g transform="translate(433 1092)" filter="url(#glow)">
+    <text x="194" y="31" text-anchor="middle" font-family="Menlo, Consolas, 'SFMono-Regular', monospace" font-size="21" font-weight="700" letter-spacing="8" fill="#f6fbff">phase1://root ~ #</text>
+    <rect x="362" y="12" width="12" height="24" fill="#e9fbff" opacity="0.92"/>
   </g>
 </svg>
