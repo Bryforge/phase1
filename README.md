@@ -1,7 +1,9 @@
 # Phase1
 
 <p align="center">
-  <img src="assets/phase1-banner.svg" alt="Phase1 neon advertisement logo" width="760">
+  <a href="https://bryforge.github.io/phase1/">
+    <img src="assets/phase1-banner.svg" alt="Phase1 neon advertisement logo" width="760">
+  </a>
 </p>
 
 <p align="center">
@@ -9,9 +11,25 @@
   Simulated kernel. VFS. Process table. Audit log. Guarded browser. Secure-by-default shell.
 </p>
 
+<p align="center">
+  <a href="https://bryforge.github.io/phase1/"><strong>Open the Phase1 website</strong></a>
+  ·
+  <a href="WIKI_ROADMAP.md">Website + wiki roadmap</a>
+</p>
+
 ![Edge](https://img.shields.io/badge/edge-v4.0.0--dev-00d8ff) ![Stable](https://img.shields.io/badge/stable-v3.10.9-39ff88) ![Rust](https://img.shields.io/badge/language-Rust-ff8a00) ![Security](https://img.shields.io/badge/default-safe%20mode%20on-39ff88)
 
 Phase1 is a Rust-built, terminal-first educational virtual operating-system console. It models boot profiles, a virtual kernel, a VFS, process scheduling, `/proc`, `/dev`, `/var/log`, guarded networking, command capability metadata, pipelines, update tooling, runtime management, and a guarded terminal browser.
+
+## Website
+
+The main Phase1 homepage is designed for GitHub Pages:
+
+```text
+https://bryforge.github.io/phase1/
+```
+
+It uses a dark live-space background, moving rainbow visuals, the Phase1 neon logo, and a website/wiki implementation roadmap.
 
 ## Status
 
@@ -121,6 +139,8 @@ The full manual lives in `docs/wiki/` and can be published to GitHub Wiki with:
 chmod +x scripts/publish-wiki.sh
 ./scripts/publish-wiki.sh
 ```
+
+The public website/wiki roadmap lives in [`WIKI_ROADMAP.md`](WIKI_ROADMAP.md).
 
 ## Safety
 
