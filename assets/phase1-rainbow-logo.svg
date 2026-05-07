@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
-  <title id="title">Phase1 Rainbow Logo</title>
-  <desc id="desc">A rainbow neon Phase1 project logo with a futuristic console glyph.</desc>
+  <title id="title">Phase1 Rainbow P Logo</title>
+  <desc id="desc">A rainbow neon Phase1 app icon with a central futuristic P glyph and no text badge.</desc>
   <defs>
     <radialGradient id="bg" cx="50%" cy="45%" r="70%">
       <stop offset="0%" stop-color="#20224d"/>
@@ -51,11 +51,6 @@
     <path d="M110 134c0-40 32-72 72-72h292c98 0 178 80 178 178s-80 178-178 178H248v118H110V134z" fill="url(#rainbow)"/>
     <path d="M248 184v114h214c32 0 58-26 58-57s-26-57-58-57H248z" fill="#071022"/>
     <path d="M110 134c0-40 32-72 72-72h292c98 0 178 80 178 178s-80 178-178 178H248v118H110V134z" fill="url(#glass)"/>
-  </g>
-
-  <g transform="translate(308 706)">
-    <rect x="0" y="0" width="408" height="76" rx="38" fill="#060a16" stroke="url(#rainbow)" stroke-width="6" opacity="0.96"/>
-    <text x="204" y="50" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="44" font-weight="800" letter-spacing="5" fill="#ffffff">PHASE1</text>
   </g>
 
   <g opacity="0.75">
