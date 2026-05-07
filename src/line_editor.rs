@@ -1,7 +1,7 @@
 use std::io::{self, Read, Write};
 use std::process::{Command, Stdio};
 use std::sync::{Mutex, OnceLock};
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 use crate::autocomplete::{self, TabCompletion};
 
@@ -14,6 +14,7 @@ const MAGENTA: &str = "\x1b[35m";
 const YELLOW: &str = "\x1b[33m";
 const RED: &str = "\x1b[31m";
 const HISTORY_LIMIT: usize = 200;
+const IDLE_ENTER_GUARD_DEFAULT_SECS: u64 = 30;
 
 static SESSION_HISTORY: OnceLock<Mutex<Vec<String>>> = OnceLock::new();
 
@@ -65,6 +66,7 @@ pub fn read_shell_line(prompt: &str) -> io::Result<Option<String>> {
         history_index: None,
     };
     let mut last_status = command_status_line(&editor.line);
+    let mut last_input = Instant::now();
 
     init_frame(prompt, &editor, &mut stdout)?;
 
@@ -83,7 +85,23 @@ pub fn read_shell_line(prompt: &str) -> io::Result<Option<String>> {
             Err(err) => return Err(err),
         }
 
-        match bytes[0] {
+        let byte = bytes[0];
+        let idle_for = last_input.elapsed();
+        if matches!(byte, b'\r' | b'\n') && idle_enter_guard_triggered(idle_for) {
+            clear_status_and_newline(&mut stdout)?;
+            writeln!(
+                stdout,
+                "idle-enter guard: ignored Enter after {}s idle; press Enter again to run",
+                idle_for.as_secs()
+            )?;
+            redraw_frame(prompt, &editor, &mut stdout)?;
+            last_status = command_status_line(&editor.line);
+            last_input = Instant::now();
+            continue;
+        }
+        last_input = Instant::now();
+
+        match byte {
             b'\r' | b'\n' => {
                 finish_frame(prompt, &editor, &mut stdout)?;
                 push_session_history(&editor.line);
@@ -162,11 +180,19 @@ pub fn read_shell_line(prompt: &str) -> io::Result<Option<String>> {
 fn read_cooked_line(prompt: &str) -> io::Result<Option<String>> {
     print!("{prompt}");
     io::stdout().flush()?;
+    let prompt_started = Instant::now();
     let mut input = String::new();
     match io::stdin().read_line(&mut input) {
         Ok(0) => Ok(None),
         Ok(_) => {
             let line = input.trim_end_matches(['\r', '\n']);
+            if line.trim().is_empty() && idle_enter_guard_triggered(prompt_started.elapsed()) {
+                println!(
+                    "idle-enter guard: ignored blank Enter after {}s idle; press Enter again to run",
+                    prompt_started.elapsed().as_secs()
+                );
+                return Ok(Some(String::new()));
+            }
             if line.contains('\t') {
                 return Ok(Some(complete_cooked_line(line, prompt)?));
             }
@@ -432,6 +458,25 @@ fn push_session_history(line: &str) {
     }
 }
 
+fn idle_enter_guard_triggered(idle_for: Duration) -> bool {
+    let Some(threshold) = idle_enter_guard_duration() else {
+        return false;
+    };
+    idle_for >= threshold
+}
+
+fn idle_enter_guard_duration() -> Option<Duration> {
+    let seconds = std::env::var("PHASE1_IDLE_ENTER_GUARD_SECONDS")
+        .ok()
+        .and_then(|raw| raw.trim().parse::<u64>().ok())
+        .unwrap_or(IDLE_ENTER_GUARD_DEFAULT_SECS);
+    if seconds == 0 {
+        None
+    } else {
+        Some(Duration::from_secs(seconds))
+    }
+}
+
 fn command_status_line(input: &str) -> String {
     let width = terminal_width().clamp(32, 72);
     let raw = format!("HUD {} | {}", short_clock_utc(), command_hint(input));
@@ -593,8 +638,10 @@ fn stty(args: &[&str]) -> io::Result<String> {
 mod tests {
     use super::{
         char_len, command_hint, command_status_line, delete_at_cursor, delete_before_cursor,
-        delete_previous_word, history_down, history_up, insert_char, EditorState,
+        delete_previous_word, history_down, history_up, idle_enter_guard_triggered, insert_char,
+        EditorState,
     };
+    use std::time::Duration;
 
     #[test]
     fn avim_status_explains_modes() {
@@ -651,5 +698,20 @@ mod tests {
         assert_eq!(editor.line, "ls");
         history_down(&mut editor);
         assert_eq!(editor.line, "cat readme.txt");
+    }
+
+    #[test]
+    fn idle_enter_guard_blocks_stale_enter_and_can_be_disabled() {
+        std::env::remove_var("PHASE1_IDLE_ENTER_GUARD_SECONDS");
+        assert!(!idle_enter_guard_triggered(Duration::from_secs(29)));
+        assert!(idle_enter_guard_triggered(Duration::from_secs(30)));
+
+        std::env::set_var("PHASE1_IDLE_ENTER_GUARD_SECONDS", "0");
+        assert!(!idle_enter_guard_triggered(Duration::from_secs(999)));
+
+        std::env::set_var("PHASE1_IDLE_ENTER_GUARD_SECONDS", "5");
+        assert!(!idle_enter_guard_triggered(Duration::from_secs(4)));
+        assert!(idle_enter_guard_triggered(Duration::from_secs(5)));
+        std::env::remove_var("PHASE1_IDLE_ENTER_GUARD_SECONDS");
     }
 }
