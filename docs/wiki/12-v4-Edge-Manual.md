@@ -1,7 +1,8 @@
-# Phase1 v4 Edge Manual
+# Phase1 v4 Stable Manual
 
-Edge version: v4.0.0-dev
-Stable reference: v3.10.9
+Stable version: v4.0.0
+Previous stable reference: v3.10.9
+Compatibility base: v3.6.0
 
 ## Verify
 
@@ -9,6 +10,8 @@ Stable reference: v3.10.9
 version
 version --compare
 roadmap
+security
+sysinfo
 ```
 
 ## Editors
@@ -37,11 +40,24 @@ theme linux 256
 theme linux truecolor
 ```
 
+## Website quality
+
+The v4 stable website keeps the cyberpunk/neon style while improving mobile readability and desktop performance:
+
+- no duplicate creator labels
+- balanced mobile headings
+- desktop canvas detail caps
+- debounced resize handling
+- hidden-tab animation pause
+- reduced-motion support
+
 ## Validate
 
 ```bash
-cargo fmt --all
 cargo fmt --all -- --check
+cargo check --all-targets
+cargo clippy --all-targets -- -D warnings
 cargo test --all-targets
-cargo run
+cargo audit
+cargo deny check
 ```
