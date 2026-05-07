@@ -15,16 +15,7 @@ fn storage_status_is_read_only_and_guarded_by_default() {
 
     assert_success(&output, "storage status");
     let text = output_text(&output);
-    assert_contains_all(
-        &text,
-        &[
-            "storage root",
-            "exists",
-            "repos",
-            "host tools",
-            "guarded",
-        ],
-    );
+    assert_contains_all(&text, &["storage root", "exists", "repos", "host tools", "guarded"]);
 }
 
 #[test]
@@ -73,7 +64,10 @@ fn storage_init_and_rust_init_work_only_after_explicit_trust_gate() {
         .expect("run trusted storage init");
     assert_success(&init, "trusted storage init");
     let init_text = output_text(&init);
-    assert_contains_all(&init_text, &["storage: initialized", "repos", "build", "tmp"]);
+    assert_contains_all(
+        &init_text,
+        &["storage: initialized", "repos", "build", "tmp"],
+    );
     assert!(storage_root.join("repos").is_dir(), "repos dir missing");
     assert!(storage_root.join("build").is_dir(), "build dir missing");
     assert!(storage_root.join("tmp").is_dir(), "tmp dir missing");
@@ -131,7 +125,10 @@ fn repository_and_cargo_inputs_are_validated() {
         .env("PHASE1_STORAGE_ROOT", &storage_root)
         .output()
         .expect("run invalid git clone");
-    assert!(!bad_url.status.success(), "invalid git URL unexpectedly succeeded");
+    assert!(
+        !bad_url.status.success(),
+        "invalid git URL unexpectedly succeeded"
+    );
     assert!(output_text(&bad_url).contains("URL must be a normal git remote URL"));
 }
 
