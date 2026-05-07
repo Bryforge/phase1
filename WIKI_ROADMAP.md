@@ -8,6 +8,9 @@ Make `https://bryforge.github.io/phase1/` the main Phase1 homepage:
 
 - minimalist dark-space rainbow landing page
 - Phase1 logo and operator-console identity
+- founder profile for Chase Bryan
+- Bryforge startup software development company profile
+- sponsor section with Buy Me a Coffee support link
 - direct links to GitHub, install steps, docs, and releases
 - web version of the Phase1 wiki
 - command index and tutorial hub
@@ -20,6 +23,9 @@ Status: started.
 - Use a dark space canvas background with live stars/comets
 - Use moving rainbow gradients, orbital rings, and neon glass panels
 - Use the Phase1 logo on the homepage
+- Add Chase Bryan founder/computer scientist section
+- Add Bryforge startup software development company section
+- Add Buy Me a Coffee sponsor call-to-action
 - Link the website from the root `README.md`
 - Add a GitHub Pages deploy workflow
 
@@ -38,6 +44,7 @@ Initial pages:
 - Updates
 - Troubleshooting
 - Tutorials
+- Sponsorship and Bryforge
 
 Recommended layout:
 
@@ -53,6 +60,8 @@ wiki/
   updates.html
   trouble.html
   tutorials.html
+  sponsor.html
+  bryforge.html
 ```
 
 ## Phase C — Add docs navigation
@@ -63,6 +72,7 @@ wiki/
 - Add previous/next links
 - Add keyboard-friendly search
 - Add command metadata cards for every Phase1 command
+- Add support links in the docs footer
 
 ## Phase D — Add visual demos
 
@@ -71,6 +81,7 @@ wiki/
 - Add boot-profile selector preview
 - Add storage/Git/Rust workflow preview
 - Add safe-mode vs trusted-host explanation
+- Add founder/build-log updates for major milestones
 
 ## Phase E — Make the website the public front door
 
@@ -80,6 +91,7 @@ wiki/
 - Add contributor guide
 - Add roadmap and quality score sections
 - Add links to security policy and audit notes
+- Keep the sponsor and Bryforge company sections visible from the homepage
 
 ## Design principles
 
@@ -90,3 +102,4 @@ wiki/
 - Mobile-first layout
 - GitHub Pages compatible
 - Docs should be readable even if animations are disabled
+- Sponsor content should support the project without distracting from technical docs
