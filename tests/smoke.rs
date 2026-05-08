@@ -130,8 +130,8 @@ fn secure_default_blocks_host_backed_commands() {
             "wifi-scan: disabled by safe boot profile",
             "wifi-connect: disabled by safe boot profile",
             "ping: disabled by safe boot profile",
-            "browser: disabled by safe boot profile",
-            "python: disabled by safe boot profile",
+            "browser: disabled; enable the trust gate with PHASE1_ALLOW_HOST_TOOLS=1",
+            "python: disabled; enable the trust gate with PHASE1_ALLOW_HOST_TOOLS=1",
         ],
     );
     assert!(
@@ -151,8 +151,8 @@ fn safe_off_without_host_tools_still_blocks_host_commands() {
             "security   host bridge",
             "security mode       : host-capable",
             "host tools          : off",
-            "python: disabled; set PHASE1_ALLOW_HOST_TOOLS=1 to enable trusted host tools",
-            "browser: disabled; set PHASE1_ALLOW_HOST_TOOLS=1 to enable trusted host tools",
+            "python: disabled; enable the trust gate with PHASE1_ALLOW_HOST_TOOLS=1",
+            "browser: disabled; enable the trust gate with PHASE1_ALLOW_HOST_TOOLS=1",
         ],
     );
     assert!(
@@ -372,7 +372,7 @@ fn user_env_browser_and_sandbox_commands_work() {
             "uid=0(root)",
             "phase1",
             "PHASE1",
-            "browser: disabled by safe boot profile",
+            "browser: disabled; enable the trust gate with PHASE1_ALLOW_HOST_TOOLS=1",
             "sandbox: VFS/processes are simulated",
             "up ",
         ],
