@@ -72,3 +72,9 @@ Phase1 can automatically observe normal shell commands after they run. Known dis
 
 This is still local-only and heuristic. It does not send data to a network service, cloud model, or external API.
 
+\n## Failure intelligence
+
+`learn suggest` prioritizes failed commands before routine successful usage. When a command fails, Phase1 recommends a recovery path such as `help`, `complete <prefix>`, or a likely command completion.
+
+This keeps the learning layer useful for repair and discovery without using a network service, cloud model, or external API.
+
