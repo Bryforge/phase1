@@ -83,7 +83,7 @@ pub fn banner(config: BootConfig, args: &[String]) -> String {
         match arg.as_str() {
             "mobile" | "--mobile" => preview.mobile_mode = true,
             "desktop" | "--desktop" | "workstation" | "--workstation" => {
-                preview.mobile_mode = false
+                preview.mobile_mode = false;
             }
             "mono" | "--mono" => {
                 preview.color = false;
@@ -110,7 +110,7 @@ pub fn banner(config: BootConfig, args: &[String]) -> String {
             "host" | "--host" => preview.safe_mode = false,
             "trust" | "host-tools" | "--trust-host" => preview.host_tools = true,
             "persist" | "persistent" | "--persistent" | "vault" => {
-                preview.persistent_state = true
+                preview.persistent_state = true;
             }
             "volatile" | "--volatile" => preview.persistent_state = false,
             other => {
@@ -126,29 +126,11 @@ pub fn banner(config: BootConfig, args: &[String]) -> String {
         }
     }
 
-    let display = display.unwrap_or_else(|| {
-        if preview.ascii_mode {
-            "ascii".to_string()
-        } else if preview.color {
-            if preview.bleeding_edge {
-                "edge-operator-deck".to_string()
-            } else {
-                std::env::var("PHASE1_THEME")
-                    .ok()
-                    .and_then(|raw| {
-                        ThemePalette::parse(&raw).map(|palette| palette.name().to_string())
-                    })
-                    .unwrap_or_else(|| "neo-tokyo".to_string())
-            }
-        } else {
-            "mono".to_string()
-        }
-    });
-
+    let display = display.unwrap_or_else(|| display_label(preview));
     format!(
         "banner preview // operator deck\nprofile : {}\nchannel : {}\nversion : {}\nsecurity: {}\ntrust   : {}\nstate   : {}\ndisplay : {}\nlayout  : signal-first developer cockpit\ntry     : cargo run, boot with e=edge, then run dash\n",
         preview.profile_name(),
-        if preview.bleeding_edge { "bleeding-edge" } else { "release" },
+        channel_label(preview),
         crate::ui::display_version(crate::kernel::VERSION, preview),
         if preview.safe_mode { "safe" } else { "host-capable" },
         trust_status(preview),
@@ -160,15 +142,15 @@ pub fn banner(config: BootConfig, args: &[String]) -> String {
 pub fn sysinfo(shell: &mut Phase1Shell, config: BootConfig) -> String {
     shell.kernel.tick();
     let processes = shell.kernel.scheduler.ps().lines().skip(1).count();
-    let jobs = shell.kernel.scheduler.jobs();
-    let job_count = if jobs.trim() == "no background jobs" { 0 } else { jobs.lines().count() };
+    let jobs_output = shell.kernel.scheduler.jobs();
+    let job_count = job_count(&jobs_output);
     let audit_count = shell.kernel.audit.dump().lines().count();
     let pcie_count = shell.kernel.pcie.lspci().lines().count();
 
     format!(
         "phase1 sysinfo\nversion     : {}\nchannel     : {}\nprofile     : {}\nuser        : {}\nuid         : {}\ncwd         : {}\nuptime      : {}s\nsecurity    : {}\ntrust       : {}\nstate       : {}\nprocesses   : {}\nbackground  : {}\npcie devices: {}\naudit events: {}\nhost tools  : {}\nui          : edge operator deck capable\nprivacy     : no emails, passwords, tokens, or host account secrets are shown\n",
         crate::ui::display_version(crate::kernel::VERSION, config),
-        if config.bleeding_edge { "bleeding-edge" } else { "release" },
+        channel_label(config),
         config.profile_name(),
         shell.user(),
         shell.kernel.scheduler.current_uid,
@@ -181,7 +163,11 @@ pub fn sysinfo(shell: &mut Phase1Shell, config: BootConfig) -> String {
         job_count,
         pcie_count,
         audit_count,
-        if crate::policy::host_tools_allowed() { "enabled" } else { "disabled" }
+        if crate::policy::host_tools_allowed() {
+            "enabled"
+        } else {
+            "disabled"
+        }
     )
 }
 
@@ -197,21 +183,27 @@ pub fn dashboard(shell: &mut Phase1Shell, config: BootConfig, args: &[String]) -
         .find_map(|arg| arg.strip_prefix("--focus=").map(str::to_string))
         .unwrap_or_else(|| "dev".to_string());
     let display_version = crate::ui::display_version(crate::kernel::VERSION, config);
-    let channel = if config.bleeding_edge { "bleeding-edge" } else { "release" };
     let uptime = shell.kernel.uptime().as_secs();
     let cwd = shell.kernel.vfs.cwd.display().to_string();
     let process_count = shell.kernel.scheduler.ps().lines().skip(1).count();
     let jobs_output = shell.kernel.scheduler.jobs();
-    let job_count = if jobs_output.trim() == "no background jobs" { 0 } else { jobs_output.lines().count() };
+    let job_count = job_count(&jobs_output);
     let ifconfig = shell.network.ifconfig();
-    let iface_count = ifconfig.lines().filter(|line| line.contains(": flags=<")).count();
+    let iface_count = ifconfig
+        .lines()
+        .filter(|line| line.contains(": flags=<"))
+        .count();
     let audit_dump = shell.kernel.audit.dump();
     let audit_count = audit_dump.lines().count();
     let audit_signal = audit_signal(&audit_dump);
     let pcie_count = shell.kernel.pcie.lspci().lines().count();
     let cr3 = shell.kernel.scheduler.get_cr3();
     let cr4 = shell.kernel.scheduler.cr4();
-    let safety = if crate::policy::host_tools_allowed() { "host-enabled" } else { "safe-mode" };
+    let safety = if crate::policy::host_tools_allowed() {
+        "host-enabled"
+    } else {
+        "safe-mode"
+    };
     let dev_activity = developer_activity(shell);
     let command_heat = command_heat(shell);
     let trust_meter = trust_meter(config);
@@ -223,7 +215,7 @@ pub fn dashboard(shell: &mut Phase1Shell, config: BootConfig, args: &[String]) -
             display_version,
             shell.user(),
             uptime,
-            channel,
+            channel_label(config),
             config.profile_name(),
             progress_bar(trust_meter, 12),
             trust_status(config),
@@ -246,7 +238,7 @@ pub fn dashboard(shell: &mut Phase1Shell, config: BootConfig, args: &[String]) -
     format!(
         "PHASE1 FULL-SCREEN TUI DASHBOARD v{}\nEDGE OPERATOR DECK // signal-first developer cockpit\nchannel : {}\nprofile : {}\nfocus   : {}\nprivacy : raw command/audit payloads are not displayed\n\n┌─ SIGNAL BUS ───────────────────────────────────────────────┐\n│ user {:<10} uid {:<5} uptime {:>6}s command-heat {:<8} │\n│ cwd  {:<52} │\n│ boot {:<15} state {:<12} theme {:<15} │\n└────────────────────────────────────────────────────────────┘\n┌─ TRUST BOUNDARY ───────────────────────────────────────────┐\n│ shield {:<11} host {:<13} meter {:<18} │\n│ policy {:<18} persistence {:<12} audit-class {:<12} │\n└────────────────────────────────────────────────────────────┘\n┌─ DEVELOPER COCKPIT ────────────────────────────────────────┐\n│ activity {:<14} next {:<34} │\n│ surfaces avim lang wasm update pipeline grep find theme     │\n│ quick    dash --compact | capabilities | lang security      │\n└────────────────────────────────────────────────────────────┘\n┌─ RUNTIME GRAPH ────────────────────────────────────────────┐\n│ proc {:<4} bg {:<4} net-if {:<4} pcie {:<4} audit {:<5} {:<12} │\n│ cr3  0x{:<12x} cr4 {:<20} │\n└────────────────────────────────────────────────────────────┘\n┌─ COMMAND RADAR ────────────────────────────────────────────┐\n│ {} │\n│ {} │\n│ {} │\n└────────────────────────────────────────────────────────────┘\ncontrols: dash --compact | dash --focus=net | theme deck | banner edge | reboot\nstatus  : edge-only operator UI, safe-by-default, developer-focused\n",
         display_version,
-        channel,
+        channel_label(config),
         config.profile_name(),
         focus,
         shell.user(),
@@ -293,9 +285,15 @@ fn set_palette(shell: &mut Phase1Shell, palette: ThemePalette) {
     std::env::remove_var("PHASE1_NO_COLOR");
     std::env::remove_var("PHASE1_ASCII");
     std::env::set_var("PHASE1_THEME", palette.name());
-    shell.env.insert("PHASE1_THEME".to_string(), palette.name().to_string());
-    shell.env.insert("PHASE1_NO_COLOR".to_string(), "0".to_string());
-    shell.env.insert("PHASE1_ASCII".to_string(), "0".to_string());
+    shell
+        .env
+        .insert("PHASE1_THEME".to_string(), palette.name().to_string());
+    shell
+        .env
+        .insert("PHASE1_NO_COLOR".to_string(), "0".to_string());
+    shell
+        .env
+        .insert("PHASE1_ASCII".to_string(), "0".to_string());
 }
 
 fn bleeding_edge_active() -> bool {
@@ -319,17 +317,23 @@ fn theme_status(shell: &Phase1Shell) -> String {
                     .ok()
                     .and_then(|raw| ThemePalette::parse(&raw).map(|theme| theme.name().to_string()))
             })
-            .unwrap_or_else(|| {
-                if bleeding_edge_active() { ThemePalette::BleedingEdge.name().to_string() } else { ThemePalette::NeoTokyo.name().to_string() }
-            })
+            .unwrap_or_else(active_theme_label)
     };
 
     format!(
         "theme status\nactive : {active}\nchannel: {}\ncolor  : {}\nascii  : {}\ndeck   : {}\n",
-        if bleeding_edge_active() { "bleeding-edge" } else { "release" },
+        if bleeding_edge_active() {
+            "bleeding-edge"
+        } else {
+            "release"
+        },
         if color { "on" } else { "off" },
         if ascii { "on" } else { "off" },
-        if bleeding_edge_active() { "edge operator deck" } else { "standard operator console" }
+        if bleeding_edge_active() {
+            "edge operator deck"
+        } else {
+            "standard operator console"
+        }
     )
 }
 
@@ -366,7 +370,12 @@ fn trust_meter(config: BootConfig) -> usize {
     }
 }
 
-fn runtime_meter(process_count: usize, job_count: usize, iface_count: usize, audit_count: usize) -> usize {
+fn runtime_meter(
+    process_count: usize,
+    job_count: usize,
+    iface_count: usize,
+    audit_count: usize,
+) -> usize {
     let score = process_count + job_count * 2 + iface_count + audit_count.min(8);
     score.clamp(1, 10)
 }
@@ -388,7 +397,9 @@ fn developer_activity(shell: &Phase1Shell) -> String {
         .take(12)
         .map(|line| line.split_whitespace().next().unwrap_or(""))
         .collect::<Vec<_>>();
-    for needle in ["lang", "avim", "wasm", "update", "grep", "find", "matrix", "theme"] {
+    for needle in [
+        "lang", "avim", "wasm", "update", "grep", "find", "matrix", "theme",
+    ] {
         if recent.iter().any(|cmd| *cmd == needle) {
             return needle.to_string();
         }
@@ -430,7 +441,11 @@ fn active_theme_label() -> String {
         .ok()
         .and_then(|raw| ThemePalette::parse(&raw).map(|theme| theme.name().to_string()))
         .unwrap_or_else(|| {
-            if bleeding_edge_active() { ThemePalette::BleedingEdge.name().to_string() } else { ThemePalette::NeoTokyo.name().to_string() }
+            if bleeding_edge_active() {
+                ThemePalette::BleedingEdge.name().to_string()
+            } else {
+                ThemePalette::NeoTokyo.name().to_string()
+            }
         })
 }
 
@@ -474,6 +489,34 @@ fn radar_line(idx: usize) -> String {
         "ops  dash ━ sysinfo ━ matrix ━ reboot".to_string(),
     ];
     format!("{:<58}", lines[idx])
+}
+
+fn channel_label(config: BootConfig) -> &'static str {
+    if config.bleeding_edge {
+        "bleeding-edge"
+    } else {
+        "release"
+    }
+}
+
+fn display_label(config: BootConfig) -> String {
+    if config.ascii_mode {
+        "ascii".to_string()
+    } else if !config.color {
+        "mono".to_string()
+    } else if config.bleeding_edge {
+        "edge-operator-deck".to_string()
+    } else {
+        "neo-tokyo".to_string()
+    }
+}
+
+fn job_count(jobs_output: &str) -> usize {
+    if jobs_output.trim() == "no background jobs" {
+        0
+    } else {
+        jobs_output.lines().count()
+    }
 }
 
 #[cfg(test)]
