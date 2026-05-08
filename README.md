@@ -20,12 +20,12 @@
   ·
   <a href="QUALITY.md">Quality system</a>
   ·
-  <a href="RELEASE_v4.0.0.md">v4.0.0 release prep</a>
+  <a href="RELEASE_v4.1.0.md">v4.1.0 release prep</a>
   ·
   <a href="EDGE.md">Bleeding edge</a>
 </p>
 
-![Edge](https://img.shields.io/badge/edge-v4.1.0--dev-00d8ff) ![Stable](https://img.shields.io/badge/stable-v4.0.0-39ff88) ![Previous Stable](https://img.shields.io/badge/previous%20stable-v3.10.9-7f8cff) ![Rust](https://img.shields.io/badge/language-Rust-ff8a00) ![Security](https://img.shields.io/badge/default-safe%20mode%20on-39ff88) ![Base1](https://img.shields.io/badge/base1-secure%20host%20foundation-8a5cff)
+![Edge](https://img.shields.io/badge/edge-v4.2.0--dev-00d8ff) ![Stable](https://img.shields.io/badge/stable-v4.1.0-39ff88) ![Previous Stable](https://img.shields.io/badge/previous%20stable-v4.0.0-7f8cff) ![Rust](https://img.shields.io/badge/language-Rust-ff8a00) ![Security](https://img.shields.io/badge/default-safe%20mode%20on-39ff88) ![Base1](https://img.shields.io/badge/base1-secure%20host%20foundation-8a5cff)
 
 Phase1 is a Rust-built, terminal-first educational virtual operating-system console. It models boot profiles, a virtual kernel, a VFS, process scheduling, `/proc`, `/dev`, `/var/log`, guarded networking, command capability metadata, pipelines, update tooling, runtime management, a guarded terminal browser, and a Base1 secure-host foundation.
 
@@ -33,9 +33,11 @@ Base1 is the planned secure hardware host foundation for Phase1 on Raspberry Pi 
 
 ## Release tracks
 
-`release/v4.0.0` preserves the stable `v4.0.0` release point and is the branch to tag as `v4.0.0` after final validation.
+`prepare-v4.1.0-stable` prepares the stable `v4.1.0` release candidate. After validation, create `release/v4.1.0` and tag `v4.1.0` from the validated commit.
 
-`edge/v4.1.0-dev` is the bleeding-edge development branch beyond `v4.0.0`. It intentionally carries a `-dev` package version and may contain work that is not yet release-qualified.
+`release/v4.0.0` preserves the previous stable `v4.0.0` release point.
+
+`edge/v4.2.0-dev` is the next bleeding-edge development branch after `v4.1.0`. It intentionally carries a `-dev` package version and may contain work that is not yet release-qualified.
 
 ## Website
 
@@ -51,9 +53,9 @@ It uses a dark live-space background, moving rainbow visuals, the Phase1 neon lo
 
 | Track | Version | Notes |
 | --- | --- | --- |
-| Edge | `v4.1.0-dev` | Bleeding-edge branch for development beyond v4.0.0 |
-| Stable | `v4.0.0` | Current stable release point prepared for tag `v4.0.0` |
-| Previous stable | `v3.10.9` | Previous stable reference line |
+| Stable | `v4.1.0` | Current stable release candidate prepared for tag `v4.1.0` |
+| Previous stable | `v4.0.0` | Previous stable release line |
+| Edge | `v4.2.0-dev` | Bleeding-edge branch for development beyond v4.1.0 |
 | Compatibility base | `v3.6.0` | Historical comparison base |
 | Base1 | `foundation` | Secure host design for Raspberry Pi and X200 targets |
 | Quality | `managed` | Scorecard, gates, scripts, and CI workflow |
@@ -71,14 +73,14 @@ cargo run
 For stable validation:
 
 ```bash
-git checkout release/v4.0.0
+git checkout prepare-v4.1.0-stable
 sh scripts/quality-check.sh full
 ```
 
 For bleeding-edge work:
 
 ```bash
-git checkout edge/v4.1.0-dev
+git checkout edge/v4.2.0-dev
 cargo run
 ```
 
@@ -177,11 +179,11 @@ avim hello.py
 
 Use `:help` inside `avim` for movement, edit, search, save, and quit commands.
 
-## Post-v4.0 edge focus
+## Post-v4.1 edge focus
 
-- Keep `v4.0.0` preserved on `release/v4.0.0`.
-- Advance `edge/v4.1.0-dev` with guarded experimental work.
-- Continue improving editor usability, terminal wrapping, website responsiveness, and Base1 compatibility.
+- Keep `v4.1.0` preserved on `release/v4.1.0` after validation.
+- Advance `edge/v4.2.0-dev` with guarded experimental work.
+- Continue improving editor usability, terminal wrapping, website responsiveness, Base1 compatibility, and supply-chain hardening.
 - Integrate approved post-stable work only after quality and security review.
 - Keep release-facing documentation explicit about stable versus edge status.
 
@@ -245,7 +247,7 @@ The public website/wiki roadmap lives in [`WIKI_ROADMAP.md`](WIKI_ROADMAP.md).
 
 Phase1 is an educational simulator. It should never need your GitHub password, personal access token, SSH private key, browser cookies, Apple ID, email password, or recovery codes.
 
-Host-backed commands are explicit and guarded. Runtime files such as `phase1.state`, `phase1.history`, and `phase1.log` are local operational artifacts.
+Host-backed commands are explicit and guarded. Runtime files such as `phase1.state`, `phase1.history`, and `phase1.log` are local operational artifacts. Command history and ops logs are sanitized before storage.
 
 Base1 is a secure host foundation, not a destructive installer. Its first tooling is intentionally read-only and compatibility-focused. Base1 security claims should remain conservative until backed by repeatable builds, audits, and hardware validation.
 
