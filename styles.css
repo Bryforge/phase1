@@ -602,3 +602,239 @@ h1,
     scroll-behavior: auto !important;
   }
 }
+
+/* 2026-05-07 live fit correction: keep the hero inside MacBook/desktop widths. */
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.site-shell,
+.nav,
+.nav-links,
+.hero,
+.hero-copy,
+.logo-stage,
+.founder,
+.founder-copy,
+.sponsor-card,
+.feature-card,
+.roadmap,
+.footer {
+  min-width: 0;
+}
+
+img,
+svg,
+canvas {
+  max-width: 100%;
+}
+
+.nav-links {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.hero {
+  grid-template-columns: minmax(0, 1.08fr) minmax(280px, 0.92fr);
+  gap: clamp(18px, 4vw, 52px);
+  padding: clamp(24px, 5vw, 56px);
+}
+
+h1 {
+  max-width: 100%;
+  font-size: clamp(2.75rem, 6vw, 5.2rem);
+  line-height: 0.96;
+  letter-spacing: -0.062em;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+  text-wrap: balance;
+}
+
+.hero-text {
+  max-width: 600px;
+  line-height: 1.65;
+}
+
+.logo-stage {
+  min-height: clamp(340px, 45vw, 520px);
+}
+
+.phase-logo {
+  display: block;
+  width: min(100%, 500px);
+  height: auto;
+}
+
+.terminal-chip {
+  max-width: 100%;
+  overflow: auto;
+  white-space: nowrap;
+}
+
+@media (min-width: 861px) and (max-width: 1280px) {
+  .site-shell {
+    width: min(1160px, calc(100% - 24px));
+    padding-top: 6px;
+  }
+
+  .nav {
+    top: 8px;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+
+  .brand {
+    letter-spacing: 0.13em;
+  }
+
+  .nav-links {
+    gap: 4px;
+    font-size: 0.86rem;
+  }
+
+  .nav-links a {
+    padding: 7px 8px;
+  }
+
+  .hero {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 0.82fr);
+    gap: clamp(18px, 3.5vw, 42px);
+    margin-top: 22px;
+    padding: clamp(28px, 4.2vw, 48px);
+  }
+
+  h1 {
+    font-size: clamp(3rem, 5.15vw, 4.35rem);
+    line-height: 0.98;
+    letter-spacing: -0.052em;
+  }
+
+  .hero-text {
+    max-width: 560px;
+    font-size: 1.02rem;
+  }
+
+  .hero-actions {
+    gap: 10px;
+    margin: 24px 0 18px;
+  }
+
+  .button {
+    min-height: 44px;
+    padding-inline: 15px;
+  }
+
+  .logo-stage {
+    min-height: min(48vw, 430px);
+  }
+
+  .phase-logo {
+    width: min(100%, 430px);
+  }
+}
+
+@media (min-width: 861px) and (max-width: 1080px) {
+  .hero {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .hero-copy {
+    max-width: 850px;
+  }
+
+  h1 {
+    max-width: 840px;
+    font-size: clamp(3.2rem, 7vw, 4.9rem);
+  }
+
+  .logo-stage {
+    min-height: auto;
+    padding-block: 8px 2px;
+  }
+
+  .phase-logo {
+    width: min(74vw, 500px);
+  }
+}
+
+@media (max-width: 860px) {
+  .site-shell {
+    width: min(100% - 18px, 680px);
+  }
+
+  .nav-links {
+    justify-content: flex-start;
+    gap: 6px;
+  }
+
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 24px;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 10.5vw, 3.25rem);
+    line-height: 1.04;
+    letter-spacing: -0.04em;
+  }
+
+  .hero-text {
+    font-size: 0.98rem;
+    line-height: 1.6;
+  }
+
+  .logo-stage {
+    min-height: clamp(260px, 78vw, 420px);
+  }
+
+  .phase-logo {
+    width: min(96%, 420px);
+  }
+
+  .hero-actions {
+    gap: 10px;
+  }
+
+  .button {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 540px) {
+  .site-shell {
+    width: min(100% - 14px, 540px);
+  }
+
+  .nav {
+    padding: 11px;
+    border-radius: 18px;
+  }
+
+  .nav-links a {
+    padding: 6px 7px;
+    font-size: 0.82rem;
+  }
+
+  .hero {
+    padding: 20px;
+    border-radius: 24px;
+  }
+
+  h1 {
+    font-size: clamp(1.85rem, 10.4vw, 2.7rem);
+    letter-spacing: -0.028em;
+  }
+
+  .logo-stage {
+    min-height: clamp(230px, 76vw, 340px);
+  }
+
+  .terminal-chip {
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+  }
+}
