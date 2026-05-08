@@ -204,7 +204,10 @@ mod tests {
             capability_denial_message_from_values("browser", "host.net", Some("0"), None).unwrap();
         assert!(host.contains("PHASE1_ALLOW_HOST_TOOLS"));
 
-        assert!(capability_denial_message_from_values("python", "host.exec", None, Some("1")).is_none());
+        assert!(
+            capability_denial_message_from_values("python", "host.exec", None, Some("1"))
+                .is_none()
+        );
         assert!(
             capability_denial_message_from_values("python", "host.exec", Some("1"), Some("1"))
                 .is_none()
