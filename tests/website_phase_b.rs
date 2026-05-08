@@ -69,9 +69,9 @@ fn founder_profile_guard_lives_in_mobile_fix_stylesheet() {
         &[
             "Founder-section cleanup",
             "keep the real Founder profile label",
-            "#founder .profile-label",
-            "#founder .founder-copy > .eyebrow",
-            "#founder .founder-copy h2::before",
+            ".profile-label",
+            ".founder-copy > .eyebrow",
+            ".founder-copy h2::before",
             "content: none !important",
             "display: none !important",
         ],
