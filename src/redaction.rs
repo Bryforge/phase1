@@ -286,9 +286,8 @@ mod tests {
 
     #[test]
     fn redacts_cli_flag_values_and_url_credentials() {
-        let out = redact_line(
-            "login --token ghp_secret clone https://user:pass@example.com/repo.git",
-        );
+        let out =
+            redact_line("login --token ghp_secret clone https://user:pass@example.com/repo.git");
         assert!(out.contains("--token [redacted-secret]"));
         assert!(out.contains("https://[redacted]@example.com/repo.git"));
         assert!(!out.contains("ghp_secret"));
