@@ -9,13 +9,18 @@ fn gina_ai_and_assistant_manifests_are_offline_and_safe() {
     for plugin in ["gina", "ai", "assistant"] {
         let manifest = fs::read_to_string(format!("plugins/{plugin}.wasi"))
             .unwrap_or_else(|err| panic!("missing {plugin} manifest: {err}"));
-        assert!(manifest.contains("ai.offline"), "{plugin} should be offline");
+        assert!(
+            manifest.contains("ai.offline"),
+            "{plugin} should be offline"
+        );
         assert!(
             manifest.contains("no host") || manifest.contains("host shell blocked"),
             "{plugin} should describe host blocking"
         );
         assert!(
-            manifest.contains("credential") || manifest.contains("no provider") || manifest.contains("no external"),
+            manifest.contains("credential")
+                || manifest.contains("no provider")
+                || manifest.contains("no external"),
             "{plugin} should describe credential/provider safety"
         );
     }

@@ -115,10 +115,11 @@ pub fn run(shell: &mut Phase1Shell, store: &HistoryStore, args: &[String]) -> St
 }
 
 pub fn push_bounded(history: &mut VecDeque<String>, line: &str) {
-    if line.trim().is_empty() {
+    let sanitized = sanitize_line(line);
+    if sanitized.trim().is_empty() {
         return;
     }
-    history.push_back(line.to_string());
+    history.push_back(sanitized);
     while history.len() > HISTORY_LIMIT {
         history.pop_front();
     }
@@ -126,7 +127,7 @@ pub fn push_bounded(history: &mut VecDeque<String>, line: &str) {
 
 pub fn status(shell: &Phase1Shell, store: &HistoryStore) -> String {
     format!(
-        "history entries     : {}\npersistent history  : {}\nhistory file        : {}\nprivacy             : persisted history is sanitized; password/token/secret-like commands are redacted\n",
+        "history entries     : {}\npersistent history  : {}\nhistory file        : {}\nprivacy             : in-memory and persisted history are sanitized; password/token/secret-like commands are redacted\n",
         shell.history.len(),
         if matches!(store, HistoryStore::Disk(_)) { "on" } else { "off" },
         store.describe()
@@ -239,6 +240,16 @@ mod tests {
         }
         assert_eq!(history.len(), HISTORY_LIMIT);
         assert_eq!(history.front().map(String::as_str), Some("cmd-3"));
+    }
+
+    #[test]
+    fn bounded_history_redacts_sensitive_entries_before_storage() {
+        let mut history = VecDeque::new();
+        push_bounded(&mut history, "wifi-connect home password123");
+        assert_eq!(
+            history.front().map(String::as_str),
+            Some("[redacted-sensitive-command]")
+        );
     }
 
     #[test]

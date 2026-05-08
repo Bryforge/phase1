@@ -38,10 +38,10 @@ pub fn log_error(kind: &str, detail: &str) {
 }
 
 pub fn log_command(command: &str) {
-    let trimmed = command.trim();
-    if !trimmed.is_empty() {
-        let _ = append("command", trimmed);
+    if command.trim().is_empty() {
+        return;
     }
+    let _ = append("command", &command_summary(command));
 }
 
 pub fn run(args: &[String]) -> String {
@@ -97,7 +97,7 @@ fn status() -> String {
         .map(|meta| format!("{} bytes", meta.len()))
         .unwrap_or_else(|_| "none".to_string());
     format!(
-        "phase1 ops log\npath       : {LOG_PATH}\nsize       : {size} bytes\nrotation   : {ROTATED_LOG_PATH} ({rotated})\ncommands   : opslog tail | opslog clear | opslog path\nprivacy    : credential-like strings are redacted before write\n"
+        "phase1 ops log\npath       : {LOG_PATH}\nsize       : {size} bytes\nrotation   : {ROTATED_LOG_PATH} ({rotated})\ncommands   : opslog tail | opslog clear | opslog path\nprivacy    : commands are recorded as structured summaries and credential-like strings are redacted before write\n"
     )
 }
 
@@ -127,7 +127,7 @@ fn clear() -> io::Result<()> {
 }
 
 fn help() -> String {
-    "usage: opslog [status|tail [n]|path|clear]\n\nThe ops log records boot selections, shell commands, guarded local operations, and panic summaries in phase1.log. It is local-only and redacts common credential-like values.\n".to_string()
+    "usage: opslog [status|tail [n]|path|clear]\n\nThe ops log records boot selections, structured shell command summaries, guarded local operations, and panic summaries in phase1.log. It is local-only and redacts common credential-like values.\n".to_string()
 }
 
 fn timestamp() -> String {
@@ -136,6 +136,48 @@ fn timestamp() -> String {
         .unwrap_or_default()
         .as_secs();
     format!("unix:{now}")
+}
+
+fn command_summary(command: &str) -> String {
+    let trimmed = command.trim();
+    if contains_sensitive_marker(trimmed) {
+        return "name=[redacted] argc=0 sensitive=true".to_string();
+    }
+
+    let parts = trimmed.split_whitespace().collect::<Vec<_>>();
+    let name = parts.first().copied().unwrap_or("unknown");
+    format!(
+        "name={} argc={} sensitive=false",
+        sanitize_token(name),
+        parts.len().saturating_sub(1)
+    )
+}
+
+fn contains_sensitive_marker(raw: &str) -> bool {
+    let lower = raw.to_ascii_lowercase();
+    [
+        "password",
+        "passwd",
+        "secret",
+        "token",
+        "api_key",
+        "apikey",
+        "access_token",
+        "refresh_token",
+        "client_secret",
+        "private_key",
+        "authorization:",
+        "bearer ",
+        "cookie",
+        "github_pat_",
+        "ghp_",
+        "gho_",
+        "ghu_",
+        "ghs_",
+        "ghr_",
+    ]
+    .iter()
+    .any(|marker| lower.contains(marker))
 }
 
 fn sanitize(raw: &str) -> String {
@@ -153,6 +195,10 @@ fn sanitize_token(token: &str) -> String {
         || lower.contains("token=")
         || lower.contains("api_key=")
         || lower.contains("apikey=")
+        || lower.contains("access_token=")
+        || lower.contains("refresh_token=")
+        || lower.contains("client_secret=")
+        || lower.contains("private_key=")
     {
         return "[redacted-secret]".to_string();
     }
@@ -177,7 +223,7 @@ fn sanitize_token(token: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{run, sanitize_token};
+    use super::{command_summary, run, sanitize_token};
 
     #[test]
     fn redacts_secret_like_tokens() {
@@ -186,6 +232,18 @@ mod tests {
         assert_eq!(
             sanitize_token("https://user:pass@example.com/repo.git"),
             "https://[redacted-credential]@example.com/repo.git"
+        );
+    }
+
+    #[test]
+    fn command_summary_does_not_store_raw_sensitive_commands() {
+        assert_eq!(
+            command_summary("wifi-connect home password123"),
+            "name=[redacted] argc=0 sensitive=true"
+        );
+        assert_eq!(
+            command_summary("echo hello world"),
+            "name=echo argc=2 sensitive=false"
         );
     }
 
