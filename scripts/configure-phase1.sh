@@ -81,11 +81,11 @@ install_terminal_wrapper() {
     mkdir -p "$BIN_DIR"
     cat > "$BIN_DIR/phase1" <<EOF
 #!/usr/bin/env sh
-exec "$ROOT_DIR/phase1" "\$@"
+exec sh "$ROOT_DIR/phase1" "\$@"
 EOF
     cat > "$BIN_DIR/phase1-terminal" <<EOF
 #!/usr/bin/env sh
-exec "$ROOT_DIR/terminal/bin/phase1-terminal" "\$@"
+exec sh "$ROOT_DIR/terminal/bin/phase1-terminal" "\$@"
 EOF
     chmod 0755 "$BIN_DIR/phase1" "$BIN_DIR/phase1-terminal"
 }
