@@ -3,7 +3,7 @@ use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
 
-use crate::commands::Phase1Shell;
+use crate::{commands::Phase1Shell, registry};
 
 const LEARN_PATH: &str = "phase1.learn";
 const HISTORY_PATH: &str = "phase1.history";
@@ -353,6 +353,24 @@ impl Memory {
 
     fn suggest(&self) -> String {
         let mut out = String::from("phase1 smart suggestions\n");
+        let failures = self.top_failures(3);
+        if let Some(&(command, stat)) = failures.first() {
+            let noun = if stat.fail == 1 { "time" } else { "times" };
+            out.push_str(&format!("focus: {command} failed {} {noun}\n", stat.fail));
+            out.push_str(&format!("next : {}\n", failure_recovery(command)));
+            out.push_str("why  : failed commands are prioritized before routine usage\n");
+            out.push_str("also : ");
+            out.push_str(
+                &failures
+                    .iter()
+                    .map(|(name, stat)| format!("{name}:fail{}", stat.fail))
+                    .collect::<Vec<_>>()
+                    .join(", "),
+            );
+            out.push('\n');
+            return out;
+        }
+
         let top = self.top_commands(5);
         if top.is_empty() {
             out.push_str("next : help\nwhy  : no learned command patterns yet\ntry  : learn import-history\n");
@@ -436,6 +454,22 @@ impl Memory {
         items
     }
 
+    fn top_failures(&self, limit: usize) -> Vec<(&String, &CommandStat)> {
+        let mut items: Vec<_> = self
+            .commands
+            .iter()
+            .filter(|(_, stat)| stat.fail > 0)
+            .collect();
+        items.sort_by(|a, b| {
+            b.1.fail
+                .cmp(&a.1.fail)
+                .then_with(|| b.1.seen.cmp(&a.1.seen))
+                .then_with(|| a.0.cmp(b.0))
+        });
+        items.truncate(limit);
+        items
+    }
+
     fn trim(&mut self) {
         if self.notes.len() > MAX_NOTES {
             let drop_count = self.notes.len() - MAX_NOTES;
@@ -480,6 +514,28 @@ fn is_safe_command_name(command: &str) -> bool {
         && command
             .chars()
             .all(|ch| ch.is_ascii_alphanumeric() || matches!(ch, '-' | '_'))
+}
+
+fn failure_recovery(command: &str) -> String {
+    let prefix = command.chars().take(2).collect::<String>();
+    let probe = if prefix.is_empty() {
+        command.chars().take(1).collect::<String>()
+    } else {
+        prefix
+    };
+    let matches = if probe.is_empty() {
+        Vec::new()
+    } else {
+        registry::completions(&probe)
+    };
+
+    if let Some(candidate) = matches.first() {
+        format!("try `{candidate}`, or run `complete {probe}` and `help`")
+    } else if let Some(first) = command.chars().next() {
+        format!("run `complete {first}` or `help` to find a valid command")
+    } else {
+        "run `help` to find a valid command".to_string()
+    }
 }
 
 fn next_step(command: &str) -> &'static str {
@@ -670,6 +726,18 @@ mod tests {
         assert!(!memory.commands.contains_key("memory"));
 
         let _ = fs::remove_file(path);
+    }
+
+    #[test]
+    fn suggestions_prioritize_failed_commands() {
+        let mut memory = Memory::default();
+        memory.observe("sysinfo", "ok").unwrap();
+        memory.observe("unknown-auto-test", "fail").unwrap();
+
+        let suggestion = memory.suggest();
+        assert!(suggestion.contains("focus: unknown-auto-test failed 1 time"));
+        assert!(suggestion.contains("failed commands are prioritized"));
+        assert!(!suggestion.contains("top  : sysinfo"));
     }
 
     #[test]
