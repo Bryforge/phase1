@@ -1,9 +1,17 @@
+#[path = "../src/wasm.rs"]
+mod wasm;
+
 use std::fs;
+use std::path::Path;
 use std::process::Command;
 
 #[test]
 fn launch_scripts_exist_and_have_valid_shell_syntax() {
-    for path in ["start_phase1", "scripts/configure-phase1.sh", "scripts/test-phase1-launch.sh"] {
+    for path in [
+        "start_phase1",
+        "scripts/configure-phase1.sh",
+        "scripts/test-phase1-launch.sh",
+    ] {
         assert!(fs::metadata(path).is_ok(), "missing launch script: {path}");
         let status = Command::new("sh")
             .arg("-n")
@@ -65,4 +73,26 @@ fn gina_is_configured_for_phase1_operations() {
     assert!(gina.contains("quality"));
     assert!(gina.contains("./start_phase1"));
     assert!(gina.contains("offline"));
+}
+
+#[test]
+fn gina_runs_inside_phase1_wasi_layer() {
+    let out = wasm::execute_plugin(Path::new("plugins"), "gina", &["status".to_string()]);
+    assert!(out.contains("phase1 wasi run"));
+    assert!(out.contains("Phase1 AI operations assistant"));
+    assert!(out.contains("operations-focused"));
+    assert!(out.contains("host=blocked"));
+}
+
+#[test]
+fn launch_validation_script_passes() {
+    let output = Command::new("sh")
+        .arg("scripts/test-phase1-launch.sh")
+        .output()
+        .expect("run launch validation");
+    assert!(
+        output.status.success(),
+        "launch validation failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
 }
