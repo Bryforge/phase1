@@ -114,15 +114,15 @@ fn capability_denial_message_from_values(
                 )
             })
         }
-        "net.admin" => (!privileged_host_tools_allowed_from_values(safe_mode, host_tools)).then(
-            || {
+        "net.admin" => {
+            (!privileged_host_tools_allowed_from_values(safe_mode, host_tools)).then(|| {
                 privileged_denial_message_from_values(
                     command,
                     safe_mode_from_value(safe_mode),
                     host_tools_from_value(host_tools),
                 )
-            },
-        ),
+            })
+        }
         _ => None,
     }
 }
@@ -163,8 +163,8 @@ fn privileged_denial_message_from_values(
 mod tests {
     use super::{
         capability_denial_message_from_values, guarded_host_execution_allowed_from_values,
-        host_tools_allowed_from_values, host_tools_from_value, privileged_host_tools_allowed_from_values,
-        safe_mode_from_value, security_report,
+        host_tools_allowed_from_values, host_tools_from_value,
+        privileged_host_tools_allowed_from_values, safe_mode_from_value, security_report,
     };
 
     #[test]
@@ -184,8 +184,14 @@ mod tests {
     #[test]
     fn privileged_host_changes_still_require_safe_mode_off() {
         assert!(!privileged_host_tools_allowed_from_values(None, Some("1")));
-        assert!(!privileged_host_tools_allowed_from_values(Some("1"), Some("1")));
-        assert!(privileged_host_tools_allowed_from_values(Some("0"), Some("1")));
+        assert!(!privileged_host_tools_allowed_from_values(
+            Some("1"),
+            Some("1")
+        ));
+        assert!(privileged_host_tools_allowed_from_values(
+            Some("0"),
+            Some("1")
+        ));
     }
 
     #[test]
@@ -198,10 +204,7 @@ mod tests {
             capability_denial_message_from_values("browser", "host.net", Some("0"), None).unwrap();
         assert!(host.contains("PHASE1_ALLOW_HOST_TOOLS"));
 
-        assert!(
-            capability_denial_message_from_values("python", "host.exec", None, Some("1"))
-                .is_none()
-        );
+        assert!(capability_denial_message_from_values("python", "host.exec", None, Some("1")).is_none());
         assert!(
             capability_denial_message_from_values("python", "host.exec", Some("1"), Some("1"))
                 .is_none()
