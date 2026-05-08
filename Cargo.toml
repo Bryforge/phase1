@@ -15,6 +15,10 @@ codegen-units = 1
 panic = "abort"
 strip = true
 
+[lints.rust]
+# Boot UI palette tables intentionally keep a few reserved fields for theme compatibility.
+dead_code = "allow"
+
 [lints.clippy]
 # Rust 1.95 tightened several style lints that do not change Phase1 behavior.
 # Keep the quality gate stable while these areas are refactored in the next pass.
