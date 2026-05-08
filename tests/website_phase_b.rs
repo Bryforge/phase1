@@ -23,7 +23,7 @@ fn homepage_preserves_project_identity_and_metadata() {
     assert_contains_all(
         &html,
         &[
-            "name\": \"phase1\"",
+            "name\":\"phase1\"",
             "Chase Bryan",
             "Bryforge",
             "GPL-3.0",
@@ -43,10 +43,10 @@ fn homepage_keeps_static_offline_friendly_dependency_posture_and_cache_busts_ass
     assert_contains_all(
         &html,
         &[
-            "./styles.css?v=4.0.0-stable-2",
-            "./button-fix.css?v=4.0.0-founder-profile-2",
-            "./button-fix.js?v=4.0.0-stable-2",
-            "./site.js?v=4.0.0-stable-2",
+            "./styles.css?v=4.2.6-dev",
+            "./button-fix.css?v=4.2.6-dev",
+            "./button-fix.js?v=4.2.6-dev",
+            "./site.js?v=4.2.6-dev",
         ],
     );
     assert_not_contains_any(
@@ -62,12 +62,13 @@ fn homepage_keeps_static_offline_friendly_dependency_posture_and_cache_busts_ass
 }
 
 #[test]
-fn homepage_has_inline_founder_profile_guard() {
-    let html = read("index.html");
+fn founder_profile_guard_lives_in_mobile_fix_stylesheet() {
+    let fix_css = read("button-fix.css");
     assert_contains_all(
-        &html,
+        &fix_css,
         &[
-            "founder-profile-inline-guard",
+            "Founder-section cleanup",
+            "keep the real Founder profile label",
             "#founder .profile-label",
             "#founder .founder-copy > .eyebrow",
             "#founder .founder-copy h2::before",
@@ -134,8 +135,9 @@ fn site_js_implements_canvas_terminal_progressive_enhancement_and_performance_gu
             "demoResponses",
             "wiki-quick",
             "phase1 // advanced operator kernel",
-            "stable: v4.0.0",
-            "previous stable: v3.10.9",
+            "const EDGE_VERSION = \"v4.2.6-dev\"",
+            "const STABLE_VERSION = \"v4.0.0\"",
+            "const PREVIOUS_STABLE = \"v3.10.9\"",
             "safe mode: on",
             "setupNavigation",
             "setupReveals",
@@ -146,7 +148,7 @@ fn site_js_implements_canvas_terminal_progressive_enhancement_and_performance_gu
             "document.hidden",
             "startAnimation",
             "stopAnimation",
-            "desktop ? 180 : 210",
+            "desktop ? 170 : 150",
         ],
     );
     assert_not_contains_any(&js, &["edge: v4.0.0-dev"]);
