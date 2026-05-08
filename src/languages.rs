@@ -455,9 +455,7 @@ fn run_language(shell: &mut Phase1Shell, args: &[String]) -> String {
         Err(err) => return err,
     };
 
-    if !crate::policy::guarded_host_execution_allowed()
-        && language != "wasm"
-        && language != "wasi"
+    if !crate::policy::guarded_host_execution_allowed() && language != "wasm" && language != "wasi"
     {
         return format!("{}\n", crate::policy::host_denial_message("lang run"));
     }
@@ -699,7 +697,11 @@ fn execute(spec: &LanguageSpec, source: &str, options: &RunOptions) -> io::Resul
             let mut cmd = Command::new("dotnet");
             cmd.arg("run");
             prepare_guarded_command(&mut cmd, &project);
-            run_command(cmd, options.timeout.max(Duration::from_secs(30)), options.stdin.as_deref())
+            run_command(
+                cmd,
+                options.timeout.max(Duration::from_secs(30)),
+                options.stdin.as_deref(),
+            )
         }
         Runner::WasmInfo => unreachable!(),
     };
@@ -803,7 +805,11 @@ fn tool_version(tool: &str) -> String {
     }
 }
 
-fn run_command(mut cmd: Command, timeout: Duration, stdin_text: Option<&str>) -> io::Result<Output> {
+fn run_command(
+    mut cmd: Command,
+    timeout: Duration,
+    stdin_text: Option<&str>,
+) -> io::Result<Output> {
     let timeout = timeout.min(MAX_RUN_TIMEOUT);
     let stdin_mode = if stdin_text.is_some() {
         Stdio::piped()
