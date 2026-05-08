@@ -1,3 +1,4 @@
+use crate::redaction;
 use std::fs::{self, OpenOptions};
 use std::io::{self, Write};
 use std::panic;
@@ -75,8 +76,8 @@ fn append(kind: &str, detail: &str) -> io::Result<()> {
         file,
         "{} [{}] {}",
         timestamp(),
-        sanitize(kind),
-        sanitize(detail)
+        redaction::redact_line(kind),
+        single_line(redaction::redact_multiline(detail))
     )
 }
 
@@ -97,7 +98,7 @@ fn status() -> String {
         .map(|meta| format!("{} bytes", meta.len()))
         .unwrap_or_else(|_| "none".to_string());
     format!(
-        "phase1 ops log\npath       : {LOG_PATH}\nsize       : {size} bytes\nrotation   : {ROTATED_LOG_PATH} ({rotated})\ncommands   : opslog tail | opslog clear | opslog path\nprivacy    : commands are recorded as structured summaries and credential-like strings are redacted before write\n"
+        "phase1 ops log\npath       : {LOG_PATH}\nsize       : {size} bytes\nrotation   : {ROTATED_LOG_PATH} ({rotated})\ncommands   : opslog tail | opslog clear | opslog path\nprivacy    : commands are recorded as structured summaries; sensitive strings are redacted with the central redaction policy before write\n"
     )
 }
 
@@ -112,7 +113,7 @@ fn tail(count: usize) -> String {
         lines.len() - start
     );
     for line in &lines[start..] {
-        out.push_str(line);
+        out.push_str(&redaction::redact_line(line));
         out.push('\n');
     }
     out
@@ -127,7 +128,7 @@ fn clear() -> io::Result<()> {
 }
 
 fn help() -> String {
-    "usage: opslog [status|tail [n]|path|clear]\n\nThe ops log records boot selections, structured shell command summaries, guarded local operations, and panic summaries in phase1.log. It is local-only and redacts common credential-like values.\n".to_string()
+    "usage: opslog [status|tail [n]|path|clear]\n\nThe ops log records boot selections, structured shell command summaries, guarded local operations, and panic summaries in phase1.log. It is local-only and uses the central redaction policy for credential-like values.\n".to_string()
 }
 
 fn timestamp() -> String {
@@ -140,7 +141,7 @@ fn timestamp() -> String {
 
 fn command_summary(command: &str) -> String {
     let trimmed = command.trim();
-    if contains_sensitive_marker(trimmed) {
+    if redaction::has_sensitive_marker(trimmed) {
         return "name=[redacted] argc=0 sensitive=true".to_string();
     }
 
@@ -148,90 +149,27 @@ fn command_summary(command: &str) -> String {
     let name = parts.first().copied().unwrap_or("unknown");
     format!(
         "name={} argc={} sensitive=false",
-        sanitize_token(name),
+        redaction::redact_line(name),
         parts.len().saturating_sub(1)
     )
 }
 
-fn contains_sensitive_marker(raw: &str) -> bool {
-    let lower = raw.to_ascii_lowercase();
-    [
-        "password",
-        "passwd",
-        "secret",
-        "token",
-        "api_key",
-        "apikey",
-        "access_token",
-        "refresh_token",
-        "client_secret",
-        "private_key",
-        "authorization:",
-        "bearer ",
-        "cookie",
-        "github_pat_",
-        "ghp_",
-        "gho_",
-        "ghu_",
-        "ghs_",
-        "ghr_",
-    ]
-    .iter()
-    .any(|marker| lower.contains(marker))
-}
-
-fn sanitize(raw: &str) -> String {
-    raw.split_whitespace()
-        .map(sanitize_token)
-        .collect::<Vec<_>>()
-        .join(" ")
-}
-
-fn sanitize_token(token: &str) -> String {
-    let lower = token.to_ascii_lowercase();
-    if lower.contains("password=")
-        || lower.contains("passwd=")
-        || lower.contains("secret=")
-        || lower.contains("token=")
-        || lower.contains("api_key=")
-        || lower.contains("apikey=")
-        || lower.contains("access_token=")
-        || lower.contains("refresh_token=")
-        || lower.contains("client_secret=")
-        || lower.contains("private_key=")
-    {
-        return "[redacted-secret]".to_string();
-    }
-    let blocked_prefixes = ["ghp_", "gho_", "ghu_", "ghs_", "ghr_", "github_pat_"];
-    if blocked_prefixes
-        .iter()
-        .any(|prefix| lower.starts_with(prefix))
-    {
-        return "[redacted-token]".to_string();
-    }
-    if let Some(proto_pos) = token.find("://") {
-        let auth_start = proto_pos + 3;
-        if let Some(at_offset) = token[auth_start..].find('@') {
-            let at = auth_start + at_offset;
-            let mut redacted = token.to_string();
-            redacted.replace_range(auth_start..at, "[redacted-credential]");
-            return redacted;
-        }
-    }
-    token.to_string()
+fn single_line(text: String) -> String {
+    text.lines().collect::<Vec<_>>().join(" \\n ")
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{command_summary, run, sanitize_token};
+    use super::{command_summary, run};
+    use crate::redaction;
 
     #[test]
     fn redacts_secret_like_tokens() {
-        assert_eq!(sanitize_token("token=example"), "[redacted-secret]");
-        assert_eq!(sanitize_token("ghp_example"), "[redacted-token]");
+        assert_eq!(redaction::redact_line("token=example"), "token=[redacted-secret]");
+        assert_eq!(redaction::redact_line("ghp_example"), "[redacted-token]");
         assert_eq!(
-            sanitize_token("https://user:pass@example.com/repo.git"),
-            "https://[redacted-credential]@example.com/repo.git"
+            redaction::redact_line("https://user:pass@example.com/repo.git"),
+            "https://[redacted]@example.com/repo.git"
         );
     }
 
