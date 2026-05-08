@@ -23,14 +23,19 @@ add_missing() {
 
 award_docs() {
     points=0
+    found=0
     for file in README.md SECURITY.md SECURITY_REVIEW.md UPDATE_PROTOCOL.md QUALITY.md QUALITY_SCORECARD.md; do
         if has_file "$file"; then
-            points=$((points + 3))
+            found=$((found + 1))
         else
             add_missing "$file"
         fi
     done
-    if [ "$points" -gt 20 ]; then points=20; fi
+    if [ "$found" -eq 6 ]; then
+        points=20
+    else
+        points=$((found * 3))
+    fi
     echo "$points"
 }
 
