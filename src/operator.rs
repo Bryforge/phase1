@@ -211,12 +211,15 @@ pub fn dashboard(shell: &mut Phase1Shell, config: BootConfig, args: &[String]) -
 
     if compact {
         return format!(
-            "PHASE1 EDGE OPERATOR DECK v{}\nCORE  user={} uptime={}s channel={} profile={}\nTRUST {} {} safety={} state={}\nDEV   focus={} activity={} cwd={}\nRUNTIME proc={} bg={} net={} pcie={} audit={}\nHW    cr3=0x{:x} {}\nNEXT  {}\n",
+            "PHASE1 EDGE OPERATOR DECK v{}\nPHASE1 DASHBOARD v{}\nCORE  user={} uptime={}s channel={} profile={}\nPROC  tasks={} bg={}\nTRUST {} {} safety={} state={}\nDEV   focus={} activity={} cwd={}\nRUNTIME proc={} bg={} net={} pcie={} audit={}\nHW    cr3=0x{:x} {}\nNEXT  {}\n",
+            display_version,
             display_version,
             shell.user(),
             uptime,
             channel_label(config),
             config.profile_name(),
+            process_count,
+            job_count,
             progress_bar(trust_meter, 12),
             trust_status(config),
             safety,
@@ -615,7 +618,9 @@ mod tests {
             "PHASE1 EDGE OPERATOR DECK v{}",
             env!("CARGO_PKG_VERSION")
         )));
+        assert!(compact.contains("PHASE1 DASHBOARD v"));
         assert!(compact.contains("CORE  user=root"));
+        assert!(compact.contains("PROC  tasks="));
         assert!(compact.contains("TRUST"));
     }
 }
