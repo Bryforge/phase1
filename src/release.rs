@@ -1,9 +1,9 @@
 use crate::kernel::VERSION;
 
-pub const STABLE_VERSION: &str = "4.1.0";
+pub const STABLE_VERSION: &str = "4.2.0";
 pub const COMPATIBILITY_BASE: &str = "3.6.0";
 pub const CURRENT_VERSION: &str = env!("CARGO_PKG_VERSION");
-pub const CHANNEL: &str = "bleeding-edge";
+pub const CHANNEL: &str = "stable";
 pub const UPDATE_PROTOCOL_FILE: &str = "UPDATE_PROTOCOL.md";
 pub const VERSION_SCHEME: &str = "MAJOR.MINOR.PATCH[-dev]";
 
@@ -97,7 +97,7 @@ pub fn version_report(args: &[String]) -> String {
     out.push_str(&format!("channel         : {}\n", CHANNEL));
     out.push_str(&format!("version scheme  : {}\n", VERSION_SCHEME));
     out.push_str(&format!("protocol file   : {}\n", UPDATE_PROTOCOL_FILE));
-    out.push_str("\ncurrent bleeding-edge additions over stable:\n");
+    out.push_str("\nstable v4.2.0 validated capabilities:\n");
     for feature in BLEEDING_FEATURES {
         out.push_str("  - ");
         out.push_str(feature);

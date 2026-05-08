@@ -26,9 +26,9 @@
 </p>
 
 <p align="center">
-  <img alt="Stable" src="https://img.shields.io/badge/stable-v4.1.0-39ff88">
-  <img alt="Previous stable" src="https://img.shields.io/badge/previous%20stable-v4.0.0-7f8cff">
-  <img alt="Edge" src="https://img.shields.io/badge/edge-v4.2.0--dev-00d8ff">
+  <img alt="Stable" src="https://img.shields.io/badge/stable-v4.2.0-39ff88">
+  <img alt="Previous stable" src="https://img.shields.io/badge/previous%20stable-v4.1.0-7f8cff">
+  <img alt="Edge" src="https://img.shields.io/badge/edge-v4.3.0--dev-00d8ff">
   <img alt="Rust" src="https://img.shields.io/badge/language-Rust-ff8a00">
   <img alt="Security" src="https://img.shields.io/badge/safe%20mode-default%20on-39ff88">
   <img alt="License" src="https://img.shields.io/badge/license-GPL--3.0-8a5cff">
@@ -111,7 +111,7 @@ roadmap
 
 ## Latest version check
 
-Stable is currently `v4.1.0`. The active development package line has moved to `v4.2.0-dev`.
+Stable is currently `v4.2.0`. The next development package line is `v4.3.0-dev`.
 
 To update your local checkout and see the active package version:
 
@@ -121,7 +121,7 @@ git pull --ff-only origin master
 sh phase1 version
 ```
 
-Use stable release tags or release branches when you want the safest repository state. Use the `v4.2.0-dev` line only for active development and experimental polish.
+Use stable release tags or release branches when you want the safest repository state. Use `v4.2.0` for the stable public representation. Use `v4.3.0-dev` only for future development and experimental polish.
 
 ## Smart local learning
 
@@ -146,9 +146,9 @@ The learning memory is local, sanitized, bounded, and ignored by git. It does no
 
 | Track | Version | Purpose |
 | --- | --- | --- |
-| Stable | `v4.1.0` | Current stable line for release-qualified work. |
-| Previous stable | `v4.0.0` | Preserved previous stable release point. |
-| Edge | `v4.2.0-dev` | Experimental development branch beyond stable. |
+| Stable | `v4.2.0` | Current stable line for release-qualified work. |
+| Previous stable | `v4.1.0` | Preserved previous stable release point. |
+| Edge | `v4.3.0-dev` | Experimental development branch beyond stable. |
 | Compatibility base | `v3.6.0` | Historical comparison base for compatibility references. |
 | Base1 | `foundation` | Secure host design for real hardware targets. |
 

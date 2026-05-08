@@ -1,39 +1,24 @@
 # Phase1 Edge Development
 
-`v4.2.0-dev` is the active development line after the stable `v4.1.0` release point.
+`v4.3.0-dev` is the next development line after the stable `v4.2.0` release point.
 
 ## Current identity
 
 | Item | Value |
 | --- | --- |
-| Development package version | `4.2.0-dev` |
-| Stable release point | `v4.1.0` |
-| Stable branch | `release/v4.1.0` |
-| Previous stable | `v4.0.0` |
+| Stable package version | `4.2.0` |
+| Stable release point | `v4.2.0` |
+| Previous stable | `v4.1.0` |
 | Compatibility base | `v3.6.0` |
+| Next development package version | `4.3.0-dev` |
 
 ## Development rules
 
-- Keep the `-dev` suffix until the next stable promotion.
-- Keep `v4.1.0` documentation intact for stable users.
+- Keep the `-dev` suffix on future development work until the next stable promotion.
+- Keep `v4.2.0` documentation intact for stable users.
 - Label experimental work clearly in docs, tests, and command output.
 - Keep safe defaults enabled while adding new capabilities.
-- Run formatting, compile, Clippy, and tests before merging development work.
-
-## Start development
-
-```bash
-git fetch origin
-git pull --ff-only origin master
-cargo metadata --no-deps --format-version 1 | grep '"version"'
-cargo run
-```
-
-Expected package version:
-
-```text
-4.2.0-dev
-```
+- Run formatting, compile, Clippy, tests, quality, release metadata, and website validation before merging.
 
 ## Validation
 
@@ -42,20 +27,7 @@ cargo fmt --all -- --check
 cargo check --all-targets
 cargo clippy --all-targets -- -D warnings
 cargo test --all-targets
+sh scripts/quality-score.sh
+sh scripts/test-release-metadata.sh
+sh scripts/test-website.sh
 ```
-
-Before a future stable promotion, also run:
-
-```bash
-cargo audit
-cargo deny check
-```
-
-## Future stable promotion path
-
-1. Create a release branch from the development branch when ready.
-2. Remove the `-dev` suffix from `Cargo.toml`.
-3. Refresh `Cargo.lock`.
-4. Update README, website demo output, wiki docs, in-system wiki fixtures, and release metadata tests.
-5. Run the full stable validation gate.
-6. Create the release tag only after validation passes.

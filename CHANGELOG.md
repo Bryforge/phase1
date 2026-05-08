@@ -1,3 +1,11 @@
+# v4.2.0 Stable
+
+- Promoted Phase1 v4.2.0 from development checkpoint to stable representation.
+- Preserved v4.1.0 as previous stable and v3.6.0 as compatibility base.
+- Raised quality score coverage to 100/100.
+- Added release metadata and website validation scripts.
+- Confirmed safe default boot posture for public/demo use.
+
 # Changelog
 
 ## v3.6.0 - 2026-05-05

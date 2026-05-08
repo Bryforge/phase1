@@ -1,10 +1,10 @@
 use std::fs;
 
-const EDGE_VERSION: &str = "v4.2.0-dev";
-const EDGE_PACKAGE_VERSION: &str = "4.2.0-dev";
-const STABLE_VERSION: &str = "v4.1.0";
-const STABLE_PACKAGE_VERSION: &str = "4.1.0";
-const PREVIOUS_STABLE: &str = "v4.0.0";
+const EDGE_VERSION: &str = "v4.3.0-dev";
+const EDGE_PACKAGE_VERSION: &str = "4.3.0-dev";
+const STABLE_VERSION: &str = "v4.2.0";
+const STABLE_PACKAGE_VERSION: &str = "4.2.0";
+const PREVIOUS_STABLE: &str = "v4.1.0";
 const COMPATIBILITY_BASE: &str = "v3.6.0";
 
 #[test]
@@ -14,20 +14,20 @@ fn cargo_metadata_matches_current_track() {
 
     if is_edge_track(&cargo_toml) {
         assert!(
-            cargo_toml.contains("version = \"4.2.0-dev\""),
+            cargo_toml.contains("version = \"4.3.0-dev\""),
             "Cargo.toml must identify the edge package version as {EDGE_PACKAGE_VERSION}"
         );
         assert!(
-            cargo_lock.contains("version = \"4.2.0-dev\""),
+            cargo_lock.contains("version = \"4.3.0-dev\""),
             "Cargo.lock must identify the edge package version as {EDGE_PACKAGE_VERSION}"
         );
     } else {
         assert!(
-            cargo_toml.contains("version = \"4.1.0\""),
+            cargo_toml.contains("version = \"4.2.0\""),
             "Cargo.toml must be promoted to {STABLE_PACKAGE_VERSION} for stable"
         );
         assert!(
-            cargo_lock.contains("version = \"4.1.0\""),
+            cargo_lock.contains("version = \"4.2.0\""),
             "Cargo.lock must be promoted to {STABLE_PACKAGE_VERSION} for stable"
         );
         assert!(
@@ -86,9 +86,9 @@ fn compatibility_base_remains_documented() {
 #[test]
 fn website_demo_reports_current_stable_track() {
     let js = read("site.js");
-    assert!(has_line(&js, "    \"stable: v4.1.0\","));
-    assert!(has_line(&js, "    \"previous stable: v4.0.0\","));
-    assert!(!has_line(&js, "    \"stable: v4.0.0\","));
+    assert!(has_line(&js, "    \"stable: v4.2.0\","));
+    assert!(has_line(&js, "    \"previous stable: v4.1.0\","));
+    assert!(!has_line(&js, "    \"stable: v4.1.0\","));
 }
 
 #[test]
@@ -99,18 +99,18 @@ fn stale_dev_release_lines_are_removed_from_release_facing_files() {
     {
         let text = read(path);
         assert!(
-            !text.contains("v4.1.0-dev"),
-            "{path} still references development version v4.1.0-dev"
+            !text.contains("v4.2.0-dev"),
+            "{path} still references development version v4.2.0-dev"
         );
         assert!(
-            !text.contains("4.1.0-dev"),
-            "{path} still references development version 4.1.0-dev"
+            !text.contains("4.2.0-dev"),
+            "{path} still references development version 4.2.0-dev"
         );
     }
 }
 
 fn is_edge_track(cargo_toml: &str) -> bool {
-    cargo_toml.contains("version = \"4.2.0-dev\"")
+    cargo_toml.contains("version = \"4.3.0-dev\"")
 }
 
 fn edge_facing_files() -> [&'static str; 3] {
@@ -118,7 +118,7 @@ fn edge_facing_files() -> [&'static str; 3] {
 }
 
 fn release_facing_files() -> [&'static str; 3] {
-    ["README.md", "RELEASE_v4.1.0.md", "site.js"]
+    ["README.md", "RELEASE_v4.2.0.md", "site.js"]
 }
 
 fn has_line(text: &str, expected: &str) -> bool {

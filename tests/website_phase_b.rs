@@ -135,7 +135,7 @@ fn site_js_implements_canvas_terminal_progressive_enhancement_and_performance_gu
             "wiki-quick",
             "phase1 // advanced operator kernel",
             "stable: v4.1.0",
-            "previous stable: v4.0.0",
+            "previous stable: v4.1.0",
             "safe mode: on",
             "setupNavigation",
             "setupReveals",
