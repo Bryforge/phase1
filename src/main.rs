@@ -150,7 +150,9 @@ fn run_storage_boot_option(boot_config: ui::BootConfig) {
         _ => {
             ops_log::log_event("storage.helper", "binary not built");
             println!("storage helper binary is not built yet.");
-            println!("build/check it with: cargo check --all-targets");
+            println!("build matching profile first:");
+            println!("  dev     : cargo build --bins");
+            println!("  release : cargo build --release --bins");
         }
     }
 

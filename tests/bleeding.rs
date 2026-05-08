@@ -57,7 +57,8 @@ fn bleeding_version_and_roadmap_are_visible() {
         "version --compare\nroadmap\npipeline\nupdate protocol\nupdate latest --build\nupdate test quick\nsecurity\nwasm run game status\ndash\nexit\n",
     );
     assert!(output.contains("phase1 version report"));
-    assert!(output.contains("stable version  : 3.6.0"));
+    assert!(output.contains("stable version  : 4.1.0"));
+    assert!(output.contains("compatibility base : 3.6.0"));
     assert!(
         output.contains(&format!("current version : {EDGE_VERSION}")),
         "current version report did not track package version:\n{output}"

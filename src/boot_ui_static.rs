@@ -417,8 +417,7 @@ fn configure_boot_cooked(
 ) -> BootSelection {
     let stdin = io::stdin();
     let mut input = String::new();
-    let mut notice =
-        Some("boot time captured; clock is static to avoid redraw glitches".to_string());
+    let mut notice = Some("static boot clock".to_string());
     loop {
         print_preboot(version, *config, notice.as_deref(), boot_stamp);
         print!("{}", command_prompt(*config, "boot"));
@@ -491,8 +490,7 @@ fn handle_boot_input(
         }
         "t" | "trust" | "trusted" | "host-tools" | "hosttools" => {
             config.host_tools = !config.host_tools;
-            *notice =
-                Some("trust host gate toggled; SHIELD must be off for host tools".to_string());
+            *notice = Some("trust gate toggled".to_string());
             None
         }
         "p" | "persist" | "persistent" | "persistent-state" | "vault" => {

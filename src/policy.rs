@@ -2,7 +2,7 @@ pub fn security_report(persistent_state: bool, history_state: &str) -> String {
     format!(
         "security mode       : {}\nhost tools          : {}\nhost network changes: {}\ncapability metadata : {}\npersistent state    : {}\nhistory             : {}\nprivacy             : no real emails, passwords, tokens, or account secrets are stored by phase1\n",
         if safe_mode_enabled() { "safe" } else { "host-capable" },
-        if host_tools_enabled() { "enabled" } else { "disabled" },
+        host_tools_status_label(),
         if host_network_changes_enabled() { "enabled" } else { "disabled" },
         capability_metadata_status(),
         if persistent_state { "on" } else { "off" },
@@ -16,6 +16,14 @@ pub fn safe_mode_enabled() -> bool {
 
 pub fn host_tools_enabled() -> bool {
     host_tools_from_value(std::env::var("PHASE1_ALLOW_HOST_TOOLS").ok().as_deref())
+}
+
+pub fn host_tools_status_label() -> &'static str {
+    match (host_tools_enabled(), safe_mode_enabled()) {
+        (true, true) => "armed/safe",
+        (true, false) => "enabled",
+        (false, _) => "off",
+    }
 }
 
 pub fn host_network_changes_enabled() -> bool {

@@ -150,7 +150,7 @@ fn safe_off_without_host_tools_still_blocks_host_commands() {
         &[
             "security   host bridge",
             "security mode       : host-capable",
-            "host tools          : disabled",
+            "host tools          : off",
             "python: disabled; set PHASE1_ALLOW_HOST_TOOLS=1 to enable trusted host tools",
             "browser: disabled; set PHASE1_ALLOW_HOST_TOOLS=1 to enable trusted host tools",
         ],
@@ -168,7 +168,7 @@ fn security_and_accounts_reports_are_privacy_safe() {
         &output,
         &[
             "security mode       : safe",
-            "host tools          : disabled",
+            "host tools          : off",
             "privacy             : no real emails, passwords, tokens, or account secrets are stored by phase1",
             "phase1 accounts // simulated Unix account database",
             "safety : no real emails, tokens, host users, or account secrets are stored here",

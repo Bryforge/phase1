@@ -179,7 +179,7 @@ pub fn sysinfo(shell: &mut Phase1Shell, config: BootConfig) -> String {
         job_count,
         pcie_count,
         audit_count,
-        if crate::policy::host_tools_allowed() { "enabled" } else { "disabled" }
+        crate::policy::host_tools_status_label()
     )
 }
 

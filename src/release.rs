@@ -1,6 +1,7 @@
 use crate::kernel::VERSION;
 
-pub const STABLE_VERSION: &str = "3.6.0";
+pub const STABLE_VERSION: &str = "4.1.0";
+pub const COMPATIBILITY_BASE: &str = "3.6.0";
 pub const CURRENT_VERSION: &str = env!("CARGO_PKG_VERSION");
 pub const CHANNEL: &str = "bleeding-edge";
 pub const UPDATE_PROTOCOL_FILE: &str = "UPDATE_PROTOCOL.md";
@@ -91,6 +92,7 @@ pub fn version_report(args: &[String]) -> String {
     let mut out = String::from("phase1 version report\n");
     out.push_str(&format!("current version : {}\n", current_version()));
     out.push_str(&format!("stable version  : {}\n", STABLE_VERSION));
+    out.push_str(&format!("compatibility base : {}\n", COMPATIBILITY_BASE));
     out.push_str(&format!("kernel baseline : {}\n", VERSION));
     out.push_str(&format!("channel         : {}\n", CHANNEL));
     out.push_str(&format!("version scheme  : {}\n", VERSION_SCHEME));
@@ -108,6 +110,7 @@ pub fn roadmap_report() -> String {
     let mut out = String::from("phase1 roadmap status\n");
     out.push_str(&format!("current : v{}\n", current_version()));
     out.push_str(&format!("stable  : v{}\n", STABLE_VERSION));
+    out.push_str(&format!("base    : v{}\n", COMPATIBILITY_BASE));
     out.push_str(&format!("channel : {}\n", CHANNEL));
     out.push_str(&format!("scheme  : {}\n", VERSION_SCHEME));
     out.push_str(&format!("updates : {}\n\n", UPDATE_PROTOCOL_FILE));
