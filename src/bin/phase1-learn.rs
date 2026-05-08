@@ -99,7 +99,10 @@ fn observe_args(memory: &mut Memory, args: &[String]) -> Result<String, String> 
         return Err("usage: phase1-learn observe <ok|fail|seen> -- <command>".to_string());
     }
     let status = args[0].as_str();
-    let start = args.iter().position(|arg| arg == "--").map_or(1, |idx| idx + 1);
+    let start = args
+        .iter()
+        .position(|arg| arg == "--")
+        .map_or(1, |idx| idx + 1);
     let command = args[start..].join(" ");
     if command.trim().is_empty() {
         return Err("observe requires a command after --".to_string());
@@ -129,7 +132,9 @@ impl Memory {
                     }
                 }
                 ["RULE", trigger, response] => {
-                    if let (Ok(trigger), Ok(response)) = (decode_text(trigger), decode_text(response)) {
+                    if let (Ok(trigger), Ok(response)) =
+                        (decode_text(trigger), decode_text(response))
+                    {
                         memory.rules.push(Rule { trigger, response });
                     }
                 }
@@ -151,7 +156,10 @@ impl Memory {
     }
 
     fn save(&self, path: &Path) -> io::Result<()> {
-        if let Some(parent) = path.parent().filter(|parent| !parent.as_os_str().is_empty()) {
+        if let Some(parent) = path
+            .parent()
+            .filter(|parent| !parent.as_os_str().is_empty())
+        {
             fs::create_dir_all(parent)?;
         }
         fs::write(path, self.serialize())
@@ -251,7 +259,10 @@ impl Memory {
                 count = count.saturating_add(1);
             }
         }
-        Ok(format!("learn: imported {count} history entries from {}\n", path.display()))
+        Ok(format!(
+            "learn: imported {count} history entries from {}\n",
+            path.display()
+        ))
     }
 
     fn ask(&self, query: &str) -> String {
@@ -345,7 +356,8 @@ impl Memory {
             }
             query => {
                 let before = self.notes.len() + self.rules.len() + self.commands.len();
-                self.notes.retain(|note| !normalize_query(note).contains(query));
+                self.notes
+                    .retain(|note| !normalize_query(note).contains(query));
                 self.rules.retain(|rule| !rule.trigger.contains(query));
                 self.commands.retain(|command, _| !command.contains(query));
                 let after = self.notes.len() + self.rules.len() + self.commands.len();
@@ -447,7 +459,11 @@ fn sanitize_text(text: &str) -> String {
     if risky.iter().any(|marker| lower.contains(marker)) {
         return "[redacted-sensitive-memory]".to_string();
     }
-    trimmed.chars().filter(|ch| !ch.is_control()).take(600).collect()
+    trimmed
+        .chars()
+        .filter(|ch| !ch.is_control())
+        .take(600)
+        .collect()
 }
 
 fn normalize_query(text: &str) -> String {
@@ -564,7 +580,10 @@ mod tests {
 
     #[test]
     fn command_names_are_sanitized() {
-        assert_eq!(command_name("/usr/bin/python demo.py").as_deref(), Some("python"));
+        assert_eq!(
+            command_name("/usr/bin/python demo.py").as_deref(),
+            Some("python")
+        );
         assert_eq!(command_name("bad$cmd arg").as_deref(), Some("badcmd"));
     }
 }

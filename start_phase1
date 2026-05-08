@@ -12,6 +12,8 @@ PHASE1_SAFE_MODE="${PHASE1_SAFE_MODE:-1}"
 PHASE1_DEVICE_MODE="${PHASE1_DEVICE_MODE:-desktop}"
 PHASE1_GINA_ENABLED="${PHASE1_GINA_ENABLED:-1}"
 PHASE1_TERMINAL_TITLE="${PHASE1_TERMINAL_TITLE:-Phase1 Command Center}"
+PHASE1_LAUNCH_COMMAND_REQUEST="${PHASE1_LAUNCH_COMMAND:-}"
+PHASE1_LAUNCH_COMMAND="${PHASE1_LAUNCH_COMMAND:-./start_phase1}"
 
 RUN_CONFIGURE=0
 RUN_DOCTOR=0
@@ -48,6 +50,10 @@ print_help() {
     cat <<'EOF'
 Phase1 launch command
 
+Recommended:
+  sh phase1
+  ./phase1
+
 Usage:
   ./start_phase1
   ./start_phase1 --configure
@@ -58,11 +64,15 @@ Usage:
   ./start_phase1 --no-build
 
 Simple launch command:
-  ./start_phase1
+  ./phase1
+
+Install local terminal command:
+  sh scripts/install-phase1-command.sh
+  phase1
 
 Notes:
   Run `sh scripts/configure-phase1.sh` once for full local configuration.
-  If your checkout does not preserve executable bits, run `sh start_phase1` or `chmod +x start_phase1`.
+  If your checkout does not preserve executable bits, run `sh phase1`, `sh start_phase1`, or `chmod +x phase1 start_phase1`.
 EOF
 }
 
@@ -75,7 +85,7 @@ premium_banner() {
     fg 45; bold; printf '║'; reset; fg 201; bold; printf '                    PHASE1 COMMAND CENTER                    '; reset; fg 45; bold; printf '║\n'; reset
     fg 45; bold; printf '║'; reset; fg 118; printf '       premium launch • Gina AI • Base1 • quality gate        '; reset; fg 45; bold; printf '║\n'; reset
     fg 51; bold; printf '╚══════════════════════════════════════════════════════════════╝\n'; reset
-    fg 81; printf 'launch command : '; reset; bold; printf './start_phase1\n'; reset
+    fg 81; printf 'launch command : '; reset; bold; printf '%s\n' "$PHASE1_LAUNCH_COMMAND"; reset
     fg 81; printf 'safe mode      : '; reset; printf '%s\n' "$PHASE1_SAFE_MODE"
     fg 81; printf 'theme          : '; reset; printf '%s\n' "$PHASE1_THEME"
     fg 81; printf 'gina           : '; reset; printf '%s\n' "enabled/offline"
@@ -86,6 +96,9 @@ load_config() {
     if [ -f "$PHASE1_CONFIG_FILE" ]; then
         # shellcheck disable=SC1090
         . "$PHASE1_CONFIG_FILE"
+    fi
+    if [ -n "$PHASE1_LAUNCH_COMMAND_REQUEST" ]; then
+        PHASE1_LAUNCH_COMMAND="$PHASE1_LAUNCH_COMMAND_REQUEST"
     fi
 }
 
@@ -98,6 +111,7 @@ phase1_doctor() {
     echo "safe mode  : $PHASE1_SAFE_MODE"
     echo "device     : $PHASE1_DEVICE_MODE"
     echo "gina       : $PHASE1_GINA_ENABLED"
+    echo "launcher   : $PHASE1_LAUNCH_COMMAND"
     if [ -f "$PHASE1_HOME/plugins/gina.wasi" ]; then echo "gina file  : present"; else echo "gina file  : missing"; fi
     if [ -f "$PHASE1_HOME/scripts/base1-preflight.sh" ]; then echo "base1      : preflight available"; else echo "base1      : preflight missing"; fi
     if command -v cargo >/dev/null 2>&1; then echo "cargo      : $(command -v cargo)"; else echo "cargo      : missing"; fi
@@ -130,9 +144,8 @@ run_quality() {
 
 launch_phase1() {
     export PHASE1_HOME PHASE1_THEME PHASE1_COLOR_MODE PHASE1_SAFE_MODE PHASE1_DEVICE_MODE
-    export PHASE1_GINA_ENABLED PHASE1_TERMINAL_TITLE
+    export PHASE1_GINA_ENABLED PHASE1_TERMINAL_TITLE PHASE1_LAUNCH_COMMAND
     export PHASE1_AI_MODE="offline"
-    export PHASE1_LAUNCH_COMMAND="./start_phase1"
 
     cd "$PHASE1_HOME"
 

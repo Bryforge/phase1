@@ -1,16 +1,15 @@
 # Phase1 Terminal
 
-Phase1 Terminal is the current-master terminal entrypoint wrapper for Phase1.
-
-It is intentionally thin. The canonical launch path remains:
+Phase1 now has two safe local launch surfaces:
 
 ```bash
-./start_phase1
+sh phase1
+./phase1
 ```
 
-`phase1-terminal` delegates to that launcher instead of duplicating trust, build, Gina, Base1, or quality logic.
+The root `phase1` command is the simplest operator entrypoint. It delegates to `./start_phase1`, so Phase1 keeps one source launcher for trust, build, Gina, Base1, and quality logic.
 
-## Commands
+The lower-level terminal wrapper remains available for explicit terminal workflows:
 
 ```bash
 terminal/bin/phase1-terminal help
@@ -24,6 +23,43 @@ terminal/bin/phase1-terminal version
 terminal/bin/phase1-terminal selftest
 ```
 
+## Recommended startup
+
+Fresh clone:
+
+```bash
+git clone https://github.com/Bryforge/phase1.git
+cd phase1
+sh phase1
+```
+
+After executable bits are set:
+
+```bash
+./phase1
+```
+
+Install a local command on macOS/Linux:
+
+```bash
+sh scripts/install-phase1-command.sh
+phase1
+```
+
+Useful checks:
+
+```bash
+sh phase1 version
+sh phase1 doctor
+sh phase1 selftest
+```
+
+The original launcher remains valid:
+
+```bash
+./start_phase1
+```
+
 ## Safety model
 
 Defaults stay conservative:
@@ -34,12 +70,12 @@ Defaults stay conservative:
 - no external AI provider call
 - no full terminal-emulator claim
 
-The wrapper does not create a new privilege path. It only makes the already-merged `./start_phase1` flow easier to discover from Linux, macOS, and local terminal sessions.
+The simple launcher and terminal wrapper do not create new privilege paths. They only make the already-merged `./start_phase1` flow easier to discover from Linux, macOS, and local terminal sessions.
 
 ## Gina workflow
 
 ```bash
-terminal/bin/phase1-terminal gina
+sh phase1 gina
 ```
 
 This delegates to:
@@ -53,6 +89,7 @@ Gina remains offline by default and runs through the existing Phase1 WASI-lite p
 ## Quality workflow
 
 ```bash
+sh phase1 selftest
 terminal/bin/phase1-terminal selftest
 sh scripts/test-phase1-terminal.sh
 ```
@@ -68,7 +105,7 @@ cargo test --workspace --all-targets
 
 Keep future terminal expansion staged:
 
-1. Wrapper and tests.
+1. Simple command and tests.
 2. Linux/macOS install helpers.
 3. Optional `.desktop` and `.command` launchers.
 4. Theme/profile helpers.
