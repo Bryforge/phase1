@@ -2,9 +2,18 @@
 
 This directory contains the lightweight Phase1 Terminal wrapper.
 
-The first implementation is deliberately small and current-master friendly:
+The primary repository startup command is now:
 
-- `bin/phase1-terminal` delegates to ../../start_phase1.
+```bash
+sh phase1
+./phase1
+```
+
+The root `phase1` command delegates to `./start_phase1` and is the recommended operator-friendly entrypoint.
+
+The terminal wrapper remains deliberately small and current-master friendly:
+
+- `bin/phase1-terminal` delegates to `../../start_phase1`.
 - It keeps safe defaults and does not create a new trust path.
 - It provides discovery commands for doctor, Gina, Base1, quality checks, and self-test.
 
@@ -16,7 +25,14 @@ sh terminal/bin/phase1-terminal doctor
 sh terminal/bin/phase1-terminal selftest
 ```
 
-Use the canonical launcher directly when in doubt:
+Install a local `phase1` command on macOS/Linux:
+
+```bash
+sh scripts/install-phase1-command.sh
+phase1
+```
+
+Use the source launcher directly when debugging:
 
 ```bash
 ./start_phase1
