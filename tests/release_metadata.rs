@@ -1,29 +1,44 @@
 use std::fs;
 
+const EDGE_VERSION: &str = "v4.1.0-dev";
+const EDGE_PACKAGE_VERSION: &str = "4.1.0-dev";
 const STABLE_VERSION: &str = "v4.0.0";
+const STABLE_PACKAGE_VERSION: &str = "4.0.0";
 const PREVIOUS_STABLE: &str = "v3.10.9";
 const COMPATIBILITY_BASE: &str = "v3.6.0";
 
 #[test]
-fn cargo_metadata_is_promoted_to_stable() {
+fn cargo_metadata_matches_current_track() {
     let cargo_toml = read("Cargo.toml");
     let cargo_lock = read("Cargo.lock");
-    assert!(
-        cargo_toml.contains("version = \"4.0.0\""),
-        "Cargo.toml must be promoted to 4.0.0"
-    );
-    assert!(
-        cargo_lock.contains("version = \"4.0.0\""),
-        "Cargo.lock must be promoted to 4.0.0"
-    );
-    assert!(
-        !cargo_toml.contains("4.0.0-dev"),
-        "Cargo.toml must not contain a dev suffix for stable"
-    );
-    assert!(
-        !cargo_lock.contains("4.0.0-dev"),
-        "Cargo.lock must not contain a dev suffix for stable"
-    );
+
+    if is_edge_track(&cargo_toml) {
+        assert!(
+            cargo_toml.contains("version = \"4.1.0-dev\""),
+            "Cargo.toml must identify the edge package version as {EDGE_PACKAGE_VERSION}"
+        );
+        assert!(
+            cargo_lock.contains("version = \"4.1.0-dev\""),
+            "Cargo.lock must identify the edge package version as {EDGE_PACKAGE_VERSION}"
+        );
+    } else {
+        assert!(
+            cargo_toml.contains("version = \"4.0.0\""),
+            "Cargo.toml must be promoted to {STABLE_PACKAGE_VERSION} for stable"
+        );
+        assert!(
+            cargo_lock.contains("version = \"4.0.0\""),
+            "Cargo.lock must be promoted to {STABLE_PACKAGE_VERSION} for stable"
+        );
+        assert!(
+            !cargo_toml.contains("-dev"),
+            "stable Cargo.toml must not contain a dev suffix"
+        );
+        assert!(
+            !cargo_lock.contains("-dev"),
+            "stable Cargo.lock must not contain a dev suffix"
+        );
+    }
 }
 
 #[test]
@@ -37,6 +52,22 @@ fn release_metadata_is_consistent_across_public_docs() {
         assert!(
             text.contains(PREVIOUS_STABLE),
             "{path} is missing previous stable {PREVIOUS_STABLE}"
+        );
+    }
+}
+
+#[test]
+fn edge_track_is_documented_when_package_is_dev() {
+    let cargo_toml = read("Cargo.toml");
+    if !is_edge_track(&cargo_toml) {
+        return;
+    }
+
+    for path in edge_facing_files() {
+        let text = read(path);
+        assert!(
+            text.contains(EDGE_VERSION) || text.contains(EDGE_PACKAGE_VERSION),
+            "{path} is missing edge version {EDGE_VERSION}"
         );
     }
 }
@@ -62,11 +93,15 @@ fn compatibility_base_remains_documented() {
 }
 
 #[test]
-fn website_demo_reports_stable_release() {
+fn website_demo_reports_current_track() {
     let js = read("site.js");
     assert!(js.contains("stable: v4.0.0"));
     assert!(js.contains("previous stable: v3.10.9"));
     assert!(!js.contains("edge: v4.0.0-dev"));
+
+    if is_edge_track(&read("Cargo.toml")) {
+        assert!(js.contains("edge: v4.1.0-dev"));
+    }
 }
 
 #[test]
@@ -95,9 +130,26 @@ fn stale_release_lines_are_removed_from_release_facing_files() {
     }
 }
 
-fn release_facing_files() -> [&'static str; 11] {
+fn is_edge_track(cargo_toml: &str) -> bool {
+    cargo_toml.contains("version = \"4.1.0-dev\"")
+}
+
+fn edge_facing_files() -> [&'static str; 7] {
     [
         "README.md",
+        "EDGE.md",
+        "site.js",
+        "docs/wiki/Home.md",
+        "docs/wiki/02-Version-Guide.md",
+        "docs/wiki/08-Updates-Releases-and-Validation.md",
+        "plugins/wiki-version.wasi",
+    ]
+}
+
+fn release_facing_files() -> [&'static str; 13] {
+    [
+        "README.md",
+        "RELEASE_v4.0.0.md",
         "docs/wiki/Home.md",
         "docs/wiki/02-Version-Guide.md",
         "docs/wiki/08-Updates-Releases-and-Validation.md",
@@ -108,6 +160,7 @@ fn release_facing_files() -> [&'static str; 11] {
         "plugins/wiki-quick.wasi",
         "plugins/wiki-version.wasi",
         "plugins/wiki-updates.wasi",
+        "site.js",
     ]
 }
 
