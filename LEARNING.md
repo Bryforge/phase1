@@ -145,10 +145,13 @@ phase1-learn forget <all|notes|rules|commands|query>
 phase1-learn export
 ```
 
+## Completed milestone
+
+The in-shell learning milestone is complete: `learn`, auto-observe, failure-prioritized suggestions, typo recovery, `learn explain`, `learn doctor`, and the local update helper are merged. See `DEVELOPMENT_CHECKPOINT_LEARN.md`.
+
 ## Roadmap
 
-- expose `learn` as an in-shell Phase1 command
-- auto-observe known command success/failure from the shell dispatcher
+- add `learn repair` for direct repair actions from failed commands
 - add VFS summaries for `/home` project files
 - add local classifier weights for command categories
 - add guarded import/export for shareable non-secret learning profiles

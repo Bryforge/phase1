@@ -247,3 +247,7 @@ cargo deny check
 ## Decision
 
 The next implementation should start with `project.html`, because it clarifies the product before expanding the company story. The company page should follow immediately after so Bryforge has a professional public identity separate from the phase1 technical pitch.
+
+## Roadmap maintenance requirement
+
+Future implementation PRs must keep roadmap and planning documents current. When a PR completes a planned item, starts a new track, or changes implementation priority, update the relevant roadmap docs in the same PR or explain why no roadmap change is required. Review LEARNING.md, WIKI_ROADMAP.md, docs/website/NEXT_ROADMAP_IMPLEMENTATION.md, EDGE.md, and CHANGELOG.md during milestone PRs.
