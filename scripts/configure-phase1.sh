@@ -27,7 +27,8 @@ Options:
   -h, --help       Show help.
 
 After configuration, launch with:
-  ./start_phase1
+  sh phase1
+  ./phase1
 EOF
 }
 
@@ -62,7 +63,7 @@ PHASE1_DEVICE_MODE="desktop"
 PHASE1_GINA_ENABLED="1"
 PHASE1_AI_MODE="offline"
 PHASE1_TERMINAL_TITLE="Phase1 Command Center"
-PHASE1_LAUNCH_COMMAND="./start_phase1"
+PHASE1_LAUNCH_COMMAND="./phase1"
 PHASE1_BASE1_PREFLIGHT="scripts/base1-preflight.sh"
 PHASE1_QUALITY_SCORE="scripts/quality-score.sh"
 EOF
@@ -73,29 +74,33 @@ install_terminal_wrapper() {
         return 0
     fi
     if [ "$DRY_RUN" = "1" ]; then
+        say "dry-run: write $BIN_DIR/phase1"
         say "dry-run: write $BIN_DIR/phase1-terminal"
         return 0
     fi
     mkdir -p "$BIN_DIR"
-    cat > "$BIN_DIR/phase1-terminal" <<'EOF'
+    cat > "$BIN_DIR/phase1" <<EOF
 #!/usr/bin/env sh
-SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
-exec "$SCRIPT_DIR/start_phase1" "$@"
+exec "$ROOT_DIR/phase1" "\$@"
 EOF
-    chmod 0755 "$BIN_DIR/phase1-terminal"
+    cat > "$BIN_DIR/phase1-terminal" <<EOF
+#!/usr/bin/env sh
+exec "$ROOT_DIR/terminal/bin/phase1-terminal" "\$@"
+EOF
+    chmod 0755 "$BIN_DIR/phase1" "$BIN_DIR/phase1-terminal"
 }
 
 make_launchers_executable() {
     if [ "$DRY_RUN" = "1" ]; then
-        say "dry-run: chmod +x start_phase1 scripts/configure-phase1.sh"
+        say "dry-run: chmod +x phase1 start_phase1 scripts/configure-phase1.sh scripts/install-phase1-command.sh"
         return 0
     fi
-    chmod 0755 "$ROOT_DIR/start_phase1" "$ROOT_DIR/scripts/configure-phase1.sh"
+    chmod 0755 "$ROOT_DIR/phase1" "$ROOT_DIR/start_phase1" "$ROOT_DIR/scripts/configure-phase1.sh" "$ROOT_DIR/scripts/install-phase1-command.sh"
 }
 
 validate_files() {
     missing=0
-    for file in start_phase1 plugins/gina.wasi plugins/ai.wasi scripts/base1-preflight.sh; do
+    for file in phase1 start_phase1 plugins/gina.wasi plugins/ai.wasi scripts/base1-preflight.sh; do
         if [ ! -f "$ROOT_DIR/$file" ]; then
             say "missing: $file"
             missing=$((missing + 1))
@@ -130,10 +135,10 @@ say "Phase1 absolute configuration"
 say "home       : $ROOT_DIR"
 say "local dir  : $LOCAL_DIR"
 say "config     : $CONFIG_FILE"
-say "launcher   : ./start_phase1"
+say "launcher   : ./phase1"
 say "gina       : offline operations assistant"
 say "base1      : read-only preflight available when present"
-say "terminal   : local wrapper enabled"
+say "terminal   : local wrappers enabled"
 
 write_config
 install_terminal_wrapper
@@ -148,4 +153,5 @@ if [ "$RUN_QUALITY" = "1" ]; then
 fi
 
 say "Configuration complete."
-say "Launch command: ./start_phase1"
+say "Launch command: sh phase1"
+say "Executable command: ./phase1"
