@@ -13,6 +13,7 @@ use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 use crate::browser::Browser;
 use crate::kernel::{Kernel, VfsNode, VERSION};
+use crate::learn;
 use crate::man;
 use crate::ned;
 use crate::network::NetworkStack;
@@ -320,6 +321,7 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
         "complete" => print_completions(args.first().map(String::as_str)),
         "capabilities" => print!("{}", registry::capabilities_report()),
         "dash" => print!("{}", dashboard(shell, args)),
+        "learn" => print!("{}", learn::run(shell, args)),
         "pipeline" => print!("{}", pipeline::help()),
         "wasm" => print!("{}", wasm::run(&shell.plugins_dir, args)),
         "roadmap" => print!("{}", release::roadmap_report()),

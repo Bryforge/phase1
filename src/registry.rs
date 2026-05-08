@@ -90,6 +90,7 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("su", &[], "user", "su <user>", "Switch simulated user.", "user.switch"),
     cmd!("accounts", &["users"], "user", "accounts", "Explain and list simulated Unix accounts without real emails or credentials.", "user.read"),
     cmd!("history", &[], "user", "history [list|status|path|save|clear]", "Show shell command history and persistent-history status.", "user.read"),
+    cmd!("learn", &["memory"], "user", "learn [status|import-history|note|teach|ask|suggest|profile|forget|export]", "Use the local learning memory from inside Phase1 with sanitized notes, rules, command observations, and suggestions.", "learn.write"),
     cmd!("security", &["sec", "policy"], "user", "security", "Show safe mode, host tool gates, persistence, and privacy status.", "user.read"),
     cmd!("theme", &["style"], "user", "theme [show|list|rainbow|matrix|cyber|amber|ice|synthwave|crimson|mono|ascii|reset]", "Switch or inspect selectable terminal palettes. Rainbow remains the default.", "user.env"),
     cmd!("banner", &["splash"], "user", "banner [mobile|desktop|mono|rainbow|matrix|cyber|amber|ice|synthwave|crimson|ascii|safe|host|persist]", "Preview boot splash profile and color palette choices without changing saved config.", "user.read"),
@@ -129,7 +130,7 @@ pub fn command_map() -> String {
             .join(" ");
         out.push_str(&format!("{:<5}: {}\n", category, names));
     }
-    out.push_str("\nquick : version --compare | roadmap | lang support | lang security | avim notes.rs | update test quick | update test full | theme list | theme matrix | pipeline | wasm list | update protocol | sysinfo\n");
+    out.push_str("\nquick : version --compare | roadmap | lang support | lang security | avim notes.rs | update test quick | update test full | learn status | learn import-history | learn suggest | theme list | theme matrix | pipeline | wasm list | update protocol | sysinfo\n");
     out
 }
 
@@ -183,6 +184,7 @@ fn guard_status(capability: &str) -> &'static str {
         "host.exec" | "host.net" => "safe-mode + PHASE1_ALLOW_HOST_TOOLS",
         "wasm.exec" => "phase1-wasi sandbox",
         "net.admin" => "safe-mode + host-tools + network-change opt-in",
+        "learn.write" => "local sanitized memory",
         "hw.write" => "validated",
         "fs.write" | "proc.kill" | "proc.spawn" | "proc.manage" | "user.switch" | "user.env" => {
             "audited"
