@@ -211,6 +211,128 @@ h1 {
 
 /* Mobile readability: keep the design, but stop headings from fragmenting. */
 @media (max-width: 860px) {
+  html,
+  body {
+    max-width: 100% !important;
+    overflow-x: clip !important;
+  }
+
+  body {
+    min-width: 0 !important;
+  }
+
+  #space,
+  .scanlines,
+  .noise {
+    width: 100vw !important;
+    max-width: 100vw !important;
+  }
+
+  .aurora {
+    width: 32rem !important;
+    height: 32rem !important;
+    filter: blur(48px) !important;
+    opacity: 0.18 !important;
+  }
+
+  .aurora-one {
+    left: -18rem !important;
+    top: -12rem !important;
+  }
+
+  .aurora-two {
+    right: -20rem !important;
+    bottom: -14rem !important;
+  }
+
+  .site-shell {
+    width: min(100% - 20px, 760px) !important;
+    padding: 10px 0 28px !important;
+  }
+
+  .nav {
+    position: sticky !important;
+    top: 8px !important;
+    gap: 10px !important;
+    padding: 10px 12px !important;
+    border-radius: 18px !important;
+  }
+
+  .brand {
+    max-width: calc(100vw - 96px) !important;
+    letter-spacing: 0.1em !important;
+    font-size: 0.92rem !important;
+  }
+
+  .nav-toggle {
+    display: inline-grid !important;
+    place-content: center !important;
+    flex: 0 0 44px !important;
+  }
+
+  .nav-links {
+    position: absolute !important;
+    top: calc(100% + 8px) !important;
+    left: 0 !important;
+    right: 0 !important;
+    display: none !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    padding: 12px !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 18px !important;
+    background: rgba(5, 7, 17, 0.96) !important;
+    backdrop-filter: blur(18px) !important;
+    box-shadow: var(--shadow) !important;
+  }
+
+  .nav-links.is-open {
+    display: grid !important;
+  }
+
+  .nav-links a {
+    display: flex !important;
+    justify-content: center !important;
+    min-width: 0 !important;
+    padding: 10px 8px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background: rgba(255, 255, 255, 0.045) !important;
+    font-size: 0.88rem !important;
+  }
+
+  main {
+    gap: 20px !important;
+  }
+
+  .hero,
+  .founder,
+  .support-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .hero {
+    gap: 22px !important;
+    margin-top: 18px !important;
+    padding: clamp(18px, 5.2vw, 28px) !important;
+    border-radius: 24px !important;
+    overflow: hidden !important;
+  }
+
+  .hero-copy,
+  .hero-text,
+  .section-heading,
+  .terminal,
+  .roadmap,
+  .founder,
+  .support-card,
+  .feature-card,
+  .timeline li,
+  .metric-strip,
+  .hero-command {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+
   h1,
   .section-heading h2,
   .founder-copy h2,
@@ -222,7 +344,7 @@ h1 {
   }
 
   h1 {
-    font-size: clamp(2.05rem, 11vw, 3.35rem) !important;
+    font-size: clamp(2.05rem, 10.2vw, 3.2rem) !important;
     line-height: 1.02 !important;
     letter-spacing: -0.045em !important;
   }
@@ -258,25 +380,201 @@ h1 {
     line-height: 1.62 !important;
   }
 
+  .hero-actions,
+  .roadmap-actions {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 10px !important;
+    width: 100% !important;
+    margin: 22px 0 16px !important;
+  }
+
+  .button {
+    width: 100% !important;
+    min-height: 48px !important;
+    padding-inline: 14px !important;
+    text-align: center !important;
+  }
+
+  .hero-command {
+    display: grid !important;
+    grid-template-columns: auto minmax(0, 1fr) !important;
+    align-items: start !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .hero-command code {
+    white-space: pre !important;
+    font-size: 0.78rem !important;
+  }
+
+  .metric-strip,
+  .feature-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  .metric-strip div {
+    padding: 12px !important;
+  }
+
+  .logo-stage {
+    width: 100% !important;
+    min-height: min(86vw, 390px) !important;
+    padding: 8px 0 0 !important;
+    overflow: hidden !important;
+  }
+
+  .logo-stage::before {
+    width: min(86vw, 360px) !important;
+    filter: blur(20px) !important;
+    opacity: 0.62 !important;
+  }
+
+  .logo-glass {
+    width: min(100%, 360px) !important;
+    max-width: calc(100vw - 56px) !important;
+    padding: 8px !important;
+    border-radius: 26px !important;
+  }
+
+  .phase-logo {
+    border-radius: 20px !important;
+  }
+
+  .orbit-one {
+    width: min(90vw, 360px) !important;
+  }
+
+  .orbit-two {
+    width: min(72vw, 286px) !important;
+  }
+
+  .orbit-three {
+    width: min(52vw, 210px) !important;
+  }
+
+  .system-card {
+    position: relative !important;
+    inset: auto !important;
+    justify-self: stretch !important;
+    width: min(100%, 260px) !important;
+    margin: 8px auto 0 !important;
+    padding: 10px 12px !important;
+    text-align: center !important;
+    transform: none !important;
+  }
+
+  .terminal-topbar,
+  .terminal-form {
+    grid-template-columns: minmax(0, 1fr) !important;
+    flex-wrap: wrap !important;
+  }
+
+  .terminal-title,
+  .terminal-status,
+  .terminal-form span {
+    white-space: normal !important;
+    min-width: 0 !important;
+  }
+
+  .terminal-form {
+    display: grid !important;
+    gap: 10px !important;
+  }
+
+  .terminal-form input,
+  .terminal-form button {
+    width: 100% !important;
+  }
+
+  .terminal-output {
+    min-height: 260px !important;
+    max-height: 380px !important;
+    padding: 16px !important;
+    font-size: 0.82rem !important;
+    white-space: pre-wrap !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  .quick-commands {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    padding: 0 14px 14px !important;
+  }
+
+  .quick-commands button {
+    min-width: 0 !important;
+  }
+
+  .timeline {
+    margin: 26px 0 22px !important;
+  }
+
+  .timeline::before {
+    left: 22px !important;
+  }
+
+  .timeline li {
+    grid-template-columns: 30px minmax(0, 1fr) !important;
+  }
+
+  .timeline-dot {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .founder {
+    padding: 22px !important;
+  }
+
+  .founder-profile {
+    order: 2 !important;
+  }
+
+  .founder-copy {
+    order: 1 !important;
+  }
+
+  .avatar-ring {
+    width: 136px !important;
+  }
+
+  .founder-avatar {
+    width: 116px !important;
+  }
+
   .feature-card,
   .bryforge-card,
   .support-card,
   .timeline li {
     padding: 18px !important;
   }
+
+  .footer {
+    grid-template-columns: minmax(0, 1fr) !important;
+    padding: 18px !important;
+  }
+
+  .footer-links {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
 }
 
 @media (max-width: 420px) {
   .site-shell {
-    width: min(100% - 16px, 720px) !important;
+    width: min(100% - 14px, 720px) !important;
   }
 
   .hero {
-    padding: 20px !important;
+    padding: 18px !important;
   }
 
   h1 {
-    font-size: clamp(1.9rem, 10vw, 2.7rem) !important;
+    font-size: clamp(1.86rem, 9.8vw, 2.55rem) !important;
     letter-spacing: -0.032em !important;
   }
 
@@ -291,5 +589,20 @@ h1 {
 
   .hero-actions {
     gap: 10px !important;
+  }
+
+  .metric-strip,
+  .feature-grid,
+  .quick-commands,
+  .footer-links {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .logo-glass {
+    max-width: calc(100vw - 44px) !important;
+  }
+
+  .terminal-output {
+    font-size: 0.78rem !important;
   }
 }

@@ -1,7 +1,7 @@
 use std::fs;
 
-const EDGE_VERSION: &str = "v4.2.5-dev";
-const EDGE_PACKAGE_VERSION: &str = "4.2.5-dev";
+const EDGE_VERSION: &str = "v4.2.6-dev";
+const EDGE_PACKAGE_VERSION: &str = "4.2.6-dev";
 const STABLE_VERSION: &str = "v4.0.0";
 const STABLE_PACKAGE_VERSION: &str = "4.0.0";
 const PREVIOUS_STABLE: &str = "v3.10.9";
@@ -14,11 +14,11 @@ fn cargo_metadata_matches_current_track() {
 
     if is_edge_track(&cargo_toml) {
         assert!(
-            cargo_toml.contains("version = \"4.2.5-dev\""),
+            cargo_toml.contains("version = \"4.2.6-dev\""),
             "Cargo.toml must identify the edge package version as {EDGE_PACKAGE_VERSION}"
         );
         assert!(
-            cargo_lock.contains("version = \"4.2.5-dev\""),
+            cargo_lock.contains("version = \"4.2.6-dev\""),
             "Cargo.lock must identify the edge package version as {EDGE_PACKAGE_VERSION}"
         );
     } else {
@@ -115,15 +115,19 @@ fn stale_release_lines_are_removed_from_release_facing_files() {
             !text.contains("4.0.0-dev"),
             "{path} still references development version 4.0.0-dev"
         );
+        assert!(
+            !text.contains("4.2.5-dev"),
+            "{path} still references previous edge version 4.2.5-dev"
+        );
     }
 }
 
 fn is_edge_track(cargo_toml: &str) -> bool {
-    cargo_toml.contains("version = \"4.2.5-dev\"")
+    cargo_toml.contains("version = \"4.2.6-dev\"")
 }
 
-fn edge_facing_files() -> [&'static str; 3] {
-    ["Cargo.toml", "Cargo.lock", "EDGE.md"]
+fn edge_facing_files() -> [&'static str; 4] {
+    ["Cargo.toml", "Cargo.lock", "EDGE.md", "site.js"]
 }
 
 fn release_facing_files() -> [&'static str; 13] {
