@@ -185,7 +185,11 @@ impl Memory {
         let total_seen: u64 = self.commands.values().map(|stat| stat.seen).sum();
         format!(
             "phase1 learning system\nstatus  : active\nmode    : local-first heuristic memory\nfile    : {}\nnotes   : {}\nrules   : {}\ncommands: {} unique, {} observed\nprivacy : sanitized; no network, no cloud model, no raw secrets\n",
-            path.display(), self.notes.len(), self.rules.len(), self.commands.len(), total_seen
+            path.display(),
+            self.notes.len(),
+            self.rules.len(),
+            self.commands.len(),
+            total_seen
         )
     }
 
@@ -257,7 +261,10 @@ impl Memory {
         }
         for rule in &self.rules {
             if rule.trigger.contains(&needle) || needle.contains(&rule.trigger) {
-                return format!("phase1 learned answer\nmatch : {}\nanswer: {}\n", rule.trigger, rule.response);
+                return format!(
+                    "phase1 learned answer\nmatch : {}\nanswer: {}\n",
+                    rule.trigger, rule.response
+                );
             }
         }
         let matches = self
@@ -342,7 +349,10 @@ impl Memory {
                 self.rules.retain(|rule| !rule.trigger.contains(query));
                 self.commands.retain(|command, _| !command.contains(query));
                 let after = self.notes.len() + self.rules.len() + self.commands.len();
-                Ok(format!("learn: removed {} matching entries\n", before.saturating_sub(after)))
+                Ok(format!(
+                    "learn: removed {} matching entries\n",
+                    before.saturating_sub(after)
+                ))
             }
         }
     }
@@ -524,12 +534,16 @@ mod tests {
     }
 
     #[test]
-    fn serializes_without_plain_sensitive_notes() {
+    fn serializes_and_restores_redacted_sensitive_notes() {
         let mut memory = Memory::default();
         memory.add_note("my token is ghp_secret").unwrap();
         let exported = memory.serialize();
         assert!(!exported.contains("ghp_secret"));
-        assert!(exported.contains("redacted"));
+        let parsed = Memory::parse(&exported);
+        assert_eq!(
+            parsed.notes.first().map(String::as_str),
+            Some("[redacted-sensitive-memory]")
+        );
     }
 
     #[test]
