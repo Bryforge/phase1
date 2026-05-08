@@ -1,0 +1,3 @@
+# Phase1 edge boot UI is generated as a compact terminal layout.
+# Keep it stable until the v4.2.x boot renderer is split into smaller modules.
+ignore = ["src/boot_ui_static.rs"]
