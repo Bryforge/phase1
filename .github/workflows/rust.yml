@@ -4,8 +4,12 @@ on:
   pull_request:
   push:
     branches:
+      - main
       - master
+      - edge/**
       - feature/**
+      - prepare-**
+      - release/**
 
 permissions:
   contents: read
@@ -19,12 +23,14 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install Rust stable
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          components: rustfmt
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install stable --profile minimal --component rustfmt
+          rustup default stable
 
-      - name: Normalize formatting
-        run: cargo fmt --all
+      - name: Check formatting
+        run: cargo fmt --all -- --check
 
       - name: Check workspace
         run: cargo check --workspace --all-targets
