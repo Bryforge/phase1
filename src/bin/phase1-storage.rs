@@ -462,6 +462,7 @@ fn sanitize_line(line: &str) -> String {
     redaction::redact_line(line)
 }
 
+#[cfg(test)]
 fn redact_url_credentials(line: &str) -> String {
     redaction::redact_url_credentials(line)
 }
