@@ -211,6 +211,7 @@ const demoResponses = {
   ].join("\n"),
   version: [
     "phase1 // advanced operator kernel",
+    "edge: v4.1.0-dev",
     "stable: v4.0.0",
     "previous stable: v3.10.9",
     "compatibility base: v3.6.0",
@@ -227,9 +228,10 @@ const demoResponses = {
   "wiki-quick": [
     "wiki-quick:",
     "  1. clone the repo",
-    "  2. run cargo run",
-    "  3. type help, security, sysinfo, wiki",
-    "  4. keep safe mode on unless you trust the host workflow",
+    "  2. choose release/v4.0.0 for stable or edge/v4.1.0-dev for bleeding edge",
+    "  3. run cargo run",
+    "  4. type help, security, sysinfo, wiki",
+    "  5. keep safe mode on unless you trust the host workflow",
   ].join("\n"),
   security: [
     "security posture:",
