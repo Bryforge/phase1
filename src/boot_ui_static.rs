@@ -406,8 +406,12 @@ pub fn print_help() {
 }
 
 pub fn print_prompt(user: &str, path: &str) {
-    print!("{}", prompt_status_bar());
-    print!("{}", prompt_text(user, path));
+    if compact_prompt_enabled() {
+        print!("{}", prompt_text(user, path));
+    } else {
+        print!("{}", prompt_status_bar());
+        print!("{}", prompt_text(user, path));
+    }
 }
 
 fn configure_boot_cooked(
@@ -819,6 +823,10 @@ fn phase1_wordmark(config: BootConfig) -> String {
 }
 
 fn prompt_text(user: &str, path: &str) -> String {
+    if compact_prompt_enabled() {
+        return compact_prompt_text(user, path);
+    }
+
     if ascii_mode() || !color_enabled() {
         format!("phase1://{} {} > ", user, path)
     } else {
@@ -837,6 +845,112 @@ fn prompt_text(user: &str, path: &str) -> String {
             path,
             RESET
         )
+    }
+}
+
+fn compact_prompt_text(user: &str, path: &str) -> String {
+    if !color_enabled() {
+        return format!(
+            "phase1://{} {} {} ⇢ ",
+            user,
+            path,
+            compact_prompt_chips_plain()
+        );
+    }
+
+    let colors = palette(active_theme());
+    format!(
+        "{}{}phase1{}{}://{}{}{}{} {}{}{} {} ⇢ ",
+        BOLD,
+        colors.title,
+        RESET,
+        GRAY,
+        RESET,
+        colors.prompt_user,
+        user,
+        RESET,
+        colors.prompt_path,
+        path,
+        RESET,
+        compact_prompt_chips_colored()
+    )
+}
+
+fn compact_prompt_enabled() -> bool {
+    env_flag("PHASE1_COMPACT_PROMPT").unwrap_or(true)
+}
+
+fn compact_prompt_chips_plain() -> String {
+    format!(
+        "[{} {} {}]",
+        prompt_channel_chip(),
+        prompt_security_chip(),
+        prompt_trust_chip()
+    )
+}
+
+fn compact_prompt_chips_colored() -> String {
+    format!(
+        "{}[{}{}{} {}{}{} {}{}{}{}]",
+        GRAY,
+        prompt_channel_color(),
+        prompt_channel_chip(),
+        GRAY,
+        prompt_security_color(),
+        prompt_security_chip(),
+        GRAY,
+        prompt_trust_color(),
+        prompt_trust_chip(),
+        GRAY,
+        RESET
+    )
+}
+
+fn prompt_channel_chip() -> &'static str {
+    if bleeding_edge_env_enabled() {
+        "edge"
+    } else {
+        "release"
+    }
+}
+
+fn prompt_security_chip() -> &'static str {
+    if std::env::var("PHASE1_SAFE_MODE").ok().as_deref() == Some("0") {
+        "host"
+    } else {
+        "safe"
+    }
+}
+
+fn prompt_trust_chip() -> &'static str {
+    if env_flag("PHASE1_ALLOW_HOST_TOOLS").unwrap_or(false) {
+        "trust"
+    } else {
+        "no-trust"
+    }
+}
+
+fn prompt_channel_color() -> &'static str {
+    if bleeding_edge_env_enabled() {
+        MAGENTA
+    } else {
+        CYAN
+    }
+}
+
+fn prompt_security_color() -> &'static str {
+    if prompt_security_chip() == "safe" {
+        GREEN
+    } else {
+        YELLOW
+    }
+}
+
+fn prompt_trust_color() -> &'static str {
+    if prompt_trust_chip() == "trust" {
+        CYAN
+    } else {
+        RED
     }
 }
 
@@ -1346,6 +1460,61 @@ mod tests {
     #[test]
     fn clock_uses_utc_suffix() {
         assert!(clock_utc().ends_with(" UTC"));
+    }
+
+    #[test]
+    fn compact_prompt_inlines_dynamic_status_chips_for_all_modes() {
+        std::env::set_var("NO_COLOR", "1");
+        std::env::remove_var("PHASE1_COMPACT_PROMPT");
+        std::env::set_var("PHASE1_BLEEDING_EDGE", "1");
+        std::env::set_var("PHASE1_SAFE_MODE", "1");
+        std::env::set_var("PHASE1_ALLOW_HOST_TOOLS", "1");
+
+        for mode in ["mobile", "laptop", "desktop"] {
+            std::env::set_var("PHASE1_DEVICE_MODE", mode);
+            let prompt = super::prompt_text("root", "~");
+            assert!(super::compact_prompt_enabled());
+            assert!(prompt.contains("phase1://root ~ [edge safe trust] ⇢ "));
+            assert!(!prompt.contains("HUD"));
+        }
+
+        std::env::remove_var("NO_COLOR");
+        std::env::remove_var("PHASE1_DEVICE_MODE");
+        std::env::remove_var("PHASE1_BLEEDING_EDGE");
+        std::env::remove_var("PHASE1_SAFE_MODE");
+        std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
+    }
+
+    #[test]
+    fn compact_prompt_can_be_disabled_for_legacy_hud_prompt() {
+        std::env::set_var("PHASE1_COMPACT_PROMPT", "0");
+        assert!(!super::compact_prompt_enabled());
+        std::env::remove_var("PHASE1_COMPACT_PROMPT");
+    }
+
+    #[test]
+    fn compact_prompt_colorizes_dynamic_chips_when_color_is_enabled() {
+        std::env::remove_var("NO_COLOR");
+        std::env::remove_var("PHASE1_NO_COLOR");
+        std::env::remove_var("PHASE1_ASCII");
+        std::env::remove_var("PHASE1_COMPACT_PROMPT");
+        std::env::set_var("PHASE1_DEVICE_MODE", "desktop");
+        std::env::set_var("PHASE1_BLEEDING_EDGE", "1");
+        std::env::set_var("PHASE1_SAFE_MODE", "1");
+        std::env::set_var("PHASE1_ALLOW_HOST_TOOLS", "1");
+
+        let prompt = super::prompt_text("root", "~");
+        assert!(prompt.contains("\x1b["));
+        assert!(prompt.contains("["));
+        assert!(prompt.contains("edge"));
+        assert!(prompt.contains("safe"));
+        assert!(prompt.contains("trust"));
+        assert!(prompt.contains("⇢"));
+
+        std::env::remove_var("PHASE1_DEVICE_MODE");
+        std::env::remove_var("PHASE1_BLEEDING_EDGE");
+        std::env::remove_var("PHASE1_SAFE_MODE");
+        std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
     }
 
     #[test]
