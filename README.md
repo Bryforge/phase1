@@ -28,7 +28,7 @@
 <p align="center">
   <img alt="Stable" src="https://img.shields.io/badge/stable-v4.1.0-39ff88">
   <img alt="Previous stable" src="https://img.shields.io/badge/previous%20stable-v4.0.0-7f8cff">
-  <img alt="Edge" src="https://img.shields.io/badge/edge-v4.2.0--dev-00d8ff">
+  <img alt="Edge" src="https://img.shields.io/badge/edge-v4.2.6--dev-00d8ff">
   <img alt="Rust" src="https://img.shields.io/badge/language-Rust-ff8a00">
   <img alt="Security" src="https://img.shields.io/badge/safe%20mode-default%20on-39ff88">
   <img alt="License" src="https://img.shields.io/badge/license-GPL--3.0-8a5cff">
@@ -63,9 +63,38 @@ The project image is modern, neon, technical, and disciplined: advanced visuals,
 
 ## Quick start
 
+Fresh clone, simplest launch:
+
 ```bash
 git clone https://github.com/Bryforge/phase1.git
 cd phase1
+sh phase1
+```
+
+After the file is executable, you can also run:
+
+```bash
+./phase1
+```
+
+Install a local `phase1` terminal command on macOS/Linux:
+
+```bash
+sh scripts/install-phase1-command.sh
+phase1
+```
+
+Useful startup checks:
+
+```bash
+sh phase1 version
+sh phase1 doctor
+sh phase1 selftest
+```
+
+Rust-native launch remains available:
+
+```bash
 cargo run
 ```
 
@@ -79,6 +108,20 @@ wiki-quick
 version --compare
 roadmap
 ```
+
+## Latest version check
+
+The default branch is the stable line. Stable is currently `v4.1.0`.
+
+For experimental edge work, fetch and switch to an edge branch:
+
+```bash
+git fetch origin
+git checkout edge/website-mobile-v4.2.6
+sh phase1 version
+```
+
+Use stable when you want the safest repository state. Use edge branches only for active development and experimental polish.
 
 ## Smart local learning
 
@@ -105,7 +148,7 @@ The learning memory is local, sanitized, bounded, and ignored by git. It does no
 | --- | --- | --- |
 | Stable | `v4.1.0` | Current stable line for release-qualified work. |
 | Previous stable | `v4.0.0` | Preserved previous stable release point. |
-| Edge | `v4.2.0-dev` | Experimental development branch beyond stable. |
+| Edge | `v4.2.6-dev` | Experimental development branch beyond stable. |
 | Compatibility base | `v3.6.0` | Historical comparison base for compatibility references. |
 | Base1 | `foundation` | Secure host design for real hardware targets. |
 
