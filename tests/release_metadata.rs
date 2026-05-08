@@ -87,7 +87,7 @@ fn edge_checkpoint_records_current_dev_boundary() {
         STABLE_VERSION,
         PREVIOUS_STABLE,
         COMPATIBILITY_BASE,
-        "guarded host runtime execution",
+        "Guarded host runtime execution",
         "compact dynamic chips",
         "Mobile/narrow terminals",
         "PHASE1_COMPACT_PROMPT=0",
