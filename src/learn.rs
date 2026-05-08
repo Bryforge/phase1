@@ -48,6 +48,7 @@ pub fn run(shell: &mut Phase1Shell, args: &[String]) -> String {
     match args.first().map(String::as_str) {
         None | Some("help" | "-h" | "--help") => help(),
         Some("status") => memory.status(&path),
+        Some("doctor") => memory.doctor(&path),
         Some("profile") => memory.profile(),
         Some("suggest") => memory.suggest(),
         Some("ask") => {
@@ -246,6 +247,24 @@ impl Memory {
             self.commands.len(),
             total_seen
         )
+    }
+
+    fn doctor(&self, path: &Path) -> String {
+        let total_seen: u64 = self.commands.values().map(|stat| stat.seen).sum();
+        let failures: u64 = self.commands.values().map(|stat| stat.fail).sum();
+        let storage = if path.exists() {
+            "present"
+        } else {
+            "not created yet"
+        };
+        let advice = if failures > 0 {
+            "run `learn suggest` to inspect failed commands"
+        } else if total_seen == 0 && self.notes.is_empty() && self.rules.is_empty() {
+            "run normal commands or `learn note <text>` to build memory"
+        } else {
+            "memory healthy"
+        };
+        format!("phase1 learn doctor\nstatus  : ok\nfile    : {}\nstorage : {}\nprivacy : local sanitized memory; no network, no cloud model\nnotes   : {}/{}\nrules   : {}/{}\ncommands: {}/{} unique, {} observed\nfailures: {}\nadvice  : {}\n", path.display(), storage, self.notes.len(), MAX_NOTES, self.rules.len(), MAX_RULES, self.commands.len(), MAX_COMMANDS, total_seen, failures, advice)
     }
 
     fn add_note(&mut self, text: &str) -> Result<String, String> {
@@ -730,7 +749,7 @@ fn safe_action(raw: &str) -> String {
 }
 
 fn help() -> String {
-    "phase1 learning system\nusage:\n  learn status\n  learn import-history [phase1.history]\n  learn import-file [phase1.history]\n  learn observe <ok|fail|seen> -- <command>\n  learn teach <trigger> = <response>\n  learn note <text>\n  learn ask <query>\n  learn suggest\n  learn profile\n  learn forget <all|notes|rules|commands|query>\n  learn export\n\nprivacy: stores sanitized local memory in phase1.learn; no network and no external AI model.\n".to_string()
+    "phase1 learning system\nusage:\n  learn status\n  learn doctor\n  learn import-history [phase1.history]\n  learn import-file [phase1.history]\n  learn observe <ok|fail|seen> -- <command>\n  learn teach <trigger> = <response>\n  learn note <text>\n  learn ask <query>\n  learn suggest\n  learn profile\n  learn forget <all|notes|rules|commands|query>\n  learn export\n\nprivacy: stores sanitized local memory in phase1.learn; no network and no external AI model.\n".to_string()
 }
 
 #[cfg(test)]
