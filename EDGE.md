@@ -1,22 +1,21 @@
 # Phase1 Edge Development
 
-`edge/v4.1.0-dev` is the active development line after the stable `v4.0.0` release point.
+`v4.2.0-dev` is the active development line after the stable `v4.1.0` release point.
 
 ## Current identity
 
 | Item | Value |
 | --- | --- |
-| Development branch | `edge/v4.1.0-dev` |
-| Development package version | `4.1.0-dev` |
-| Stable release point | `v4.0.0` |
-| Stable branch | `release/v4.0.0` |
-| Previous stable | `v3.10.9` |
+| Development package version | `4.2.0-dev` |
+| Stable release point | `v4.1.0` |
+| Stable branch | `release/v4.1.0` |
+| Previous stable | `v4.0.0` |
 | Compatibility base | `v3.6.0` |
 
 ## Development rules
 
 - Keep the `-dev` suffix until the next stable promotion.
-- Keep `v4.0.0` documentation intact for stable users.
+- Keep `v4.1.0` documentation intact for stable users.
 - Label experimental work clearly in docs, tests, and command output.
 - Keep safe defaults enabled while adding new capabilities.
 - Run formatting, compile, Clippy, and tests before merging development work.
@@ -25,7 +24,7 @@
 
 ```bash
 git fetch origin
-git checkout edge/v4.1.0-dev
+git pull --ff-only origin master
 cargo metadata --no-deps --format-version 1 | grep '"version"'
 cargo run
 ```
@@ -33,7 +32,7 @@ cargo run
 Expected package version:
 
 ```text
-4.1.0-dev
+4.2.0-dev
 ```
 
 ## Validation
