@@ -1,12 +1,17 @@
 use crate::kernel::VERSION;
 
-pub const STABLE_VERSION: &str = "3.6.0";
 pub const CURRENT_VERSION: &str = env!("CARGO_PKG_VERSION");
+pub const STABLE_VERSION: &str = "4.0.0";
+pub const PREVIOUS_STABLE_VERSION: &str = "3.10.9";
+pub const COMPATIBILITY_BASE_VERSION: &str = "3.6.0";
 pub const CHANNEL: &str = "bleeding-edge";
 pub const UPDATE_PROTOCOL_FILE: &str = "UPDATE_PROTOCOL.md";
 pub const VERSION_SCHEME: &str = "MAJOR.MINOR.PATCH[-dev]";
 
 const BLEEDING_FEATURES: &[&str] = &[
+    "edge operator deck with signal, trust, developer, runtime, and command-radar panels",
+    "boot-time install dock plan through the storage/Git/Rust helper",
+    "dynamic current/stable/previous version reporting from one release metadata surface",
     "persistent shell history with private-value redaction",
     "structured shell command chains",
     "structured text pipelines",
@@ -29,6 +34,18 @@ const BLEEDING_FEATURES: &[&str] = &[
 ];
 
 const ROADMAP_STATUS: &[(&str, &str)] = &[
+    (
+        "Edge operator deck UI overhaul",
+        "active: edge-only dashboard, trust boundary, developer cockpit, and command radar",
+    ),
+    (
+        "Boot install dock",
+        "active: install plan is available through the boot storage/Git/Rust helper path",
+    ),
+    (
+        "Dynamic version identity",
+        "complete: current, stable, previous stable, and compatibility base are reported together",
+    ),
     ("Persistent shell history", "complete"),
     ("Structured command output and pipelines", "complete"),
     (
@@ -89,12 +106,20 @@ pub fn version_report(args: &[String]) -> String {
     }
 
     let mut out = String::from("phase1 version report\n");
-    out.push_str(&format!("current version : {}\n", current_version()));
-    out.push_str(&format!("stable version  : {}\n", STABLE_VERSION));
-    out.push_str(&format!("kernel baseline : {}\n", VERSION));
-    out.push_str(&format!("channel         : {}\n", CHANNEL));
-    out.push_str(&format!("version scheme  : {}\n", VERSION_SCHEME));
-    out.push_str(&format!("protocol file   : {}\n", UPDATE_PROTOCOL_FILE));
+    out.push_str(&format!("current version      : {}\n", current_version()));
+    out.push_str(&format!("stable version       : {}\n", STABLE_VERSION));
+    out.push_str(&format!(
+        "previous stable      : {}\n",
+        PREVIOUS_STABLE_VERSION
+    ));
+    out.push_str(&format!(
+        "compatibility base   : {}\n",
+        COMPATIBILITY_BASE_VERSION
+    ));
+    out.push_str(&format!("kernel baseline      : {}\n", VERSION));
+    out.push_str(&format!("channel              : {}\n", CHANNEL));
+    out.push_str(&format!("version scheme       : {}\n", VERSION_SCHEME));
+    out.push_str(&format!("protocol file        : {}\n", UPDATE_PROTOCOL_FILE));
     out.push_str("\ncurrent bleeding-edge additions over stable:\n");
     for feature in BLEEDING_FEATURES {
         out.push_str("  - ");
@@ -106,11 +131,16 @@ pub fn version_report(args: &[String]) -> String {
 
 pub fn roadmap_report() -> String {
     let mut out = String::from("phase1 roadmap status\n");
-    out.push_str(&format!("current : v{}\n", current_version()));
-    out.push_str(&format!("stable  : v{}\n", STABLE_VERSION));
-    out.push_str(&format!("channel : {}\n", CHANNEL));
-    out.push_str(&format!("scheme  : {}\n", VERSION_SCHEME));
-    out.push_str(&format!("updates : {}\n\n", UPDATE_PROTOCOL_FILE));
+    out.push_str(&format!("current        : v{}\n", current_version()));
+    out.push_str(&format!("stable         : v{}\n", STABLE_VERSION));
+    out.push_str(&format!("previous       : v{}\n", PREVIOUS_STABLE_VERSION));
+    out.push_str(&format!(
+        "compatibility  : v{}\n",
+        COMPATIBILITY_BASE_VERSION
+    ));
+    out.push_str(&format!("channel        : {}\n", CHANNEL));
+    out.push_str(&format!("scheme         : {}\n", VERSION_SCHEME));
+    out.push_str(&format!("updates        : {}\n\n", UPDATE_PROTOCOL_FILE));
     for (track, status) in ROADMAP_STATUS {
         out.push_str(&format!("{track:<48} {status}\n"));
     }
@@ -124,19 +154,25 @@ fn current_version() -> String {
 #[cfg(test)]
 mod tests {
     use super::{
-        roadmap_report, version_report, CURRENT_VERSION, STABLE_VERSION, UPDATE_PROTOCOL_FILE,
-        VERSION_SCHEME,
+        roadmap_report, version_report, COMPATIBILITY_BASE_VERSION, CURRENT_VERSION,
+        PREVIOUS_STABLE_VERSION, STABLE_VERSION, UPDATE_PROTOCOL_FILE, VERSION_SCHEME,
     };
 
     #[test]
-    fn version_compare_reports_stable_and_current() {
+    fn version_compare_reports_all_three_release_numbers() {
         let out = version_report(&["--compare".to_string()]);
         assert!(out.contains(STABLE_VERSION));
+        assert!(out.contains(PREVIOUS_STABLE_VERSION));
+        assert!(out.contains(COMPATIBILITY_BASE_VERSION));
         assert!(out.contains(CURRENT_VERSION));
         assert!(out.contains("current version"));
         assert!(out.contains("stable version"));
+        assert!(out.contains("previous stable"));
+        assert!(out.contains("compatibility base"));
         assert!(out.contains(VERSION_SCHEME));
         assert!(out.contains(UPDATE_PROTOCOL_FILE));
+        assert!(out.contains("edge operator deck"));
+        assert!(out.contains("boot-time install dock"));
         assert!(out.contains("structured text pipelines"));
         assert!(out.contains("patch-level SemVer"));
         assert!(out.contains("metadata-backed capability enforcement"));
@@ -159,10 +195,14 @@ mod tests {
     }
 
     #[test]
-    fn roadmap_reports_pipeline_complete() {
+    fn roadmap_reports_edge_ui_and_install_dock() {
         let out = roadmap_report();
         assert!(out.contains("current"));
         assert!(out.contains("stable"));
+        assert!(out.contains("previous"));
+        assert!(out.contains("compatibility"));
+        assert!(out.contains("Edge operator deck UI overhaul"));
+        assert!(out.contains("Boot install dock"));
         assert!(out.contains("Structured command output and pipelines"));
         assert!(out.contains("Update protocol and semantic patch versioning"));
         assert!(out.contains("Capability enforcement based on command metadata"));
