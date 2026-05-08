@@ -28,7 +28,7 @@ jobs:
           - language: javascript-typescript
             build-mode: none
           - language: rust
-            build-mode: manual
+            build-mode: none
 
     steps:
       - name: Checkout repository
@@ -42,13 +42,6 @@ jobs:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
           queries: +security-extended,security-and-quality
-
-      - name: Build Rust for CodeQL
-        if: matrix.language == 'rust'
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo check --all-targets
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4
