@@ -1,16 +1,28 @@
 # Phase1 Edge Development
 
-`v4.3.0-dev` is the next development line after the stable `v4.2.0` release point.
+`v4.3.0-dev` is the active development line after the stable `v4.2.0` release point.
 
 ## Current identity
 
 | Item | Value |
 | --- | --- |
+| Current package version | `4.3.0-dev` |
+| Current edge label | `v4.3.0-dev` |
 | Stable package version | `4.2.0` |
 | Stable release point | `v4.2.0` |
 | Previous stable | `v4.1.0` |
 | Compatibility base | `v3.6.0` |
-| Next development package version | `4.3.0-dev` |
+
+## Current checkpoint
+
+The current edge checkpoint includes the post-`v4.2.0` development work that made Phase1 more practical from mobile and trusted-host workflows:
+
+- Guarded host runtime execution can run with safe mode still enabled when the host trust gate is explicit.
+- Privileged host mutation remains behind safe mode off plus the trust gate.
+- `lang run` has bounded stdin, timeout controls, guarded temporary workspaces, promptless host-tool environment, and audit metadata.
+- Mobile and narrow-terminal input uses a simple line editor path to avoid prompt repaint/NUL-padding artifacts.
+- The prompt now defaults to compact dynamic status chips across all modes, for example `phase1://root ~ [edge safe trust] ⇢`.
+- WASM test fixture directories are collision-safe under parallel test execution.
 
 ## Development rules
 
