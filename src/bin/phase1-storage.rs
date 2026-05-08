@@ -1,3 +1,6 @@
+#[path = "../redaction.rs"]
+mod redaction;
+
 use std::env;
 use std::fs;
 use std::io::{self, Write};
@@ -11,32 +14,6 @@ const COMMAND_TIMEOUT: Duration = Duration::from_secs(60);
 const RUST_RUN_TIMEOUT: Duration = Duration::from_secs(30);
 const MAX_OUTPUT_BYTES: usize = 24 * 1024;
 
-const SENSITIVE_OUTPUT_MARKERS: &[&str] = &[
-    "authorization:",
-    "bearer ",
-    "token=",
-    "token:",
-    "access_token=",
-    "refresh_token=",
-    "password=",
-    "password:",
-    "passwd=",
-    "api_key=",
-    "api-key=",
-    "apikey=",
-    "client_secret=",
-    "secret=",
-    "secret:",
-    "private_key=",
-    "aws_access_key_id=",
-    "aws_secret_access_key=",
-    "-----begin private key-----",
-    "-----begin rsa private key-----",
-    "-----begin openssh private key-----",
-];
-
-const KNOWN_TOKEN_PREFIXES: &[&str] = &["github_pat_", "ghp_", "gho_", "ghu_", "ghs_", "ghr_"];
-
 fn main() {
     let args = env::args().skip(1).collect::<Vec<_>>();
     let status = match run(&args) {
@@ -45,7 +22,7 @@ fn main() {
             0
         }
         Err(err) => {
-            eprintln!("phase1-storage: {err}");
+            eprintln!("phase1-storage: {}", redaction::redact_line(&err));
             1
         }
     };
@@ -277,7 +254,7 @@ fn storage_doctor() -> Result<String, String> {
             Ok(output) => {
                 out.push_str(&format!("  {tool}: {}", first_line(&format_output(output))))
             }
-            Err(err) => out.push_str(&format!("  {tool}: missing or blocked ({err})\n")),
+            Err(err) => out.push_str(&format!("  {tool}: missing or blocked ({})\n", redaction::redact_line(&err))),
         }
     }
     Ok(out)
@@ -475,67 +452,15 @@ fn format_output(output: Output) -> String {
 }
 
 fn sanitize_output(raw: &str) -> String {
-    raw.lines()
-        .map(sanitize_line)
-        .collect::<Vec<_>>()
-        .join("\n")
-        + "\n"
+    redaction::redact_multiline(raw)
 }
 
 fn sanitize_line(line: &str) -> String {
-    let redacted_url_line = redact_url_credentials(line);
-    if contains_sensitive_marker(&redacted_url_line)
-        || contains_known_token_prefix(&redacted_url_line)
-    {
-        "[redacted sensitive output]".to_string()
-    } else {
-        redacted_url_line
-    }
-}
-
-fn contains_sensitive_marker(line: &str) -> bool {
-    let lower = line.to_ascii_lowercase();
-    SENSITIVE_OUTPUT_MARKERS
-        .iter()
-        .any(|marker| lower.contains(marker))
-}
-
-fn contains_known_token_prefix(line: &str) -> bool {
-    KNOWN_TOKEN_PREFIXES
-        .iter()
-        .any(|prefix| line.contains(prefix))
+    redaction::redact_line(line)
 }
 
 fn redact_url_credentials(line: &str) -> String {
-    let mut output = String::new();
-    let mut rest = line;
-
-    while let Some(scheme_index) = rest.find("://") {
-        let credential_start = scheme_index + 3;
-        let after_scheme = &rest[credential_start..];
-        let Some(at_index) = after_scheme.find('@') else {
-            break;
-        };
-
-        let credential_candidate = &after_scheme[..at_index];
-        let looks_like_credentials = credential_candidate.contains(':')
-            && credential_candidate
-                .chars()
-                .all(|ch| !ch.is_whitespace() && ch != '/');
-
-        if looks_like_credentials {
-            output.push_str(&rest[..credential_start]);
-            output.push_str("[redacted]@");
-            rest = &after_scheme[at_index + 1..];
-        } else {
-            let copy_end = credential_start + at_index + 1;
-            output.push_str(&rest[..copy_end]);
-            rest = &rest[copy_end..];
-        }
-    }
-
-    output.push_str(rest);
-    output
+    redaction::redact_url_credentials(line)
 }
 
 fn first_line(text: &str) -> String {
@@ -593,11 +518,15 @@ mod tests {
         );
         let out = sanitize_output(&sample);
         assert!(out.contains("ok"));
-        assert!(out.contains("[redacted sensitive output]"));
-        assert!(!out.contains("secret"));
+        assert!(out.contains("token=[redacted-secret]"));
+        assert!(out.contains("Authorization: [redacted-secret]"));
+        assert!(out.contains("AWS_SECRET_ACCESS_KEY=[redacted-secret]"));
+        assert!(out.contains("[redacted-token]"));
+        assert!(out.contains("[redacted-private-key]"));
+        assert!(!out.contains("secret\n"));
         assert!(!out.contains("bearer nope"));
         assert!(!out.contains("alpha"));
-        assert!(!out.contains("aws"));
+        assert!(!out.contains("aws\n"));
         assert!(!out.contains("github_pat_123456"));
         assert!(!out.contains("BEGIN PRIVATE KEY"));
     }
