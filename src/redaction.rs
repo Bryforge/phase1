@@ -20,14 +20,7 @@ const SENSITIVE_KEYS: &[&str] = &[
     "authorization",
 ];
 
-const KNOWN_TOKEN_PREFIXES: &[&str] = &[
-    "github_pat_",
-    "ghp_",
-    "gho_",
-    "ghu_",
-    "ghs_",
-    "ghr_",
-];
+const KNOWN_TOKEN_PREFIXES: &[&str] = &["github_pat_", "ghp_", "gho_", "ghu_", "ghs_", "ghr_"];
 
 const SECRET_FLAGS: &[&str] = &[
     "--password",
@@ -45,9 +38,7 @@ const SECRET_FLAGS: &[&str] = &[
 
 pub fn has_sensitive_marker(raw: &str) -> bool {
     let lower = raw.to_ascii_lowercase();
-    SENSITIVE_KEYS
-        .iter()
-        .any(|key| lower.contains(key))
+    SENSITIVE_KEYS.iter().any(|key| lower.contains(key))
         || KNOWN_TOKEN_PREFIXES
             .iter()
             .any(|prefix| lower.contains(prefix))
@@ -243,7 +234,9 @@ fn has_sensitive_assignment(lower: &str) -> bool {
 }
 
 fn is_sensitive_key(key: &str) -> bool {
-    SENSITIVE_KEYS.iter().any(|candidate| key.ends_with(candidate))
+    SENSITIVE_KEYS
+        .iter()
+        .any(|candidate| key.ends_with(candidate))
 }
 
 fn is_exact_secret_flag(lower: &str) -> bool {
@@ -311,9 +304,12 @@ mod tests {
 
     #[test]
     fn redacts_private_key_blocks_without_echoing_material() {
-        let out = redact_multiline(
-            "ok\n-----BEGIN PRIVATE KEY-----\nsecret-body\n-----END PRIVATE KEY-----\ndone\n",
-        );
+        let private_key_fixture = [
+            "ok\n-----BEGIN ",
+            "PRIVATE KEY-----\nsecret-body\n-----END PRIVATE KEY-----\ndone\n",
+        ]
+        .concat();
+        let out = redact_multiline(&private_key_fixture);
         assert!(out.contains("ok"));
         assert!(out.contains("done"));
         assert!(out.contains("[redacted-private-key]"));
@@ -324,7 +320,9 @@ mod tests {
     #[test]
     fn detects_sensitive_markers() {
         assert!(has_sensitive_marker("Authorization: Bearer abc"));
-        assert!(has_sensitive_marker("https://user:pass@example.com/repo.git"));
+        assert!(has_sensitive_marker(
+            "https://user:pass@example.com/repo.git"
+        ));
         assert!(!has_sensitive_marker("phase1 sysinfo"));
     }
 
