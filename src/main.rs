@@ -8,6 +8,7 @@ mod fastfetch;
 mod history;
 mod kernel;
 mod languages;
+mod learn;
 mod line_editor;
 mod linux_colors;
 mod man;
