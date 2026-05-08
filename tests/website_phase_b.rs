@@ -134,8 +134,8 @@ fn site_js_implements_canvas_terminal_progressive_enhancement_and_performance_gu
             "demoResponses",
             "wiki-quick",
             "phase1 // advanced operator kernel",
-            "stable: v4.0.0",
-            "previous stable: v3.10.9",
+            "stable: v4.1.0",
+            "previous stable: v4.0.0",
             "safe mode: on",
             "setupNavigation",
             "setupReveals",
@@ -149,7 +149,7 @@ fn site_js_implements_canvas_terminal_progressive_enhancement_and_performance_gu
             "desktop ? 180 : 210",
         ],
     );
-    assert_not_contains_any(&js, &["edge: v4.0.0-dev"]);
+    assert_not_contains_any(&js, &["edge: v4.1.0-dev"]);
 }
 
 fn read(path: &str) -> String {
