@@ -2,65 +2,64 @@
 
 <p align="center">
   <a href="https://bryforge.github.io/phase1/">
-    <img src="assets/phase1-banner.svg" alt="Phase1 neon advertisement logo" width="760">
+    <img src="assets/phase1-banner.svg" alt="Phase1 neon rainbow advanced operator kernel logo" width="780">
   </a>
 </p>
 
 <p align="center">
-  <strong>Terminal-first virtual OS / advanced operator console in Rust.</strong><br>
-  Simulated kernel. VFS. Process table. Audit log. Guarded browser. Secure-by-default shell.
+  <strong>secure · private · powerful · open</strong><br>
+  A terminal-first Rust virtual OS console for operators, builders, and learners who want control.
 </p>
 
 <p align="center">
-  <a href="https://bryforge.github.io/phase1/"><strong>Open the Phase1 website</strong></a>
+  <a href="https://bryforge.github.io/phase1/"><strong>Open the website</strong></a>
   ·
-  <a href="WIKI_ROADMAP.md">Website + wiki roadmap</a>
+  <a href="https://github.com/Bryforge/phase1#quick-start"><strong>Quick start</strong></a>
   ·
-  <a href="base1/README.md">Base1 secure host foundation</a>
+  <a href="LEARNING.md">Learning system</a>
   ·
-  <a href="QUALITY.md">Quality system</a>
+  <a href="QUALITY.md">Quality</a>
   ·
-  <a href="RELEASE_v4.1.0.md">v4.1.0 release prep</a>
+  <a href="base1/README.md">Base1</a>
   ·
-  <a href="EDGE.md">Bleeding edge</a>
+  <a href="EDGE.md">Edge</a>
 </p>
 
-![Edge](https://img.shields.io/badge/edge-v4.2.0--dev-00d8ff) ![Stable](https://img.shields.io/badge/stable-v4.1.0-39ff88) ![Previous Stable](https://img.shields.io/badge/previous%20stable-v4.0.0-7f8cff) ![Rust](https://img.shields.io/badge/language-Rust-ff8a00) ![Security](https://img.shields.io/badge/default-safe%20mode%20on-39ff88) ![Base1](https://img.shields.io/badge/base1-secure%20host%20foundation-8a5cff)
+<p align="center">
+  <img alt="Stable" src="https://img.shields.io/badge/stable-v4.1.0-39ff88">
+  <img alt="Previous stable" src="https://img.shields.io/badge/previous%20stable-v4.0.0-7f8cff">
+  <img alt="Edge" src="https://img.shields.io/badge/edge-v4.2.0--dev-00d8ff">
+  <img alt="Rust" src="https://img.shields.io/badge/language-Rust-ff8a00">
+  <img alt="Security" src="https://img.shields.io/badge/safe%20mode-default%20on-39ff88">
+  <img alt="License" src="https://img.shields.io/badge/license-GPL--3.0-8a5cff">
+</p>
 
-Phase1 is a Rust-built, terminal-first educational virtual operating-system console. It models boot profiles, a virtual kernel, a VFS, process scheduling, `/proc`, `/dev`, `/var/log`, guarded networking, command capability metadata, pipelines, update tooling, runtime management, a guarded terminal browser, and a Base1 secure-host foundation.
+## What is Phase1?
 
-Base1 is the planned secure hardware host foundation for Phase1 on Raspberry Pi and ThinkPad X200-class systems. Its mission is to keep the host bootable, recoverable, and protected if Phase1 is damaged, corrupted, or reset.
+Phase1 is a Rust-built, terminal-first virtual operating-system console created by Chase Bryan / Bryforge. It presents a futuristic operator surface while staying grounded in practical systems ideas: a simulated kernel, virtual filesystem, process table, audit log, command metadata, guarded host access, documentation, storage tooling, runtime planning, and a local learning layer.
 
-## Release tracks
+It is designed to look and feel like a serious cyber-console without pretending to be magic. Phase1 is inspectable, teachable, and safe by default.
 
-`prepare-v4.1.0-stable` prepares the stable `v4.1.0` release candidate. After validation, create `release/v4.1.0` and tag `v4.1.0` from the validated commit.
+## Why it exists
 
-`release/v4.0.0` preserves the previous stable `v4.0.0` release point.
+Phase1 is built around a simple public promise:
 
-`edge/v4.2.0-dev` is the next bleeding-edge development branch after `v4.1.0`. It intentionally carries a `-dev` package version and may contain work that is not yet release-qualified.
+> Give operators a beautiful terminal-first environment for learning, building, inspecting, and experimenting with system concepts while keeping host access explicit and guarded.
 
-## Website
+The project image is modern, neon, technical, and disciplined: advanced visuals, conservative security claims, repeatable validation, and clear separation between stable releases and experimental edge work.
 
-The main Phase1 homepage is designed for GitHub Pages:
+## Core capabilities
 
-```text
-https://bryforge.github.io/phase1/
-```
-
-It uses a dark live-space background, moving rainbow visuals, the Phase1 neon logo, an interactive browser terminal demo, sponsor/founder sections, and a website/wiki implementation roadmap. Desktop browsing performance is protected with reduced canvas detail on large screens, debounced resize handling, hidden-tab animation pause, and reduced-motion support.
-
-## Status
-
-| Track | Version | Notes |
-| --- | --- | --- |
-| Stable | `v4.1.0` | Current stable release candidate prepared for tag `v4.1.0` |
-| Previous stable | `v4.0.0` | Previous stable release line |
-| Edge | `v4.2.0-dev` | Bleeding-edge branch for development beyond v4.1.0 |
-| Compatibility base | `v3.6.0` | Historical comparison base |
-| Base1 | `foundation` | Secure host design for Raspberry Pi and X200 targets |
-| Quality | `managed` | Scorecard, gates, scripts, and CI workflow |
-
-The package version is the booted Phase1 version. Boot, ready line, `/proc/version`, dashboard, audit boot record, `/home/readme.txt`, and shutdown dynamically reflect `CARGO_PKG_VERSION`.
+| Area | What Phase1 provides |
+| --- | --- |
+| Operator console | A command-first interface with boot flow, dashboard, prompt, help, manual pages, and autocomplete. |
+| Virtual OS model | Simulated kernel, VFS, process table, `/proc`, `/dev`, `/var/log`, architecture and system inspection commands. |
+| Safe execution model | Safe mode on by default, host tools gated behind explicit trust, command capability metadata, and secret redaction. |
+| Learning system | `phase1-learn` stores local sanitized memory, imports history, learns notes/rules, and suggests next actions. |
+| Website and wiki | Public GitHub Pages site, browser terminal demo, docs hub, tutorials, and roadmap material. |
+| Storage and runtimes | Guarded storage/Git helper, Rust workflows, and a roadmap for broader programming-language support. |
+| Base1 foundation | Planned secure host foundation for Raspberry Pi and ThinkPad X200-class systems. |
+| Quality system | Scorecards, smoke tests, release metadata checks, CI workflows, CodeQL, and repeatable validation scripts. |
 
 ## Quick start
 
@@ -70,154 +69,128 @@ cd phase1
 cargo run
 ```
 
-For stable validation:
-
-```bash
-git checkout prepare-v4.1.0-stable
-sh scripts/quality-check.sh full
-```
-
-For bleeding-edge work:
-
-```bash
-git checkout edge/v4.2.0-dev
-cargo run
-```
-
-Inside Phase1:
+Inside Phase1, start with:
 
 ```text
 help
-cat readme.txt
-wiki
+sysinfo
+security
 wiki-quick
 version --compare
-security
-sysinfo
 roadmap
 ```
 
-## Quality management
+## Smart local learning
 
-Phase1 includes a repeatable quality management system with policy, scorecard, validation scripts, CI checks, and tests.
-
-Start here:
-
-- [`QUALITY.md`](QUALITY.md) - quality policy, gates, score model, and ownership areas.
-- [`QUALITY_SCORECARD.md`](QUALITY_SCORECARD.md) - score interpretation and scoring areas.
-- [`scripts/quality-score.sh`](scripts/quality-score.sh) - deterministic repository health score.
-- [`scripts/quality-check.sh`](scripts/quality-check.sh) - quick/full quality gates.
-
-Run:
+Phase1 includes a local-first learning companion:
 
 ```bash
-sh scripts/quality-score.sh
+cargo run --bin phase1-learn -- status
+cargo run --bin phase1-learn -- import-history
+cargo run --bin phase1-learn -- suggest
+```
+
+Teach it project knowledge:
+
+```bash
+cargo run --bin phase1-learn -- teach deploy = use main for GitHub Pages deploys
+cargo run --bin phase1-learn -- ask deploy
+```
+
+The learning memory is local, sanitized, bounded, and ignored by git. It does not call a cloud model or upload data. See [`LEARNING.md`](LEARNING.md).
+
+## Release tracks
+
+| Track | Version | Purpose |
+| --- | --- | --- |
+| Stable | `v4.1.0` | Current stable line for release-qualified work. |
+| Previous stable | `v4.0.0` | Preserved previous stable release point. |
+| Edge | `v4.2.0-dev` | Experimental development branch beyond stable. |
+| Compatibility base | `v3.6.0` | Historical comparison base for compatibility references. |
+| Base1 | `foundation` | Secure host design for real hardware targets. |
+
+Use the stable line when you want the safest repository state. Use edge branches only for active development and experimental polish.
+
+## Public website
+
+The public face of Phase1 lives at:
+
+```text
+https://bryforge.github.io/phase1/
+```
+
+The site presents the project as a polished neon/cyber operator system: animated space visuals, Phase1 branding, browser terminal demo, founder profile, sponsor path, wiki links, and mobile-first public documentation.
+
+## Project structure
+
+```text
+src/                  Phase1 shell, kernel model, commands, UI, browser, runtime surfaces
+src/bin/              Helper binaries including phase1-storage, phase1-install, phase1-learn
+phase1-core/          Core package workspace member
+xtask/                Repository validation helper
+base1/                Secure host foundation docs and scripts
+docs/wiki/            Manual and tutorial source
+scripts/              Quality, runtime, Base1, wiki, and learning helpers
+.github/workflows/    CI, CodeQL, Pages, and quality automation
+```
+
+## Quality and validation
+
+Run the quick repository gate:
+
+```bash
 sh scripts/quality-check.sh quick
 ```
 
-Before release:
+Run the full validation gate before release work:
 
 ```bash
 sh scripts/quality-check.sh full
 ```
 
-## Base1 secure host foundation
-
-Base1 is designed as the real-hardware host layer below Phase1. It treats Phase1 as a contained workload and keeps host boot files, host packages, host secrets, recovery paths, and security policy outside Phase1 control.
-
-Start here:
-
-- [`base1/README.md`](base1/README.md) - Base1 overview.
-- [`base1/SECURITY_MODEL.md`](base1/SECURITY_MODEL.md) - threat model and security architecture.
-- [`base1/HARDWARE_TARGETS.md`](base1/HARDWARE_TARGETS.md) - Raspberry Pi and X200 target matrix.
-- [`base1/PHASE1_COMPATIBILITY.md`](base1/PHASE1_COMPATIBILITY.md) - Base1 and Phase1 compatibility contract.
-- [`base1/ROADMAP.md`](base1/ROADMAP.md) - staged Base1 roadmap.
-
-First safe checks:
-
-```bash
-sh scripts/base1-preflight.sh
-```
-
-The preflight checker is read-only. It reports readiness and warnings without changing the host.
-
-## In-system wiki
-
-Phase1 includes sandboxed WASI-lite manual pages readable from the prompt:
-
-```text
-wiki
-wiki-quick
-wiki-version
-wiki-boot
-wiki-commands
-wiki-files
-wiki-browse
-wiki-lang
-wiki-updates
-wiki-trouble
-wiki-tutorials
-```
-
-## Editors
-
-`ned` is the quick line editor. It supports saving without quitting:
-
-```text
-ned notes.txt
-:w      save
-:wq     save and quit
-.       save and quit
-:q      quit without saving
-```
-
-`avim` is the advanced VFS editor:
-
-```text
-avim hello.py
-```
-
-Use `:help` inside `avim` for movement, edit, search, save, and quit commands.
-
-## Post-v4.1 edge focus
-
-- Keep `v4.1.0` preserved on `release/v4.1.0` after validation.
-- Advance `edge/v4.2.0-dev` with guarded experimental work.
-- Continue improving editor usability, terminal wrapping, website responsiveness, Base1 compatibility, and supply-chain hardening.
-- Integrate approved post-stable work only after quality and security review.
-- Keep release-facing documentation explicit about stable versus edge status.
-
-## Run checks
-
-Install local security tools once:
-
-```bash
-cargo install cargo-audit --locked
-cargo install cargo-deny --locked
-```
-
-Then run the full quality gate:
-
-```bash
-sh scripts/quality-check.sh full
-```
-
-The Rust-specific gate remains:
+Rust-specific validation:
 
 ```bash
 cargo fmt --all -- --check
 cargo check --all-targets
 cargo clippy --all-targets -- -D warnings
 cargo test --all-targets
+```
+
+Optional security tooling:
+
+```bash
+cargo install cargo-audit --locked
+cargo install cargo-deny --locked
 cargo audit
 cargo deny check
 ```
 
-`cargo test --all-targets` includes unit tests plus scripted smoke tests for the main Phase1 shell, the guarded `phase1-storage` helper, the website, release metadata, quality system files, and the Base1 secure host foundation files.
+CI validates formatting, workspace checks, tests, quality rules, security workflow posture, and release metadata on pull requests and protected branch pushes.
 
-CI runs Rust validation, security validation, CodeQL, and the quality management workflow on pull requests and branch pushes.
+## Base1 secure host foundation
 
-## Enable Python, browser, network inspection, and runtimes
+Base1 is the planned real-hardware host layer below Phase1. Its purpose is to keep the host bootable, recoverable, and protected while Phase1 runs as a contained workload.
+
+Start here:
+
+- [`base1/README.md`](base1/README.md) — Base1 overview
+- [`base1/SECURITY_MODEL.md`](base1/SECURITY_MODEL.md) — security model and boundary
+- [`base1/HARDWARE_TARGETS.md`](base1/HARDWARE_TARGETS.md) — Raspberry Pi and X200 target matrix
+- [`base1/PHASE1_COMPATIBILITY.md`](base1/PHASE1_COMPATIBILITY.md) — compatibility contract
+- [`base1/ROADMAP.md`](base1/ROADMAP.md) — staged roadmap
+
+First safe check:
+
+```bash
+sh scripts/base1-preflight.sh
+```
+
+The preflight checker is read-only.
+
+## Runtime and host-backed features
+
+Phase1 defaults to a guarded posture. Some host-backed features require explicit trust and safe-mode changes.
 
 ```bash
 chmod +x scripts/phase1-runtimes.sh
@@ -232,25 +205,29 @@ t    TRUST HOST on
 1    BOOT
 ```
 
-## Manual and tutorials
+Do this only when you understand the host boundary.
 
-The full manual lives in `docs/wiki/` and can be published to GitHub Wiki with:
+## Safety model
+
+Phase1 should never need your GitHub password, personal access token, SSH private key, browser cookies, Apple ID, email password, recovery codes, or private credentials.
+
+Host-backed commands are explicit and guarded. Runtime files such as `phase1.state`, `phase1.history`, `phase1.learn`, and `phase1.log` are local operational artifacts. Command history, learning memory, and ops logs are sanitized before storage.
+
+Security claims stay conservative until they are backed by repeatable builds, tests, audits, and hardware validation.
+
+## Contributing
+
+Phase1 values useful engineering over hype. Good contributions improve clarity, safety, documentation, validation, mobile fit, terminal usability, runtime support, or Base1 compatibility.
+
+Before opening release-facing work, run:
 
 ```bash
-chmod +x scripts/publish-wiki.sh
-./scripts/publish-wiki.sh
+cargo fmt --all -- --check
+cargo check --all-targets
+cargo test --all-targets
+sh scripts/quality-check.sh quick
 ```
-
-The public website/wiki roadmap lives in [`WIKI_ROADMAP.md`](WIKI_ROADMAP.md).
-
-## Safety
-
-Phase1 is an educational simulator. It should never need your GitHub password, personal access token, SSH private key, browser cookies, Apple ID, email password, or recovery codes.
-
-Host-backed commands are explicit and guarded. Runtime files such as `phase1.state`, `phase1.history`, and `phase1.log` are local operational artifacts. Command history and ops logs are sanitized before storage.
-
-Base1 is a secure host foundation, not a destructive installer. Its first tooling is intentionally read-only and compatibility-focused. Base1 security claims should remain conservative until backed by repeatable builds, audits, and hardware validation.
 
 ## License
 
-GPL-3.0
+Phase1 is released under GPL-3.0-only.
