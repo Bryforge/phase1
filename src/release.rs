@@ -33,22 +33,64 @@ const BLEEDING_FEATURES: &[&str] = &[
 ];
 
 const ROADMAP_STATUS: &[(&str, &str)] = &[
-    ("Edge operator deck UI overhaul", "active: edge-only dashboard, trust boundary, developer cockpit, and command radar"),
-    ("Boot install dock", "active: guarded phase1-install plan and launcher writer"),
-    ("Dynamic version identity", "complete: current, stable, previous stable, and compatibility base are reported together"),
+    (
+        "Edge operator deck UI overhaul",
+        "active: edge-only dashboard, trust boundary, developer cockpit, and command radar",
+    ),
+    (
+        "Boot install dock",
+        "active: guarded phase1-install plan and launcher writer",
+    ),
+    (
+        "Dynamic version identity",
+        "complete: current, stable, previous stable, and compatibility base are reported together",
+    ),
     ("Persistent shell history", "complete"),
     ("Structured command output and pipelines", "complete"),
-    ("Update protocol and semantic patch versioning", "complete: UPDATE_PROTOCOL.md is the canonical patch-level reference"),
-    ("Capability enforcement based on command metadata", "complete: host tool and network mutation gates are checked from command metadata"),
-    ("WASM/WASI plugin runtime", "complete: WASI-lite plugins run in a phase1 sandbox without direct host shell access"),
-    ("Phase1 Arena game workspace", "complete: renamed game prototype, isolated game module, focused docs, and game-only test runner"),
-    ("Configurable UI color palettes", "complete: neo-tokyo is the default operator HUD; matrix, cyber, amber, ice, synthwave, crimson, and bleeding-edge are available"),
-    ("System tab auto-completion", "complete: live Tab expands unique command/argument matches and lists ambiguous matches"),
-    ("Raw input editing", "complete: interactive input redraws the prompt and clears ghost characters on backspace"),
-    ("Full-screen TUI dashboard", "complete: dash renders a full-screen operator panel set; dash --compact keeps the quick snapshot"),
-    ("In-system latest updater", "complete: update now --trust-host fetches, fast-forwards, and rebuilds latest bleeding edge from inside phase1"),
-    ("Developer test kit", "complete: update test plans and runs quick/full/smoke/bleeding/game validation suites from inside phase1"),
-    ("Dynamic operator HUD", "complete: command-aware prompt HUD and avim mode HUD show live UTC clock and context controls"),
+    (
+        "Update protocol and semantic patch versioning",
+        "complete: UPDATE_PROTOCOL.md is the canonical patch-level reference",
+    ),
+    (
+        "Capability enforcement based on command metadata",
+        "complete: host tool and network mutation gates are checked from command metadata",
+    ),
+    (
+        "WASM/WASI plugin runtime",
+        "complete: WASI-lite plugins run in a phase1 sandbox without direct host shell access",
+    ),
+    (
+        "Phase1 Arena game workspace",
+        "complete: renamed game prototype, isolated game module, focused docs, and game-only test runner",
+    ),
+    (
+        "Configurable UI color palettes",
+        "complete: neo-tokyo is the default operator HUD; matrix, cyber, amber, ice, synthwave, crimson, and bleeding-edge are available",
+    ),
+    (
+        "System tab auto-completion",
+        "complete: live Tab expands unique command/argument matches and lists ambiguous matches",
+    ),
+    (
+        "Raw input editing",
+        "complete: interactive input redraws the prompt and clears ghost characters on backspace",
+    ),
+    (
+        "Full-screen TUI dashboard",
+        "complete: dash renders a full-screen operator panel set; dash --compact keeps the quick snapshot",
+    ),
+    (
+        "In-system latest updater",
+        "complete: update now --trust-host fetches, fast-forwards, and rebuilds latest bleeding edge from inside phase1",
+    ),
+    (
+        "Developer test kit",
+        "complete: update test plans and runs quick/full/smoke/bleeding/game validation suites from inside phase1",
+    ),
+    (
+        "Dynamic operator HUD",
+        "complete: command-aware prompt HUD and avim mode HUD show live UTC clock and context controls",
+    ),
 ];
 
 pub fn version_report(args: &[String]) -> String {
@@ -65,12 +107,21 @@ pub fn version_report(args: &[String]) -> String {
     let mut out = String::from("phase1 version report\n");
     out.push_str(&format!("current version      : {}\n", current_version()));
     out.push_str(&format!("stable version       : {}\n", STABLE_VERSION));
-    out.push_str(&format!("previous stable      : {}\n", PREVIOUS_STABLE_VERSION));
-    out.push_str(&format!("compatibility base   : {}\n", COMPATIBILITY_BASE_VERSION));
+    out.push_str(&format!(
+        "previous stable      : {}\n",
+        PREVIOUS_STABLE_VERSION
+    ));
+    out.push_str(&format!(
+        "compatibility base   : {}\n",
+        COMPATIBILITY_BASE_VERSION
+    ));
     out.push_str(&format!("kernel baseline      : {}\n", VERSION));
     out.push_str(&format!("channel              : {}\n", CHANNEL));
     out.push_str(&format!("version scheme       : {}\n", VERSION_SCHEME));
-    out.push_str(&format!("protocol file        : {}\n", UPDATE_PROTOCOL_FILE));
+    out.push_str(&format!(
+        "protocol file        : {}\n",
+        UPDATE_PROTOCOL_FILE
+    ));
     out.push_str("\ncurrent bleeding-edge additions over stable:\n");
     for feature in BLEEDING_FEATURES {
         out.push_str("  - ");
@@ -85,7 +136,10 @@ pub fn roadmap_report() -> String {
     out.push_str(&format!("current        : v{}\n", current_version()));
     out.push_str(&format!("stable         : v{}\n", STABLE_VERSION));
     out.push_str(&format!("previous       : v{}\n", PREVIOUS_STABLE_VERSION));
-    out.push_str(&format!("compatibility  : v{}\n", COMPATIBILITY_BASE_VERSION));
+    out.push_str(&format!(
+        "compatibility  : v{}\n",
+        COMPATIBILITY_BASE_VERSION
+    ));
     out.push_str(&format!("channel        : {}\n", CHANNEL));
     out.push_str(&format!("scheme         : {}\n", VERSION_SCHEME));
     out.push_str(&format!("updates        : {}\n\n", UPDATE_PROTOCOL_FILE));
