@@ -24,6 +24,7 @@ After install:
 Notes:
   The installed command is a tiny wrapper back to this checkout.
   It does not move the repo or create a new trust path.
+  It runs the source launcher through `sh` so fresh clones work even before chmod.
 EOF
 }
 
@@ -48,7 +49,7 @@ fi
 mkdir -p "$INSTALL_DIR"
 cat > "$COMMAND_PATH" <<EOF
 #!/usr/bin/env sh
-exec "$PHASE1_ENTRY" "\$@"
+exec sh "$PHASE1_ENTRY" "\$@"
 EOF
 chmod 0755 "$COMMAND_PATH"
 
