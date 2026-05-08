@@ -1,6 +1,6 @@
 use std::env;
 use std::fs;
-use std::io;
+use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::process::{Command, Output, Stdio};
 use std::thread;
@@ -9,7 +9,9 @@ use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 use crate::commands::Phase1Shell;
 
 const MAX_SOURCE_BYTES: usize = 256 * 1024;
-const RUN_TIMEOUT: Duration = Duration::from_secs(8);
+const MAX_STDIN_BYTES: usize = 64 * 1024;
+const DEFAULT_RUN_TIMEOUT: Duration = Duration::from_secs(8);
+const MAX_RUN_TIMEOUT: Duration = Duration::from_secs(60);
 const COMPILE_TIMEOUT: Duration = Duration::from_secs(20);
 const MAX_OUTPUT_BYTES: usize = 24 * 1024;
 
@@ -41,13 +43,19 @@ pub struct LanguageSpec {
     runner: Runner,
 }
 
+#[derive(Clone, Debug)]
+struct RunOptions {
+    timeout: Duration,
+    stdin: Option<String>,
+}
+
 pub const LANGUAGES: &[LanguageSpec] = &[
     spec(
         "rust",
         &["rs"],
         &["rs"],
         "systems",
-        "compiled with rustc; host execution is gated",
+        "compiled with rustc; host execution uses the guarded runtime gate",
         Runner::Rust,
     ),
     spec(
@@ -55,7 +63,7 @@ pub const LANGUAGES: &[LanguageSpec] = &[
         &["ansi-c"],
         &["c"],
         "systems",
-        "compiled with cc/gcc/clang; host execution is gated",
+        "compiled with cc/gcc/clang; host execution uses the guarded runtime gate",
         Runner::CompileRun {
             tools: &["cc", "gcc", "clang"],
             compile_args: &["-Wall", "-Wextra", "-O0"],
@@ -66,7 +74,7 @@ pub const LANGUAGES: &[LanguageSpec] = &[
         &["c++", "cplusplus"],
         &["cpp", "cc", "cxx"],
         "systems",
-        "compiled with c++/g++/clang++; host execution is gated",
+        "compiled with c++/g++/clang++; host execution uses the guarded runtime gate",
         Runner::CompileRun {
             tools: &["c++", "g++", "clang++"],
             compile_args: &["-Wall", "-Wextra", "-O0"],
@@ -77,7 +85,7 @@ pub const LANGUAGES: &[LanguageSpec] = &[
         &["golang"],
         &["go"],
         "systems/cloud",
-        "go run in a temp workspace; host execution is gated",
+        "go run in a temporary guarded workspace",
         Runner::Go,
     ),
     spec(
@@ -85,7 +93,7 @@ pub const LANGUAGES: &[LanguageSpec] = &[
         &[],
         &["zig"],
         "systems",
-        "zig run; host execution is gated",
+        "zig run in a temporary guarded workspace",
         Runner::Interpreted {
             tools: &["zig"],
             args: &["run"],
@@ -96,7 +104,7 @@ pub const LANGUAGES: &[LanguageSpec] = &[
         &["py", "python3"],
         &["py"],
         "scripting/data",
-        "python3/python execution is gated",
+        "python3/python through the guarded runtime gate",
         Runner::Interpreted {
             tools: &["python3", "python"],
             args: &[],
@@ -107,7 +115,7 @@ pub const LANGUAGES: &[LanguageSpec] = &[
         &["js", "node"],
         &["js", "mjs", "cjs"],
         "web",
-        "node execution is gated",
+        "node through the guarded runtime gate",
         Runner::Interpreted {
             tools: &["node"],
             args: &[],
@@ -118,7 +126,7 @@ pub const LANGUAGES: &[LanguageSpec] = &[
         &["ts", "deno"],
         &["ts"],
         "web",
-        "deno run without extra permissions; host execution is gated",
+        "deno run without extra permissions through the guarded runtime gate",
         Runner::Interpreted {
             tools: &["deno"],
             args: &["run", "--no-prompt"],
@@ -129,7 +137,7 @@ pub const LANGUAGES: &[LanguageSpec] = &[
         &[],
         &["java"],
         "jvm",
-        "Java source-file mode; host execution is gated",
+        "Java source-file mode through the guarded runtime gate",
         Runner::JavaSource,
     ),
     spec(
@@ -137,7 +145,7 @@ pub const LANGUAGES: &[LanguageSpec] = &[
         &["kt"],
         &["kt"],
         "jvm",
-        "kotlinc jar build then java -jar; host execution is gated",
+        "kotlinc jar build then java -jar through the guarded runtime gate",
         Runner::Kotlin,
     ),
     spec(
@@ -145,7 +153,7 @@ pub const LANGUAGES: &[LanguageSpec] = &[
         &[],
         &["scala", "sc"],
         "jvm",
-        "scala source runner where installed; host execution is gated",
+        "scala source runner where installed through the guarded runtime gate",
         Runner::Interpreted {
             tools: &["scala"],
             args: &[],
@@ -156,7 +164,7 @@ pub const LANGUAGES: &[LanguageSpec] = &[
         &["c#", "cs", "dotnet"],
         &["cs"],
         ".net",
-        "dotnet console wrapper; host execution is gated",
+        "dotnet console wrapper through the guarded runtime gate",
         Runner::Dotnet,
     ),
     spec(
@@ -164,7 +172,7 @@ pub const LANGUAGES: &[LanguageSpec] = &[
         &["fs", "f#"],
         &["fsx"],
         ".net",
-        "dotnet fsi where installed; host execution is gated",
+        "dotnet fsi where installed through the guarded runtime gate",
         Runner::Interpreted {
             tools: &["dotnet"],
             args: &["fsi"],
@@ -175,7 +183,7 @@ pub const LANGUAGES: &[LanguageSpec] = &[
         &[],
         &["swift"],
         "apple/systems",
-        "swift script runner; host execution is gated",
+        "swift script runner through the guarded runtime gate",
         Runner::Interpreted {
             tools: &["swift"],
             args: &[],
@@ -186,7 +194,7 @@ pub const LANGUAGES: &[LanguageSpec] = &[
         &["rb"],
         &["rb"],
         "scripting/web",
-        "ruby execution is gated",
+        "ruby through the guarded runtime gate",
         Runner::Interpreted {
             tools: &["ruby"],
             args: &[],
@@ -197,7 +205,7 @@ pub const LANGUAGES: &[LanguageSpec] = &[
         &[],
         &["php"],
         "web",
-        "php cli execution is gated",
+        "php cli through the guarded runtime gate",
         Runner::Interpreted {
             tools: &["php"],
             args: &[],
@@ -208,7 +216,7 @@ pub const LANGUAGES: &[LanguageSpec] = &[
         &["pl"],
         &["pl", "pm"],
         "scripting",
-        "perl execution is gated",
+        "perl through the guarded runtime gate",
         Runner::Interpreted {
             tools: &["perl"],
             args: &[],
@@ -219,7 +227,7 @@ pub const LANGUAGES: &[LanguageSpec] = &[
         &[],
         &["lua"],
         "scripting/embedded",
-        "lua execution is gated",
+        "lua through the guarded runtime gate",
         Runner::Interpreted {
             tools: &["lua", "lua5.4", "lua5.3"],
             args: &[],
@@ -230,7 +238,7 @@ pub const LANGUAGES: &[LanguageSpec] = &[
         &["rscript"],
         &["r"],
         "data/science",
-        "Rscript execution is gated",
+        "Rscript through the guarded runtime gate",
         Runner::Interpreted {
             tools: &["Rscript"],
             args: &[],
@@ -241,7 +249,7 @@ pub const LANGUAGES: &[LanguageSpec] = &[
         &["jl"],
         &["jl"],
         "data/science",
-        "julia execution is gated",
+        "julia through the guarded runtime gate",
         Runner::Interpreted {
             tools: &["julia"],
             args: &[],
@@ -252,7 +260,7 @@ pub const LANGUAGES: &[LanguageSpec] = &[
         &["hs"],
         &["hs"],
         "functional",
-        "runghc execution is gated",
+        "runghc through the guarded runtime gate",
         Runner::Interpreted {
             tools: &["runghc", "runhaskell"],
             args: &[],
@@ -263,7 +271,7 @@ pub const LANGUAGES: &[LanguageSpec] = &[
         &["ml"],
         &["ml"],
         "functional",
-        "ocaml interpreter execution is gated",
+        "ocaml interpreter through the guarded runtime gate",
         Runner::Interpreted {
             tools: &["ocaml"],
             args: &[],
@@ -274,7 +282,7 @@ pub const LANGUAGES: &[LanguageSpec] = &[
         &["exs"],
         &["exs", "ex"],
         "beam",
-        "elixir execution is gated",
+        "elixir through the guarded runtime gate",
         Runner::Interpreted {
             tools: &["elixir"],
             args: &[],
@@ -285,7 +293,7 @@ pub const LANGUAGES: &[LanguageSpec] = &[
         &["escript"],
         &["erl", "escript"],
         "beam",
-        "escript execution is gated",
+        "escript through the guarded runtime gate",
         Runner::Interpreted {
             tools: &["escript"],
             args: &[],
@@ -296,7 +304,7 @@ pub const LANGUAGES: &[LanguageSpec] = &[
         &[],
         &["dart"],
         "mobile/web",
-        "dart execution is gated",
+        "dart through the guarded runtime gate",
         Runner::Interpreted {
             tools: &["dart"],
             args: &[],
@@ -356,7 +364,7 @@ pub fn run(shell: &mut Phase1Shell, args: &[String]) -> String {
 }
 
 fn help() -> String {
-    "phase1 lang // native guarded language runtime manager\n\nusage:\n  lang list\n  lang support\n  lang status [language]\n  lang doctor [language]\n  lang detect <file>\n  lang run <language|auto> <vfs-file | inline-code>\n  lang security\n\nexamples:\n  echo 'fn main() { println!(\"hi\"); }' > hello.rs\n  lang run rust hello.rs\n  lang run python 'print(\"hello\")'\n  lang detect app.ts\n\nsafety:\n  Language execution is host-backed except WASI-lite inspection and requires:\n    PHASE1_SAFE_MODE=0 PHASE1_ALLOW_HOST_TOOLS=1\n  Source is copied from the phase1 VFS or inline input into a temporary file, output is bounded, and common sensitive markers are redacted.\n"
+    "phase1 lang // native guarded language runtime manager\n\nusage:\n  lang list\n  lang support\n  lang status [language]\n  lang doctor [language]\n  lang detect <file>\n  lang run [--timeout seconds] [--stdin text | --stdin-file vfs-file] <language|auto> <vfs-file | inline-code>\n  lang security\n\nexamples:\n  echo 'fn main() { println!(\"hi\"); }' > hello.rs\n  lang run rust hello.rs\n  lang run python 'print(\"hello\")'\n  lang run --stdin 'hello' python 'import sys; print(sys.stdin.read().upper())'\n  lang run --timeout 20 python script.py\n  lang detect app.ts\n\nsafety:\n  Guarded language execution requires the explicit trust gate only:\n    PHASE1_ALLOW_HOST_TOOLS=1\n  Safe mode may remain enabled. Safe mode now means guarded runtime execution, not privileged host mutation.\n  Source is copied from the phase1 VFS or inline input into a temporary workspace. Commands run with bounded stdin/stdout/stderr, configurable timeouts, audit events, promptless env vars, and temp HOME/TMPDIR.\n  This is a guardrail layer, not a chroot/VM sandbox; do not run untrusted code until a stronger OS-level sandbox backend is added.\n"
         .to_string()
 }
 
@@ -408,7 +416,7 @@ fn status(language: Option<&str>) -> String {
 }
 
 fn doctor(language: Option<&str>) -> String {
-    if !crate::policy::host_tools_allowed() {
+    if !crate::policy::guarded_host_execution_allowed() {
         return format!("{}\n", crate::policy::host_denial_message("lang doctor"));
     }
     let specs = match language.and_then(find_language) {
@@ -442,19 +450,24 @@ fn doctor(language: Option<&str>) -> String {
 }
 
 fn run_language(shell: &mut Phase1Shell, args: &[String]) -> String {
-    if args.len() < 2 {
-        return "usage: lang run <language|auto> <vfs-file | inline-code>\n".to_string();
-    }
-    if !crate::policy::host_tools_allowed() && args[0] != "wasm" && args[0] != "wasi" {
+    let (mut language, source_arg, options) = match parse_run_request(shell, args) {
+        Ok(request) => request,
+        Err(err) => return err,
+    };
+
+    if !crate::policy::guarded_host_execution_allowed()
+        && language != "wasm"
+        && language != "wasi"
+    {
         return format!("{}\n", crate::policy::host_denial_message("lang run"));
     }
 
-    let mut language = args[0].as_str();
-    let source_arg = args[1..].join(" ");
     if language == "auto" {
-        language = detect_language_from_path(&source_arg).unwrap_or("unknown");
+        language = detect_language_from_path(&source_arg)
+            .unwrap_or("unknown")
+            .to_string();
     }
-    let Some(spec) = find_language(language) else {
+    let Some(spec) = find_language(&language) else {
         return format!("lang: unsupported language '{language}'\n");
     };
 
@@ -468,11 +481,13 @@ fn run_language(shell: &mut Phase1Shell, args: &[String]) -> String {
     }
 
     shell.kernel.audit.record(format!(
-        "host.lang.run language={} bytes={}",
+        "host.lang.run language={} bytes={} timeout={}s stdin={}",
         spec.name,
-        source.len()
+        source.len(),
+        options.timeout.as_secs(),
+        options.stdin.as_ref().map(|value| value.len()).unwrap_or(0)
     ));
-    match execute(spec, &source) {
+    match execute(spec, &source, &options) {
         Ok(output) => sanitize_output(&format_output(output)),
         Err(err) => format!("lang {}: {}\n", spec.name, err),
     }
@@ -486,11 +501,98 @@ fn detect(path: Option<&str>) -> String {
 }
 
 fn security_report() -> String {
-    "phase1 language runtime security\n\n- execution is blocked by default safe mode\n- host-backed language execution requires PHASE1_SAFE_MODE=0 and PHASE1_ALLOW_HOST_TOOLS=1\n- source comes from the phase1 VFS or explicit inline input\n- source is copied to temporary files and bounded to 256 KiB\n- compile and run commands have timeouts\n- stdout/stderr are capped and redacted for common sensitive markers\n- package install, network fetch, editor shell escapes, and background daemons are not implemented here\n- WASM/WASI remains the preferred long-term sandbox target\n"
+    "phase1 language runtime security\n\n- guarded language execution no longer requires disabling safe mode\n- host-backed language execution requires the explicit trust gate: PHASE1_ALLOW_HOST_TOOLS=1\n- safe mode still blocks privileged host mutation; it does not block guarded runtimes once trusted\n- source comes from the phase1 VFS or explicit inline input\n- source is copied to temporary workspaces and bounded to 256 KiB\n- stdin may be provided with --stdin or --stdin-file and is capped to 64 KiB\n- run timeout is configurable with --timeout or PHASE1_LANG_TIMEOUT and capped at 60 seconds\n- stdout/stderr are capped and redacted for common sensitive markers\n- package install, network fetch, editor shell escapes, and background daemons are not implemented here\n- this is a guardrail layer, not a chroot/VM sandbox; WASM/WASI remains the preferred long-term sandbox target\n"
         .to_string()
 }
 
-fn execute(spec: &LanguageSpec, source: &str) -> io::Result<Output> {
+fn parse_run_request(
+    shell: &mut Phase1Shell,
+    args: &[String],
+) -> Result<(String, String, RunOptions), String> {
+    if args.len() < 2 {
+        return Err("usage: lang run [--timeout seconds] [--stdin text | --stdin-file vfs-file] <language|auto> <vfs-file | inline-code>\n".to_string());
+    }
+
+    let mut timeout = env_timeout().unwrap_or(DEFAULT_RUN_TIMEOUT);
+    let mut stdin = None;
+    let mut positional = Vec::new();
+    let mut idx = 0;
+    while idx < args.len() {
+        match args[idx].as_str() {
+            "--timeout" | "-t" => {
+                let Some(raw) = args.get(idx + 1) else {
+                    return Err("lang run: --timeout requires seconds\n".to_string());
+                };
+                timeout = parse_timeout(raw)?;
+                idx += 2;
+            }
+            "--stdin" => {
+                let Some(raw) = args.get(idx + 1) else {
+                    return Err("lang run: --stdin requires input text\n".to_string());
+                };
+                if raw.len() > MAX_STDIN_BYTES {
+                    return Err(format!(
+                        "lang run: stdin is too large; limit is {MAX_STDIN_BYTES} bytes\n"
+                    ));
+                }
+                stdin = Some(raw.clone());
+                idx += 2;
+            }
+            "--stdin-file" => {
+                let Some(path) = args.get(idx + 1) else {
+                    return Err("lang run: --stdin-file requires a VFS file path\n".to_string());
+                };
+                let input = shell
+                    .kernel
+                    .sys_read(path)
+                    .map_err(|err| format!("lang run: --stdin-file: {err}\n"))?;
+                if input.len() > MAX_STDIN_BYTES {
+                    return Err(format!(
+                        "lang run: stdin file is too large; limit is {MAX_STDIN_BYTES} bytes\n"
+                    ));
+                }
+                stdin = Some(input);
+                idx += 2;
+            }
+            "--no-stdin" => {
+                stdin = None;
+                idx += 1;
+            }
+            other => {
+                positional.push(other.to_string());
+                idx += 1;
+            }
+        }
+    }
+
+    if positional.len() < 2 {
+        return Err("usage: lang run [--timeout seconds] [--stdin text | --stdin-file vfs-file] <language|auto> <vfs-file | inline-code>\n".to_string());
+    }
+
+    Ok((
+        positional[0].clone(),
+        positional[1..].join(" "),
+        RunOptions { timeout, stdin },
+    ))
+}
+
+fn env_timeout() -> Option<Duration> {
+    env::var("PHASE1_LANG_TIMEOUT")
+        .ok()
+        .and_then(|raw| parse_timeout(raw.trim()).ok())
+}
+
+fn parse_timeout(raw: &str) -> Result<Duration, String> {
+    let secs = raw
+        .parse::<u64>()
+        .map_err(|_| format!("lang run: invalid timeout '{raw}'\n"))?;
+    if secs == 0 {
+        return Err("lang run: timeout must be at least 1 second\n".to_string());
+    }
+    Ok(Duration::from_secs(secs).min(MAX_RUN_TIMEOUT))
+}
+
+fn execute(spec: &LanguageSpec, source: &str, options: &RunOptions) -> io::Result<Output> {
     let nonce = unique_nonce();
     let root = env::temp_dir().join(format!("phase1_lang_{nonce}"));
     fs::create_dir_all(&root)?;
@@ -508,7 +610,8 @@ fn execute(spec: &LanguageSpec, source: &str) -> io::Result<Output> {
             })?;
             let mut cmd = Command::new(tool);
             cmd.args(args).arg(&source_path);
-            run_command(cmd, RUN_TIMEOUT)
+            prepare_guarded_command(&mut cmd, &root);
+            run_command(cmd, options.timeout, options.stdin.as_deref())
         }
         Runner::CompileRun {
             tools,
@@ -527,10 +630,12 @@ fn execute(spec: &LanguageSpec, source: &str) -> io::Result<Output> {
                 .arg(&source_path)
                 .arg("-o")
                 .arg(&binary);
-            let compile_output = run_command(compile, COMPILE_TIMEOUT)?;
+            prepare_guarded_command(&mut compile, &root);
+            let compile_output = run_command(compile, COMPILE_TIMEOUT, None)?;
             if compile_output.status.success() {
-                let run = Command::new(&binary);
-                run_command(run, RUN_TIMEOUT)
+                let mut run = Command::new(&binary);
+                prepare_guarded_command(&mut run, &root);
+                run_command(run, options.timeout, options.stdin.as_deref())
             } else {
                 Ok(compile_output)
             }
@@ -543,25 +648,29 @@ fn execute(spec: &LanguageSpec, source: &str) -> io::Result<Output> {
                 .arg(&source_path)
                 .arg("-o")
                 .arg(&binary);
-            let compile_output = run_command(compile, COMPILE_TIMEOUT)?;
+            prepare_guarded_command(&mut compile, &root);
+            let compile_output = run_command(compile, COMPILE_TIMEOUT, None)?;
             if compile_output.status.success() {
-                let run = Command::new(&binary);
-                run_command(run, RUN_TIMEOUT)
+                let mut run = Command::new(&binary);
+                prepare_guarded_command(&mut run, &root);
+                run_command(run, options.timeout, options.stdin.as_deref())
             } else {
                 Ok(compile_output)
             }
         }
         Runner::Go => {
             let mut cmd = Command::new("go");
-            cmd.arg("run").arg(&source_path).current_dir(&root);
-            run_command(cmd, RUN_TIMEOUT)
+            cmd.arg("run").arg(&source_path);
+            prepare_guarded_command(&mut cmd, &root);
+            run_command(cmd, options.timeout, options.stdin.as_deref())
         }
         Runner::JavaSource => {
             let java_source = root.join("Main.java");
             fs::write(&java_source, normalize_java_source(source))?;
             let mut cmd = Command::new("java");
-            cmd.arg(&java_source).current_dir(&root);
-            run_command(cmd, RUN_TIMEOUT)
+            cmd.arg(&java_source);
+            prepare_guarded_command(&mut cmd, &root);
+            run_command(cmd, options.timeout, options.stdin.as_deref())
         }
         Runner::Kotlin => {
             let jar = root.join("main.jar");
@@ -570,13 +679,14 @@ fn execute(spec: &LanguageSpec, source: &str) -> io::Result<Output> {
                 .arg(&source_path)
                 .arg("-include-runtime")
                 .arg("-d")
-                .arg(&jar)
-                .current_dir(&root);
-            let compile_output = run_command(compile, COMPILE_TIMEOUT)?;
+                .arg(&jar);
+            prepare_guarded_command(&mut compile, &root);
+            let compile_output = run_command(compile, COMPILE_TIMEOUT, None)?;
             if compile_output.status.success() {
                 let mut run = Command::new("java");
                 run.arg("-jar").arg(&jar);
-                run_command(run, RUN_TIMEOUT)
+                prepare_guarded_command(&mut run, &root);
+                run_command(run, options.timeout, options.stdin.as_deref())
             } else {
                 Ok(compile_output)
             }
@@ -587,8 +697,9 @@ fn execute(spec: &LanguageSpec, source: &str) -> io::Result<Output> {
             fs::write(project.join("phase1.csproj"), "<Project Sdk=\"Microsoft.NET.Sdk\"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable></PropertyGroup></Project>")?;
             fs::write(project.join("Program.cs"), source)?;
             let mut cmd = Command::new("dotnet");
-            cmd.arg("run").current_dir(project);
-            run_command(cmd, Duration::from_secs(30))
+            cmd.arg("run");
+            prepare_guarded_command(&mut cmd, &project);
+            run_command(cmd, options.timeout.max(Duration::from_secs(30)), options.stdin.as_deref())
         }
         Runner::WasmInfo => unreachable!(),
     };
@@ -597,8 +708,23 @@ fn execute(spec: &LanguageSpec, source: &str) -> io::Result<Output> {
     result
 }
 
+fn prepare_guarded_command(cmd: &mut Command, root: &Path) {
+    cmd.current_dir(root)
+        .env("HOME", root)
+        .env("TMPDIR", root)
+        .env("TEMP", root)
+        .env("TMP", root)
+        .env("PHASE1_GUARDED_EXEC", "1")
+        .env("GIT_TERMINAL_PROMPT", "0")
+        .env("GCM_INTERACTIVE", "never")
+        .env("PYTHONNOUSERSITE", "1")
+        .env("PIP_DISABLE_PIP_VERSION_CHECK", "1")
+        .env("CARGO_TERM_COLOR", "never")
+        .env("NO_COLOR", "1");
+}
+
 fn load_source(shell: &mut Phase1Shell, raw: &str) -> String {
-    let looks_like_path = raw.starts_with('/') || raw.contains('.') || raw.ends_with('s');
+    let looks_like_path = raw.starts_with('/') || raw.starts_with("./") || raw.contains('.');
     if looks_like_path {
         if let Ok(content) = shell.kernel.sys_read(raw) {
             return content;
@@ -671,20 +797,30 @@ fn find_tool(tools: &'static [&'static str]) -> Option<&'static str> {
 fn tool_version(tool: &str) -> String {
     let mut cmd = Command::new(tool);
     cmd.arg("--version");
-    match run_command(cmd, Duration::from_secs(3)) {
+    match run_command(cmd, Duration::from_secs(3), None) {
         Ok(output) => first_line(&format_output(output)),
         Err(_) => "version unavailable".to_string(),
     }
 }
 
-fn run_command(mut cmd: Command, timeout: Duration) -> io::Result<Output> {
+fn run_command(mut cmd: Command, timeout: Duration, stdin_text: Option<&str>) -> io::Result<Output> {
+    let timeout = timeout.min(MAX_RUN_TIMEOUT);
+    let stdin_mode = if stdin_text.is_some() {
+        Stdio::piped()
+    } else {
+        Stdio::null()
+    };
     let mut child = cmd
-        .stdin(Stdio::null())
+        .stdin(stdin_mode)
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
-        .env("GIT_TERMINAL_PROMPT", "0")
-        .env("GCM_INTERACTIVE", "never")
         .spawn()?;
+    if let Some(input) = stdin_text {
+        if let Some(stdin) = child.stdin.as_mut() {
+            stdin.write_all(input.as_bytes())?;
+        }
+        drop(child.stdin.take());
+    }
     let start = Instant::now();
     loop {
         if child.try_wait()?.is_some() {
@@ -754,8 +890,10 @@ fn workspace_root() -> PathBuf {
 #[cfg(test)]
 mod tests {
     use super::{
-        detect_language_from_path, find_language, normalize_java_source, sanitize_output, LANGUAGES,
+        detect_language_from_path, find_language, normalize_java_source, parse_timeout,
+        sanitize_output, DEFAULT_RUN_TIMEOUT, LANGUAGES, MAX_RUN_TIMEOUT,
     };
+    use std::time::Duration;
 
     #[test]
     fn all_registered_languages_have_extensions() {
@@ -789,6 +927,14 @@ mod tests {
         let wrapped = normalize_java_source("System.out.println(\"hi\");");
         assert!(wrapped.contains("class Main"));
         assert!(wrapped.contains("System.out.println"));
+    }
+
+    #[test]
+    fn timeout_parsing_is_bounded() {
+        assert_eq!(parse_timeout("1").unwrap(), Duration::from_secs(1));
+        assert_eq!(parse_timeout("999").unwrap(), MAX_RUN_TIMEOUT);
+        assert!(parse_timeout("0").is_err());
+        assert_eq!(DEFAULT_RUN_TIMEOUT, Duration::from_secs(8));
     }
 
     #[test]
