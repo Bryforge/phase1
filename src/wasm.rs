@@ -315,15 +315,21 @@ fn redact_text(value: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::{execute_plugin, inspect_plugin, run};
-    use std::fs;
+    use std::sync::atomic::{AtomicU64, Ordering};
     use std::time::{SystemTime, UNIX_EPOCH};
+    use std::{fs, process};
+
+    static WASM_TEST_COUNTER: AtomicU64 = AtomicU64::new(0);
 
     fn temp_plugins() -> std::path::PathBuf {
         let nonce = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .map(|duration| duration.as_nanos())
             .unwrap_or(0);
-        let dir = std::env::temp_dir().join(format!("phase1-wasm-test-{nonce}"));
+        let seq = WASM_TEST_COUNTER.fetch_add(1, Ordering::Relaxed);
+        let dir =
+            std::env::temp_dir().join(format!("phase1-wasm-test-{}-{nonce}-{seq}", process::id()));
+        let _ = fs::remove_dir_all(&dir);
         fs::create_dir_all(&dir).unwrap();
         fs::write(dir.join("demo.wasm"), b"\0asm\x01\0\0\0").unwrap();
         fs::write(

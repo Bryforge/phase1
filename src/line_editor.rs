@@ -48,6 +48,14 @@ pub fn read_shell_line(prompt: &str) -> io::Result<Option<String>> {
         return Ok(line);
     }
 
+    if simple_line_editor_enabled() {
+        let line = read_plain_line()?;
+        if let Some(line) = &line {
+            push_session_history(line);
+        }
+        return Ok(line);
+    }
+
     let Some(_guard) = RawModeGuard::enter() else {
         let line = read_cooked_line(prompt)?;
         if let Some(line) = &line {
@@ -174,6 +182,27 @@ pub fn read_shell_line(prompt: &str) -> io::Result<Option<String>> {
             }
             _ => {}
         }
+    }
+}
+
+fn read_plain_line() -> io::Result<Option<String>> {
+    io::stdout().flush()?;
+    let prompt_started = Instant::now();
+    let mut input = String::new();
+    match io::stdin().read_line(&mut input) {
+        Ok(0) => Ok(None),
+        Ok(_) => {
+            let line = input.trim_end_matches(['\r', '\n']);
+            if line.trim().is_empty() && idle_enter_guard_triggered(prompt_started.elapsed()) {
+                println!(
+                    "idle-enter guard: ignored blank Enter after {}s idle; press Enter again to run",
+                    prompt_started.elapsed().as_secs()
+                );
+                return Ok(Some(String::new()));
+            }
+            Ok(Some(line.to_string()))
+        }
+        Err(err) => Err(err),
     }
 }
 
@@ -477,6 +506,35 @@ fn idle_enter_guard_duration() -> Option<Duration> {
     }
 }
 
+fn simple_line_editor_enabled() -> bool {
+    if env_flag("PHASE1_FORCE_RAW_LINE_EDITOR") == Some(true) {
+        return false;
+    }
+    if let Some(value) = env_flag("PHASE1_SIMPLE_LINE_EDITOR") {
+        return value;
+    }
+    env_flag("PHASE1_MOBILE_MODE") == Some(true)
+        || std::env::var("PHASE1_DEVICE_MODE")
+            .ok()
+            .map(|raw| {
+                matches!(
+                    raw.trim().to_ascii_lowercase().as_str(),
+                    "mobile" | "phone" | "deck"
+                )
+            })
+            .unwrap_or(false)
+}
+
+fn env_flag(name: &str) -> Option<bool> {
+    std::env::var(name)
+        .ok()
+        .and_then(|raw| match raw.trim().to_ascii_lowercase().as_str() {
+            "1" | "true" | "on" | "yes" => Some(true),
+            "0" | "false" | "off" | "no" => Some(false),
+            _ => None,
+        })
+}
+
 fn command_status_line(input: &str) -> String {
     let width = terminal_width().clamp(32, 72);
     let raw = format!("HUD {} | {}", short_clock_utc(), command_hint(input));
@@ -639,7 +697,7 @@ mod tests {
     use super::{
         char_len, command_hint, command_status_line, delete_at_cursor, delete_before_cursor,
         delete_previous_word, history_down, history_up, idle_enter_guard_triggered, insert_char,
-        EditorState,
+        simple_line_editor_enabled, EditorState,
     };
     use std::time::Duration;
 
@@ -658,8 +716,28 @@ mod tests {
         assert!(status.contains("HUD"));
         assert!(status.contains("UTC"));
         assert_eq!(status.lines().count(), 1);
+        assert!(!status.contains('\0'));
         std::env::remove_var("NO_COLOR");
         std::env::remove_var("COLUMNS");
+    }
+
+    #[test]
+    fn mobile_mode_uses_simple_line_editor_unless_raw_is_forced() {
+        std::env::remove_var("PHASE1_SIMPLE_LINE_EDITOR");
+        std::env::remove_var("PHASE1_FORCE_RAW_LINE_EDITOR");
+        std::env::remove_var("PHASE1_MOBILE_MODE");
+        std::env::set_var("PHASE1_DEVICE_MODE", "mobile");
+        assert!(simple_line_editor_enabled());
+
+        std::env::set_var("PHASE1_FORCE_RAW_LINE_EDITOR", "1");
+        assert!(!simple_line_editor_enabled());
+
+        std::env::remove_var("PHASE1_FORCE_RAW_LINE_EDITOR");
+        std::env::set_var("PHASE1_SIMPLE_LINE_EDITOR", "0");
+        assert!(!simple_line_editor_enabled());
+
+        std::env::remove_var("PHASE1_SIMPLE_LINE_EDITOR");
+        std::env::remove_var("PHASE1_DEVICE_MODE");
     }
 
     #[test]
