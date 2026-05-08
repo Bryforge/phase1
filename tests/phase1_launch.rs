@@ -8,8 +8,10 @@ use std::process::Command;
 #[test]
 fn launch_scripts_exist_and_have_valid_shell_syntax() {
     for path in [
+        "phase1",
         "start_phase1",
         "scripts/configure-phase1.sh",
+        "scripts/install-phase1-command.sh",
         "scripts/test-phase1-launch.sh",
     ] {
         assert!(fs::metadata(path).is_ok(), "missing launch script: {path}");
@@ -31,7 +33,8 @@ fn launch_help_displays_simple_command() {
         .expect("run start help");
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
-    assert!(stdout.contains("./start_phase1"));
+    assert!(stdout.contains("./phase1"));
+    assert!(stdout.contains("sh phase1"));
     assert!(stdout.contains("Simple launch command"));
 }
 
@@ -48,6 +51,7 @@ fn launch_doctor_reports_gina_base1_and_config() {
     assert!(stdout.contains("gina"));
     assert!(stdout.contains("base1"));
     assert!(stdout.contains("config"));
+    assert!(stdout.contains("launcher"));
 }
 
 #[test]
@@ -60,7 +64,8 @@ fn configure_dry_run_is_safe_and_mentions_launch_command() {
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
     assert!(stdout.contains("Phase1 absolute configuration"));
-    assert!(stdout.contains("Launch command: ./start_phase1"));
+    assert!(stdout.contains("Launch command: sh phase1"));
+    assert!(stdout.contains("Executable command: ./phase1"));
     assert!(stdout.contains("dry-run"));
 }
 
