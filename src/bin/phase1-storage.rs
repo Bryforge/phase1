@@ -254,7 +254,10 @@ fn storage_doctor() -> Result<String, String> {
             Ok(output) => {
                 out.push_str(&format!("  {tool}: {}", first_line(&format_output(output))))
             }
-            Err(err) => out.push_str(&format!("  {tool}: missing or blocked ({})\n", redaction::redact_line(&err))),
+            Err(err) => out.push_str(&format!(
+                "  {tool}: missing or blocked ({})\n",
+                redaction::redact_line(&err)
+            )),
         }
     }
     Ok(out)
