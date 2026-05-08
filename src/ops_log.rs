@@ -1,4 +1,5 @@
-use crate::redaction;
+#[path = "redaction.rs"]
+mod redaction;
 use std::fs::{self, OpenOptions};
 use std::io::{self, Write};
 use std::panic;
@@ -160,8 +161,7 @@ fn single_line(text: String) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{command_summary, run};
-    use crate::redaction;
+    use super::{command_summary, redaction, run};
 
     #[test]
     fn redacts_secret_like_tokens() {
