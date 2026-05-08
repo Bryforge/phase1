@@ -57,18 +57,19 @@ fn bleeding_version_and_roadmap_are_visible() {
         "version --compare\nroadmap\npipeline\nupdate protocol\nupdate latest --build\nupdate test quick\nsecurity\nwasm run game status\ndash\nexit\n",
     );
     assert!(output.contains("phase1 version report"));
-    assert!(output.contains("stable version  : 3.6.0"));
+    assert!(output.contains("stable version       : 4.0.0"));
+    assert!(output.contains("previous stable      : 3.10.9"));
+    assert!(output.contains("compatibility base   : 3.6.0"));
     assert!(
-        output.contains(&format!("current version : {EDGE_VERSION}")),
+        output.contains(&format!("current version      : {EDGE_VERSION}")),
         "current version report did not track package version:\n{output}"
     );
-    assert!(output.contains("version scheme  : MAJOR.MINOR.PATCH[-dev]"));
-    assert!(output.contains("protocol file   : UPDATE_PROTOCOL.md"));
+    assert!(output.contains("version scheme       : MAJOR.MINOR.PATCH[-dev]"));
+    assert!(output.contains("protocol file        : UPDATE_PROTOCOL.md"));
     assert!(output.contains("Update protocol and semantic patch versioning"));
     assert!(output.contains("Capability enforcement based on command metadata"));
     assert!(output.contains("WASM/WASI plugin runtime"));
     assert!(output.contains("WASI-lite plugin runtime"));
-    assert!(output.contains("metadata-backed capability enforcement"));
     assert!(output.contains("Phase1 Arena game workspace"));
     assert!(output.contains("phase1 game workspace"));
     assert!(output.contains("Configurable UI color palettes"));
@@ -78,13 +79,17 @@ fn bleeding_version_and_roadmap_are_visible() {
     assert!(output.contains("raw-mode input editor"));
     assert!(output.contains("Raw input editing"));
     assert!(output.contains("Full-screen TUI dashboard"));
+    assert!(output.contains("Edge operator deck UI overhaul"));
+    assert!(output.contains("Boot install dock"));
     assert!(output.contains("In-system latest updater"));
     assert!(output.contains("Developer test kit"));
     assert!(output.contains("developer test kit"));
     assert!(output.contains("update now --trust-host"));
     assert!(output.contains("update test quick --trust-host --execute"));
     assert!(output.contains("PHASE1 FULL-SCREEN TUI DASHBOARD"));
-    assert!(output.contains("panels  : core proc vfs net hw audit"));
+    assert!(output.contains("SIGNAL BUS"));
+    assert!(output.contains("TRUST BOUNDARY"));
+    assert!(output.contains("DEVELOPER COCKPIT"));
     assert!(output.contains("capability metadata : enforced"));
     assert!(output.contains("phase1 pipelines"));
     assert!(output.contains("phase1 update protocol"));
@@ -263,7 +268,7 @@ fn bleeding_edge_boot_switch_updates_ui_channel_and_version() {
         "sysinfo edge version missing:\n{output}"
     );
     assert!(
-        output.contains(&format!("PHASE1 DASHBOARD v{EDGE_VERSION}")),
+        output.contains(&format!("PHASE1 EDGE OPERATOR DECK v{EDGE_VERSION}")),
         "dash edge version missing:\n{output}"
     );
     assert!(
@@ -271,7 +276,7 @@ fn bleeding_edge_boot_switch_updates_ui_channel_and_version() {
         "edge theme not automatic:\n{output}"
     );
     assert!(
-        output.contains("display : bleeding-edge"),
+        output.contains("display : edge-operator-deck"),
         "banner edge preview missing:\n{output}"
     );
 }
