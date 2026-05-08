@@ -43,6 +43,9 @@ color_enabled() {
 fg() { if color_enabled; then printf '%s[38;5;%sm' "$(esc)" "$1"; fi; }
 bold() { if color_enabled; then printf '%s[1m' "$(esc)"; fi; }
 reset() { if color_enabled; then printf '%s[0m' "$(esc)"; fi; }
+phase1_version() {
+    awk -F '"' '/^version =/ { print $2; exit }' "$PHASE1_HOME/Cargo.toml" 2>/dev/null || printf '4.2.5-dev'
+}
 
 print_help() {
     cat <<'EOF'
@@ -66,20 +69,41 @@ Notes:
 EOF
 }
 
-premium_banner() {
+phase1_splash() {
+    VERSION=$(phase1_version)
     if color_enabled; then
         printf '%s]0;%s%s' "$(esc)" "$PHASE1_TERMINAL_TITLE" "$(printf '\007')"
     fi
     printf '\n'
     fg 51; bold; printf '╔══════════════════════════════════════════════════════════════╗\n'; reset
-    fg 45; bold; printf '║'; reset; fg 201; bold; printf '                    PHASE1 COMMAND CENTER                    '; reset; fg 45; bold; printf '║\n'; reset
-    fg 45; bold; printf '║'; reset; fg 118; printf '       premium launch • Gina AI • Base1 • quality gate        '; reset; fg 45; bold; printf '║\n'; reset
+    fg 45; bold; printf '║'; reset; fg 201; bold; printf '                           PHASE1                            '; reset; fg 45; bold; printf '║\n'; reset
+    fg 45; bold; printf '║'; reset; fg 118; printf '          advanced operator console • developer edge          '; reset; fg 45; bold; printf '║\n'; reset
     fg 51; bold; printf '╚══════════════════════════════════════════════════════════════╝\n'; reset
     fg 81; printf 'launch command : '; reset; bold; printf './start_phase1\n'; reset
+    fg 81; printf 'edge version   : '; reset; printf 'v%s\n' "$VERSION"
+    fg 81; printf 'stable track   : '; reset; printf 'v4.0.0\n'
+    fg 81; printf 'previous stable: '; reset; printf 'v3.10.9\n'
     fg 81; printf 'safe mode      : '; reset; printf '%s\n' "$PHASE1_SAFE_MODE"
     fg 81; printf 'theme          : '; reset; printf '%s\n' "$PHASE1_THEME"
     fg 81; printf 'gina           : '; reset; printf '%s\n' "enabled/offline"
     printf '\n'
+
+    SPIN='|/-\\'
+    IDX=0
+    for STEP in \
+        "preparing kernel interface" \
+        "mounting virtual filesystems" \
+        "checking trust boundary" \
+        "arming developer console"
+    do
+        IDX=$((IDX + 1))
+        MARK=$(printf '%s' "$SPIN" | cut -c "$IDX")
+        [ -n "$MARK" ] || MARK='*'
+        fg 118; printf ' %s ' "$MARK"; reset
+        printf '%s\n' "$STEP"
+        sleep 0.10 2>/dev/null || sleep 1
+    done
+    fg 118; printf ' ✓ '; reset; printf 'all sub-systems nominal\n\n'
 }
 
 load_config() {
@@ -169,7 +193,7 @@ if [ "$RUN_DOCTOR" = "1" ]; then
     exit 0
 fi
 
-premium_banner
+phase1_splash
 
 if [ "$RUN_BASE1" = "1" ]; then
     run_base1
