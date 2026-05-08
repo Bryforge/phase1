@@ -114,3 +114,30 @@ action  : try `sysinfo`
 
 This keeps typo recovery inspectable instead of mysterious.
 
+
+## Doctor
+
+`learn doctor` shows a quick health report for the local learning memory.
+
+Example:
+
+```text
+learn doctor
+```
+
+Expected shape:
+
+```text
+phase1 learn doctor
+status  : ok
+file    : phase1.learn
+storage : present
+privacy : local sanitized memory; no network, no cloud model
+notes   : 0/128
+rules   : 0/128
+commands: 2/256 unique, 2 observed
+failures: 0
+advice  : memory healthy
+```
+
+Use `learn suggest` when failures are reported.
