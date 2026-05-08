@@ -3,7 +3,9 @@
 /plugins/*.local.py
 phase1.conf
 phase1.state
+phase1.history
 .phase1_history
+phase1.learn
 *.tmp
 *.log
 
