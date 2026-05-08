@@ -90,7 +90,7 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("su", &[], "user", "su <user>", "Switch simulated user.", "user.switch"),
     cmd!("accounts", &["users"], "user", "accounts", "Explain and list simulated Unix accounts without real emails or credentials.", "user.read"),
     cmd!("history", &[], "user", "history [list|status|path|save|clear]", "Show shell command history and persistent-history status.", "user.read"),
-    cmd!("learn", &["memory"], "user", "learn [status|import-history|note|teach|ask|suggest|profile|forget|export]", "Use the local learning memory from inside Phase1 with sanitized notes, rules, command observations, and suggestions.", "learn.write"),
+    cmd!("learn", &["memory"], "user", "learn [status|import-history|note|teach|ask|explain|suggest|profile|forget|export]", "Use the local learning memory from inside Phase1 with sanitized notes, rules, command observations, and suggestions.", "learn.write"),
     cmd!("security", &["sec", "policy"], "user", "security", "Show safe mode, host tool gates, persistence, and privacy status.", "user.read"),
     cmd!("theme", &["style"], "user", "theme [show|list|rainbow|matrix|cyber|amber|ice|synthwave|crimson|mono|ascii|reset]", "Switch or inspect selectable terminal palettes. Rainbow remains the default.", "user.env"),
     cmd!("banner", &["splash"], "user", "banner [mobile|desktop|mono|rainbow|matrix|cyber|amber|ice|synthwave|crimson|ascii|safe|host|persist]", "Preview boot splash profile and color palette choices without changing saved config.", "user.read"),

@@ -54,6 +54,10 @@ pub fn run(shell: &mut Phase1Shell, args: &[String]) -> String {
             args.remove(0);
             memory.ask(&args.join(" "))
         }
+        Some("explain") => {
+            args.remove(0);
+            explain_command(&args.join(" "))
+        }
         Some("note") => {
             args.remove(0);
             let result = memory.add_note(&args.join(" "));
@@ -516,6 +520,45 @@ fn is_safe_command_name(command: &str) -> bool {
             .all(|ch| ch.is_ascii_alphanumeric() || matches!(ch, '-' | '_'))
 }
 
+fn explain_command(raw: &str) -> String {
+    let input = raw.trim();
+    if input.is_empty() {
+        return "learn: usage: learn explain <command>\n".to_string();
+    }
+
+    let Some(normalized) = command_name(input) else {
+        return format!(
+            "phase1 learn explain\ninput   : {input}\nmatch   : none\nreason  : could not identify a safe command name\naction  : run `help`\n"
+        );
+    };
+
+    if let Some(canonical) = registry::canonical_name(&normalized) {
+        return format!(
+            "phase1 learn explain\ninput   : {input}\nmatch   : {canonical}\nreason  : exact command or alias match\naction  : run `{canonical}`\n"
+        );
+    }
+
+    if let Some(candidate) = closest_command(&normalized) {
+        let distance = edit_distance(&normalized, candidate);
+        let threshold = typo_threshold(&normalized);
+        return format!(
+            "phase1 learn explain\ninput   : {input}\nmatch   : {candidate}\nreason  : edit distance {distance} within typo threshold {threshold}\naction  : try `{candidate}`\n"
+        );
+    }
+
+    let prefix = normalized.chars().take(2).collect::<String>();
+    let action = if prefix.is_empty() {
+        "run `help`".to_string()
+    } else {
+        format!("run `complete {prefix}` or `help`")
+    };
+
+    format!(
+        "phase1 learn explain\ninput   : {input}\nmatch   : none\nreason  : no close command found within typo threshold {}\naction  : {action}\n",
+        typo_threshold(&normalized)
+    )
+}
+
 fn failure_recovery(command: &str) -> String {
     if let Some(candidate) = closest_command(command) {
         return format!("try `{candidate}`; it looks closest to `{command}`");
@@ -692,7 +735,7 @@ fn help() -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{auto_observe_at, command_name, Memory};
+    use super::{auto_observe_at, command_name, explain_command, Memory};
     use std::collections::VecDeque;
     use std::fs;
     use std::time::{SystemTime, UNIX_EPOCH};
@@ -799,6 +842,15 @@ mod tests {
         let suggestion = memory.suggest();
         assert!(suggestion.contains("focus: systinfo failed 1 time"));
         assert!(suggestion.contains("try `sysinfo`; it looks closest to `systinfo`"));
+    }
+
+    #[test]
+    fn explain_describes_typo_recovery() {
+        let explanation = explain_command("systinfo");
+        assert!(explanation.contains("input   : systinfo"));
+        assert!(explanation.contains("match   : sysinfo"));
+        assert!(explanation.contains("edit distance 1 within typo threshold 2"));
+        assert!(explanation.contains("action  : try `sysinfo`"));
     }
 
     #[test]
