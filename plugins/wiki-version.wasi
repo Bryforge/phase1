@@ -1,6 +1,7 @@
 name=wiki-version
 capability=none
 stdout=PHASE1 WIKI: VERSION GUIDE
+stdout=Edge build: v4.1.0-dev
 stdout=Stable release: v4.0.0
 stdout=Previous stable: v3.10.9
 stdout=Compatibility base: v3.6.0
@@ -18,5 +19,8 @@ stdout=
 stdout=STABLE RULE
 stdout=  Stable builds have no -dev suffix and must pass formatting, compile, Clippy, tests, audit, and dependency policy checks.
 stdout=
+stdout=EDGE RULE
+stdout=  Edge builds keep the -dev suffix and are used for post-v4.0.0 work before stable promotion.
+stdout=
 stdout=RELEASE RULE
-stdout=  Tag v4.0.0 only after the stable release pull request is green and merged.
+stdout=  Tag v4.0.0 from release/v4.0.0 after the stable release branch is green.
