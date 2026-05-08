@@ -133,7 +133,11 @@ fn guarded_execute(request: UpdateRequest) -> String {
     if !crate::policy::privileged_host_tools_allowed() {
         let denial = crate::policy::capability_denial_message("update", "net.admin")
             .unwrap_or_else(|| crate::policy::host_denial_message("update"));
-        return format!("update: {}\n{}", denial, plan(request.target, request.build));
+        return format!(
+            "update: {}\n{}",
+            denial,
+            plan(request.target, request.build)
+        );
     }
 
     let target = request.target;
