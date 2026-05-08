@@ -165,7 +165,10 @@ mod tests {
 
     #[test]
     fn redacts_secret_like_tokens() {
-        assert_eq!(redaction::redact_line("token=example"), "token=[redacted-secret]");
+        assert_eq!(
+            redaction::redact_line("token=example"),
+            "token=[redacted-secret]"
+        );
         assert_eq!(redaction::redact_line("ghp_example"), "[redacted-token]");
         assert_eq!(
             redaction::redact_line("https://user:pass@example.com/repo.git"),
