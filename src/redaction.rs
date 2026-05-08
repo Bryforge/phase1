@@ -51,7 +51,7 @@ pub fn has_sensitive_marker(raw: &str) -> bool {
             .any(|prefix| lower.contains(prefix))
         || lower.contains("bearer ")
         || lower.contains("authorization:")
-        || lower.contains("-----begin ") && lower.contains("private key-----")
+        || contains_private_key_marker(&lower)
         || contains_url_credentials(raw)
 }
 
@@ -59,15 +59,43 @@ pub fn redact_multiline(raw: &str) -> String {
     if raw.is_empty() {
         return String::new();
     }
-    let mut out = raw.lines().map(redact_line).collect::<Vec<_>>().join("\n");
-    if raw.ends_with('\n') {
-        out.push('\n');
+
+    let mut out = Vec::new();
+    let mut inside_private_key = false;
+    let mut emitted_private_key_marker = false;
+
+    for line in raw.lines() {
+        let lower = line.to_ascii_lowercase();
+        if contains_private_key_marker(&lower) {
+            inside_private_key = true;
+            if !emitted_private_key_marker {
+                out.push("[redacted-private-key]".to_string());
+                emitted_private_key_marker = true;
+            }
+            continue;
+        }
+        if inside_private_key {
+            if lower.contains("-----end ") && lower.contains("private key-----") {
+                inside_private_key = false;
+                emitted_private_key_marker = false;
+            }
+            continue;
+        }
+        out.push(redact_line(line));
     }
-    out
+
+    let mut text = out.join("\n");
+    if raw.ends_with('\n') {
+        text.push('\n');
+    }
+    text
 }
 
 pub fn redact_line(raw: &str) -> String {
-    let no_controls = raw.chars().filter(|ch| !ch.is_control() || *ch == '\t').collect::<String>();
+    let no_controls = raw
+        .chars()
+        .filter(|ch| !ch.is_control() || *ch == '\t')
+        .collect::<String>();
     if contains_private_key_marker(&no_controls) {
         return "[redacted-private-key]".to_string();
     }
@@ -117,7 +145,11 @@ fn redact_tokens(line: &str) -> String {
         }
 
         let lower = token.to_ascii_lowercase();
-        if is_secret_flag(&lower) {
+        if let Some(flagged) = redact_flag_assignment(token, &lower) {
+            out.push(flagged);
+            continue;
+        }
+        if is_exact_secret_flag(&lower) {
             out.push(token.to_string());
             redact_next = true;
             continue;
@@ -153,6 +185,15 @@ fn redact_token(token: &str) -> String {
         return redact_assignment(token);
     }
     token.to_string()
+}
+
+fn redact_flag_assignment(token: &str, lower: &str) -> Option<String> {
+    let (flag, _) = lower.split_once('=')?;
+    if !is_exact_secret_flag(flag) {
+        return None;
+    }
+    let delimiter = token.find('=')?;
+    Some(format!("{}=[redacted-secret]", &token[..delimiter]))
 }
 
 fn redact_assignment(token: &str) -> String {
@@ -203,8 +244,8 @@ fn is_sensitive_key(key: &str) -> bool {
     SENSITIVE_KEYS.iter().any(|candidate| key.ends_with(candidate))
 }
 
-fn is_secret_flag(lower: &str) -> bool {
-    SECRET_FLAGS.iter().any(|flag| lower == *flag || lower.starts_with(&format!("{flag}=")))
+fn is_exact_secret_flag(lower: &str) -> bool {
+    SECRET_FLAGS.iter().any(|flag| lower == *flag)
 }
 
 fn contains_private_key_marker(raw: &str) -> bool {
@@ -258,11 +299,24 @@ mod tests {
     }
 
     #[test]
-    fn redacts_private_key_markers_without_echoing_material() {
-        let out = redact_multiline("ok\n-----BEGIN PRIVATE KEY-----\nsecret-body\n");
+    fn redacts_inline_cli_flag_values() {
+        let out = redact_line("login --token=ghp_secret --password=hunter2");
+        assert!(out.contains("--token=[redacted-secret]"));
+        assert!(out.contains("--password=[redacted-secret]"));
+        assert!(!out.contains("ghp_secret"));
+        assert!(!out.contains("hunter2"));
+    }
+
+    #[test]
+    fn redacts_private_key_blocks_without_echoing_material() {
+        let out = redact_multiline(
+            "ok\n-----BEGIN PRIVATE KEY-----\nsecret-body\n-----END PRIVATE KEY-----\ndone\n",
+        );
         assert!(out.contains("ok"));
+        assert!(out.contains("done"));
         assert!(out.contains("[redacted-private-key]"));
         assert!(!out.contains("BEGIN PRIVATE KEY"));
+        assert!(!out.contains("secret-body"));
     }
 
     #[test]
