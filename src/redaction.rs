@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 const SENSITIVE_KEYS: &[&str] = &[
     "password",
     "passwd",
