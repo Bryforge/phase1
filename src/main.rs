@@ -368,6 +368,7 @@ fn execute_chain(
         };
         if should_run {
             last_status = execute_one(shell, boot_config, history_store, &segment.command)?;
+            learn::auto_observe(&segment.command, last_status);
         }
         if shell
             .env

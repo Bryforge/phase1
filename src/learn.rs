@@ -105,6 +105,28 @@ fn format_memory_load_warning(path: &Path, err: &io::Error) {
     eprintln!("learn: could not load {}: {err}", path.display());
 }
 
+pub fn auto_observe(line: &str, succeeded: bool) {
+    let path = learn_path();
+    let _ = auto_observe_at(&path, line, succeeded);
+}
+
+fn auto_observe_at(path: &Path, line: &str, succeeded: bool) -> Result<(), String> {
+    let trimmed = line.trim();
+    if !should_auto_observe(trimmed) {
+        return Ok(());
+    }
+
+    let mut memory = Memory::load(path).map_err(|err| err.to_string())?;
+    let status = if succeeded { "ok" } else { "fail" };
+    memory.observe(trimmed, status)?;
+    memory.save(path).map_err(|err| err.to_string())
+}
+
+fn should_auto_observe(line: &str) -> bool {
+    let first = line.split_whitespace().next().unwrap_or("");
+    !first.is_empty() && !matches!(first, "learn" | "memory")
+}
+
 fn save_result(memory: &Memory, path: &Path, result: Result<String, String>) -> String {
     match result {
         Ok(message) => match memory.save(path) {
@@ -563,7 +585,7 @@ fn help() -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{command_name, Memory};
+    use super::{auto_observe_at, command_name, Memory};
     use std::collections::VecDeque;
     use std::fs;
     use std::time::{SystemTime, UNIX_EPOCH};
@@ -625,6 +647,28 @@ mod tests {
         let profile = memory.profile();
         assert!(profile.contains("avim"));
         assert!(profile.contains("sysinfo"));
+        let _ = fs::remove_file(path);
+    }
+
+    #[test]
+    fn auto_observe_records_command_outcomes_without_learning_itself() {
+        let path = temp_path("auto-observe");
+        let _ = fs::remove_file(&path);
+
+        auto_observe_at(&path, "sysinfo", true).unwrap();
+        auto_observe_at(&path, "unknown-tool", false).unwrap();
+        auto_observe_at(&path, "learn status", true).unwrap();
+        auto_observe_at(&path, "memory status", true).unwrap();
+
+        let memory = Memory::load(&path).unwrap();
+        assert_eq!(memory.commands.get("sysinfo").map(|stat| stat.ok), Some(1));
+        assert_eq!(
+            memory.commands.get("unknown-tool").map(|stat| stat.fail),
+            Some(1)
+        );
+        assert!(!memory.commands.contains_key("learn"));
+        assert!(!memory.commands.contains_key("memory"));
+
         let _ = fs::remove_file(path);
     }
 
