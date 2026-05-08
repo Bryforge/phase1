@@ -91,3 +91,26 @@ hlep     -> help
 
 The match is local and heuristic. It uses command metadata already present in Phase1; it does not call an external service.
 
+
+## Explain
+
+`learn explain <command>` shows why Phase1 maps an input to a likely command correction.
+
+Example:
+
+```text
+learn explain systinfo
+```
+
+Expected shape:
+
+```text
+phase1 learn explain
+input   : systinfo
+match   : sysinfo
+reason  : edit distance 1 within typo threshold 2
+action  : try `sysinfo`
+```
+
+This keeps typo recovery inspectable instead of mysterious.
+
