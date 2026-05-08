@@ -30,8 +30,14 @@ fn cargo_metadata_matches_current_track() {
             cargo_lock.contains("version = \"4.0.0\""),
             "Cargo.lock must be promoted to {STABLE_PACKAGE_VERSION} for stable"
         );
-        assert!(!cargo_toml.contains("-dev"), "stable Cargo.toml must not contain a dev suffix");
-        assert!(!cargo_lock.contains("-dev"), "stable Cargo.lock must not contain a dev suffix");
+        assert!(
+            !cargo_toml.contains("-dev"),
+            "stable Cargo.toml must not contain a dev suffix"
+        );
+        assert!(
+            !cargo_lock.contains("-dev"),
+            "stable Cargo.lock must not contain a dev suffix"
+        );
     }
 }
 
@@ -39,8 +45,14 @@ fn cargo_metadata_matches_current_track() {
 fn release_metadata_is_consistent_across_public_docs() {
     for path in release_facing_files() {
         let text = read(path);
-        assert!(text.contains(STABLE_VERSION), "{path} is missing stable version {STABLE_VERSION}");
-        assert!(text.contains(PREVIOUS_STABLE), "{path} is missing previous stable {PREVIOUS_STABLE}");
+        assert!(
+            text.contains(STABLE_VERSION),
+            "{path} is missing stable version {STABLE_VERSION}"
+        );
+        assert!(
+            text.contains(PREVIOUS_STABLE),
+            "{path} is missing previous stable {PREVIOUS_STABLE}"
+        );
     }
 }
 
@@ -73,18 +85,36 @@ fn compatibility_base_remains_documented() {
         "plugins/wiki-version.wasi",
     ] {
         let text = read(path);
-        assert!(text.contains(COMPATIBILITY_BASE), "{path} is missing compatibility base {COMPATIBILITY_BASE}");
+        assert!(
+            text.contains(COMPATIBILITY_BASE),
+            "{path} is missing compatibility base {COMPATIBILITY_BASE}"
+        );
     }
 }
 
 #[test]
 fn stale_release_lines_are_removed_from_release_facing_files() {
-    for path in release_facing_files().into_iter().chain(["Cargo.toml", "Cargo.lock", "start_phase1"]) {
+    for path in release_facing_files()
+        .into_iter()
+        .chain(["Cargo.toml", "Cargo.lock", "start_phase1"])
+    {
         let text = read(path);
-        assert!(!text.contains("v3.10.7"), "{path} still references old stable v3.10.7");
-        assert!(!text.contains("v3.10.9-dev"), "{path} still references old edge v3.10.9-dev");
-        assert!(!text.contains("v4.0.0-dev"), "{path} still references development version v4.0.0-dev");
-        assert!(!text.contains("4.0.0-dev"), "{path} still references development version 4.0.0-dev");
+        assert!(
+            !text.contains("v3.10.7"),
+            "{path} still references old stable v3.10.7"
+        );
+        assert!(
+            !text.contains("v3.10.9-dev"),
+            "{path} still references old edge v3.10.9-dev"
+        );
+        assert!(
+            !text.contains("v4.0.0-dev"),
+            "{path} still references development version v4.0.0-dev"
+        );
+        assert!(
+            !text.contains("4.0.0-dev"),
+            "{path} still references development version 4.0.0-dev"
+        );
     }
 }
 
