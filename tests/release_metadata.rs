@@ -86,9 +86,9 @@ fn compatibility_base_remains_documented() {
 #[test]
 fn website_demo_reports_current_stable_track() {
     let js = read("site.js");
-    assert!(js.contains("stable: v4.1.0"));
-    assert!(js.contains("previous stable: v4.0.0"));
-    assert!(!js.contains("stable: v4.0.0"));
+    assert!(has_line(&js, "    \"stable: v4.1.0\","));
+    assert!(has_line(&js, "    \"previous stable: v4.0.0\","));
+    assert!(!has_line(&js, "    \"stable: v4.0.0\","));
 }
 
 #[test]
@@ -119,6 +119,10 @@ fn edge_facing_files() -> [&'static str; 3] {
 
 fn release_facing_files() -> [&'static str; 3] {
     ["README.md", "RELEASE_v4.1.0.md", "site.js"]
+}
+
+fn has_line(text: &str, expected: &str) -> bool {
+    text.lines().any(|line| line == expected)
 }
 
 fn read(path: &str) -> String {
