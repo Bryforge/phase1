@@ -77,6 +77,7 @@ phase1_splash() {
     printf '\n'
     fg 51; bold; printf '╔══════════════════════════════════════════════════════════════╗\n'; reset
     fg 45; bold; printf '║'; reset; fg 201; bold; printf '                           PHASE1                            '; reset; fg 45; bold; printf '║\n'; reset
+    fg 45; bold; printf '║'; reset; fg 196; bold; printf '                    こんにちは、ハッカー！                    '; reset; fg 45; bold; printf '║\n'; reset
     fg 45; bold; printf '║'; reset; fg 118; printf '          advanced operator console • developer edge          '; reset; fg 45; bold; printf '║\n'; reset
     fg 51; bold; printf '╚══════════════════════════════════════════════════════════════╝\n'; reset
     fg 81; printf 'launch command : '; reset; bold; printf './start_phase1\n'; reset
