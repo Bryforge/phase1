@@ -65,3 +65,10 @@ cargo test learn --all-targets
 cargo test registry --all-targets
 sh scripts/phase1-learn-shell-smoke.sh
 ```
+
+## Automatic observation
+
+Phase1 can automatically observe normal shell commands after they run. Known dispatcher commands are recorded as `ok`, unknown commands are recorded as `fail`, and `learn` / `memory` commands are ignored so the learning system does not train on itself.
+
+This is still local-only and heuristic. It does not send data to a network service, cloud model, or external API.
+
