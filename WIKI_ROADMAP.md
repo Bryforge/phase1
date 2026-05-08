@@ -237,3 +237,7 @@ Start with **PR B1: phase1 project page**.
 Reason:
 
 The product page clarifies what phase1 is before the company page expands Bryforge. After that, build the company page so Bryforge has a professional identity separate from the phase1 technical pitch.
+
+## Development checkpoint rule
+
+Feature milestones must update roadmap and planned implementation docs when they complete planned work or change direction. Review LEARNING.md, WIKI_ROADMAP.md, docs/website/NEXT_ROADMAP_IMPLEMENTATION.md, EDGE.md, and CHANGELOG.md. If no roadmap update is needed, say why in the PR body.

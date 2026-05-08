@@ -44,3 +44,8 @@ Release focus: roadmap foundation, release readiness, and demo-quality operator 
 - End-to-end smoke test harness.
 - macOS Wi-Fi scan fallbacks.
 - Roadmap groundwork for shell, kernel, security, pipelines, plugins, and TUI.
+
+## Development checkpoint - Learn system
+
+- Recorded the completed learn-system milestone through PR #48.
+- Added a roadmap maintenance rule for future feature PRs.
