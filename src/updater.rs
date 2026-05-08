@@ -130,12 +130,10 @@ fn guarded_execute(request: UpdateRequest) -> String {
             plan(request.target, request.build)
         );
     }
-    if !crate::policy::host_tools_allowed() {
-        return format!(
-            "update: {}\n{}",
-            crate::policy::host_denial_message("update"),
-            plan(request.target, request.build)
-        );
+    if !crate::policy::privileged_host_tools_allowed() {
+        let denial = crate::policy::capability_denial_message("update", "net.admin")
+            .unwrap_or_else(|| crate::policy::host_denial_message("update"));
+        return format!("update: {}\n{}", denial, plan(request.target, request.build));
     }
 
     let target = request.target;
@@ -489,10 +487,12 @@ mod tests {
     #[test]
     fn update_now_trust_still_requires_safe_mode_off() {
         std::env::remove_var("PHASE1_SAFE_MODE");
-        std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
+        std::env::set_var("PHASE1_ALLOW_HOST_TOOLS", "1");
         let out = run(&["now".to_string(), "--trust-host".to_string()]);
-        assert!(out.contains("disabled by safe boot profile"));
+        assert!(out.contains("blocked by safe boot profile"));
+        assert!(out.contains("privileged host changes require safe mode off"));
         assert!(out.contains("update latest --trust-host --execute --build"));
+        std::env::remove_var("PHASE1_SAFE_MODE");
         std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
     }
 
