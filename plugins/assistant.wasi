@@ -1,0 +1,9 @@
+name=Assistant
+capability=ai.offline
+stdout=assistant: Gina alias active inside Phase1.
+stdout=gina: Phase1 AI operations assistant is the primary offline advisor.
+stdout=mode: offline deterministic guidance; no external provider calls by default.
+stdout=sandbox: no host shell, no host network, no host filesystem passthrough.
+stdout=security: safe mode first, redaction first, least privilege first, no credential storage.
+stdout=launch: use ./start_phase1 --gina or phase1-terminal gina for the guided operations path.
+stdout=status: ready; alias; offline; sandboxed; operations-focused.
