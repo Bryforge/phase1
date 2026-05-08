@@ -44,13 +44,6 @@ while [ "$#" -gt 0 ]; do
 done
 
 say() { printf '%s\n' "$*"; }
-do_write() {
-    if [ "$DRY_RUN" = "1" ]; then
-        say "dry-run: $*"
-    else
-        "$@"
-    fi
-}
 
 write_config() {
     if [ "$DRY_RUN" = "1" ]; then
@@ -90,6 +83,14 @@ SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 exec "$SCRIPT_DIR/start_phase1" "$@"
 EOF
     chmod 0755 "$BIN_DIR/phase1-terminal"
+}
+
+make_launchers_executable() {
+    if [ "$DRY_RUN" = "1" ]; then
+        say "dry-run: chmod +x start_phase1 scripts/configure-phase1.sh"
+        return 0
+    fi
+    chmod 0755 "$ROOT_DIR/start_phase1" "$ROOT_DIR/scripts/configure-phase1.sh"
 }
 
 validate_files() {
@@ -136,6 +137,7 @@ say "terminal   : local wrapper enabled"
 
 write_config
 install_terminal_wrapper
+make_launchers_executable
 validate_files
 
 if [ "$RUN_BASE1" = "1" ]; then
