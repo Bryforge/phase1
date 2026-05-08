@@ -1,7 +1,11 @@
 const canvas = document.getElementById("space");
-const ctx = canvas.getContext("2d", { alpha: true });
-
+const ctx = canvas?.getContext("2d", { alpha: true });
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const EDGE_VERSION = "v4.2.6-dev";
+const STABLE_VERSION = "v4.0.0";
+const PREVIOUS_STABLE = "v3.10.9";
+const COMPATIBILITY_BASE = "v3.6.0";
+
 let width = 0;
 let height = 0;
 let stars = [];
@@ -10,10 +14,19 @@ let animationFrame = 0;
 let resizeTimer = 0;
 let running = false;
 
+function viewportWidth() {
+  return Math.max(320, Math.min(window.innerWidth || 0, document.documentElement.clientWidth || 0));
+}
+
+function viewportHeight() {
+  return Math.max(480, window.innerHeight || document.documentElement.clientHeight || 0);
+}
+
 function resize() {
-  const ratio = Math.min(window.devicePixelRatio || 1, width >= 1200 ? 1.5 : 2);
-  width = window.innerWidth;
-  height = window.innerHeight;
+  if (!canvas || !ctx) return;
+  width = viewportWidth();
+  height = viewportHeight();
+  const ratio = Math.min(window.devicePixelRatio || 1, width >= 1200 ? 1.5 : 1.75);
   canvas.width = Math.floor(width * ratio);
   canvas.height = Math.floor(height * ratio);
   canvas.style.width = `${width}px`;
@@ -21,11 +34,11 @@ function resize() {
   ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
 
   const desktop = width >= 1024;
-  const density = prefersReducedMotion ? 16000 : desktop ? 8800 : 6800;
-  const cap = prefersReducedMotion ? 80 : desktop ? 180 : 210;
+  const density = prefersReducedMotion ? 18000 : desktop ? 9200 : 7600;
+  const cap = prefersReducedMotion ? 70 : desktop ? 170 : 150;
   const starCount = Math.min(cap, Math.floor((width * height) / density));
   stars = Array.from({ length: starCount }, () => makeStar(true));
-  comets = Array.from({ length: prefersReducedMotion ? 0 : desktop ? 2 : 3 }, (_, idx) => makeComet(idx));
+  comets = Array.from({ length: prefersReducedMotion ? 0 : desktop ? 2 : 1 }, (_, idx) => makeComet(idx));
 }
 
 function scheduleResize() {
@@ -37,9 +50,9 @@ function makeStar(randomizeY = false) {
   return {
     x: Math.random() * width,
     y: randomizeY ? Math.random() * height : -10,
-    r: Math.random() * 1.8 + 0.25,
-    vx: (Math.random() - 0.5) * 0.12,
-    vy: Math.random() * 0.28 + 0.04,
+    r: Math.random() * 1.6 + 0.25,
+    vx: (Math.random() - 0.5) * 0.1,
+    vy: Math.random() * 0.22 + 0.04,
     hue: Math.random() * 360,
     pulse: Math.random() * Math.PI * 2,
   };
@@ -48,11 +61,11 @@ function makeStar(randomizeY = false) {
 function makeComet(idx = 0) {
   return {
     x: Math.random() * width,
-    y: Math.random() * height * 0.55,
-    vx: 0.65 + idx * 0.2,
-    vy: 0.18 + idx * 0.05,
+    y: Math.random() * height * 0.5,
+    vx: 0.58 + idx * 0.18,
+    vy: 0.16 + idx * 0.04,
     hue: [190, 285, 122][idx % 3],
-    delay: Math.random() * 800,
+    delay: Math.random() * 700,
   };
 }
 
@@ -80,11 +93,9 @@ function drawStar(star, time) {
     star.pulse += 0.018;
     star.hue = (star.hue + 0.08) % 360;
   }
-
   if (star.y > height + 10 || star.x < -10 || star.x > width + 10) {
     Object.assign(star, makeStar(false));
   }
-
   const alpha = 0.38 + Math.sin(star.pulse + time * 0.001) * 0.28;
   ctx.beginPath();
   ctx.fillStyle = `hsla(${star.hue}, 95%, 72%, ${Math.max(0.18, alpha)})`;
@@ -98,22 +109,18 @@ function drawStar(star, time) {
 function drawComet(comet) {
   comet.delay -= 1;
   if (comet.delay > 0) return;
-
   comet.x += comet.vx;
   comet.y += comet.vy;
-
-  const trail = 92;
+  const trail = width < 520 ? 58 : 92;
   const gradient = ctx.createLinearGradient(comet.x, comet.y, comet.x - trail, comet.y - trail * 0.28);
   gradient.addColorStop(0, `hsla(${comet.hue}, 100%, 70%, 0.95)`);
   gradient.addColorStop(1, `hsla(${comet.hue}, 100%, 70%, 0)`);
-
   ctx.strokeStyle = gradient;
-  ctx.lineWidth = 2;
+  ctx.lineWidth = width < 520 ? 1.4 : 2;
   ctx.beginPath();
   ctx.moveTo(comet.x, comet.y);
   ctx.lineTo(comet.x - trail, comet.y - trail * 0.28);
   ctx.stroke();
-
   if (comet.x > width + 130 || comet.y > height + 80) {
     comet.x = -40 - Math.random() * width * 0.3;
     comet.y = Math.random() * height * 0.45;
@@ -122,26 +129,16 @@ function drawComet(comet) {
 }
 
 function frame(time) {
-  if (!running) return;
-
+  if (!running || !ctx) return;
   ctx.clearRect(0, 0, width, height);
   drawNebula(time);
-
-  for (const star of stars) {
-    drawStar(star, time);
-  }
-
-  if (!prefersReducedMotion) {
-    for (const comet of comets) {
-      drawComet(comet);
-    }
-  }
-
+  for (const star of stars) drawStar(star, time);
+  if (!prefersReducedMotion) for (const comet of comets) drawComet(comet);
   animationFrame = requestAnimationFrame(frame);
 }
 
 function startAnimation() {
-  if (running) return;
+  if (running || !ctx) return;
   running = true;
   animationFrame = requestAnimationFrame(frame);
 }
@@ -152,24 +149,18 @@ function stopAnimation() {
 }
 
 function handleVisibilityChange() {
-  if (document.hidden) {
-    stopAnimation();
-  } else {
-    startAnimation();
-  }
+  document.hidden ? stopAnimation() : startAnimation();
 }
 
 function setupNavigation() {
   const toggle = document.querySelector(".nav-toggle");
   const links = document.getElementById("nav-links");
   if (!toggle || !links) return;
-
   toggle.addEventListener("click", () => {
     const expanded = toggle.getAttribute("aria-expanded") === "true";
     toggle.setAttribute("aria-expanded", String(!expanded));
     links.classList.toggle("is-open", !expanded);
   });
-
   links.addEventListener("click", (event) => {
     if (event.target instanceof HTMLAnchorElement) {
       toggle.setAttribute("aria-expanded", "false");
@@ -184,7 +175,6 @@ function setupReveals() {
     revealEls.forEach((el) => el.classList.add("is-visible"));
     return;
   }
-
   const observer = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {
@@ -196,7 +186,6 @@ function setupReveals() {
     },
     { threshold: 0.14 },
   );
-
   revealEls.forEach((el) => observer.observe(el));
 }
 
@@ -211,10 +200,10 @@ const demoResponses = {
   ].join("\n"),
   version: [
     "phase1 // advanced operator kernel",
-    "edge: v4.1.0-dev",
-    "stable: v4.0.0",
-    "previous stable: v3.10.9",
-    "compatibility base: v3.6.0",
+    `edge: ${EDGE_VERSION}`,
+    `stable: ${STABLE_VERSION}`,
+    `previous stable: ${PREVIOUS_STABLE}`,
+    `compatibility base: ${COMPATIBILITY_BASE}`,
     "language: Rust",
   ].join("\n"),
   sysinfo: [
@@ -228,7 +217,7 @@ const demoResponses = {
   "wiki-quick": [
     "wiki-quick:",
     "  1. clone the repo",
-    "  2. choose release/v4.0.0 for stable or edge/v4.1.0-dev for bleeding edge",
+    "  2. choose release/v4.0.0 for stable or edge/v4.2.6-dev for bleeding edge",
     "  3. run cargo run",
     "  4. type help, security, sysinfo, wiki",
     "  5. keep safe mode on unless you trust the host workflow",
@@ -249,32 +238,27 @@ function setupTerminalDemo() {
   const output = document.getElementById("terminal-output");
   const quickCommands = document.querySelectorAll("[data-command]");
   if (!form || !input || !output) return;
-
   const history = [];
-
   const print = (text) => {
     output.textContent = text;
     output.scrollTop = output.scrollHeight;
   };
-
   const append = (command, response) => {
     if (command === "clear") {
       history.length = 0;
       print("phase1 demo reset. type help to begin.");
       return;
     }
-
     history.push(`phase1://root ~ # ${command}`);
     history.push(response || `unknown command: ${command}\ntype help for available demo commands.`);
     print(history.slice(-18).join("\n\n"));
   };
-
   print([
     "phase1 browser console demo",
+    `edge: ${EDGE_VERSION} // stable: ${STABLE_VERSION}`,
     "safe mode: on // host tools: guarded",
     "type help, version, sysinfo, wiki-quick, security, or clear",
   ].join("\n"));
-
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     const command = input.value.trim().toLowerCase();
@@ -282,7 +266,6 @@ function setupTerminalDemo() {
     append(command, demoResponses[command]);
     input.value = "";
   });
-
   quickCommands.forEach((button) => {
     button.addEventListener("click", () => {
       const command = button.getAttribute("data-command") || "help";
@@ -297,5 +280,6 @@ setupReveals();
 setupTerminalDemo();
 startAnimation();
 window.addEventListener("resize", scheduleResize, { passive: true });
+window.addEventListener("orientationchange", scheduleResize, { passive: true });
 document.addEventListener("visibilitychange", handleVisibilityChange);
 window.addEventListener("pagehide", stopAnimation);

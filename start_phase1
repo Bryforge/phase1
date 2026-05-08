@@ -44,7 +44,7 @@ fg() { if color_enabled; then printf '%s[38;5;%sm' "$(esc)" "$1"; fi; }
 bold() { if color_enabled; then printf '%s[1m' "$(esc)"; fi; }
 reset() { if color_enabled; then printf '%s[0m' "$(esc)"; fi; }
 phase1_version() {
-    awk -F '"' '/^version =/ { print $2; exit }' "$PHASE1_HOME/Cargo.toml" 2>/dev/null || printf '4.2.5-dev'
+    awk -F '"' '/^version =/ { print $2; exit }' "$PHASE1_HOME/Cargo.toml" 2>/dev/null || printf '4.2.6-dev'
 }
 
 print_help() {
