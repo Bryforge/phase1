@@ -517,6 +517,10 @@ fn is_safe_command_name(command: &str) -> bool {
 }
 
 fn failure_recovery(command: &str) -> String {
+    if let Some(candidate) = closest_command(command) {
+        return format!("try `{candidate}`; it looks closest to `{command}`");
+    }
+
     let prefix = command.chars().take(2).collect::<String>();
     let probe = if prefix.is_empty() {
         command.chars().take(1).collect::<String>()
@@ -536,6 +540,53 @@ fn failure_recovery(command: &str) -> String {
     } else {
         "run `help` to find a valid command".to_string()
     }
+}
+
+fn closest_command(command: &str) -> Option<&'static str> {
+    let normalized = command_name(command)?;
+    let threshold = typo_threshold(&normalized);
+
+    registry::COMMANDS
+        .iter()
+        .flat_map(|spec| std::iter::once(spec.name).chain(spec.aliases.iter().copied()))
+        .filter(|candidate| *candidate != normalized.as_str())
+        .map(|candidate| (candidate, edit_distance(&normalized, candidate)))
+        .filter(|(_, distance)| *distance <= threshold)
+        .min_by(|left, right| {
+            left.1
+                .cmp(&right.1)
+                .then_with(|| left.0.len().cmp(&right.0.len()))
+                .then_with(|| left.0.cmp(right.0))
+        })
+        .map(|(candidate, _)| candidate)
+}
+
+fn typo_threshold(command: &str) -> usize {
+    match command.len() {
+        0..=4 => 2,
+        5..=10 => 2,
+        _ => 3,
+    }
+}
+
+fn edit_distance(left: &str, right: &str) -> usize {
+    let left_chars: Vec<char> = left.chars().collect();
+    let right_chars: Vec<char> = right.chars().collect();
+    let mut previous: Vec<usize> = (0..=right_chars.len()).collect();
+
+    for (left_idx, left_ch) in left_chars.iter().enumerate() {
+        let mut current = vec![left_idx + 1; right_chars.len() + 1];
+        for (right_idx, right_ch) in right_chars.iter().enumerate() {
+            let cost = if left_ch == right_ch { 0 } else { 1 };
+            let substitution = previous[right_idx] + cost;
+            let insertion = current[right_idx] + 1;
+            let deletion = previous[right_idx + 1] + 1;
+            current[right_idx + 1] = substitution.min(insertion).min(deletion);
+        }
+        previous = current;
+    }
+
+    previous[right_chars.len()]
 }
 
 fn next_step(command: &str) -> &'static str {
@@ -738,6 +789,16 @@ mod tests {
         assert!(suggestion.contains("focus: unknown-auto-test failed 1 time"));
         assert!(suggestion.contains("failed commands are prioritized"));
         assert!(!suggestion.contains("top  : sysinfo"));
+    }
+
+    #[test]
+    fn failure_recovery_suggests_direct_typo_match() {
+        let mut memory = Memory::default();
+        memory.observe("systinfo", "fail").unwrap();
+
+        let suggestion = memory.suggest();
+        assert!(suggestion.contains("focus: systinfo failed 1 time"));
+        assert!(suggestion.contains("try `sysinfo`; it looks closest to `systinfo`"));
     }
 
     #[test]

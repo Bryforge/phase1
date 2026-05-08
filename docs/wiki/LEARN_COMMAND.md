@@ -78,3 +78,16 @@ This is still local-only and heuristic. It does not send data to a network servi
 
 This keeps the learning layer useful for repair and discovery without using a network service, cloud model, or external API.
 
+
+## Typo recovery
+
+When a failed command is close to a known Phase1 command or alias, `learn suggest` recommends the direct likely correction before falling back to prefix completion.
+
+Examples:
+
+systinfo -> sysinfo
+securty  -> security
+hlep     -> help
+
+The match is local and heuristic. It uses command metadata already present in Phase1; it does not call an external service.
+
