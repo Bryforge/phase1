@@ -94,6 +94,7 @@ fn privileged_host_tools_allowed_from_values(
     !safe_mode_from_value(safe_mode) && host_tools_from_value(host_tools)
 }
 
+#[cfg(test)]
 fn host_tools_allowed_from_values(safe_mode: Option<&str>, host_tools: Option<&str>) -> bool {
     guarded_host_execution_allowed_from_values(safe_mode, host_tools)
 }
