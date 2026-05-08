@@ -1,0 +1,113 @@
+#!/usr/bin/env sh
+set -eu
+
+ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+START_PHASE1="$ROOT_DIR/start_phase1"
+
+usage() {
+    cat <<'EOF'
+Phase1
+
+Usage:
+  phase1 [run]
+  phase1 safe
+  phase1 doctor
+  phase1 configure
+  phase1 gina
+  phase1 quality
+  phase1 base1
+  phase1 version
+  phase1 selftest
+  phase1 help
+
+Fresh clone shortcut:
+  sh phase1
+
+Install a local terminal command:
+  sh scripts/install-phase1-command.sh
+  phase1
+
+Design:
+  This command is the simple operator entrypoint.
+  It delegates to ./start_phase1 so Phase1 keeps one launch path.
+EOF
+}
+
+require_start() {
+    if [ ! -f "$START_PHASE1" ]; then
+        echo "phase1: missing launch command: $START_PHASE1" >&2
+        exit 1
+    fi
+}
+
+show_version() {
+    if [ -f "$ROOT_DIR/Cargo.toml" ]; then
+        version=$(sed -n 's/^version = "\(.*\)"/\1/p' "$ROOT_DIR/Cargo.toml" | head -n 1)
+        if [ -n "$version" ]; then
+            echo "Phase1 $version"
+            exit 0
+        fi
+    fi
+    echo "Phase1"
+}
+
+selftest() {
+    require_start
+    sh -n "$0"
+    sh -n "$START_PHASE1"
+    sh "$START_PHASE1" --help >/dev/null
+    sh "$START_PHASE1" --doctor >/dev/null
+    echo "phase1 selftest: ok"
+}
+
+cmd=${1:-run}
+case "$cmd" in
+    help|-h|--help)
+        usage
+        ;;
+    run)
+        shift || true
+        require_start
+        PHASE1_LAUNCH_COMMAND="./phase1" exec sh "$START_PHASE1" "$@"
+        ;;
+    safe)
+        shift || true
+        require_start
+        PHASE1_SAFE_MODE=1 PHASE1_ALLOW_HOST_TOOLS=0 PHASE1_LAUNCH_COMMAND="./phase1 safe" exec sh "$START_PHASE1" "$@"
+        ;;
+    doctor)
+        shift || true
+        require_start
+        exec sh "$START_PHASE1" --doctor "$@"
+        ;;
+    configure)
+        shift || true
+        require_start
+        exec sh "$START_PHASE1" --configure "$@"
+        ;;
+    gina|assistant)
+        shift || true
+        require_start
+        PHASE1_LAUNCH_COMMAND="./phase1 gina" exec sh "$START_PHASE1" --gina "$@"
+        ;;
+    quality)
+        shift || true
+        require_start
+        exec sh "$START_PHASE1" --quality "$@"
+        ;;
+    base1)
+        shift || true
+        require_start
+        exec sh "$START_PHASE1" --base1 "$@"
+        ;;
+    version|--version)
+        show_version
+        ;;
+    selftest)
+        selftest
+        ;;
+    *)
+        require_start
+        PHASE1_LAUNCH_COMMAND="./phase1" exec sh "$START_PHASE1" "$cmd" "$@"
+        ;;
+esac
