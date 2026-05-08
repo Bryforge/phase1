@@ -212,15 +212,8 @@ pub fn dashboard(shell: &mut Phase1Shell, config: BootConfig, args: &[String]) -
         .lines()
         .filter(|line| line.contains(": flags=<"))
         .count();
-    let audit_tail = shell
-        .kernel
-        .audit
-        .dump()
-        .lines()
-        .last()
-        .unwrap_or("audit log empty")
-        .to_string();
     let audit_count = shell.kernel.audit.dump().lines().count();
+    let audit_latest = format!("safe-summary events={audit_count}");
     let pcie_count = shell.kernel.pcie.lspci().lines().count();
     let cr4 = shell.kernel.scheduler.cr4();
     let safety = if crate::policy::host_tools_allowed() {
@@ -244,7 +237,7 @@ pub fn dashboard(shell: &mut Phase1Shell, config: BootConfig, args: &[String]) -
             shell.kernel.scheduler.get_cr3(),
             cr4,
             pcie_count,
-            audit_tail
+            audit_latest
         );
     }
 
@@ -267,7 +260,7 @@ pub fn dashboard(shell: &mut Phase1Shell, config: BootConfig, args: &[String]) -
         cr4,
         pcie_count,
         audit_count,
-        audit_tail.chars().take(35).collect::<String>(),
+        audit_latest.chars().take(35).collect::<String>(),
     )
 }
 
@@ -434,9 +427,11 @@ mod tests {
         assert!(full.contains("PHASE1 FULL-SCREEN TUI DASHBOARD"));
         assert!(full.contains("panels  : core proc vfs net hw audit"));
         assert!(full.contains("controls: dash --compact"));
+        assert!(full.contains("safe-summary events="));
 
         let compact = dashboard(&mut shell, config(), &["--compact".to_string()]);
         assert!(compact.contains(&format!("PHASE1 DASHBOARD v{}", env!("CARGO_PKG_VERSION"))));
         assert!(compact.contains("CORE  user=root"));
+        assert!(compact.contains("AUDIT latest=safe-summary events="));
     }
 }
