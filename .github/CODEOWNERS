@@ -1,0 +1,17 @@
+# Phase1 ownership defaults
+# Keep release, website, workflow, security, and public-facing changes under direct Bryforge review.
+
+* @Bryforge
+
+.github/ @Bryforge
+.github/workflows/ @Bryforge
+SECURITY.md @Bryforge
+README.md @Bryforge
+CONTACT.md @Bryforge
+links.html @Bryforge
+index.html @Bryforge
+styles.css @Bryforge
+site.js @Bryforge
+base1/ @Bryforge
+src/ @Bryforge
+scripts/ @Bryforge
