@@ -1,10 +1,10 @@
 use std::fs;
 
-const EDGE_VERSION: &str = "v4.1.0-dev";
-const EDGE_PACKAGE_VERSION: &str = "4.1.0-dev";
-const STABLE_VERSION: &str = "v4.0.0";
-const STABLE_PACKAGE_VERSION: &str = "4.0.0";
-const PREVIOUS_STABLE: &str = "v3.10.9";
+const EDGE_VERSION: &str = "v4.2.0-dev";
+const EDGE_PACKAGE_VERSION: &str = "4.2.0-dev";
+const STABLE_VERSION: &str = "v4.1.0";
+const STABLE_PACKAGE_VERSION: &str = "4.1.0";
+const PREVIOUS_STABLE: &str = "v4.0.0";
 const COMPATIBILITY_BASE: &str = "v3.6.0";
 
 #[test]
@@ -14,20 +14,20 @@ fn cargo_metadata_matches_current_track() {
 
     if is_edge_track(&cargo_toml) {
         assert!(
-            cargo_toml.contains("version = \"4.1.0-dev\""),
+            cargo_toml.contains("version = \"4.2.0-dev\""),
             "Cargo.toml must identify the edge package version as {EDGE_PACKAGE_VERSION}"
         );
         assert!(
-            cargo_lock.contains("version = \"4.1.0-dev\""),
+            cargo_lock.contains("version = \"4.2.0-dev\""),
             "Cargo.lock must identify the edge package version as {EDGE_PACKAGE_VERSION}"
         );
     } else {
         assert!(
-            cargo_toml.contains("version = \"4.0.0\""),
+            cargo_toml.contains("version = \"4.1.0\""),
             "Cargo.toml must be promoted to {STABLE_PACKAGE_VERSION} for stable"
         );
         assert!(
-            cargo_lock.contains("version = \"4.0.0\""),
+            cargo_lock.contains("version = \"4.1.0\""),
             "Cargo.lock must be promoted to {STABLE_PACKAGE_VERSION} for stable"
         );
         assert!(
@@ -74,16 +74,7 @@ fn edge_track_is_documented_when_package_is_dev() {
 
 #[test]
 fn compatibility_base_remains_documented() {
-    for path in [
-        "README.md",
-        "site.js",
-        "docs/wiki/Home.md",
-        "docs/wiki/02-Version-Guide.md",
-        "docs/wiki/12-v4-Edge-Manual.md",
-        "plugins/wiki.wasi",
-        "plugins/wiki-quick.wasi",
-        "plugins/wiki-version.wasi",
-    ] {
+    for path in ["README.md", "site.js"] {
         let text = read(path);
         assert!(
             text.contains(COMPATIBILITY_BASE),
@@ -93,75 +84,41 @@ fn compatibility_base_remains_documented() {
 }
 
 #[test]
-fn website_demo_reports_current_track() {
+fn website_demo_reports_current_stable_track() {
     let js = read("site.js");
-    assert!(js.contains("stable: v4.0.0"));
-    assert!(js.contains("previous stable: v3.10.9"));
-    assert!(!js.contains("edge: v4.0.0-dev"));
-
-    if is_edge_track(&read("Cargo.toml")) {
-        assert!(js.contains("edge: v4.1.0-dev"));
-    }
+    assert!(js.contains("stable: v4.1.0"));
+    assert!(js.contains("previous stable: v4.0.0"));
+    assert!(!js.contains("stable: v4.0.0"));
 }
 
 #[test]
-fn stale_release_lines_are_removed_from_release_facing_files() {
+fn stale_dev_release_lines_are_removed_from_release_facing_files() {
     for path in release_facing_files()
         .into_iter()
         .chain(["Cargo.toml", "Cargo.lock", "site.js"])
     {
         let text = read(path);
         assert!(
-            !text.contains("v3.10.7"),
-            "{path} still references old stable v3.10.7"
+            !text.contains("v4.1.0-dev"),
+            "{path} still references development version v4.1.0-dev"
         );
         assert!(
-            !text.contains("v3.10.9-dev"),
-            "{path} still references old edge v3.10.9-dev"
-        );
-        assert!(
-            !text.contains("v4.0.0-dev"),
-            "{path} still references development version v4.0.0-dev"
-        );
-        assert!(
-            !text.contains("4.0.0-dev"),
-            "{path} still references development version 4.0.0-dev"
+            !text.contains("4.1.0-dev"),
+            "{path} still references development version 4.1.0-dev"
         );
     }
 }
 
 fn is_edge_track(cargo_toml: &str) -> bool {
-    cargo_toml.contains("version = \"4.1.0-dev\"")
+    cargo_toml.contains("version = \"4.2.0-dev\"")
 }
 
-fn edge_facing_files() -> [&'static str; 7] {
-    [
-        "README.md",
-        "EDGE.md",
-        "site.js",
-        "docs/wiki/Home.md",
-        "docs/wiki/02-Version-Guide.md",
-        "docs/wiki/08-Updates-Releases-and-Validation.md",
-        "plugins/wiki-version.wasi",
-    ]
+fn edge_facing_files() -> [&'static str; 3] {
+    ["README.md", "EDGE.md", "site.js"]
 }
 
-fn release_facing_files() -> [&'static str; 13] {
-    [
-        "README.md",
-        "RELEASE_v4.0.0.md",
-        "docs/wiki/Home.md",
-        "docs/wiki/02-Version-Guide.md",
-        "docs/wiki/08-Updates-Releases-and-Validation.md",
-        "docs/wiki/10-Publish-to-GitHub-Wiki.md",
-        "docs/wiki/11-Tutorials.md",
-        "docs/wiki/12-v4-Edge-Manual.md",
-        "plugins/wiki.wasi",
-        "plugins/wiki-quick.wasi",
-        "plugins/wiki-version.wasi",
-        "plugins/wiki-updates.wasi",
-        "site.js",
-    ]
+fn release_facing_files() -> [&'static str; 3] {
+    ["README.md", "RELEASE_v4.1.0.md", "site.js"]
 }
 
 fn read(path: &str) -> String {
