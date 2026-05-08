@@ -13,6 +13,18 @@
 | Previous stable | `v3.10.9` |
 | Compatibility base | `v3.6.0` |
 
+## Edge UI direction
+
+The edge line is where the developer-facing operator deck evolves before stable promotion. The UI should stay terminal-native, fast, and privacy-safe while feeling like a purpose-built development cockpit instead of a generic shell skin.
+
+Current edge UI priorities:
+
+- Signal-first dashboard layout with separate core, trust, developer, runtime, and command-radar panels.
+- Developer command surfaces that make `avim`, `lang`, `wasm`, `update`, `pipeline`, `grep`, `find`, `capabilities`, and `security` easy to discover.
+- Edge-only `theme deck` behavior that resolves to the bleeding-edge palette when booted with `e=edge`.
+- Privacy-safe status output that shows audit classes and runtime counts without dumping raw commands or secrets.
+- Mobile/laptop/desktop responsiveness through the existing boot profile and prompt system.
+
 ## Development rules
 
 - Keep the `-dev` suffix until the next stable promotion.
