@@ -1,6 +1,6 @@
 [package]
 name = "phase1"
-version = "4.1.0-dev"
+version = "4.2.5-dev"
 edition = "2021"
 default-run = "phase1"
 authors = ["Chase Bryan"]
@@ -14,6 +14,10 @@ lto = true
 codegen-units = 1
 panic = "abort"
 strip = true
+
+[lints.rust]
+# Boot UI palette tables intentionally keep a few reserved fields for theme compatibility.
+dead_code = "allow"
 
 [lints.clippy]
 # Rust 1.95 tightened several style lints that do not change Phase1 behavior.

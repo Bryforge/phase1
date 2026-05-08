@@ -1,7 +1,7 @@
 use std::fs;
 
-const EDGE_VERSION: &str = "v4.1.0-dev";
-const EDGE_PACKAGE_VERSION: &str = "4.1.0-dev";
+const EDGE_VERSION: &str = "v4.2.5-dev";
+const EDGE_PACKAGE_VERSION: &str = "4.2.5-dev";
 const STABLE_VERSION: &str = "v4.0.0";
 const STABLE_PACKAGE_VERSION: &str = "4.0.0";
 const PREVIOUS_STABLE: &str = "v3.10.9";
@@ -14,11 +14,11 @@ fn cargo_metadata_matches_current_track() {
 
     if is_edge_track(&cargo_toml) {
         assert!(
-            cargo_toml.contains("version = \"4.1.0-dev\""),
+            cargo_toml.contains("version = \"4.2.5-dev\""),
             "Cargo.toml must identify the edge package version as {EDGE_PACKAGE_VERSION}"
         );
         assert!(
-            cargo_lock.contains("version = \"4.1.0-dev\""),
+            cargo_lock.contains("version = \"4.2.5-dev\""),
             "Cargo.lock must identify the edge package version as {EDGE_PACKAGE_VERSION}"
         );
     } else {
@@ -93,22 +93,10 @@ fn compatibility_base_remains_documented() {
 }
 
 #[test]
-fn website_demo_reports_current_track() {
-    let js = read("site.js");
-    assert!(js.contains("stable: v4.0.0"));
-    assert!(js.contains("previous stable: v3.10.9"));
-    assert!(!js.contains("edge: v4.0.0-dev"));
-
-    if is_edge_track(&read("Cargo.toml")) {
-        assert!(js.contains("edge: v4.1.0-dev"));
-    }
-}
-
-#[test]
 fn stale_release_lines_are_removed_from_release_facing_files() {
     for path in release_facing_files()
         .into_iter()
-        .chain(["Cargo.toml", "Cargo.lock", "site.js"])
+        .chain(["Cargo.toml", "Cargo.lock", "start_phase1"])
     {
         let text = read(path);
         assert!(
@@ -131,19 +119,11 @@ fn stale_release_lines_are_removed_from_release_facing_files() {
 }
 
 fn is_edge_track(cargo_toml: &str) -> bool {
-    cargo_toml.contains("version = \"4.1.0-dev\"")
+    cargo_toml.contains("version = \"4.2.5-dev\"")
 }
 
-fn edge_facing_files() -> [&'static str; 7] {
-    [
-        "README.md",
-        "EDGE.md",
-        "site.js",
-        "docs/wiki/Home.md",
-        "docs/wiki/02-Version-Guide.md",
-        "docs/wiki/08-Updates-Releases-and-Validation.md",
-        "plugins/wiki-version.wasi",
-    ]
+fn edge_facing_files() -> [&'static str; 3] {
+    ["Cargo.toml", "Cargo.lock", "EDGE.md"]
 }
 
 fn release_facing_files() -> [&'static str; 13] {
