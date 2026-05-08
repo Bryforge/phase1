@@ -4,8 +4,12 @@ on:
   pull_request:
   push:
     branches:
+      - main
       - master
+      - edge/**
       - feature/**
+      - prepare-**
+      - release/**
 
 permissions:
   contents: read
