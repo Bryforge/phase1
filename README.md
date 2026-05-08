@@ -19,13 +19,23 @@
   <a href="base1/README.md">Base1 secure host foundation</a>
   ·
   <a href="QUALITY.md">Quality system</a>
+  ·
+  <a href="RELEASE_v4.0.0.md">v4.0.0 release prep</a>
+  ·
+  <a href="EDGE.md">Bleeding edge</a>
 </p>
 
-![Stable](https://img.shields.io/badge/stable-v4.0.0-39ff88) ![Previous Stable](https://img.shields.io/badge/previous%20stable-v3.10.9-7f8cff) ![Rust](https://img.shields.io/badge/language-Rust-ff8a00) ![Security](https://img.shields.io/badge/default-safe%20mode%20on-39ff88) ![Base1](https://img.shields.io/badge/base1-secure%20host%20foundation-8a5cff)
+![Edge](https://img.shields.io/badge/edge-v4.1.0--dev-00d8ff) ![Stable](https://img.shields.io/badge/stable-v4.0.0-39ff88) ![Previous Stable](https://img.shields.io/badge/previous%20stable-v3.10.9-7f8cff) ![Rust](https://img.shields.io/badge/language-Rust-ff8a00) ![Security](https://img.shields.io/badge/default-safe%20mode%20on-39ff88) ![Base1](https://img.shields.io/badge/base1-secure%20host%20foundation-8a5cff)
 
 Phase1 is a Rust-built, terminal-first educational virtual operating-system console. It models boot profiles, a virtual kernel, a VFS, process scheduling, `/proc`, `/dev`, `/var/log`, guarded networking, command capability metadata, pipelines, update tooling, runtime management, a guarded terminal browser, and a Base1 secure-host foundation.
 
 Base1 is the planned secure hardware host foundation for Phase1 on Raspberry Pi and ThinkPad X200-class systems. Its mission is to keep the host bootable, recoverable, and protected if Phase1 is damaged, corrupted, or reset.
+
+## Release tracks
+
+`release/v4.0.0` preserves the stable `v4.0.0` release point and is the branch to tag as `v4.0.0` after final validation.
+
+`edge/v4.1.0-dev` is the bleeding-edge development branch beyond `v4.0.0`. It intentionally carries a `-dev` package version and may contain work that is not yet release-qualified.
 
 ## Website
 
@@ -41,7 +51,8 @@ It uses a dark live-space background, moving rainbow visuals, the Phase1 neon lo
 
 | Track | Version | Notes |
 | --- | --- | --- |
-| Stable | `v4.0.0` | Current stable release candidate |
+| Edge | `v4.1.0-dev` | Bleeding-edge branch for development beyond v4.0.0 |
+| Stable | `v4.0.0` | Current stable release point prepared for tag `v4.0.0` |
 | Previous stable | `v3.10.9` | Previous stable reference line |
 | Compatibility base | `v3.6.0` | Historical comparison base |
 | Base1 | `foundation` | Secure host design for Raspberry Pi and X200 targets |
@@ -54,6 +65,20 @@ The package version is the booted Phase1 version. Boot, ready line, `/proc/versi
 ```bash
 git clone https://github.com/Bryforge/phase1.git
 cd phase1
+cargo run
+```
+
+For stable validation:
+
+```bash
+git checkout release/v4.0.0
+sh scripts/quality-check.sh full
+```
+
+For bleeding-edge work:
+
+```bash
+git checkout edge/v4.1.0-dev
 cargo run
 ```
 
@@ -152,17 +177,13 @@ avim hello.py
 
 Use `:help` inside `avim` for movement, edit, search, save, and quit commands.
 
-## Stable v4 focus
+## Post-v4.0 edge focus
 
-- Preserve all v3.10.9 stable features.
-- Improve editor usability and reliability.
-- Improve logical wrapping for narrow terminals.
-- Improve Linux color fallback for older systems such as ThinkPad X200 running Trisquel.
-- Improve Raspberry Pi 5 default OS text and color compatibility.
-- Add Base1 compatibility around secure Raspberry Pi and X200 host profiles.
-- Improve the public website with clearer creator labeling, mobile readability, and desktop animation performance guards.
-- Harden `phase1-storage` output redaction for common secret and URL-credential patterns.
-- Manage quality through repeatable scripts, scorecards, tests, and CI.
+- Keep `v4.0.0` preserved on `release/v4.0.0`.
+- Advance `edge/v4.1.0-dev` with guarded experimental work.
+- Continue improving editor usability, terminal wrapping, website responsiveness, and Base1 compatibility.
+- Integrate approved post-stable work only after quality and security review.
+- Keep release-facing documentation explicit about stable versus edge status.
 
 ## Run checks
 

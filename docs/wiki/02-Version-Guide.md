@@ -1,12 +1,13 @@
 # Version Guide
 
-![Stable](https://img.shields.io/badge/stable-v4.0.0-39ff88) ![Previous Stable](https://img.shields.io/badge/previous%20stable-v3.10.9-7f8cff) ![Base](https://img.shields.io/badge/compatibility-v3.6.0-7f8cff)
+![Edge](https://img.shields.io/badge/edge-v4.1.0--dev-00d8ff) ![Stable](https://img.shields.io/badge/stable-v4.0.0-39ff88) ![Previous Stable](https://img.shields.io/badge/previous%20stable-v3.10.9-7f8cff) ![Base](https://img.shields.io/badge/compatibility-v3.6.0-7f8cff)
 
-Phase1 has three release concepts that users may see.
+Phase1 has four version concepts that users may see.
 
 | Name | Current value | Meaning |
 | --- | --- | --- |
-| Stable release | `v4.0.0` | Current tagged non-dev release line |
+| Edge build | `v4.1.0-dev` | Bleeding-edge development line beyond v4.0.0 |
+| Stable release | `v4.0.0` | Current stable release point and tag target |
 | Previous stable | `v3.10.9` | Previous stable reference line |
 | Compatibility base | `v3.6.0` | Historical stable base used by compatibility comparisons |
 
@@ -37,11 +38,23 @@ exit / shutdown banner    shutdown: phase1 <CARGO_PKG_VERSION>
 > cat readme.txt
 > ```
 
+## Edge release policy
+
+Use an edge build when the version ends in `-dev` or when new behavior is still being validated.
+
+Current edge example:
+
+```text
+v4.1.0-dev
+```
+
+Edge builds are best for testing post-v4.0.0 work, including terminal behavior, editor improvements, website changes, Base1 integration, guarded AI/plugin experiments, and documentation changes that follow active development.
+
 ## Stable release policy
 
 Use a stable release when the version has no `-dev` suffix and has passed the full validation suite.
 
-Current stable release:
+Current stable release point:
 
 ```text
 v4.0.0
@@ -84,28 +97,33 @@ version
 cat /proc/version
 ```
 
-## Promote a release candidate to stable
+## Prepare the v4.0.0 tag
 
-> [!IMPORTANT]
-> Only promote after formatting, Clippy, tests, audit, and dependency policy checks pass.
+`release/v4.0.0` preserves the stable release point. Validate it before tagging:
 
 ```bash
+git checkout release/v4.0.0
 cargo fmt --all -- --check
 cargo check --all-targets
 cargo clippy --all-targets -- -D warnings
 cargo test --all-targets
 cargo audit
 cargo deny check
+git tag v4.0.0
+git push origin v4.0.0
 ```
 
-Then remove the `-dev` suffix from `Cargo.toml`, update `Cargo.lock`, update README/wiki/version references, run validation again, commit, and tag.
+## Continue bleeding-edge work
 
-Current stable tagging example:
+`edge/v4.1.0-dev` is the post-v4.0.0 development line:
 
 ```bash
-git status
-git log -1 --oneline
-git tag v4.0.0
-git push origin master
-git push origin v4.0.0
+git checkout edge/v4.1.0-dev
+cargo metadata --no-deps --format-version 1 | grep '"version"'
+```
+
+Expected package version on the edge branch:
+
+```text
+4.1.0-dev
 ```

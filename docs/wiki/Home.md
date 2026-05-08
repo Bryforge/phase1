@@ -1,12 +1,13 @@
 # Phase1 User Manual
 
-![Stable](https://img.shields.io/badge/stable-v4.0.0-39ff88) ![Previous Stable](https://img.shields.io/badge/previous%20stable-v3.10.9-7f8cff) ![Base](https://img.shields.io/badge/compatibility-v3.6.0-7f8cff)
+![Edge](https://img.shields.io/badge/edge-v4.1.0--dev-00d8ff) ![Stable](https://img.shields.io/badge/stable-v4.0.0-39ff88) ![Previous Stable](https://img.shields.io/badge/previous%20stable-v3.10.9-7f8cff) ![Base](https://img.shields.io/badge/compatibility-v3.6.0-7f8cff)
 
-Welcome to the Phase1 manual. This wiki source reflects the current stable release and the historical compatibility line.
+Welcome to the Phase1 manual. This wiki source distinguishes the stable `v4.0.0` release point from the bleeding-edge `v4.1.0-dev` development line.
 
 | Track | Version | Use it for |
 | --- | --- | --- |
-| Stable | `v4.0.0` | Current stable usage, public demos, website, docs, and release notes |
+| Edge | `v4.1.0-dev` | Development beyond v4.0.0, experiments, integration work, and pre-release validation |
+| Stable | `v4.0.0` | Current stable usage, public demos, website, docs, release notes, and the `v4.0.0` tag target |
 | Previous stable | `v3.10.9` | Previous stable reference usage and compatibility checks |
 | Compatibility base | `v3.6.0` | Historical stable comparison shown by some in-app version checks |
 
@@ -84,4 +85,4 @@ Phase1 is a terminal-first virtual OS and advanced operator console written in R
 
 ## Manual maintenance rule
 
-When the Cargo package version changes, update this manual version matrix, README status, in-system `wiki-*` pages, website demo output, and release workflow examples together.
+When the Cargo package version changes, update this manual version matrix, README status, in-system `wiki-*` pages, website demo output, release workflow examples, and release metadata tests together. Stable release branches must avoid `-dev` suffixes; edge branches must keep the `-dev` suffix visible.
