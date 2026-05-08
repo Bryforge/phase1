@@ -1,0 +1,119 @@
+#!/usr/bin/env sh
+set -eu
+
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+ROOT_DIR=$(CDPATH= cd -- "$SCRIPT_DIR/../.." && pwd)
+START_PHASE1="$ROOT_DIR/start_phase1"
+
+usage() {
+    cat <<'EOF'
+Phase1 Terminal
+
+Usage:
+  phase1-terminal [run]
+  phase1-terminal safe
+  phase1-terminal doctor
+  phase1-terminal gina
+  phase1-terminal quality
+  phase1-terminal base1
+  phase1-terminal version
+  phase1-terminal selftest
+  phase1-terminal help
+
+Design:
+  This is a thin, safe wrapper around ./start_phase1.
+  It does not replace Phase1's launcher, safe-mode gate, or Base1 boundary.
+EOF
+}
+
+require_start() {
+    if [ ! -f "$START_PHASE1" ]; then
+        echo "phase1-terminal: missing launch command: $START_PHASE1" >&2
+        exit 1
+    fi
+}
+
+run_quality() {
+    if [ -f "$ROOT_DIR/scripts/quality-check.sh" ]; then
+        sh "$ROOT_DIR/scripts/quality-check.sh" quick
+    elif [ -f "$ROOT_DIR/scripts/quality-score.sh" ]; then
+        sh "$ROOT_DIR/scripts/quality-score.sh"
+    else
+        echo "phase1-terminal: quality scripts not found" >&2
+        exit 1
+    fi
+}
+
+run_base1() {
+    if [ -f "$ROOT_DIR/scripts/base1-preflight.sh" ]; then
+        sh "$ROOT_DIR/scripts/base1-preflight.sh"
+    else
+        echo "phase1-terminal: Base1 preflight script not found" >&2
+        exit 1
+    fi
+}
+
+show_version() {
+    if [ -f "$ROOT_DIR/Cargo.toml" ]; then
+        version=$(sed -n 's/^version = "\(.*\)"/\1/p' "$ROOT_DIR/Cargo.toml" | head -n 1)
+        if [ -n "$version" ]; then
+            echo "phase1-terminal for Phase1 $version"
+            exit 0
+        fi
+    fi
+    echo "phase1-terminal for Phase1"
+}
+
+selftest() {
+    require_start
+    sh -n "$0"
+    sh -n "$START_PHASE1"
+    sh "$START_PHASE1" --help >/dev/null
+    sh "$START_PHASE1" --doctor >/dev/null
+    echo "phase1-terminal selftest: ok"
+}
+
+cmd=${1:-run}
+case "$cmd" in
+    help|-h|--help)
+        usage
+        ;;
+    run)
+        shift || true
+        require_start
+        exec sh "$START_PHASE1" "$@"
+        ;;
+    safe)
+        shift || true
+        require_start
+        PHASE1_SAFE_MODE=1 PHASE1_ALLOW_HOST_TOOLS=0 exec sh "$START_PHASE1" "$@"
+        ;;
+    doctor)
+        shift || true
+        require_start
+        exec sh "$START_PHASE1" --doctor "$@"
+        ;;
+    gina|assistant)
+        shift || true
+        require_start
+        exec sh "$START_PHASE1" --gina "$@"
+        ;;
+    quality)
+        shift || true
+        run_quality "$@"
+        ;;
+    base1)
+        shift || true
+        run_base1 "$@"
+        ;;
+    version|--version)
+        show_version
+        ;;
+    selftest)
+        selftest
+        ;;
+    *)
+        require_start
+        exec sh "$START_PHASE1" "$cmd" "$@"
+        ;;
+esac
