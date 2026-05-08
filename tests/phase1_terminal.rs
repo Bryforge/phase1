@@ -46,10 +46,7 @@ fn simple_phase1_command_delegates_to_start_phase1() {
 
 #[test]
 fn install_phase1_command_creates_executable_wrapper() {
-    let temp_dir = env::temp_dir().join(format!(
-        "phase1-command-test-{}",
-        std::process::id()
-    ));
+    let temp_dir = env::temp_dir().join(format!("phase1-command-test-{}", std::process::id()));
     let _ = fs::remove_dir_all(&temp_dir);
     fs::create_dir_all(&temp_dir).expect("create temp command dir");
 
@@ -65,7 +62,10 @@ fn install_phase1_command_creates_executable_wrapper() {
     );
 
     let installed = temp_dir.join("phase1");
-    assert!(installed.exists(), "installer did not create phase1 command");
+    assert!(
+        installed.exists(),
+        "installer did not create phase1 command"
+    );
 
     let version = Command::new(&installed)
         .arg("version")
