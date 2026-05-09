@@ -637,19 +637,13 @@ fn fyr_init(shell: &mut Phase1Shell, args: &[String]) -> String {
 }
 
 fn fyr_check(shell: &mut Phase1Shell, args: &[String]) -> String {
-    let Some(path) = args.first().map(String::as_str) else {
+    let Some(target) = args.first().map(String::as_str) else {
         return "usage: fyr check <file.fyr|package>\n".to_string();
     };
 
-    let source_path = fyr_source_target(path);
-    let source = match shell.kernel.sys_read(&source_path) {
-        Ok(source) => source,
-        Err(err) => return format!("fyr check: {err}\n"),
-    };
-
-    match fyr_check_source(&source) {
-        Ok(()) => format!("fyr check: ok {source_path}\n"),
-        Err(err) => format!("fyr check: {source_path}: {err}\n"),
+    match fyr_resolve_target(shell, target) {
+        Ok(resolved) => format!("fyr check: ok {}\n", resolved.source_path()),
+        Err(err) => format!("fyr check: {err}\n"),
     }
 }
 
@@ -658,76 +652,221 @@ fn fyr_build(shell: &mut Phase1Shell, args: &[String]) -> String {
         return "usage: fyr build <file.fyr|package>\n".to_string();
     };
 
-    let source_path = fyr_source_target(target);
-    let source = match shell.kernel.sys_read(&source_path) {
-        Ok(source) => source,
+    let resolved = match fyr_resolve_target(shell, target) {
+        Ok(resolved) => resolved,
         Err(err) => return format!("fyr build: {err}\n"),
     };
 
-    if let Err(err) = fyr_check_source(&source) {
-        return format!("fyr build: {source_path}: {err}\n");
-    }
-
-    let package = if target.ends_with(".fyr") {
-        target
-            .rsplit('/')
-            .next()
-            .unwrap_or(target)
-            .trim_end_matches(".fyr")
-            .to_string()
-    } else {
-        target.trim_end_matches('/').to_string()
-    };
-
+    let summary = resolved.ast_summary();
     format!(
-        "fyr build\npackage : {package}\nsource  : {source_path}\nbackend : seed/interpreted\nhost    : none\nstatus  : dry-run artifact ready\n"
+        "fyr build\npackage : {}\nsource  : {}\nast     : functions={} prints={} returns={}\nbackend : seed/interpreted\nhost    : none\nstatus  : dry-run artifact ready\n",
+        resolved.package_name(),
+        resolved.source_path(),
+        summary.functions,
+        summary.prints,
+        summary.returns,
     )
 }
 
-fn fyr_source_target(raw: &str) -> String {
-    let target = raw.trim().trim_end_matches('/');
-    if target.ends_with(".fyr") {
-        target.to_string()
-    } else {
-        format!("{target}/src/main.fyr")
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct FyrSourceAst {
+    functions: Vec<FyrFunctionAst>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct FyrFunctionAst {
+    name: String,
+    statements: Vec<FyrStatementAst>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+enum FyrStatementAst {
+    Print(String),
+    Return(i32),
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+struct FyrAstSummary {
+    functions: usize,
+    prints: usize,
+    returns: usize,
+}
+
+enum FyrResolvedTarget {
+    Single {
+        source_path: String,
+        ast: FyrSourceAst,
+    },
+    Package {
+        package: String,
+        main_path: String,
+        ast: FyrSourceAst,
+    },
+}
+
+impl FyrResolvedTarget {
+    fn source_path(&self) -> &str {
+        match self {
+            Self::Single { source_path, .. } => source_path,
+            Self::Package { main_path, .. } => main_path,
+        }
+    }
+
+    fn package_name(&self) -> String {
+        match self {
+            Self::Single { source_path, .. } => source_path
+                .rsplit('/')
+                .next()
+                .unwrap_or(source_path)
+                .trim_end_matches(".fyr")
+                .to_string(),
+            Self::Package { package, .. } => package.clone(),
+        }
+    }
+
+    fn ast_summary(&self) -> FyrAstSummary {
+        match self {
+            Self::Single { ast, .. } | Self::Package { ast, .. } => fyr_ast_summary(ast),
+        }
     }
 }
 
-fn fyr_check_source(source: &str) -> Result<(), &'static str> {
-    let trimmed = source.trim();
-    if trimmed.is_empty() {
-        return Err("empty source");
+fn fyr_resolve_target(shell: &mut Phase1Shell, raw: &str) -> Result<FyrResolvedTarget, String> {
+    let target = raw.trim().trim_end_matches('/');
+
+    if target.ends_with(".fyr") {
+        let source = shell
+            .kernel
+            .sys_read(target)
+            .map_err(|err| err.to_string())?;
+        let ast = fyr_parse_source_ast(&source).map_err(|err| format!("{target}: {err}"))?;
+        return Ok(FyrResolvedTarget::Single {
+            source_path: target.to_string(),
+            ast,
+        });
     }
 
-    let body = fyr_main_body(trimmed)?;
+    let manifest = format!("{target}/fyr.toml");
+    if shell.kernel.sys_read(&manifest).is_err() {
+        return Err(format!("{target}: missing package manifest {manifest}"));
+    }
+
+    let main_path = format!("{target}/src/main.fyr");
+    let main_source = shell
+        .kernel
+        .sys_read(&main_path)
+        .map_err(|_| format!("{target}: missing package main {main_path}"))?;
+    let main_ast =
+        fyr_parse_source_ast(&main_source).map_err(|err| format!("{main_path}: {err}"))?;
+
+    let mut package_ast = FyrSourceAst {
+        functions: main_ast.functions,
+    };
+
+    let src_dir = format!("{target}/src");
+    let listing = shell.kernel.vfs.ls(Some(&src_dir), false);
+    for name in listing
+        .lines()
+        .map(str::trim)
+        .filter(|name| name.ends_with(".fyr") && *name != "main.fyr" && !name.contains(':'))
+    {
+        let path = format!("{src_dir}/{name}");
+        let source = shell
+            .kernel
+            .sys_read(&path)
+            .map_err(|err| format!("{path}: {err}"))?;
+        let module_ast = fyr_parse_source_ast(&source).map_err(|err| format!("{path}: {err}"))?;
+        package_ast.functions.extend(module_ast.functions);
+    }
+
+    let main_count = package_ast
+        .functions
+        .iter()
+        .filter(|function| function.name == "main")
+        .count();
+    if main_count > 1 {
+        return Err(format!("{target}: duplicate fn main"));
+    }
+    if main_count == 0 {
+        return Err(format!("{target}: missing fn main entry point"));
+    }
+
+    Ok(FyrResolvedTarget::Package {
+        package: target.to_string(),
+        main_path,
+        ast: package_ast,
+    })
+}
+
+fn fyr_parse_source_ast(source: &str) -> Result<FyrSourceAst, &'static str> {
+    let function = fyr_parse_main_function(source)?;
+    Ok(FyrSourceAst {
+        functions: vec![function],
+    })
+}
+
+fn fyr_ast_summary(ast: &FyrSourceAst) -> FyrAstSummary {
+    let mut summary = FyrAstSummary {
+        functions: ast.functions.len(),
+        prints: 0,
+        returns: 0,
+    };
+
+    for function in &ast.functions {
+        for statement in &function.statements {
+            match statement {
+                FyrStatementAst::Print(_) => summary.prints += 1,
+                FyrStatementAst::Return(_) => summary.returns += 1,
+            }
+        }
+    }
+
+    summary
+}
+
+fn fyr_parse_main_function(source: &str) -> Result<FyrFunctionAst, &'static str> {
+    let body = fyr_main_body(source)?;
+    let statements = fyr_parse_statements(body)?;
+    Ok(FyrFunctionAst {
+        name: "main".to_string(),
+        statements,
+    })
+}
+
+fn fyr_parse_statements(body: &str) -> Result<Vec<FyrStatementAst>, &'static str> {
+    let mut statements = Vec::new();
     let mut rest = body.trim();
-    let mut saw_print = false;
-    let mut saw_return = false;
 
     while !rest.is_empty() {
         rest = rest.trim_start();
 
         if rest.starts_with("print") {
-            saw_print = true;
-            rest = fyr_parse_print_statement(rest)?;
+            let (statement, next) = fyr_parse_print_statement_ast(rest)?;
+            statements.push(statement);
+            rest = next.trim_start();
         } else if rest.starts_with("return") {
-            saw_return = true;
-            rest = fyr_parse_return_statement(rest)?;
+            let (statement, next) = fyr_parse_return_statement_ast(rest)?;
+            statements.push(statement);
+            rest = next.trim_start();
         } else {
             return Err("expected print or return statement");
         }
-
-        rest = rest.trim_start();
     }
 
-    if !saw_print {
+    if !statements
+        .iter()
+        .any(|statement| matches!(statement, FyrStatementAst::Print(_)))
+    {
         return Err("seed checker requires at least one print literal");
     }
-    if !saw_return {
+    if !statements
+        .iter()
+        .any(|statement| matches!(statement, FyrStatementAst::Return(_)))
+    {
         return Err("missing return statement");
     }
 
-    Ok(())
+    Ok(statements)
 }
 
 fn fyr_main_body(source: &str) -> Result<&str, &'static str> {
@@ -752,7 +891,7 @@ fn fyr_main_body(source: &str) -> Result<&str, &'static str> {
     Ok(&body[..close])
 }
 
-fn fyr_parse_print_statement(statement: &str) -> Result<&str, &'static str> {
+fn fyr_parse_print_statement_ast(statement: &str) -> Result<(FyrStatementAst, &str), &'static str> {
     let Some(rest) = statement.strip_prefix("print") else {
         return Err("expected print statement");
     };
@@ -762,7 +901,7 @@ fn fyr_parse_print_statement(statement: &str) -> Result<&str, &'static str> {
         return Err("expected '(' after print");
     };
 
-    let (_, rest) = fyr_parse_string_literal_with_rest(rest)?;
+    let (message, rest) = fyr_parse_string_literal_with_rest(rest)?;
     let rest = rest.trim_start();
 
     let Some(rest) = rest.strip_prefix(')') else {
@@ -774,10 +913,12 @@ fn fyr_parse_print_statement(statement: &str) -> Result<&str, &'static str> {
         return Err("expected ';' after print statement");
     };
 
-    Ok(rest)
+    Ok((FyrStatementAst::Print(message), rest))
 }
 
-fn fyr_parse_return_statement(statement: &str) -> Result<&str, &'static str> {
+fn fyr_parse_return_statement_ast(
+    statement: &str,
+) -> Result<(FyrStatementAst, &str), &'static str> {
     let Some(rest) = statement.strip_prefix("return") else {
         return Err("expected return statement");
     };
@@ -799,12 +940,16 @@ fn fyr_parse_return_statement(statement: &str) -> Result<&str, &'static str> {
         return Err("expected integer return value");
     }
 
+    let value = rest[..end]
+        .parse::<i32>()
+        .map_err(|_| "expected integer return value")?;
     let rest = rest[end..].trim_start();
+
     let Some(rest) = rest.strip_prefix(';') else {
         return Err("expected ';' after return statement");
     };
 
-    Ok(rest)
+    Ok((FyrStatementAst::Return(value), rest))
 }
 
 fn fyr_parse_string_literal_with_rest(text: &str) -> Result<(String, &str), &'static str> {
