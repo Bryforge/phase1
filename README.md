@@ -97,7 +97,7 @@ The current surface is intentionally conservative: it tracks child contexts, act
 
 Phase1 now has an explicit long-term operating-system track. The immediate goal is not to claim a finished OS. The goal is to move toward a bootable, recoverable, Phase1-first environment through Base1.
 
-Start with [`docs/os/ROADMAP.md`](docs/os/ROADMAP.md). The first Stage 1 design slice is [`docs/os/BASE1_IMAGE_BUILDER.md`](docs/os/BASE1_IMAGE_BUILDER.md).
+Start with [`docs/os/ROADMAP.md`](docs/os/ROADMAP.md). The first Stage 1 design slice is [`docs/os/BASE1_IMAGE_BUILDER.md`](docs/os/BASE1_IMAGE_BUILDER.md). The installer/recovery slice is [`docs/os/INSTALLER_RECOVERY.md`](docs/os/INSTALLER_RECOVERY.md).
 
 The staged path is:
 
@@ -328,6 +328,7 @@ Start here:
 
 - [`docs/os/ROADMAP.md`](docs/os/ROADMAP.md) — Phase1 operating-system track
 - [`docs/os/BASE1_IMAGE_BUILDER.md`](docs/os/BASE1_IMAGE_BUILDER.md) — Base1 image-builder design
+- [`docs/os/INSTALLER_RECOVERY.md`](docs/os/INSTALLER_RECOVERY.md) — Base1 installer and recovery design
 - [`base1/README.md`](base1/README.md) — Base1 overview
 - [`base1/SECURITY_MODEL.md`](base1/SECURITY_MODEL.md) — security model and boundary
 - [`base1/HARDWARE_TARGETS.md`](base1/HARDWARE_TARGETS.md) — Raspberry Pi and X200 target matrix
