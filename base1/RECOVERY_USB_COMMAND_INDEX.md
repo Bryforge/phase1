@@ -13,6 +13,7 @@ This document is advisory and read-only. It does not write USB media, partition 
 - `base1/RECOVERY_USB_TARGET_SELECTION.md` — Recovery USB target-device selection design.
 - `base1/RECOVERY_USB_TARGET_COMMAND_INDEX.md` — Recovery USB target selection command index.
 - `base1/RECOVERY_USB_TARGET_SUMMARY.md` — Recovery USB target selection summary.
+- `base1/RECOVERY_USB_IMAGE_PROVENANCE.md` — Recovery USB image provenance and checksum design.
 - `base1/LIBREBOOT_DOCS_SUMMARY.md` — Libreboot documentation path.
 - `base1/LIBREBOOT_MILESTONE.md` — Libreboot read-only milestone checkpoint.
 - `base1/LIBREBOOT_VALIDATION_REPORT.md` — validation report template.

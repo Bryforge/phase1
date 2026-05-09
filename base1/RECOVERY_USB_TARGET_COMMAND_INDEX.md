@@ -67,3 +67,6 @@ A future recovery USB writer can only follow after target identity, image proven
 
 
 See also: [`RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md`](../RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md) — recovery USB target selection read-only checkpoint release notes.
+
+
+See also: [Recovery USB image provenance and checksum design](RECOVERY_USB_IMAGE_PROVENANCE.md).
