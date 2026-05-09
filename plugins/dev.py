@@ -19,14 +19,14 @@ EXCLUDED_PREFIXES = ("target/", ".git/")
 
 def run(args: list[str], check: bool = True) -> int:
     print("+", shlex.join(args))
-    proc = subprocess.run(args, cwd=ROOT)
+    proc = subprocess.run(args, cwd=ROOT, stdin=subprocess.DEVNULL)
     if check and proc.returncode != 0:
         raise SystemExit(proc.returncode)
     return proc.returncode
 
 
 def output(args: list[str]) -> str:
-    return subprocess.check_output(args, cwd=ROOT, text=True).strip()
+    return subprocess.check_output(args, cwd=ROOT, text=True, stdin=subprocess.DEVNULL).strip()
 
 
 def help_text() -> str:
@@ -182,41 +182,30 @@ def cmd_docs() -> int:
 def cmd_checkpoint(args: list[str]) -> int:
     title = " ".join(args).strip() or "Checkpoint edge stable"
     slug = title.lower()
-    for ch in " /_:.":
+    for ch in " /_:.": 
         slug = slug.replace(ch, "-")
     slug = "".join(ch for ch in slug if ch.isalnum() or ch == "-").strip("-") or "edge-stable"
     branch = f"checkpoint/{slug}"
 
-    for cmd in [
-        ["git", "fetch", "origin"],
-        ["git", "checkout", "edge/stable"],
-        ["git", "pull", "--ff-only"],
-        ["git", "checkout", "-B", branch],
-        ["python3", "scripts/update-docs.py"],
-        ["cargo", "fmt", "--all", "--", "--check"],
-        ["cargo", "test", "--workspace", "--all-targets"],
-    ]:
-        code = run(cmd)
-        if code != 0:
-            return code
+    run(["git", "fetch", "origin"])
+    run(["git", "checkout", "edge/stable"])
+    run(["git", "pull", "--ff-only"])
+    run(["python3", "scripts/update-docs.py"])
+    run(["cargo", "fmt", "--all", "--", "--check"])
 
-    run(["git", "add", "README.md", "REPO_DOCTRINE.md", "EDGE.md", "EDGE_STABLE_CHECKPOINT.md", "FEATURE_STATUS.md", "WIKI_ROADMAP.md", "docs/wiki", "scripts/update-docs.py"])
+    paths = ["README.md", "REPO_DOCTRINE.md", "EDGE.md", "EDGE_STABLE_CHECKPOINT.md", "FEATURE_STATUS.md", "WIKI_ROADMAP.md", "docs/wiki", "scripts/update-docs.py"]
+    run(["git", "add", *paths])
 
-    changed = subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=ROOT).returncode != 0
+    changed = subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=ROOT, stdin=subprocess.DEVNULL).returncode != 0
     if not changed:
         print("dev checkpoint: no changes; edge/stable is already current, no PR needed")
         return 0
 
-    code = run(["git", "commit", "-m", title])
-    if code != 0:
-        return code
-
-    code = run(["git", "push", "-u", "origin", branch])
-    if code != 0:
-        return code
-
+    run(["git", "checkout", "-B", branch])
+    run(["cargo", "test", "--workspace", "--all-targets"])
+    run(["git", "commit", "-m", title])
+    run(["git", "push", "-u", "origin", branch])
     return run(["gh", "pr", "create", "--title", title, "--body", "Automated Phase1 checkpoint created from inside Phase1.", "--base", "edge/stable", "--head", branch])
-
 
 
 def cmd_doctor() -> int:
