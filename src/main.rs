@@ -1030,7 +1030,6 @@ mod tests {
     }
 
     #[test]
-    #[test]
     fn pasted_command_lines_split_shell_blocks() {
         let lines = super::pasted_command_lines(
             "git status\ngh pr list\ncargo test --workspace --all-targets\nexit all\n",
@@ -1059,6 +1058,7 @@ mod tests {
         );
     }
 
+    #[test]
     fn command_chain_respects_quotes_and_operators() {
         let chain = parse_chain("echo 'a;b' ; unknown && echo no || echo yes").unwrap();
         assert_eq!(chain.len(), 4);
