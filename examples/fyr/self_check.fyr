@@ -1,0 +1,6 @@
+fn main() -> i32 {
+    let system = "Phase1";
+    let language = "Fyr";
+    print(system + " native language target: " + language);
+    return 0;
+}
