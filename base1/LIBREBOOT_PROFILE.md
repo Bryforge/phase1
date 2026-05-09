@@ -39,6 +39,13 @@ A Libreboot Base1 profile should avoid assuming:
 - Modern graphical firmware setup screens.
 - Network boot availability.
 - Automatic bootloader repair.
+- Non-GRUB boot compatibility.
+
+## Bootloader expectation
+
+For this profile, treat GRUB as the first expected bootloader path unless a specific Libreboot-backed machine has been verified with another boot path.
+
+Base1 should not assume systemd-boot, EFI-only boot, or automatic bootloader repair for Libreboot-backed X200-class systems.
 
 ## Required operator notes
 

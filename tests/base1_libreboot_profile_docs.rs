@@ -12,6 +12,12 @@ fn libreboot_profile_doc_exists_and_defines_boundary() {
     );
     assert!(doc.contains("Do not assume Secure Boot"), "{doc}");
     assert!(doc.contains("Do not assume TPM"), "{doc}");
+    assert!(
+        doc.contains("GRUB as the first expected bootloader path"),
+        "{doc}"
+    );
+    assert!(doc.contains("systemd-boot"), "{doc}");
+    assert!(doc.contains("EFI-only boot"), "{doc}");
     assert!(doc.contains("sh scripts/base1-preflight.sh"), "{doc}");
 }
 
