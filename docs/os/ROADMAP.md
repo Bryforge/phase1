@@ -130,3 +130,8 @@ Each target needs:
 ## Stage 1 recovery command design
 
 - [`Base1 recovery command design`](BASE1_RECOVERY_COMMAND.md) defines the first read-only recovery command surface for status and planning.
+
+
+## Stage 2 storage layout checker design
+
+- [`Base1 storage layout checker design`](BASE1_STORAGE_LAYOUT_CHECKER.md) defines the first read-only disk-layout validation surface for Base1 installer planning.

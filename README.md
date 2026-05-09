@@ -325,6 +325,7 @@ Start here:
 - [`docs/os/INSTALLER_RECOVERY.md`](docs/os/INSTALLER_RECOVERY.md) — Base1 installer and recovery design
 - [`docs/os/BASE1_INSTALLER_DRY_RUN.md`](docs/os/BASE1_INSTALLER_DRY_RUN.md) — Base1 installer dry-run design
 - [`docs/os/BASE1_RECOVERY_COMMAND.md`](docs/os/BASE1_RECOVERY_COMMAND.md) — Base1 recovery command design
+- [`docs/os/BASE1_STORAGE_LAYOUT_CHECKER.md`](docs/os/BASE1_STORAGE_LAYOUT_CHECKER.md) — Base1 storage layout checker design
 - [`base1/README.md`](base1/README.md) — Base1 overview
 - [`base1/SECURITY_MODEL.md`](base1/SECURITY_MODEL.md) — security model and boundary
 - [`base1/HARDWARE_TARGETS.md`](base1/HARDWARE_TARGETS.md) — Raspberry Pi and X200 target matrix
