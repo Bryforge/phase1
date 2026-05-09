@@ -1338,6 +1338,21 @@ fn fyr_parse_assertion_ast(assertion: &str) -> Result<FyrAssertionAst, &'static 
         });
     }
 
+    if let Some(inner) = assertion.strip_prefix('!') {
+        let inner = inner.trim();
+        let inner = if inner.starts_with('(') && inner.ends_with(')') && inner.len() >= 2 {
+            &inner[1..inner.len() - 1]
+        } else {
+            inner
+        };
+
+        let parsed = fyr_parse_assertion_ast(inner)?;
+        return Ok(FyrAssertionAst {
+            value: !parsed.value,
+            label: format!("!({})", parsed.label),
+        });
+    }
+
     fyr_parse_atomic_assertion_ast(assertion)
 }
 
