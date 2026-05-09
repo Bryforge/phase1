@@ -336,24 +336,39 @@ fn run_shell(boot_config: ui::BootConfig) -> ShellExit {
             continue;
         }
 
-        ops_log::log_command(&line);
-        history::push_bounded(&mut shell.history, &line);
-        match execute_chain(&mut shell, boot_config, &history_store, &line) {
-            Ok(_) => {
-                if boot_config.persistent_state {
-                    if let Err(err) = save_persistent_state(&shell) {
-                        ops_log::log_error("state.save", &err.to_string());
-                        eprintln!("persistent state save warning: {err}");
+        for command_line in pasted_command_lines(&line) {
+            ops_log::log_command(&command_line);
+            history::push_bounded(&mut shell.history, &command_line);
+            match execute_chain(&mut shell, boot_config, &history_store, &command_line) {
+                Ok(_) => {
+                    if boot_config.persistent_state {
+                        if let Err(err) = save_persistent_state(&shell) {
+                            ops_log::log_error("state.save", &err.to_string());
+                            eprintln!("persistent state save warning: {err}");
+                        }
+                    }
+                    if let Err(err) = history_store.save(&shell.history) {
+                        ops_log::log_error("history.save", &err.to_string());
+                        eprintln!("persistent history save warning: {err}");
                     }
                 }
-                if let Err(err) = history_store.save(&shell.history) {
-                    ops_log::log_error("history.save", &err.to_string());
-                    eprintln!("persistent history save warning: {err}");
+                Err(err) => {
+                    ops_log::log_error("parse", &err);
+                    eprintln!("parse error: {err}");
                 }
             }
-            Err(err) => {
-                ops_log::log_error("parse", &err);
-                eprintln!("parse error: {err}");
+
+            if shell
+                .env
+                .get("PHASE1_NEST_EXIT_REQUESTED")
+                .is_some_and(|value| value == "1")
+                || nest_exit_all_requested()
+                || shell
+                    .env
+                    .get("PHASE1_REBOOT_REQUESTED")
+                    .is_some_and(|value| value == "1")
+            {
+                break;
             }
         }
 
@@ -403,6 +418,21 @@ fn run_shell(boot_config: ui::BootConfig) -> ShellExit {
         },
     );
     shell_exit
+}
+
+fn pasted_command_lines(input: &str) -> Vec<String> {
+    let normalized = input
+        .replace("\x1b[200~", "")
+        .replace("\x1b[201~", "")
+        .replace("\r\n", "\n")
+        .replace('\r', "\n");
+
+    normalized
+        .lines()
+        .map(str::trim)
+        .filter(|line| !line.is_empty())
+        .map(ToString::to_string)
+        .collect()
 }
 
 fn execute_chain(
@@ -999,6 +1029,35 @@ mod tests {
     }
 
     #[test]
+    #[test]
+    fn pasted_command_lines_split_shell_blocks() {
+        let lines = super::pasted_command_lines(
+            "git status\ngh pr list\ncargo test --workspace --all-targets\nexit all\n",
+        );
+
+        assert_eq!(
+            lines,
+            vec![
+                "git status",
+                "gh pr list",
+                "cargo test --workspace --all-targets",
+                "exit all",
+            ]
+        );
+    }
+
+    #[test]
+    fn pasted_command_lines_strip_bracketed_paste_markers() {
+        let lines = super::pasted_command_lines(
+            "\x1b[200~cat jesse_copy.go\nlang run go jesse_copy.go\x1b[201~",
+        );
+
+        assert_eq!(
+            lines,
+            vec!["cat jesse_copy.go", "lang run go jesse_copy.go"]
+        );
+    }
+
     fn command_chain_respects_quotes_and_operators() {
         let chain = parse_chain("echo 'a;b' ; unknown && echo no || echo yes").unwrap();
         assert_eq!(chain.len(), 4);
