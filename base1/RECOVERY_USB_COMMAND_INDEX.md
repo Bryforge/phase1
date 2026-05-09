@@ -15,6 +15,7 @@ This document is advisory and read-only. It does not write USB media, partition 
 - `base1/RECOVERY_USB_TARGET_SUMMARY.md` — Recovery USB target selection summary.
 - `base1/RECOVERY_USB_IMAGE_PROVENANCE.md` — Recovery USB image provenance and checksum design.
 - `scripts/base1-recovery-usb-image-report.sh` — Recovery USB image provenance report command.
+- `scripts/base1-recovery-usb-image-validate.sh` — Recovery USB image provenance validation bundle.
 - `base1/LIBREBOOT_DOCS_SUMMARY.md` — Libreboot documentation path.
 - `base1/LIBREBOOT_MILESTONE.md` — Libreboot read-only milestone checkpoint.
 - `base1/LIBREBOOT_VALIDATION_REPORT.md` — validation report template.
