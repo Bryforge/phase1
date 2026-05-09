@@ -145,3 +145,8 @@ Each target needs:
 ## Stage 2 installer dry-run script
 
 - `scripts/base1-install-dry-run.sh` is the first non-destructive installer preview command. It requires `--dry-run`, requires an explicit target, and reports `writes: no`.
+
+
+## Stage 2 recovery dry-run script
+
+- `scripts/base1-recovery-dry-run.sh` is the first non-destructive recovery preview command. It requires `--dry-run`, keeps boot settings unchanged, and reports `writes: no`.
