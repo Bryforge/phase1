@@ -698,19 +698,148 @@ fn fyr_check_source(source: &str) -> Result<(), &'static str> {
     if trimmed.is_empty() {
         return Err("empty source");
     }
-    if !trimmed.contains("fn main") {
-        return Err("missing fn main entry point");
+
+    let body = fyr_main_body(trimmed)?;
+    let mut rest = body.trim();
+    let mut saw_print = false;
+    let mut saw_return = false;
+
+    while !rest.is_empty() {
+        rest = rest.trim_start();
+
+        if rest.starts_with("print") {
+            saw_print = true;
+            rest = fyr_parse_print_statement(rest)?;
+        } else if rest.starts_with("return") {
+            saw_return = true;
+            rest = fyr_parse_return_statement(rest)?;
+        } else {
+            return Err("expected print or return statement");
+        }
+
+        rest = rest.trim_start();
     }
-    if !trimmed.contains("print(") {
+
+    if !saw_print {
         return Err("seed checker requires at least one print literal");
     }
-    if !trimmed.contains("return") {
+    if !saw_return {
         return Err("missing return statement");
     }
-    if parse_fyr_string_literal(trimmed).is_none() {
-        return Err("missing valid string literal");
-    }
+
     Ok(())
+}
+
+fn fyr_main_body(source: &str) -> Result<&str, &'static str> {
+    let Some(fn_pos) = source.find("fn") else {
+        return Err("missing fn main entry point");
+    };
+
+    let source = source[fn_pos..].trim_start();
+    let Some(rest) = source.strip_prefix("fn main() -> i32") else {
+        return Err("missing fn main entry point");
+    };
+
+    let rest = rest.trim_start();
+    let Some(body) = rest.strip_prefix('{') else {
+        return Err("expected '{' after fn main signature");
+    };
+
+    let Some(close) = body.rfind('}') else {
+        return Err("expected '}' after fn main body");
+    };
+
+    Ok(&body[..close])
+}
+
+fn fyr_parse_print_statement(statement: &str) -> Result<&str, &'static str> {
+    let Some(rest) = statement.strip_prefix("print") else {
+        return Err("expected print statement");
+    };
+
+    let rest = rest.trim_start();
+    let Some(rest) = rest.strip_prefix('(') else {
+        return Err("expected '(' after print");
+    };
+
+    let (_, rest) = fyr_parse_string_literal_with_rest(rest)?;
+    let rest = rest.trim_start();
+
+    let Some(rest) = rest.strip_prefix(')') else {
+        return Err("expected ')' after print literal");
+    };
+
+    let rest = rest.trim_start();
+    let Some(rest) = rest.strip_prefix(';') else {
+        return Err("expected ';' after print statement");
+    };
+
+    Ok(rest)
+}
+
+fn fyr_parse_return_statement(statement: &str) -> Result<&str, &'static str> {
+    let Some(rest) = statement.strip_prefix("return") else {
+        return Err("expected return statement");
+    };
+
+    let rest = rest.trim_start();
+    let mut end = 0usize;
+    let mut saw_digit = false;
+
+    for (idx, ch) in rest.char_indices() {
+        if ch.is_ascii_digit() {
+            saw_digit = true;
+            end = idx + ch.len_utf8();
+        } else {
+            break;
+        }
+    }
+
+    if !saw_digit {
+        return Err("expected integer return value");
+    }
+
+    let rest = rest[end..].trim_start();
+    let Some(rest) = rest.strip_prefix(';') else {
+        return Err("expected ';' after return statement");
+    };
+
+    Ok(rest)
+}
+
+fn fyr_parse_string_literal_with_rest(text: &str) -> Result<(String, &str), &'static str> {
+    let text = text.trim_start();
+    let Some(inner) = text.strip_prefix('"') else {
+        return Err("expected string literal");
+    };
+
+    let mut out = String::new();
+    let mut escaped = false;
+
+    for (idx, ch) in inner.char_indices() {
+        if escaped {
+            match ch {
+                'n' => out.push('\n'),
+                't' => out.push('\t'),
+                '"' => out.push('"'),
+                '\\' => out.push('\\'),
+                other => out.push(other),
+            }
+            escaped = false;
+            continue;
+        }
+
+        match ch {
+            '\\' => escaped = true,
+            '"' => {
+                let rest = &inner[idx + ch.len_utf8()..];
+                return Ok((out, rest));
+            }
+            other => out.push(other),
+        }
+    }
+
+    Err("unterminated string literal")
 }
 
 fn fyr_package_name(raw: &str) -> Option<String> {
