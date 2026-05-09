@@ -73,6 +73,8 @@ The profile should document:
 
 See also: [Libreboot preflight notes](LIBREBOOT_PREFLIGHT.md).
 
+See also: [Libreboot GRUB recovery notes](LIBREBOOT_GRUB_RECOVERY.md).
+
 ## First validation command
 
 ```bash
