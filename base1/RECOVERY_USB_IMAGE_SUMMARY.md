@@ -81,3 +81,6 @@ See also: [Recovery USB image provenance command index](RECOVERY_USB_IMAGE_COMMA
 
 
 See also: [RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md](../RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md).
+
+
+See also: [Recovery USB emergency shell behavior design](RECOVERY_USB_EMERGENCY_SHELL.md).
