@@ -165,3 +165,8 @@ Each target needs:
 ## Stage 2 dry-run command index
 
 - [`Base1 dry-run command index`](BASE1_DRY_RUN_COMMANDS.md) lists the current non-destructive Base1 preview commands and their shared guardrails.
+
+
+## Stage 2 recovery USB design
+
+- [`Base1 recovery USB design`](../../base1/RECOVERY_USB_DESIGN.md) defines the first read-only recovery-media plan for Libreboot/X200-class systems without writing USB media or changing boot settings.
