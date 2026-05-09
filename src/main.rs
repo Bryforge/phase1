@@ -549,7 +549,7 @@ fn theme_command(shell: &mut Phase1Shell, args: &[String]) -> String {
     out
 }
 
-fn fyr_command(shell: &Phase1Shell, args: &[String]) -> String {
+fn fyr_command(shell: &mut Phase1Shell, args: &[String]) -> String {
     match args.first().map(String::as_str) {
         None | Some("status") => fyr_status(),
         Some("spec") => fyr_spec(),
@@ -570,7 +570,7 @@ fn fyr_spec() -> String {
     }
 }
 
-fn fyr_run(shell: &Phase1Shell, args: &[String]) -> String {
+fn fyr_run(shell: &mut Phase1Shell, args: &[String]) -> String {
     let Some(path) = args.first() else {
         return "usage: fyr run <file.fyr>\n".to_string();
     };
