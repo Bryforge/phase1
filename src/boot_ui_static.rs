@@ -595,7 +595,7 @@ fn print_boot_card(
     outln(&card_line(
         config,
         width,
-        &format!("node TOKYO-01 | boot {boot_stamp}"),
+        &boot_greeting_line(config, boot_stamp),
     ));
     outln(&card_rule(config, width));
     for row in skyline_rows(config) {
@@ -629,6 +629,15 @@ fn print_boot_card(
     }
     outln(&card_bottom(config, width));
     outln("");
+}
+
+fn boot_greeting_line(config: BootConfig, boot_stamp: &str) -> String {
+    let greeting = "こんにちは、ハッカー！";
+    if config.color && !config.ascii_mode {
+        format!("{BOLD}{RED}{greeting}{RESET} | boot {boot_stamp}")
+    } else {
+        format!("{greeting} | boot {boot_stamp}")
+    }
 }
 
 fn skyline_rows(config: BootConfig) -> Vec<String> {
