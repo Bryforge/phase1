@@ -2,9 +2,9 @@ use std::fs;
 
 const EDGE_VERSION: &str = "v5.0.0";
 const EDGE_PACKAGE_VERSION: &str = "5.0.0";
-const STABLE_VERSION: &str = "v4.3.0";
-const STABLE_PACKAGE_VERSION: &str = "4.3.0";
-const PREVIOUS_STABLE: &str = "v4.2.0";
+const STABLE_VERSION: &str = "v4.4.0";
+const STABLE_PACKAGE_VERSION: &str = "4.4.0";
+const PREVIOUS_STABLE: &str = "v4.3.0";
 const COMPATIBILITY_BASE: &str = "v3.6.0";
 const EDGE_CHECKPOINT: &str = "DEVELOPMENT_CHECKPOINT_EDGE_5_0_0.md";
 
@@ -113,8 +113,8 @@ fn compatibility_base_remains_documented() {
 #[test]
 fn website_demo_reports_current_stable_track() {
     let js = read("site.js");
-    assert!(has_line(&js, "    \"stable: v4.3.0\","));
-    assert!(has_line(&js, "    \"previous stable: v4.2.0\","));
+    assert!(has_line(&js, "    \"stable: v4.4.0\","));
+    assert!(has_line(&js, "    \"previous stable: v4.3.0\","));
     assert!(has_line(&js, "    \"next edge: v5.0.0\","));
     assert!(!has_line(&js, "    \"stable: v4.1.0\","));
     assert!(!has_line(&js, "    \"next edge: v4.2.0\","));
@@ -153,7 +153,7 @@ fn edge_facing_files() -> [&'static str; 5] {
 }
 
 fn release_facing_files() -> [&'static str; 3] {
-    ["README.md", "RELEASE_v4.3.0.md", "site.js"]
+    ["README.md", "RELEASE_v4.4.0.md", "site.js"]
 }
 
 fn has_line(text: &str, expected: &str) -> bool {

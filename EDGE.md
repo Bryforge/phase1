@@ -10,7 +10,7 @@
 | Current edge label | `v5.0.0` |
 | Stable package version | `4.3.0` |
 | Stable release point | `v4.3.0` |
-| Previous stable | `v4.2.0` |
+| Previous stable | `v4.3.0` |
 | Compatibility base | `v3.6.0` |
 
 ## Current checkpoint

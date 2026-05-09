@@ -1,6 +1,6 @@
 # Development Checkpoint: Edge 5.0.0
 
-This checkpoint records the first active edge line after the stable `v4.3.0` public representation.
+This checkpoint records the first active edge line after the stable `v4.4.0` public representation.
 
 ## Version identity
 
@@ -8,14 +8,14 @@ This checkpoint records the first active edge line after the stable `v4.3.0` pub
 | --- | --- |
 | Active package version | `5.0.0` |
 | Edge label | `v5.0.0` |
-| Stable release point | `v4.3.0` |
-| Previous stable | `v4.2.0` |
+| Stable release point | `v4.4.0` |
+| Previous stable | `v4.3.0` |
 | Compatibility base | `v3.6.0` |
 | Version scheme | `MAJOR.MINOR.PATCH[-dev]` |
 
 ## Checkpoint scope
 
-This checkpoint includes the post-`v4.3.0` work that improves Phase1 for real local development and mobile operator usage:
+This checkpoint includes the post-`v4.4.0` work that improves Phase1 for real local development and mobile operator usage:
 
 - Guarded host runtime execution is separated from privileged host mutation.
 - `PHASE1_ALLOW_HOST_TOOLS=1` can enable guarded language/runtime execution while safe mode remains enabled.
@@ -47,4 +47,4 @@ Recommended follow-up work after this checkpoint:
 1. Migrate direct `python`, `py`, `gcc`, and `cc` wrappers onto the same guarded runtime helper used by `lang run`.
 2. Add `doctor mobile` for terminal width, prompt mode, line-editor mode, color mode, safe mode, trust gate, and launch advice.
 3. Add named boot profiles for phone, laptop development, release demo, and trusted-runtime workflows.
-4. Continue keeping `v4.3.0` stable docs intact until the next formal stable promotion.
+4. Continue keeping `v4.4.0` stable docs intact until the next formal stable promotion.
