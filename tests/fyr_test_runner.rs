@@ -166,3 +166,37 @@ fn fyr_test_boolean_assert_failure_is_reported() {
     assert!(output.contains("failed  : 1"), "{output}");
     assert!(output.contains("status  : failed"), "{output}");
 }
+
+#[test]
+fn fyr_test_comparison_assertions_pass() {
+    let output = run_phase1(
+        "fyr init app\n\
+echo 'fn main() -> i32 { assert(1 == 1); assert(2 != 1); assert(3 > 2); assert(2 < 3); return 0; }' > app/tests/compare_ok.fyr\n\
+fyr test app\n\
+exit\n",
+    );
+
+    assert!(
+        output.contains("test    : app/tests/compare_ok.fyr ok"),
+        "{output}"
+    );
+    assert!(output.contains("failed  : 0"), "{output}");
+    assert!(output.contains("status  : ok"), "{output}");
+}
+
+#[test]
+fn fyr_test_comparison_assertion_failure_is_reported() {
+    let output = run_phase1(
+        "fyr init app\n\
+echo 'fn main() -> i32 { assert(2 > 3); return 0; }' > app/tests/compare_fail.fyr\n\
+fyr test app\n\
+exit\n",
+    );
+
+    assert!(
+        output.contains("test    : app/tests/compare_fail.fyr failed: assertion failed: 2 > 3"),
+        "{output}"
+    );
+    assert!(output.contains("failed  : 1"), "{output}");
+    assert!(output.contains("status  : failed"), "{output}");
+}
