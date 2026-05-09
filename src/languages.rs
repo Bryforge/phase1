@@ -473,7 +473,10 @@ fn run_language(shell: &mut Phase1Shell, args: &[String]) -> String {
         return "lang wasm: use the phase1 'wasm' command for WASI-lite plugin validation and execution\n".to_string();
     }
 
-    let source = load_source(shell, &source_arg);
+    let source = match load_source(shell, &source_arg, spec) {
+        Ok(source) => source,
+        Err(err) => return err,
+    };
     if source.len() > MAX_SOURCE_BYTES {
         return format!("lang: source is too large; limit is {MAX_SOURCE_BYTES} bytes\n");
     }
@@ -725,14 +728,48 @@ fn prepare_guarded_command(cmd: &mut Command, root: &Path) {
         .env("NO_COLOR", "1");
 }
 
-fn load_source(shell: &mut Phase1Shell, raw: &str) -> String {
-    let looks_like_path = raw.starts_with('/') || raw.starts_with("./") || raw.contains('.');
-    if looks_like_path {
-        if let Ok(content) = shell.kernel.sys_read(raw) {
-            return content;
+fn load_source(shell: &mut Phase1Shell, raw: &str, spec: &LanguageSpec) -> Result<String, String> {
+    let trimmed = raw.trim();
+    let first = trimmed.split_whitespace().next().unwrap_or(trimmed);
+
+    if looks_like_source_path(first, spec) {
+        let extra = trimmed[first.len()..].trim();
+        if !extra.is_empty() {
+            return Err(format!(
+                "lang run: source path '{first}' was joined with extra input: {extra}\n\
+                 Run `lang run {} {first}` as its own line, then run the next command separately.\n",
+                spec.name
+            ));
         }
+
+        return shell.kernel.sys_read(first).map_err(|err| {
+            format!(
+                "lang run: could not read VFS source '{first}': {err}\n\
+                 Use `ls`, `cat {first}`, or pass inline source text that is not filename-shaped.\n"
+            )
+        });
     }
-    raw.to_string()
+
+    Ok(raw.to_string())
+}
+
+fn looks_like_source_path(raw: &str, spec: &LanguageSpec) -> bool {
+    if raw.starts_with('/') || raw.starts_with("./") || raw.starts_with("../") {
+        return true;
+    }
+
+    let Some(ext) = Path::new(raw).extension().and_then(|ext| ext.to_str()) else {
+        return false;
+    };
+    let ext = ext.to_ascii_lowercase();
+
+    spec.extensions.iter().any(|candidate| *candidate == ext)
+        || LANGUAGES.iter().any(|language| {
+            language
+                .extensions
+                .iter()
+                .any(|candidate| *candidate == ext)
+        })
 }
 
 fn normalize_java_source(source: &str) -> String {
@@ -923,6 +960,15 @@ mod tests {
         );
         assert_eq!(find_language("c++").map(|spec| spec.name), Some("cpp"));
         assert_eq!(find_language("c#").map(|spec| spec.name), Some("csharp"));
+    }
+
+    #[test]
+    fn source_path_detection_handles_paste_joined_filenames() {
+        let go = super::find_language("go").expect("go registered");
+
+        assert!(super::looks_like_source_path("jesse_copy.go", go));
+        assert!(super::looks_like_source_path("./jesse_copy.go", go));
+        assert!(!super::looks_like_source_path("fmt.Println(\"hi\")", go));
     }
 
     #[test]
