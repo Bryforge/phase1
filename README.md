@@ -16,6 +16,8 @@
   ·
   <a href="https://github.com/Bryforge/phase1#quick-start"><strong>Quick start</strong></a>
   ·
+  <a href="FEATURE_STATUS.md">Feature status</a>
+  ·
   <a href="LEARNING.md">Learning system</a>
   ·
   <a href="QUALITY.md">Quality</a>
@@ -61,6 +63,22 @@ The project image is modern, neon, technical, and disciplined: advanced visuals,
 | Base1 foundation | Planned secure host foundation for Raspberry Pi and ThinkPad X200-class systems. |
 | Quality system | Scorecards, smoke tests, release metadata checks, CI workflows, CodeQL, and repeatable validation scripts. |
 
+## Implementation status
+
+Phase1 separates implemented features from experimental host integrations and future plans. The canonical matrix is [`FEATURE_STATUS.md`](FEATURE_STATUS.md).
+
+| Feature area | Status | Short answer |
+| --- | --- | --- |
+| Terminal shell, VFS, process table, audit log, `/proc`, text tools, and dashboards | Implemented | These are simulated Phase1 subsystems and are covered by tests/smoke checks. |
+| Local learning memory | Implemented | Local, sanitized, bounded, and git-ignored. |
+| WASI-lite plugins | Implemented | Phase1's sandboxed plugin path; no host shell/network passthrough. |
+| Python/Git/Cargo/Rust host-backed workflows | Experimental | Useful local integrations, but not hardened secure execution. |
+| Host network/admin mutation | Restricted | Requires explicit trust gates and safe-mode changes. |
+| Hardened VM/chroot/container sandbox | Not planned | Use a real VM/container for hostile code. |
+| Full OS replacement | Not planned | Phase1 is a virtual OS console, not a replacement for Linux/macOS/Windows. |
+
+Inside Phase1, run `capabilities` to inspect command-level gates and guard status. Use `FEATURE_STATUS.md` when you need the broader project-level answer to “is this implemented yet?”
+
 ## Quick start
 
 Fresh clone, simplest launch:
@@ -102,6 +120,7 @@ Inside Phase1, start with:
 
 ```text
 help
+capabilities
 sysinfo
 security
 wiki-quick
