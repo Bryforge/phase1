@@ -80,3 +80,6 @@ See also: [Recovery USB hardware validation checklist](RECOVERY_USB_HARDWARE_CHE
 
 
 See also: [Recovery USB hardware validation summary](RECOVERY_USB_HARDWARE_SUMMARY.md).
+
+
+See also: [Recovery USB target-device selection design](RECOVERY_USB_TARGET_SELECTION.md).
