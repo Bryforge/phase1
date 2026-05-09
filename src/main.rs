@@ -1037,6 +1037,7 @@ fn fyr_test(shell: &mut Phase1Shell, args: &[String]) -> String {
     let mut tests = 0usize;
     let mut passed = 0usize;
     let mut failed = 0usize;
+    let mut out = format!("fyr test\npackage : {package}\n");
 
     for name in listing
         .lines()
@@ -1045,17 +1046,31 @@ fn fyr_test(shell: &mut Phase1Shell, args: &[String]) -> String {
     {
         tests += 1;
         let path = format!("{tests_dir}/{name}");
+
         match shell.kernel.sys_read(&path) {
-            Ok(source) if fyr_parse_source_ast(&source).is_ok() => passed += 1,
-            _ => failed += 1,
+            Ok(source) => match fyr_parse_source_ast(&source) {
+                Ok(_) => {
+                    passed += 1;
+                    out.push_str(&format!("test    : {path} ok\n"));
+                }
+                Err(err) => {
+                    failed += 1;
+                    out.push_str(&format!("test    : {path} failed: {err}\n"));
+                }
+            },
+            Err(err) => {
+                failed += 1;
+                out.push_str(&format!("test    : {path} failed: {err}\n"));
+            }
         }
     }
 
     let status = if failed == 0 { "ok" } else { "failed" };
 
-    format!(
-        "fyr test\npackage : {package}\ntests   : {tests}\npassed  : {passed}\nfailed  : {failed}\nstatus  : {status}\n"
-    )
+    out.push_str(&format!(
+        "tests   : {tests}\npassed  : {passed}\nfailed  : {failed}\nstatus  : {status}\n"
+    ));
+    out
 }
 
 fn fyr_self() -> String {
