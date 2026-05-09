@@ -432,6 +432,9 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
                 );
             }
         }
+        "git" | "gh" | "cargo" | "rustc" | "python3" => {
+            run_guarded_host_passthrough(shell, command, args)
+        }
         "python" => run_python(shell, args),
         "gcc" => run_c(shell, args),
         "plugins" => print!("{}", shell.list_plugins()),
@@ -623,6 +626,63 @@ fn spawn(shell: &mut Phase1Shell, args: &[String]) {
         Ok(pid) => println!("spawned pid {}", pid),
         Err(err) => println!("spawn: {}", err),
     }
+}
+
+
+fn run_guarded_host_passthrough(shell: &mut Phase1Shell, tool: &str, args: &[String]) {
+    if !is_host_passthrough_tool(tool) {
+        println!("{tool}: not an approved host passthrough tool");
+        return;
+    }
+
+    if host_tools_blocked() {
+        println!("{}", crate::policy::host_denial_message(tool));
+        return;
+    }
+
+    if let Some(arg) = args.iter().find(|arg| !is_safe_host_passthrough_arg(arg)) {
+        println!("{tool}: blocked unsafe argument: {arg}");
+        return;
+    }
+
+    shell
+        .kernel
+        .audit
+        .record(format!("host.passthrough tool={tool} argc={}", args.len()));
+
+    let mut cmd = Command::new(tool);
+    cmd.args(args);
+
+    match run_command(cmd, host_passthrough_timeout(tool)) {
+        Ok(output) => print_output(output),
+        Err(err) => println!("{tool}: {err}"),
+    }
+}
+
+fn is_host_passthrough_tool(tool: &str) -> bool {
+    matches!(tool, "git" | "gh" | "cargo" | "rustc" | "python3")
+}
+
+fn host_passthrough_timeout(tool: &str) -> Duration {
+    match tool {
+        "cargo" => Duration::from_secs(180),
+        "git" | "gh" => Duration::from_secs(60),
+        _ => Duration::from_secs(30),
+    }
+}
+
+fn is_safe_host_passthrough_arg(arg: &str) -> bool {
+    !arg.is_empty()
+        && !arg.contains('\0')
+        && !arg.contains('\n')
+        && !arg.contains('\r')
+        && !arg.contains(';')
+        && !arg.contains('|')
+        && !arg.contains('&')
+        && !arg.contains('<')
+        && !arg.contains('>')
+        && !arg.contains('`')
+        && !arg.contains("$(")
 }
 
 fn run_python(shell: &mut Phase1Shell, args: &[String]) {

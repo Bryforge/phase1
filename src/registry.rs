@@ -58,6 +58,11 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("ping", &[], "net", "ping <host>", "Run bounded host ping only when trusted host tools are enabled.", "net.read"),
     cmd!("nmcli", &[], "net", "nmcli", "Show NetworkManager state on Linux only when trusted host tools are enabled.", "net.read"),
     cmd!("browser", &[], "host", "browser <url|phase1|about>", "Fetch and render HTTP/HTTPS text using guarded curl.", "host.net"),
+    cmd!("git", &[], "host", "git <args...>", "Run host Git through guarded operator passthrough at any Phase1 nest level.", "host.exec"),
+    cmd!("gh", &["github"], "host", "gh <args...>", "Run GitHub CLI through guarded operator passthrough at any Phase1 nest level.", "host.exec"),
+    cmd!("cargo", &[], "host", "cargo <args...>", "Run host Cargo through guarded operator passthrough at any Phase1 nest level.", "host.exec"),
+    cmd!("rustc", &[], "host", "rustc <args...>", "Run host rustc through guarded operator passthrough at any Phase1 nest level.", "host.exec"),
+    cmd!("python3", &[], "host", "python3 <args...>", "Run host Python 3 through guarded operator passthrough at any Phase1 nest level.", "host.exec"),
     cmd!("python", &["py"], "host", "python <file.py> | python -c <code>", "Run Python with a timeout.", "host.exec"),
     cmd!("gcc", &["cc"], "host", "gcc <file.c> | gcc <code>", "Compile and run C with host compiler timeout guards.", "host.exec"),
     cmd!("plugins", &["plugin"], "host", "plugins", "List Python and WASI-lite plugins in ./plugins.", "host.exec"),
@@ -320,6 +325,16 @@ mod tests {
         assert!(completions("a").contains(&"avim"));
         assert!(completions("v").contains(&"vim"));
         assert!(completions("la").contains(&"lang"));
+    }
+
+    #[test]
+    fn host_passthrough_commands_are_registered() {
+        for name in ["git", "gh", "cargo", "rustc", "python3"] {
+            let cmd = lookup(name).expect("host passthrough command registered");
+            assert_eq!(cmd.category, "host");
+            assert_eq!(cmd.capability, "host.exec");
+        }
+        assert_eq!(canonical_name("github"), Some("gh"));
     }
 
     #[test]
