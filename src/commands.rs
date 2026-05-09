@@ -652,6 +652,7 @@ fn run_guarded_host_passthrough(shell: &mut Phase1Shell, tool: &str, args: &[Str
 
     let mut cmd = Command::new(tool);
     cmd.args(args);
+    cmd.stdin(Stdio::null());
 
     match run_command(cmd, host_passthrough_timeout(tool)) {
         Ok(output) => print_output(output),
