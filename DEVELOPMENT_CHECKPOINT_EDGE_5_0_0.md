@@ -1,4 +1,4 @@
-# Development Checkpoint: Edge 4.4.0-dev
+# Development Checkpoint: Edge 5.0.0
 
 This checkpoint records the first active edge line after the stable `v4.3.0` public representation.
 
@@ -6,8 +6,8 @@ This checkpoint records the first active edge line after the stable `v4.3.0` pub
 
 | Item | Value |
 | --- | --- |
-| Active package version | `4.4.0-dev` |
-| Edge label | `v4.4.0-dev` |
+| Active package version | `5.0.0` |
+| Edge label | `v5.0.0` |
 | Stable release point | `v4.3.0` |
 | Previous stable | `v4.2.0` |
 | Compatibility base | `v3.6.0` |
