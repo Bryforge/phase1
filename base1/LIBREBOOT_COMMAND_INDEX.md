@@ -10,6 +10,7 @@ This document is advisory and read-only. It does not flash firmware, change boot
 - `base1/LIBREBOOT_PREFLIGHT.md` — read-only Libreboot and GRUB-first preflight notes.
 - `base1/LIBREBOOT_GRUB_RECOVERY.md` — GRUB-first recovery notes.
 - `base1/LIBREBOOT_OPERATOR_CHECKLIST.md` — operator readiness checklist.
+- `base1/LIBREBOOT_VALIDATION_REPORT.md` — Libreboot validation report template.
 
 ## Libreboot scripts
 
