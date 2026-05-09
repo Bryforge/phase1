@@ -1081,13 +1081,10 @@ mod tests {
     #[test]
     fn pasted_command_lines_strip_bracketed_paste_markers() {
         let lines = super::pasted_command_lines(
-            "\x1b[200~cat jesse_copy.go\nlang run go jesse_copy.go\x1b[201~",
+            "\x1b[200~cat demo_copy.go\nlang run go demo_copy.go\x1b[201~",
         );
 
-        assert_eq!(
-            lines,
-            vec!["cat jesse_copy.go", "lang run go jesse_copy.go"]
-        );
+        assert_eq!(lines, vec!["cat demo_copy.go", "lang run go demo_copy.go"]);
     }
 
     #[test]

@@ -17,11 +17,11 @@ emac <file>
 ## Smoke test inside Phase1
 
 ```text
-emacs jesse.go
+emacs demo.go
 :help pro
 :template go
 :wq
-lang run go jesse.go
+lang run go demo.go
 ```
 
 ## Safety model
