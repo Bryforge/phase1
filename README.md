@@ -18,6 +18,8 @@
   ·
   <a href="FEATURE_STATUS.md">Feature status</a>
   ·
+  <a href="PHASE1_NATIVE_LANGUAGE.md">Fyr language</a>
+  ·
   <a href="LEARNING.md">Learning system</a>
   ·
   <a href="QUALITY.md">Quality</a>
@@ -32,8 +34,15 @@
   <img alt="Previous stable" src="https://img.shields.io/badge/previous%20stable-v4.1.0-7f8cff">
   <img alt="Edge" src="https://img.shields.io/badge/edge-v4.3.0--dev-00d8ff">
   <img alt="Rust" src="https://img.shields.io/badge/language-Rust-ff8a00">
+  <img alt="Fyr" src="https://img.shields.io/badge/native%20language-Fyr-ff5a00">
   <img alt="Security" src="https://img.shields.io/badge/safe%20mode-default%20on-39ff88">
   <img alt="License" src="https://img.shields.io/badge/license-GPL--3.0-8a5cff">
+</p>
+
+<p align="center">
+  <a href="PHASE1_NATIVE_LANGUAGE.md">
+    <img src="assets/fyr-flame.svg" alt="Fyr flame mark with fyr written inside the flame" width="520">
+  </a>
 </p>
 
 ## What is Phase1?
@@ -50,6 +59,25 @@ Phase1 is built around a simple public promise:
 
 The project image is modern, neon, technical, and disciplined: advanced visuals, conservative security claims, repeatable validation, and clear separation between stable releases and experimental edge work.
 
+## Fyr native language
+
+Fyr is the Phase1-native language target for VFS automation, self-construction, and operator-owned scripts. It is designed around C-style explicit control, Rust-style safety posture, and Python-style readability while staying owned by Phase1.
+
+Start with [`PHASE1_NATIVE_LANGUAGE.md`](PHASE1_NATIVE_LANGUAGE.md), then follow the dedicated [`Fyr roadmap`](docs/fyr/ROADMAP.md). The README/post flame mark lives at [`assets/fyr-flame.svg`](assets/fyr-flame.svg).
+
+First working script inside Phase1:
+
+```text
+echo 'fn main() -> i32 { print("Hello, hacker!"); return 0; }' > hello_hacker.fyr
+fyr run hello_hacker.fyr
+```
+
+Expected output:
+
+```text
+Hello, hacker!
+```
+
 ## Core capabilities
 
 | Area | What Phase1 provides |
@@ -57,6 +85,7 @@ The project image is modern, neon, technical, and disciplined: advanced visuals,
 | Operator console | A command-first interface with boot flow, dashboard, prompt, help, manual pages, and autocomplete. |
 | Virtual OS model | Simulated kernel, VFS, process table, `/proc`, `/dev`, `/var/log`, architecture and system inspection commands. |
 | Safe execution model | Safe mode on by default, host tools gated behind explicit trust, command capability metadata, and secret redaction. |
+| Fyr native language | Phase1-owned `.fyr` language path with initial command runner and roadmap for self-construction workflows. |
 | Learning system | `phase1-learn` stores local sanitized memory, imports history, learns notes/rules, and suggests next actions. |
 | Website and wiki | Public GitHub Pages site, browser terminal demo, docs hub, tutorials, and roadmap material. |
 | Storage and runtimes | Guarded storage/Git helper, Rust workflows, and a roadmap for broader programming-language support. |

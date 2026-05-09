@@ -102,7 +102,7 @@ Use `Esc`, `escape`, `normal`, or `cancel` to cancel a pending edit and return t
 ## Pro editor target
 
 ```text
-avim jesse.go
+avim demo.go
 :template go
 :w
 :run
@@ -112,7 +112,7 @@ Expected future workflow:
 
 ```text
 avim: inserted Go starter template
-avim: wrote jesse.go
+avim: wrote demo.go
 avim: running go through Phase1 guarded language runtime
 hello from avim + Go inside Phase1
 ```

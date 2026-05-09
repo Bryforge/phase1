@@ -592,10 +592,11 @@ fn print_boot_card(
     outln("");
     outln(&card_top(config, width));
     outln(&card_line(config, width, &console_title(config)));
+    outln(&card_line(config, width, &boot_greeting_line(config)));
     outln(&card_line(
         config,
         width,
-        &format!("node TOKYO-01 | boot {boot_stamp}"),
+        &boot_time_line(config, boot_stamp),
     ));
     outln(&card_rule(config, width));
     for row in skyline_rows(config) {
@@ -631,6 +632,19 @@ fn print_boot_card(
     outln("");
 }
 
+fn boot_greeting_line(config: BootConfig) -> String {
+    let greeting = "こんにちは、ハッカー！";
+    if config.color && !config.ascii_mode {
+        format!("{BOLD}{RED}{greeting}{RESET}")
+    } else {
+        greeting.to_string()
+    }
+}
+
+fn boot_time_line(config: BootConfig, boot_stamp: &str) -> String {
+    tint(config, &format!("boot {boot_stamp}"))
+}
+
 fn skyline_rows(config: BootConfig) -> Vec<String> {
     let mode = if config.safe_mode {
         "shielded"
@@ -640,10 +654,7 @@ fn skyline_rows(config: BootConfig) -> Vec<String> {
     vec![
         tint(config, "neural sync :: kernel PHASE1"),
         format!("mesh encrypted :: {mode}"),
-        format!(
-            "ui device {} :: kern/vfs/proc/net/audit/lang",
-            device_mode(config).name()
-        ),
+        format!("ui device {} :: kern/vfs/proc", device_mode(config).name()),
     ]
 }
 
@@ -1118,13 +1129,94 @@ fn card_section(config: BootConfig, width: usize, label: &str) -> String {
 }
 
 fn card_line(config: BootConfig, width: usize, text: &str) -> String {
-    let padded = pad_visible(&clip_visible(text, width), width);
+    let inner = width;
+    let fitted = fit_cell_text(text, inner);
+    let pad = inner.saturating_sub(visible_cell_width(&fitted));
+    let padding = " ".repeat(pad);
+
     if config.color && !config.ascii_mode {
         let border = palette(active_theme_for_config(config)).border;
-        format!("{border}│{RESET}{padded}{border}│{RESET}")
+        format!("{border}│{RESET}{fitted}{padding}{border}│{RESET}")
     } else {
-        format!("|{padded}|")
+        format!("|{fitted}{padding}|")
     }
+}
+
+fn fit_cell_text(text: &str, width: usize) -> String {
+    if visible_cell_width(text) <= width {
+        return text.to_string();
+    }
+
+    let ellipsis = "…";
+    let ellipsis_width = visible_cell_width(ellipsis);
+    let limit = width.saturating_sub(ellipsis_width);
+    let mut out = String::new();
+    let mut cells = 0;
+    let mut in_escape = false;
+
+    for ch in text.chars() {
+        if in_escape {
+            out.push(ch);
+            if ch == 'm' {
+                in_escape = false;
+            }
+            continue;
+        }
+
+        if ch == char::from(27) {
+            in_escape = true;
+            out.push(ch);
+            continue;
+        }
+
+        let ch_width = char_cell_width(ch);
+        if cells + ch_width > limit {
+            break;
+        }
+
+        out.push(ch);
+        cells += ch_width;
+    }
+
+    if text.contains(RESET) && !out.ends_with(RESET) {
+        out.push_str(RESET);
+    }
+
+    out.push_str(ellipsis);
+    out
+}
+
+fn visible_cell_width(text: &str) -> usize {
+    let mut width = 0;
+    let mut in_escape = false;
+    for ch in text.chars() {
+        if in_escape {
+            if ch == 'm' {
+                in_escape = false;
+            }
+            continue;
+        }
+        if ch == char::from(27) {
+            in_escape = true;
+            continue;
+        }
+        width += char_cell_width(ch);
+    }
+    width
+}
+
+fn char_cell_width(ch: char) -> usize {
+    if ch.is_control() {
+        0
+    } else if is_wide_cell(ch as u32) {
+        2
+    } else {
+        1
+    }
+}
+
+fn is_wide_cell(code: u32) -> bool {
+    matches!(code, 0x1100..=0x115F | 0x2329..=0x232A | 0x2E80..=0xA4CF | 0xAC00..=0xD7A3 | 0xF900..=0xFAFF | 0xFE10..=0xFE19 | 0xFE30..=0xFE6F | 0xFF00..=0xFF60 | 0xFFE0..=0xFFE6)
 }
 
 fn palette(theme: ThemePalette) -> Palette {

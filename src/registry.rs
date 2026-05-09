@@ -74,6 +74,7 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("emacs", &["emac", "phase1-emacs", "phase1emacs", "pemacs"], "editor", "emacs <file>", "Phase1 eMacs editor: VFS-native advanced editor powered by AVIM Pro.", "fs.write"),
     cmd!("dev", &["dock", "selfdev"], "dev", "dev [status|sync|branch|quick|test|commit|push|pr|merge|close|doctor]", "Phase1 self-development dock for working on Phase1 from inside Phase1.", "host.exec"),
     cmd!("repo", &["channels", "branches", "doctrine"], "dev", "repo [status|base|edge|checkpoint]", "Show the Phase1 repository channel doctrine: frozen base, active edge/stable path, checkpoints, and feature branch targets.", "none"),
+    cmd!("fyr", &["phase1lang", "forge"], "dev", "fyr [status|spec|new|cat|self|run <file.fyr>]", "Phase1-native language target for self-construction and VFS automation.", "none"),
     cmd!("lang", &["language", "runlang"], "dev", "lang [list|support|status|doctor|detect|run|security]", "Native guarded multi-language runtime manager for major open-source programming languages.", "host.exec"),
     cmd!("lspci", &[], "arch", "lspci", "List simulated PCIe devices.", "hw.read"),
     cmd!("pcie", &[], "arch", "pcie", "Show PCIe subsystem summary.", "hw.read"),
@@ -243,6 +244,7 @@ mod tests {
         assert_eq!(lookup("channels").map(|cmd| cmd.name), Some("repo"));
         assert_eq!(lookup("branches").map(|cmd| cmd.name), Some("repo"));
         assert_eq!(lookup("doctrine").map(|cmd| cmd.name), Some("repo"));
+        assert_eq!(lookup("phase1lang").map(|cmd| cmd.name), Some("fyr"));
     }
 
     #[test]
@@ -267,6 +269,7 @@ mod tests {
         assert_eq!(canonical_name("edit"), Some("avim"));
         assert_eq!(canonical_name("runlang"), Some("lang"));
         assert_eq!(canonical_name("channels"), Some("repo"));
+        assert_eq!(canonical_name("forge"), Some("fyr"));
     }
 
     #[test]
@@ -299,6 +302,7 @@ mod tests {
         assert!(map.contains("lang"));
         assert!(map.contains("dev"));
         assert!(map.contains("repo"));
+        assert!(map.contains("fyr"));
     }
 
     #[test]
@@ -336,6 +340,8 @@ mod tests {
         assert!(completions("st").contains(&"status"));
         assert!(completions("the").contains(&"theme"));
         assert!(completions("f").contains(&"find"));
+        assert!(completions("f").contains(&"fyr"));
+        assert!(completions("fo").contains(&"forge"));
         assert!(completions("g").contains(&"grep"));
         assert!(completions("u").contains(&"update"));
         assert!(completions("u").contains(&"upgrade"));

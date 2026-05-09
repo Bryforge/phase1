@@ -1,0 +1,5 @@
+fn main() -> i32 {
+    let name = "Phase1";
+    print("Hello from " + name);
+    return 0;
+}
