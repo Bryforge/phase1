@@ -337,6 +337,7 @@ First safe check:
 
 ```bash
 sh scripts/base1-preflight.sh
+sh scripts/base1-install-dry-run.sh --dry-run --target /dev/example
 ```
 
 The preflight checker is read-only.

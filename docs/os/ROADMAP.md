@@ -140,3 +140,8 @@ Each target needs:
 ## Stage 2 rollback metadata design
 
 - [`Base1 rollback metadata design`](BASE1_ROLLBACK_METADATA.md) defines the first safe restore-record contract for Base1 installer, update, and recovery planning.
+
+
+## Stage 2 installer dry-run script
+
+- `scripts/base1-install-dry-run.sh` is the first non-destructive installer preview command. It requires `--dry-run`, requires an explicit target, and reports `writes: no`.
