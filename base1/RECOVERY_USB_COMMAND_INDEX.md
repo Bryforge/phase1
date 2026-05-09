@@ -18,6 +18,7 @@ This document is advisory and read-only. It does not write USB media, partition 
 
 ## Recovery USB commands
 
+- `scripts/base1-recovery-usb-hardware-summary.sh`
 - `scripts/base1-recovery-usb-hardware-report.sh`
 - `scripts/base1-recovery-usb-hardware-validate.sh`
 - `scripts/base1-recovery-usb-hardware-checklist.sh`
