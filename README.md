@@ -357,6 +357,7 @@ sh scripts/base1-libreboot-preflight.sh
 sh scripts/base1-libreboot-report.sh
 sh scripts/base1-libreboot-validate.sh
 sh scripts/base1-recovery-usb-validate.sh
+sh scripts/base1-recovery-usb-hardware-report.sh
 sh scripts/base1-recovery-usb-hardware-validate.sh
 sh scripts/base1-recovery-usb-hardware-checklist.sh
 sh scripts/base1-recovery-usb-index.sh

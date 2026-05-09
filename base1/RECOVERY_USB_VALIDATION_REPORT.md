@@ -22,6 +22,7 @@ This document is advisory and read-only. Do not store passwords, tokens, private
 Run and record whether each command completed:
 
     sh scripts/base1-recovery-usb-index.sh
+    sh scripts/base1-recovery-usb-hardware-report.sh
     sh scripts/base1-recovery-usb-hardware-validate.sh
     sh scripts/base1-recovery-usb-validate.sh
     sh scripts/base1-recovery-usb-dry-run.sh --dry-run --target /dev/example
