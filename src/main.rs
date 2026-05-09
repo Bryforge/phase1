@@ -924,16 +924,18 @@ fn fyr_eval_integer_expression(raw: &str, bindings: &[(String, i32)]) -> Result<
         return Err("expected integer expression");
     }
 
-    if let Some((idx, ch)) = fyr_find_top_level_operator(expr, &['+', '-'])? {
+    if let Some((idx, op)) = fyr_find_top_level_operator(expr, &['+', '-'])? {
         let left = expr[..idx].trim();
-        let right = expr[idx + ch.len_utf8()..].trim();
+        let right = expr[idx + op.len_utf8()..].trim();
+
         if left.is_empty() || right.is_empty() {
             return Err("expected integer expression");
         }
 
         let left = fyr_eval_integer_expression(left, bindings)?;
         let right = fyr_eval_integer_term(right, bindings)?;
-        return match ch {
+
+        return match op {
             '+' => Ok(left + right),
             '-' => Ok(left - right),
             _ => unreachable!(),
@@ -949,9 +951,10 @@ fn fyr_eval_integer_term(raw: &str, bindings: &[(String, i32)]) -> Result<i32, &
         return Err("expected integer expression");
     }
 
-    if let Some((idx, ch)) = fyr_find_top_level_operator(term, &['*', '/'])? {
+    if let Some((idx, op)) = fyr_find_top_level_operator(term, &['*', '/'])? {
         let left = term[..idx].trim();
-        let right = term[idx + ch.len_utf8()..].trim();
+        let right = term[idx + op.len_utf8()..].trim();
+
         if left.is_empty() || right.is_empty() {
             return Err("expected integer expression");
         }
@@ -959,7 +962,7 @@ fn fyr_eval_integer_term(raw: &str, bindings: &[(String, i32)]) -> Result<i32, &
         let left = fyr_eval_integer_term(left, bindings)?;
         let right = fyr_eval_integer_factor(right, bindings)?;
 
-        return match ch {
+        return match op {
             '*' => Ok(left * right),
             '/' => {
                 if right == 0 {
@@ -1001,9 +1004,11 @@ fn fyr_find_top_level_operator(
         if depth == 0 && idx > 0 && operators.contains(&ch) {
             let left = expr[..idx].trim();
             let right = expr[idx + ch.len_utf8()..].trim();
+
             if left.is_empty() || right.is_empty() {
                 return Err("expected integer expression");
             }
+
             found = Some((idx, ch));
         }
     }
