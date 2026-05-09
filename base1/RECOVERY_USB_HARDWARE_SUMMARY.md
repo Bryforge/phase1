@@ -71,3 +71,6 @@ Recovery USB work must remain read-only until target-device selection, image pro
 
 
 See also: [RELEASE_BASE1_RECOVERY_USB_HARDWARE_READONLY_V1.md](../RELEASE_BASE1_RECOVERY_USB_HARDWARE_READONLY_V1.md).
+
+
+See also: [Recovery USB target-device selection design](RECOVERY_USB_TARGET_SELECTION.md).
