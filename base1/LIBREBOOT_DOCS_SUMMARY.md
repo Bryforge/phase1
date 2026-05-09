@@ -18,6 +18,7 @@ This document is advisory and read-only. It does not flash firmware, change boot
 
 Run the read-only commands first:
 
+    sh scripts/base1-libreboot-docs.sh
     sh scripts/base1-libreboot-index.sh
     sh scripts/base1-libreboot-checklist.sh
     sh scripts/base1-libreboot-preflight.sh
