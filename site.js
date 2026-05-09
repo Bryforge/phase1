@@ -213,7 +213,7 @@ const demoResponses = {
     "phase1 // advanced operator kernel",
     "stable: v5.0.0",
     "previous stable: v4.4.0",
-    "next edge: v5.1.0",
+    "next edge: v6.0.0",
     "compatibility base: v3.6.0",
     "language: Rust",
   ].join("\n"),
@@ -228,7 +228,7 @@ const demoResponses = {
   "wiki-quick": [
     "wiki-quick:",
     "  1. clone the repo",
-    "  2. use v5.0.0 for stable or v5.1.0 for active edge development",
+    "  2. use v5.0.0 for stable or v6.0.0 for active edge development",
     "  3. run cargo run",
     "  4. type help, security, sysinfo, wiki",
     "  5. keep safe mode on unless you trust the host workflow",

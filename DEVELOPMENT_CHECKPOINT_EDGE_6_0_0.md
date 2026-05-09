@@ -1,13 +1,13 @@
-# Development Checkpoint: Edge 5.1.0
+# Development Checkpoint: Edge 6.0.0
 
-This checkpoint records the first active edge line after the stable `v5.0.0` public representation.
+This checkpoint records the major edge line after the stable `v5.0.0` public representation.
 
 ## Version identity
 
 | Item | Value |
 | --- | --- |
-| Active package version | `5.1.0` |
-| Edge label | `v5.1.0` |
+| Active package version | `6.0.0` |
+| Edge label | `v6.0.0` |
 | Stable release point | `v5.0.0` |
 | Previous stable | `v4.4.0` |
 | Compatibility base | `v3.6.0` |
@@ -48,3 +48,10 @@ Recommended follow-up work after this checkpoint:
 2. Add `doctor mobile` for terminal width, prompt mode, line-editor mode, color mode, safe mode, trust gate, and launch advice.
 3. Add named boot profiles for phone, laptop development, release demo, and trusted-runtime workflows.
 4. Continue keeping `v5.0.0` stable docs intact until the next formal stable promotion.
+
+
+## v6.0.0 boundary
+
+The v6.0.0 edge line opens after the Base1 recovery USB target-selection and image-provenance read-only checkpoints.
+
+This is still an edge line. It does not claim a finished OS replacement, bootable Base1 image readiness, destructive installer readiness, USB media writing readiness, or real-hardware recovery completion.
