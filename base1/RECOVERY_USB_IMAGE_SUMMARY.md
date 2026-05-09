@@ -75,3 +75,6 @@ This summary does not claim:
 ## Promotion rule
 
 Recovery USB image work must remain read-only until image provenance, checksum verification, target identity, emergency shell behavior, rollback metadata, storage layout, and actual Libreboot/X200-class boot behavior are verified.
+
+
+See also: [Recovery USB image provenance command index](RECOVERY_USB_IMAGE_COMMAND_INDEX.md).
