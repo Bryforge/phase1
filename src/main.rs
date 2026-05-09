@@ -1293,26 +1293,103 @@ fn fyr_parse_assert_statement_ast(
         return Err("expected ');' after assert statement");
     };
 
+    Ok((
+        FyrStatementAst::Assert(fyr_parse_assertion_ast(assertion)?),
+        rest,
+    ))
+}
+
+fn fyr_parse_assertion_ast(assertion: &str) -> Result<FyrAssertionAst, &'static str> {
+    let assertion = assertion.trim();
+
+    if assertion.is_empty() {
+        return Err("expected boolean assertion");
+    }
+
+    if let Some(parts) = fyr_split_assertion_chain(assertion, "||") {
+        let mut labels = Vec::new();
+        let mut value = false;
+
+        for part in parts {
+            let parsed = fyr_parse_assertion_ast(part)?;
+            value |= parsed.value;
+            labels.push(parsed.label);
+        }
+
+        return Ok(FyrAssertionAst {
+            value,
+            label: labels.join(" || "),
+        });
+    }
+
+    if let Some(parts) = fyr_split_assertion_chain(assertion, "&&") {
+        let mut labels = Vec::new();
+        let mut value = true;
+
+        for part in parts {
+            let parsed = fyr_parse_assertion_ast(part)?;
+            value &= parsed.value;
+            labels.push(parsed.label);
+        }
+
+        return Ok(FyrAssertionAst {
+            value,
+            label: labels.join(" && "),
+        });
+    }
+
+    fyr_parse_atomic_assertion_ast(assertion)
+}
+
+fn fyr_split_assertion_chain<'a>(assertion: &'a str, op: &str) -> Option<Vec<&'a str>> {
+    let mut parts = Vec::new();
+    let mut start = 0usize;
+    let mut depth = 0i32;
+    let mut i = 0usize;
+
+    while i < assertion.len() {
+        let rest = &assertion[i..];
+        let ch = rest.chars().next().expect("char");
+
+        match ch {
+            '(' => depth += 1,
+            ')' if depth > 0 => depth -= 1,
+            _ => {}
+        }
+
+        if depth == 0 && rest.starts_with(op) {
+            parts.push(&assertion[start..i]);
+            i += op.len();
+            start = i;
+            continue;
+        }
+
+        i += ch.len_utf8();
+    }
+
+    if parts.is_empty() {
+        None
+    } else {
+        parts.push(&assertion[start..]);
+        Some(parts)
+    }
+}
+
+fn fyr_parse_atomic_assertion_ast(assertion: &str) -> Result<FyrAssertionAst, &'static str> {
     let assertion = assertion.trim();
 
     if assertion == "true" {
-        return Ok((
-            FyrStatementAst::Assert(FyrAssertionAst {
-                value: true,
-                label: assertion.to_string(),
-            }),
-            rest,
-        ));
+        return Ok(FyrAssertionAst {
+            value: true,
+            label: assertion.to_string(),
+        });
     }
 
     if assertion == "false" {
-        return Ok((
-            FyrStatementAst::Assert(FyrAssertionAst {
-                value: false,
-                label: assertion.to_string(),
-            }),
-            rest,
-        ));
+        return Ok(FyrAssertionAst {
+            value: false,
+            label: assertion.to_string(),
+        });
     }
 
     for op in [">=", "<=", "==", "!=", ">", "<"] {
@@ -1332,13 +1409,10 @@ fn fyr_parse_assert_statement_ast(
                 _ => unreachable!(),
             };
 
-            return Ok((
-                FyrStatementAst::Assert(FyrAssertionAst {
-                    value,
-                    label: assertion.to_string(),
-                }),
-                rest,
-            ));
+            return Ok(FyrAssertionAst {
+                value,
+                label: format!("{left} {op} {right}"),
+            });
         }
     }
 
