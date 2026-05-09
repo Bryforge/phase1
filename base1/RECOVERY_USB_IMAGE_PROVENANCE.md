@@ -51,6 +51,7 @@ This design does not implement image downloads, signature verification, or media
 
 Run first:
 
+    sh scripts/base1-recovery-usb-image-summary.sh
     sh scripts/base1-recovery-usb-image-validate.sh
     sh scripts/base1-recovery-usb-image-report.sh
     sh scripts/base1-recovery-usb-target-summary.sh
