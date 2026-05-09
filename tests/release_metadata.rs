@@ -6,6 +6,7 @@ const STABLE_VERSION: &str = "v4.2.0";
 const STABLE_PACKAGE_VERSION: &str = "4.2.0";
 const PREVIOUS_STABLE: &str = "v4.1.0";
 const COMPATIBILITY_BASE: &str = "v3.6.0";
+const EDGE_CHECKPOINT: &str = "DEVELOPMENT_CHECKPOINT_EDGE_4_3_0_DEV.md";
 
 #[test]
 fn cargo_metadata_matches_current_track() {
@@ -73,6 +74,32 @@ fn edge_track_is_documented_when_package_is_dev() {
 }
 
 #[test]
+fn edge_checkpoint_records_current_dev_boundary() {
+    let cargo_toml = read("Cargo.toml");
+    if !is_edge_track(&cargo_toml) {
+        return;
+    }
+
+    let checkpoint = read(EDGE_CHECKPOINT);
+    for expected in [
+        EDGE_VERSION,
+        EDGE_PACKAGE_VERSION,
+        STABLE_VERSION,
+        PREVIOUS_STABLE,
+        COMPATIBILITY_BASE,
+        "Guarded host runtime execution",
+        "compact dynamic chips",
+        "Mobile/narrow terminals",
+        "PHASE1_COMPACT_PROMPT=0",
+    ] {
+        assert!(
+            checkpoint.contains(expected),
+            "{EDGE_CHECKPOINT} is missing checkpoint marker {expected}"
+        );
+    }
+}
+
+#[test]
 fn compatibility_base_remains_documented() {
     for path in ["README.md", "site.js"] {
         let text = read(path);
@@ -88,7 +115,9 @@ fn website_demo_reports_current_stable_track() {
     let js = read("site.js");
     assert!(has_line(&js, "    \"stable: v4.2.0\","));
     assert!(has_line(&js, "    \"previous stable: v4.1.0\","));
+    assert!(has_line(&js, "    \"next edge: v4.3.0-dev\","));
     assert!(!has_line(&js, "    \"stable: v4.1.0\","));
+    assert!(!has_line(&js, "    \"next edge: v4.2.0\","));
 }
 
 #[test]
@@ -113,8 +142,14 @@ fn is_edge_track(cargo_toml: &str) -> bool {
     cargo_toml.contains("version = \"4.3.0-dev\"")
 }
 
-fn edge_facing_files() -> [&'static str; 3] {
-    ["README.md", "EDGE.md", "site.js"]
+fn edge_facing_files() -> [&'static str; 5] {
+    [
+        "README.md",
+        "EDGE.md",
+        "CHANGELOG.md",
+        "site.js",
+        EDGE_CHECKPOINT,
+    ]
 }
 
 fn release_facing_files() -> [&'static str; 3] {

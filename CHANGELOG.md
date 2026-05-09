@@ -1,3 +1,11 @@
+# v4.3.0-dev Edge Checkpoint
+
+- Moved the active package line from stable `4.2.0` to edge `4.3.0-dev`.
+- Preserved `v4.2.0` as the stable public representation, `v4.1.0` as previous stable, and `v3.6.0` as compatibility base.
+- Checkpointed guarded host runtime execution so trusted language/runtime commands can run with safe mode still enabled while privileged host mutation remains gated.
+- Checkpointed compact dynamic prompt chips across mobile, laptop, and desktop modes: `phase1://root ~ [edge safe trust] ⇢`.
+- Checkpointed mobile-safe line editing and collision-safe WASM test fixtures.
+
 # v4.2.0 Stable
 
 - Promoted Phase1 v4.2.0 from development checkpoint to stable representation.

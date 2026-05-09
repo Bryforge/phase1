@@ -3,11 +3,17 @@ use crate::kernel::VERSION;
 pub const STABLE_VERSION: &str = "4.2.0";
 pub const COMPATIBILITY_BASE: &str = "3.6.0";
 pub const CURRENT_VERSION: &str = env!("CARGO_PKG_VERSION");
-pub const CHANNEL: &str = "stable";
+pub const CHANNEL: &str = "edge";
 pub const UPDATE_PROTOCOL_FILE: &str = "UPDATE_PROTOCOL.md";
 pub const VERSION_SCHEME: &str = "MAJOR.MINOR.PATCH[-dev]";
 
 const BLEEDING_FEATURES: &[&str] = &[
+    "guarded host runtime execution with safe mode still enabled under explicit trust",
+    "privileged host mutation remains behind safe mode off plus the trust gate",
+    "lang run guarded workspaces with bounded stdin, timeout controls, and audit metadata",
+    "compact dynamic prompt chips across mobile, laptop, and desktop modes",
+    "mobile-safe simple line editor path for narrow terminals",
+    "collision-safe WASM test fixtures for parallel validation",
     "persistent shell history with private-value redaction",
     "structured shell command chains",
     "structured text pipelines",
@@ -30,6 +36,9 @@ const BLEEDING_FEATURES: &[&str] = &[
 ];
 
 const ROADMAP_STATUS: &[(&str, &str)] = &[
+    ("Guarded host runtime execution", "complete: trusted runtime commands can run while safe mode remains enabled"),
+    ("Compact dynamic prompt", "complete: prompt chips show edge/release, safe/host, and trust/no-trust across all modes"),
+    ("Mobile-safe line editing", "complete: mobile terminals use a simple paste-safe input path by default"),
     ("Persistent shell history", "complete"),
     ("Structured command output and pipelines", "complete"),
     (
@@ -97,7 +106,7 @@ pub fn version_report(args: &[String]) -> String {
     out.push_str(&format!("channel         : {}\n", CHANNEL));
     out.push_str(&format!("version scheme  : {}\n", VERSION_SCHEME));
     out.push_str(&format!("protocol file   : {}\n", UPDATE_PROTOCOL_FILE));
-    out.push_str("\nstable v4.2.0 validated capabilities:\n");
+    out.push_str("\nedge v4.3.0-dev checkpoint capabilities:\n");
     for feature in BLEEDING_FEATURES {
         out.push_str("  - ");
         out.push_str(feature);
@@ -140,6 +149,9 @@ mod tests {
         assert!(out.contains("stable version"));
         assert!(out.contains(VERSION_SCHEME));
         assert!(out.contains(UPDATE_PROTOCOL_FILE));
+        assert!(out.contains("guarded host runtime execution"));
+        assert!(out.contains("compact dynamic prompt chips"));
+        assert!(out.contains("mobile-safe simple line editor"));
         assert!(out.contains("structured text pipelines"));
         assert!(out.contains("patch-level SemVer"));
         assert!(out.contains("metadata-backed capability enforcement"));
@@ -166,6 +178,9 @@ mod tests {
         let out = roadmap_report();
         assert!(out.contains("current"));
         assert!(out.contains("stable"));
+        assert!(out.contains("Guarded host runtime execution"));
+        assert!(out.contains("Compact dynamic prompt"));
+        assert!(out.contains("Mobile-safe line editing"));
         assert!(out.contains("Structured command output and pipelines"));
         assert!(out.contains("Update protocol and semantic patch versioning"));
         assert!(out.contains("Capability enforcement based on command metadata"));
