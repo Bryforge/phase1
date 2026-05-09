@@ -227,9 +227,21 @@ def cmd_doctor() -> int:
     return 0
 
 
+def phase1_plugin_args() -> list[str]:
+    if len(sys.argv) > 1:
+        return sys.argv[1:]
+    data: dict[str, str] = {}
+    if not sys.stdin.isatty():
+        for line in sys.stdin:
+            if "=" in line:
+                key, value = line.rstrip("\n").split("=", 1)
+                data[key] = value
+    return shlex.split(data.get("ARGS", ""))
+
+
 def main() -> int:
     assert_repo()
-    args = sys.argv[1:]
+    args = phase1_plugin_args()
     if not args or args[0] in {"help", "-h", "--help"}:
         print(help_text())
         return 0
