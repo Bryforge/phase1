@@ -33,13 +33,14 @@ Phase1 is a **terminal-first virtual OS console**, not a full bare-metal operati
 | Theme palettes | Implemented | Multiple terminal palettes and preview commands exist. |
 | Dashboard/sysinfo | Implemented | `dash`, `sysinfo`, and related operator reports are available. |
 | Local learning system | Implemented | `learn` and `phase1-learn` use local sanitized memory, rules, notes, suggestions, and history import. |
+| In-shell feature status | Implemented | `status`, `status features`, and `capabilities` show a compact implemented/experimental/restricted/planned/not-planned summary plus command gates. |
 
 ## Runtime, host, and security features
 
 | Feature | Status | Notes |
 | --- | --- | --- |
 | Safe mode default | Implemented | Phase1 boots with host tools blocked unless explicitly trusted. |
-| Command capability metadata | Implemented | Commands have capability labels and guard descriptions. Run `capabilities` in Phase1. |
+| Command capability metadata | Implemented | Commands have capability labels and guard descriptions. Run `capabilities` or `status features` in Phase1. |
 | Guarded host runtime execution | Experimental | `lang run` can execute trusted local runtimes with explicit host trust while safe mode remains enabled. This is a guardrail layer, not VM isolation. |
 | Direct `python` / `py` wrapper | Experimental | Works as host-backed execution, but should be migrated to the same runtime helper as `lang run`. |
 | Direct `gcc` / `cc` wrapper | Experimental | Works as host-backed execution, but should be migrated to the same runtime helper as `lang run`. |
@@ -75,7 +76,6 @@ Phase1 is a **terminal-first virtual OS console**, not a full bare-metal operati
 | Unified legacy runtime wrappers | Planned | Move direct `python`, `py`, `gcc`, and `cc` through the same helper as `lang run`. |
 | `doctor mobile` | Planned | Report terminal width, prompt mode, line-editor mode, color mode, safe mode, trust gate, and recommended launch command. |
 | Named boot profiles | Planned | Save/use profiles such as phone, laptop-dev, release-demo, and trusted-runtime. |
-| `capabilities --status` or `status features` | Planned | Add an in-shell high-level feature-status view that mirrors this matrix. |
 | Broader language support | Planned | Continue expanding the guarded runtime manager for major programming languages. |
 
 ## Quick answers
@@ -84,4 +84,4 @@ Phase1 is a **terminal-first virtual OS console**, not a full bare-metal operati
 - **Is Python/Git/Cargo support stable secure execution?** No. It is experimental host integration and should be labeled that way until more isolation work exists.
 - **Does Phase1 run untrusted code safely?** No. Do not treat host-backed runtimes as a hardened sandbox.
 - **What is implemented today?** The shell, simulated VFS/process/kernel model, docs, local learning, prompt/UI, quality checks, WASI-lite plugin path, and guarded runtime pathways described above.
-- **What should users run to inspect command-level gates?** Run `capabilities` inside Phase1.
+- **What should users run to inspect command-level gates?** Run `status features`, `status`, or `capabilities` inside Phase1.
