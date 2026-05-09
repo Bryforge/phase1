@@ -27,6 +27,7 @@ This document is advisory and read-only. It does not write USB media, partition 
 
 Run the read-only commands first:
 
+    sh scripts/base1-recovery-usb-image-report.sh
     sh scripts/base1-recovery-usb-target-summary.sh
     sh scripts/base1-recovery-usb-target-validate.sh
     sh scripts/base1-recovery-usb-target-dry-run.sh --dry-run --target /dev/example
