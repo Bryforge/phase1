@@ -50,5 +50,6 @@ Do not store passwords, recovery phrases, private keys, tokens, or personal secr
 ## Related read-only checks
 
     sh scripts/base1-libreboot-preflight.sh
+    sh scripts/base1-grub-recovery-dry-run.sh --dry-run
     sh scripts/base1-recovery-dry-run.sh --dry-run
     sh scripts/base1-rollback-metadata-dry-run.sh --dry-run
