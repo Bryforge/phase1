@@ -108,3 +108,33 @@ fn fyr_test_reports_failed_test_file_diagnostics() {
     assert!(output.contains("failed  : 1"), "{output}");
     assert!(output.contains("status  : failed"), "{output}");
 }
+
+#[test]
+fn fyr_test_assert_eq_passes() {
+    let output = run_phase1(
+        "fyr init app\necho 'fn main() -> i32 { assert_eq(1, 1); return 0; }' > app/tests/assert_ok.fyr\nfyr test app\nexit\n",
+    );
+
+    assert!(
+        output.contains("test    : app/tests/assert_ok.fyr ok"),
+        "{output}"
+    );
+    assert!(output.contains("passed  : 2"), "{output}");
+    assert!(output.contains("failed  : 0"), "{output}");
+    assert!(output.contains("status  : ok"), "{output}");
+}
+
+#[test]
+fn fyr_test_assert_eq_failure_is_reported() {
+    let output = run_phase1(
+        "fyr init app\necho 'fn main() -> i32 { assert_eq(1, 2); return 0; }' > app/tests/assert_fail.fyr\nfyr test app\nexit\n",
+    );
+
+    assert!(
+        output.contains("test    : app/tests/assert_fail.fyr failed: assertion failed: 1 != 2"),
+        "{output}"
+    );
+    assert!(output.contains("passed  : 1"), "{output}");
+    assert!(output.contains("failed  : 1"), "{output}");
+    assert!(output.contains("status  : failed"), "{output}");
+}

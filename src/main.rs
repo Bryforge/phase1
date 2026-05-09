@@ -683,6 +683,7 @@ struct FyrFunctionAst {
 #[derive(Clone, Debug, Eq, PartialEq)]
 enum FyrStatementAst {
     Print(String),
+    AssertEq(i32, i32),
     Return(i32),
 }
 
@@ -816,7 +817,7 @@ fn fyr_ast_summary(ast: &FyrSourceAst) -> FyrAstSummary {
     for function in &ast.functions {
         for statement in &function.statements {
             match statement {
-                FyrStatementAst::Print(_) => summary.prints += 1,
+                FyrStatementAst::Print(_) | FyrStatementAst::AssertEq(_, _) => summary.prints += 1,
                 FyrStatementAst::Return(_) => summary.returns += 1,
             }
         }
@@ -845,20 +846,26 @@ fn fyr_parse_statements(body: &str) -> Result<Vec<FyrStatementAst>, &'static str
             let (statement, next) = fyr_parse_print_statement_ast(rest)?;
             statements.push(statement);
             rest = next.trim_start();
+        } else if rest.starts_with("assert_eq") {
+            let (statement, next) = fyr_parse_assert_eq_statement_ast(rest)?;
+            statements.push(statement);
+            rest = next.trim_start();
         } else if rest.starts_with("return") {
             let (statement, next) = fyr_parse_return_statement_ast(rest)?;
             statements.push(statement);
             rest = next.trim_start();
         } else {
-            return Err("expected print or return statement");
+            return Err("expected print, assert_eq, or return statement");
         }
     }
 
-    if !statements
-        .iter()
-        .any(|statement| matches!(statement, FyrStatementAst::Print(_)))
-    {
-        return Err("seed checker requires at least one print literal");
+    if !statements.iter().any(|statement| {
+        matches!(
+            statement,
+            FyrStatementAst::Print(_) | FyrStatementAst::AssertEq(_, _)
+        )
+    }) {
+        return Err("seed checker requires at least one print literal or assertion");
     }
     if !statements
         .iter()
@@ -915,6 +922,77 @@ fn fyr_parse_print_statement_ast(statement: &str) -> Result<(FyrStatementAst, &s
     };
 
     Ok((FyrStatementAst::Print(message), rest))
+}
+
+fn fyr_parse_assert_eq_statement_ast(
+    statement: &str,
+) -> Result<(FyrStatementAst, &str), &'static str> {
+    let Some(rest) = statement.strip_prefix("assert_eq") else {
+        return Err("expected assert_eq statement");
+    };
+
+    let rest = rest.trim_start();
+    let Some(rest) = rest.strip_prefix('(') else {
+        return Err("expected '(' after assert_eq");
+    };
+
+    let (left, rest) = fyr_parse_integer_with_rest(rest)?;
+    let rest = rest.trim_start();
+    let Some(rest) = rest.strip_prefix(',') else {
+        return Err("expected ',' in assert_eq");
+    };
+
+    let (right, rest) = fyr_parse_integer_with_rest(rest)?;
+    let rest = rest.trim_start();
+    let Some(rest) = rest.strip_prefix(')') else {
+        return Err("expected ')' after assert_eq values");
+    };
+
+    let rest = rest.trim_start();
+    let Some(rest) = rest.strip_prefix(';') else {
+        return Err("expected ';' after assert_eq statement");
+    };
+
+    Ok((FyrStatementAst::AssertEq(left, right), rest))
+}
+
+fn fyr_parse_integer_with_rest(text: &str) -> Result<(i32, &str), &'static str> {
+    let rest = text.trim_start();
+    let mut end = 0usize;
+    let mut saw_digit = false;
+
+    for (idx, ch) in rest.char_indices() {
+        if ch.is_ascii_digit() {
+            saw_digit = true;
+            end = idx + ch.len_utf8();
+        } else {
+            break;
+        }
+    }
+
+    if !saw_digit {
+        return Err("expected integer value");
+    }
+
+    let value = rest[..end]
+        .parse::<i32>()
+        .map_err(|_| "expected integer value")?;
+
+    Ok((value, &rest[end..]))
+}
+
+fn fyr_eval_test_ast(ast: &FyrSourceAst) -> Result<(), String> {
+    for function in &ast.functions {
+        for statement in &function.statements {
+            if let FyrStatementAst::AssertEq(left, right) = statement {
+                if left != right {
+                    return Err(format!("assertion failed: {left} != {right}"));
+                }
+            }
+        }
+    }
+
+    Ok(())
 }
 
 fn fyr_parse_return_statement_ast(
@@ -1049,10 +1127,16 @@ fn fyr_test(shell: &mut Phase1Shell, args: &[String]) -> String {
 
         match shell.kernel.sys_read(&path) {
             Ok(source) => match fyr_parse_source_ast(&source) {
-                Ok(_) => {
-                    passed += 1;
-                    out.push_str(&format!("test    : {path} ok\n"));
-                }
+                Ok(ast) => match fyr_eval_test_ast(&ast) {
+                    Ok(()) => {
+                        passed += 1;
+                        out.push_str(&format!("test    : {path} ok\n"));
+                    }
+                    Err(err) => {
+                        failed += 1;
+                        out.push_str(&format!("test    : {path} failed: {err}\n"));
+                    }
+                },
                 Err(err) => {
                     failed += 1;
                     out.push_str(&format!("test    : {path} failed: {err}\n"));
