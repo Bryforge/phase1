@@ -798,7 +798,11 @@ fn find_tool(tools: &'static [&'static str]) -> Option<&'static str> {
 
 fn tool_version(tool: &str) -> String {
     let mut cmd = Command::new(tool);
-    cmd.arg("--version");
+    if tool == "go" {
+        cmd.arg("version");
+    } else {
+        cmd.arg("--version");
+    }
     match run_command(cmd, Duration::from_secs(3), None) {
         Ok(output) => first_line(&format_output(output)),
         Err(_) => "version unavailable".to_string(),

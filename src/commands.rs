@@ -432,7 +432,7 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
                 );
             }
         }
-        "git" | "gh" | "cargo" | "rustc" | "python3" => {
+        "git" | "gh" | "cargo" | "rustc" | "python3" | "go" => {
             run_guarded_host_passthrough(shell, command, args)
         }
         "python" => run_python(shell, args),
@@ -628,7 +628,6 @@ fn spawn(shell: &mut Phase1Shell, args: &[String]) {
     }
 }
 
-
 fn run_guarded_host_passthrough(shell: &mut Phase1Shell, tool: &str, args: &[String]) {
     if !is_host_passthrough_tool(tool) {
         println!("{tool}: not an approved host passthrough tool");
@@ -652,6 +651,7 @@ fn run_guarded_host_passthrough(shell: &mut Phase1Shell, tool: &str, args: &[Str
 
     let mut cmd = Command::new(tool);
     cmd.args(args);
+    cmd.stdin(Stdio::null());
 
     match run_command(cmd, host_passthrough_timeout(tool)) {
         Ok(output) => print_output(output),
@@ -660,12 +660,13 @@ fn run_guarded_host_passthrough(shell: &mut Phase1Shell, tool: &str, args: &[Str
 }
 
 fn is_host_passthrough_tool(tool: &str) -> bool {
-    matches!(tool, "git" | "gh" | "cargo" | "rustc" | "python3")
+    matches!(tool, "git" | "gh" | "cargo" | "rustc" | "python3" | "go")
 }
 
 fn host_passthrough_timeout(tool: &str) -> Duration {
     match tool {
         "cargo" => Duration::from_secs(180),
+        "go" => Duration::from_secs(120),
         "git" | "gh" => Duration::from_secs(60),
         _ => Duration::from_secs(30),
     }
