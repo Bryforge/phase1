@@ -49,7 +49,7 @@ pub fn read_shell_line(prompt: &str) -> io::Result<Option<String>> {
     }
 
     if simple_line_editor_enabled() {
-        let line = read_plain_line()?;
+        let line = read_plain_line(prompt)?;
         if let Some(line) = &line {
             push_session_history(line);
         }
@@ -185,7 +185,7 @@ pub fn read_shell_line(prompt: &str) -> io::Result<Option<String>> {
     }
 }
 
-fn read_plain_line() -> io::Result<Option<String>> {
+fn read_plain_line(prompt: &str) -> io::Result<Option<String>> {
     io::stdout().flush()?;
     let prompt_started = Instant::now();
     let mut input = String::new();
@@ -199,6 +199,9 @@ fn read_plain_line() -> io::Result<Option<String>> {
                     prompt_started.elapsed().as_secs()
                 );
                 return Ok(Some(String::new()));
+            }
+            if line.contains('\t') {
+                return Ok(Some(complete_cooked_line(line, prompt)?));
             }
             Ok(Some(line.to_string()))
         }
