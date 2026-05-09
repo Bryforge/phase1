@@ -16,6 +16,7 @@ This document is advisory and read-only. It does not write USB media, partition 
 ## Target selection commands
 
 - `scripts/base1-recovery-usb-target-dry-run.sh --dry-run --target /dev/example`
+- `scripts/base1-recovery-usb-target-summary.sh`
 - `scripts/base1-recovery-usb-target-validate.sh`
 - `scripts/base1-recovery-usb-target-report.sh`
 - `scripts/base1-recovery-usb-hardware-summary.sh`
