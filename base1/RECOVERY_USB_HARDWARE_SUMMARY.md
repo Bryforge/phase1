@@ -80,3 +80,6 @@ See also: [Recovery USB target-device selection design](RECOVERY_USB_TARGET_SELE
 
 
 See also: [Recovery USB target selection command index](RECOVERY_USB_TARGET_COMMAND_INDEX.md).
+
+
+See also: [Recovery USB target selection summary](RECOVERY_USB_TARGET_SUMMARY.md).

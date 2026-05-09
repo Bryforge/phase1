@@ -79,3 +79,6 @@ A future recovery USB writer can only follow after target identity, image proven
 
 
 See also: [Recovery USB target selection command index](RECOVERY_USB_TARGET_COMMAND_INDEX.md).
+
+
+See also: [Recovery USB target selection summary](RECOVERY_USB_TARGET_SUMMARY.md).

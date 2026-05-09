@@ -7,6 +7,7 @@ This document is advisory and read-only. It does not write USB media, partition 
 ## Target selection documents
 
 - `base1/RECOVERY_USB_TARGET_SELECTION.md` — target-device selection design.
+- `base1/RECOVERY_USB_TARGET_SUMMARY.md` — Recovery USB target selection summary.
 - `base1/RECOVERY_USB_HARDWARE_SUMMARY.md` — recovery USB hardware validation summary.
 - `base1/RECOVERY_USB_HARDWARE_CHECKLIST.md` — hardware observation checklist.
 - `base1/RECOVERY_USB_COMMAND_INDEX.md` — broader recovery USB command index.
