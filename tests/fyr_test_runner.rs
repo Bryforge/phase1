@@ -74,3 +74,37 @@ fn fyr_test_reports_missing_package_manifest() {
         "{output}"
     );
 }
+
+#[test]
+fn fyr_test_reports_each_test_file() {
+    let output = run_phase1("fyr init app\nfyr test app\nexit\n");
+
+    assert!(
+        output.contains("test    : app/tests/smoke.fyr ok"),
+        "{output}"
+    );
+    assert!(output.contains("tests   : 1"), "{output}");
+    assert!(output.contains("passed  : 1"), "{output}");
+    assert!(output.contains("failed  : 0"), "{output}");
+    assert!(output.contains("status  : ok"), "{output}");
+}
+
+#[test]
+fn fyr_test_reports_failed_test_file_diagnostics() {
+    let output = run_phase1(
+        "fyr init app\necho 'print(\"missing entry\");' > app/tests/bad.fyr\nfyr test app\nexit\n",
+    );
+
+    assert!(
+        output.contains("test    : app/tests/bad.fyr failed: missing fn main entry point"),
+        "{output}"
+    );
+    assert!(
+        output.contains("test    : app/tests/smoke.fyr ok"),
+        "{output}"
+    );
+    assert!(output.contains("tests   : 2"), "{output}");
+    assert!(output.contains("passed  : 1"), "{output}");
+    assert!(output.contains("failed  : 1"), "{output}");
+    assert!(output.contains("status  : failed"), "{output}");
+}
