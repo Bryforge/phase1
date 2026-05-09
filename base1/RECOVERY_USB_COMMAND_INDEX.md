@@ -61,3 +61,6 @@ The expected read-only path is:
 5. Confirm rollback metadata location.
 6. Confirm Phase1 state location.
 7. Confirm recovery USB plan without writing media.
+
+
+See also: [`RELEASE_BASE1_RECOVERY_USB_HARDWARE_READONLY_V1.md`](../RELEASE_BASE1_RECOVERY_USB_HARDWARE_READONLY_V1.md) — recovery USB hardware read-only checkpoint release notes.
