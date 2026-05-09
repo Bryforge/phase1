@@ -818,7 +818,7 @@ fn fyr_expand_let_bindings(source: &str) -> Result<String, &'static str> {
     };
 
     let body = &source[body_start..body_end];
-    let mut bindings: Vec<(String, String)> = Vec::new();
+    let mut bindings: Vec<(String, i32)> = Vec::new();
     let mut rewritten_body = String::new();
 
     for statement in fyr_split_seed_statements(body)? {
@@ -837,18 +837,17 @@ fn fyr_expand_let_bindings(source: &str) -> Result<String, &'static str> {
                 return Err("invalid let binding name");
             }
 
-            let value = value
-                .trim()
-                .parse::<i32>()
+            let value = fyr_eval_integer_expression(value.trim(), &bindings)
                 .map_err(|_| "expected integer let binding value")?;
 
-            bindings.push((name.to_string(), value.to_string()));
+            bindings.push((name.to_string(), value));
             continue;
         }
 
         let mut expanded = statement.to_string();
         for (name, value) in &bindings {
-            expanded = fyr_replace_identifier_outside_strings(&expanded, name, value);
+            let value = value.to_string();
+            expanded = fyr_replace_identifier_outside_strings(&expanded, name, &value);
         }
 
         rewritten_body.push_str(&expanded);
@@ -911,6 +910,53 @@ fn fyr_split_seed_statements(body: &str) -> Result<Vec<String>, &'static str> {
     }
 
     Ok(statements)
+}
+
+fn fyr_eval_integer_expression(raw: &str, bindings: &[(String, i32)]) -> Result<i32, &'static str> {
+    let expr = raw.trim();
+    if expr.is_empty() {
+        return Err("expected integer expression");
+    }
+
+    for (idx, ch) in expr.char_indices() {
+        if idx == 0 || !matches!(ch, '+' | '-') {
+            continue;
+        }
+
+        let left = expr[..idx].trim();
+        let right = expr[idx + ch.len_utf8()..].trim();
+        if left.is_empty() || right.is_empty() {
+            return Err("expected integer expression");
+        }
+
+        let left = fyr_eval_integer_term(left, bindings)?;
+        let right = fyr_eval_integer_term(right, bindings)?;
+        return match ch {
+            '+' => Ok(left + right),
+            '-' => Ok(left - right),
+            _ => unreachable!(),
+        };
+    }
+
+    fyr_eval_integer_term(expr, bindings)
+}
+
+fn fyr_eval_integer_term(raw: &str, bindings: &[(String, i32)]) -> Result<i32, &'static str> {
+    let term = raw.trim();
+
+    if let Ok(value) = term.parse::<i32>() {
+        return Ok(value);
+    }
+
+    if !fyr_is_identifier(term) {
+        return Err("expected integer expression");
+    }
+
+    bindings
+        .iter()
+        .rev()
+        .find_map(|(name, value)| (name == term).then_some(*value))
+        .ok_or("unknown let binding")
 }
 
 fn fyr_is_identifier(raw: &str) -> bool {
