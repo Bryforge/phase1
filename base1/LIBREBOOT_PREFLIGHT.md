@@ -55,3 +55,6 @@ sh scripts/base1-libreboot-preflight.sh
 See also: [Libreboot GRUB recovery notes](LIBREBOOT_GRUB_RECOVERY.md).
 
 Future script support should remain read-only and should print notes instead of mutating firmware or boot settings.
+
+
+See also: [Libreboot operator checklist](LIBREBOOT_OPERATOR_CHECKLIST.md).

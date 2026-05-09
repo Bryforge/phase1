@@ -83,3 +83,6 @@ sh scripts/base1-libreboot-preflight.sh
 ```
 
 Future Libreboot-aware validation may add read-only firmware notes, but firmware mutation remains explicit operator work.
+
+
+See also: [Libreboot operator checklist](LIBREBOOT_OPERATOR_CHECKLIST.md).

@@ -53,3 +53,6 @@ Do not store passwords, recovery phrases, private keys, tokens, or personal secr
     sh scripts/base1-grub-recovery-dry-run.sh --dry-run
     sh scripts/base1-recovery-dry-run.sh --dry-run
     sh scripts/base1-rollback-metadata-dry-run.sh --dry-run
+
+
+See also: [Libreboot operator checklist](LIBREBOOT_OPERATOR_CHECKLIST.md).
