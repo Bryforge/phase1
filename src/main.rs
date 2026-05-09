@@ -683,6 +683,7 @@ struct FyrFunctionAst {
 #[derive(Clone, Debug, Eq, PartialEq)]
 enum FyrStatementAst {
     Print(String),
+    Assert(bool),
     AssertEq(i32, i32),
     Return(i32),
 }
@@ -817,7 +818,9 @@ fn fyr_ast_summary(ast: &FyrSourceAst) -> FyrAstSummary {
     for function in &ast.functions {
         for statement in &function.statements {
             match statement {
-                FyrStatementAst::Print(_) | FyrStatementAst::AssertEq(_, _) => summary.prints += 1,
+                FyrStatementAst::Print(_)
+                | FyrStatementAst::Assert(_)
+                | FyrStatementAst::AssertEq(_, _) => summary.prints += 1,
                 FyrStatementAst::Return(_) => summary.returns += 1,
             }
         }
@@ -850,23 +853,32 @@ fn fyr_parse_statements(body: &str) -> Result<Vec<FyrStatementAst>, &'static str
             let (statement, next) = fyr_parse_assert_eq_statement_ast(rest)?;
             statements.push(statement);
             rest = next.trim_start();
+        } else if rest.starts_with("assert") {
+            let (statement, next) = fyr_parse_assert_statement_ast(rest)?;
+            statements.push(statement);
+            rest = next.trim_start();
         } else if rest.starts_with("return") {
             let (statement, next) = fyr_parse_return_statement_ast(rest)?;
             statements.push(statement);
             rest = next.trim_start();
         } else {
-            return Err("expected print, assert_eq, or return statement");
+            return Err("expected print, assert_eq, assert, or return statement");
         }
     }
 
-    if !statements.iter().any(|statement| {
+    let has_observable_statement = statements.iter().any(|statement| {
         matches!(
             statement,
-            FyrStatementAst::Print(_) | FyrStatementAst::AssertEq(_, _)
+            FyrStatementAst::Print(_)
+                | FyrStatementAst::Assert(_)
+                | FyrStatementAst::AssertEq(_, _)
         )
-    }) {
+    });
+
+    if !has_observable_statement {
         return Err("seed checker requires at least one print literal or assertion");
     }
+
     if !statements
         .iter()
         .any(|statement| matches!(statement, FyrStatementAst::Return(_)))
@@ -922,6 +934,45 @@ fn fyr_parse_print_statement_ast(statement: &str) -> Result<(FyrStatementAst, &s
     };
 
     Ok((FyrStatementAst::Print(message), rest))
+}
+
+fn fyr_parse_assert_statement_ast(
+    statement: &str,
+) -> Result<(FyrStatementAst, &str), &'static str> {
+    let Some(rest) = statement.strip_prefix("assert") else {
+        return Err("expected assert statement");
+    };
+
+    let rest = rest.trim_start();
+    let Some(rest) = rest.strip_prefix('(') else {
+        return Err("expected '(' after assert");
+    };
+
+    let (value, rest) = fyr_parse_bool_with_rest(rest)?;
+    let rest = rest.trim_start();
+
+    let Some(rest) = rest.strip_prefix(')') else {
+        return Err("expected ')' after assert value");
+    };
+
+    let rest = rest.trim_start();
+    let Some(rest) = rest.strip_prefix(';') else {
+        return Err("expected ';' after assert statement");
+    };
+
+    Ok((FyrStatementAst::Assert(value), rest))
+}
+
+fn fyr_parse_bool_with_rest(text: &str) -> Result<(bool, &str), &'static str> {
+    let rest = text.trim_start();
+
+    if let Some(next) = rest.strip_prefix("true") {
+        Ok((true, next))
+    } else if let Some(next) = rest.strip_prefix("false") {
+        Ok((false, next))
+    } else {
+        Err("expected boolean value")
+    }
 }
 
 fn fyr_parse_assert_eq_statement_ast(
@@ -984,10 +1035,14 @@ fn fyr_parse_integer_with_rest(text: &str) -> Result<(i32, &str), &'static str> 
 fn fyr_eval_test_ast(ast: &FyrSourceAst) -> Result<(), String> {
     for function in &ast.functions {
         for statement in &function.statements {
-            if let FyrStatementAst::AssertEq(left, right) = statement {
-                if left != right {
+            match statement {
+                FyrStatementAst::Assert(value) if !value => {
+                    return Err("assertion failed: false".to_string());
+                }
+                FyrStatementAst::AssertEq(left, right) if left != right => {
                     return Err(format!("assertion failed: {left} != {right}"));
                 }
+                _ => {}
             }
         }
     }
