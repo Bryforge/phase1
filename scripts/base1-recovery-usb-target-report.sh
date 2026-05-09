@@ -43,7 +43,7 @@ target identity:
 - device model/name: unknown
 - device size: unknown
 - removable status: unknown
-- current mount status: unknown
+- current attachment status: unknown
 - filesystem labels: unknown
 - data preservation status: unknown
 - internal disk status: unknown

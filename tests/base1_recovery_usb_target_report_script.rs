@@ -46,7 +46,10 @@ fn recovery_usb_target_report_script_lists_identity_fields_and_commands() {
     assert!(text.contains("device model/name: unknown"), "{text}");
     assert!(text.contains("device size: unknown"), "{text}");
     assert!(text.contains("removable status: unknown"), "{text}");
-    assert!(text.contains("current mount status: unknown"), "{text}");
+    assert!(
+        text.contains("current attachment status: unknown"),
+        "{text}"
+    );
     assert!(text.contains("internal disk status: unknown"), "{text}");
     assert!(
         text.contains("physical USB label status: unknown"),
