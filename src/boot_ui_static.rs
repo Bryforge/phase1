@@ -1127,13 +1127,52 @@ fn card_section(config: BootConfig, width: usize, label: &str) -> String {
 }
 
 fn card_line(config: BootConfig, width: usize, text: &str) -> String {
-    let padded = pad_visible(&clip_visible(text, width), width);
+    let content_width = width.saturating_sub(2);
+    let visible = visible_cell_width(text);
+    let pad = content_width.saturating_sub(visible);
+    let padding = " ".repeat(pad);
     if config.color && !config.ascii_mode {
-        let border = palette(active_theme_for_config(config)).border;
-        format!("{border}│{RESET}{padded}{border}│{RESET}")
+        let colors = palette(active_theme_for_config(config));
+        format!(
+            "{}│{}{}{}│{}",
+            colors.border, text, padding, colors.border, RESET
+        )
     } else {
-        format!("|{padded}|")
+        format!("|{}{}|", text, padding)
     }
+}
+
+fn visible_cell_width(text: &str) -> usize {
+    let mut width = 0;
+    let mut in_escape = false;
+    for ch in text.chars() {
+        if in_escape {
+            if ch == 'm' {
+                in_escape = false;
+            }
+            continue;
+        }
+        if ch == char::from(27) {
+            in_escape = true;
+            continue;
+        }
+        width += char_cell_width(ch);
+    }
+    width
+}
+
+fn char_cell_width(ch: char) -> usize {
+    if ch.is_control() {
+        0
+    } else if is_wide_cell(ch as u32) {
+        2
+    } else {
+        1
+    }
+}
+
+fn is_wide_cell(code: u32) -> bool {
+    matches!(code, 0x1100..=0x115F | 0x2329..=0x232A | 0x2E80..=0xA4CF | 0xAC00..=0xD7A3 | 0xF900..=0xFAFF | 0xFE10..=0xFE19 | 0xFE30..=0xFE6F | 0xFF00..=0xFF60 | 0xFFE0..=0xFFE6)
 }
 
 fn palette(theme: ThemePalette) -> Palette {
