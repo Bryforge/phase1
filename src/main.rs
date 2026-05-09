@@ -481,7 +481,7 @@ fn execute_one(
             let canonical = registry::canonical_name(cmd).unwrap_or(cmd);
             let known = registry::lookup(cmd).is_some()
                 || plugin_exists(shell, canonical)
-                || matches!(canonical, "avim" | "lang" | "opslog");
+                || matches!(canonical, "avim" | "emacs" | "lang" | "opslog");
             match canonical {
                 "help" => ui::print_help(),
                 "accounts" => print!("{}", accounts_report(shell)),
@@ -504,6 +504,7 @@ fn execute_one(
                 "find" => print!("{}", text::find(&shell.kernel.vfs, args)),
                 "matrix" => matrix::run(args),
                 "avim" => avim::edit(&mut shell.kernel.vfs, args),
+                "emacs" => avim::edit(&mut shell.kernel.vfs, args),
                 "lang" => print!("{}", languages::run(shell, args)),
                 "opslog" => print!("{}", ops_log::run(args)),
                 "bootcfg" => handle_bootcfg(boot_config, args),
@@ -1029,7 +1030,6 @@ mod tests {
     }
 
     #[test]
-    #[test]
     fn pasted_command_lines_split_shell_blocks() {
         let lines = super::pasted_command_lines(
             "git status\ngh pr list\ncargo test --workspace --all-targets\nexit all\n",
@@ -1058,6 +1058,7 @@ mod tests {
         );
     }
 
+    #[test]
     fn command_chain_respects_quotes_and_operators() {
         let chain = parse_chain("echo 'a;b' ; unknown && echo no || echo yes").unwrap();
         assert_eq!(chain.len(), 4);
