@@ -1361,7 +1361,7 @@ mod avim_pro_slice_tests {
 
     fn demo_state() -> AvimState {
         AvimState {
-            filename: "jesse.go".to_string(),
+            filename: "demo.go".to_string(),
             lines: vec!["package main".to_string()],
             cursor: 0,
             column: 0,
@@ -1379,7 +1379,7 @@ mod avim_pro_slice_tests {
     fn pro_status_reports_buffer_details() {
         let state = demo_state();
         let status = buffer_status(&state);
-        assert!(status.contains("file      : jesse.go"));
+        assert!(status.contains("file      : demo.go"));
         assert!(status.contains("dirty     : false"));
         assert!(status.contains("lines     : 1"));
         assert!(status.contains("cursor    : L1 C1"));

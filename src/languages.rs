@@ -966,8 +966,8 @@ mod tests {
     fn source_path_detection_handles_paste_joined_filenames() {
         let go = super::find_language("go").expect("go registered");
 
-        assert!(super::looks_like_source_path("jesse_copy.go", go));
-        assert!(super::looks_like_source_path("./jesse_copy.go", go));
+        assert!(super::looks_like_source_path("demo_copy.go", go));
+        assert!(super::looks_like_source_path("./demo_copy.go", go));
         assert!(!super::looks_like_source_path("fmt.Println(\"hi\")", go));
     }
 
