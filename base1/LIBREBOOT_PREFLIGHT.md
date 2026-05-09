@@ -58,3 +58,6 @@ Future script support should remain read-only and should print notes instead of 
 
 
 See also: [Libreboot operator checklist](LIBREBOOT_OPERATOR_CHECKLIST.md).
+
+
+See also: [Libreboot command index](LIBREBOOT_COMMAND_INDEX.md).

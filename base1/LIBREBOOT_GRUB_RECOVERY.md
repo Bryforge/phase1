@@ -56,3 +56,6 @@ Do not store passwords, recovery phrases, private keys, tokens, or personal secr
 
 
 See also: [Libreboot operator checklist](LIBREBOOT_OPERATOR_CHECKLIST.md).
+
+
+See also: [Libreboot command index](LIBREBOOT_COMMAND_INDEX.md).
