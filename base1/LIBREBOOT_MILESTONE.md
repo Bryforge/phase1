@@ -31,6 +31,7 @@ Documents:
 
 Scripts:
 
+- scripts/base1-libreboot-milestone.sh
 - scripts/base1-libreboot-docs.sh
 - scripts/base1-libreboot-index.sh
 - scripts/base1-libreboot-checklist.sh
