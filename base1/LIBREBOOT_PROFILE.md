@@ -77,6 +77,7 @@ See also: [Libreboot preflight notes](LIBREBOOT_PREFLIGHT.md).
 
 ```bash
 sh scripts/base1-preflight.sh
+sh scripts/base1-libreboot-preflight.sh
 ```
 
 Future Libreboot-aware validation may add read-only firmware notes, but firmware mutation remains explicit operator work.

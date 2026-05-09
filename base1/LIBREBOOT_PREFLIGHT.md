@@ -49,6 +49,7 @@ The preflight should not assume:
 
 ```bash
 sh scripts/base1-preflight.sh
+sh scripts/base1-libreboot-preflight.sh
 ```
 
 Future script support should remain read-only and should print notes instead of mutating firmware or boot settings.
