@@ -71,3 +71,6 @@ A future recovery USB builder can only exist after the dry-run path, target sele
 
 
 See also: [Recovery USB command index](RECOVERY_USB_COMMAND_INDEX.md).
+
+
+See also: [Recovery USB validation report](RECOVERY_USB_VALIDATION_REPORT.md).
