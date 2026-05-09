@@ -2028,6 +2028,7 @@ fn nest_command(shell: &mut Phase1Shell, args: &[String]) -> String {
         None | Some("status") => nest_status(shell),
         Some("spawn") => nest_spawn(shell, &args[1..]),
         Some("list") | Some("ls") => nest_list(shell),
+        Some("enter") => nest_enter(shell, &args[1..]),
         Some("target") | Some("use") => {
             let Some(raw) = args.get(1).map(String::as_str) else {
                 return "usage: nest target <self|parent|root|level>\n".to_string();
@@ -2042,6 +2043,7 @@ fn nest_command(shell: &mut Phase1Shell, args: &[String]) -> String {
                 None => format!("nest: invalid target '{raw}'\n"),
             }
         }
+        Some("exit") if args.len() == 1 => nest_exit(shell),
         Some("exit") => match args.get(1).map(String::as_str) {
             None | Some("self") => request_nest_exit_self(shell),
             Some("all") | Some("--all") => request_nest_exit_all(shell),
@@ -2074,7 +2076,7 @@ fn nest_spawn(shell: &mut Phase1Shell, args: &[String]) -> String {
         return "usage: nest spawn <name>\n".to_string();
     };
 
-    let level = nested_level();
+    let level = nest_current_level(shell);
     let max = nested_max();
 
     if level >= max {
@@ -2105,7 +2107,7 @@ fn nest_spawn(shell: &mut Phase1Shell, args: &[String]) -> String {
 
 fn nest_list(shell: &Phase1Shell) -> String {
     let children = nest_children(shell);
-    let level = nested_level();
+    let level = nest_current_level(shell);
     let max = nested_max();
 
     if children.is_empty() {
@@ -2151,11 +2153,93 @@ fn nest_name_is_valid(name: &str) -> bool {
             .all(|ch| ch.is_ascii_alphanumeric() || ch == '-' || ch == '_')
 }
 
-fn nest_status(_shell: &Phase1Shell) -> String {
-    let level = nested_level();
+fn nest_current_level(shell: &Phase1Shell) -> u32 {
+    shell
+        .env
+        .get("PHASE1_NEST_ACTIVE_LEVEL")
+        .and_then(|raw| raw.trim().parse::<u32>().ok())
+        .unwrap_or_else(nested_level)
+}
+
+fn nest_active_name(shell: &Phase1Shell) -> String {
+    shell
+        .env
+        .get("PHASE1_NEST_ACTIVE")
+        .filter(|name| !name.trim().is_empty())
+        .cloned()
+        .unwrap_or_else(|| "root".to_string())
+}
+
+fn nest_active_path(shell: &Phase1Shell) -> String {
+    let active = nest_active_name(shell);
+    if active == "root" {
+        "/".to_string()
+    } else {
+        format!("/nest/{active}")
+    }
+}
+
+fn nest_enter(shell: &mut Phase1Shell, args: &[String]) -> String {
+    let Some(name) = args.first().map(String::as_str) else {
+        return "usage: nest enter <name>\n".to_string();
+    };
+
+    if !nest_name_is_valid(name) {
+        return "nest enter: invalid nest name\n".to_string();
+    }
+
+    let children = nest_children(shell);
+    if !children.iter().any(|child| child == name) {
+        return format!("nest enter: {name} not found\n");
+    }
+
+    let level = nest_current_level(shell);
     let max = nested_max();
+
+    if level >= max {
+        return format!("nest enter: max depth reached {level}/{max}\n");
+    }
+
+    shell
+        .env
+        .insert("PHASE1_NEST_ACTIVE".to_string(), name.to_string());
+    shell.env.insert(
+        "PHASE1_NEST_ACTIVE_LEVEL".to_string(),
+        (level + 1).to_string(),
+    );
+
     format!(
-        "nest status\nlevel   : {level}/{max}\nroot    : {}\nmode    : isolated\nhost    : inherited-safe-defaults\n",
+        "nest enter: {name}\nlevel   : {}/{}\nmode    : isolated\npath    : /nest/{name}\nhost    : inherited-safe-defaults\n",
+        level + 1,
+        max
+    )
+}
+
+fn nest_exit(shell: &mut Phase1Shell) -> String {
+    let level = nest_current_level(shell);
+
+    if level == 0 {
+        return "nest exit: already at root\n".to_string();
+    }
+
+    shell.env.remove("PHASE1_NEST_ACTIVE");
+    shell.env.remove("PHASE1_NEST_ACTIVE_LEVEL");
+
+    format!(
+        "nest exit: returned to parent\nlevel   : {}/{}\nactive  : root\npath    : /\n",
+        nested_level(),
+        nested_max()
+    )
+}
+
+fn nest_status(shell: &Phase1Shell) -> String {
+    let level = nest_current_level(shell);
+    let max = nested_max();
+    let active = nest_active_name(shell);
+    let path = nest_active_path(shell);
+
+    format!(
+        "nest status\nlevel   : {level}/{max}\nroot    : {}\nactive  : {active}\npath    : {path}\nmode    : isolated\nhost    : inherited-safe-defaults\n",
         if level == 0 { "yes" } else { "no" }
     )
 }
