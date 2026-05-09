@@ -28,6 +28,11 @@ fn grub_recovery_dry_run_reports_read_only_recovery_plan() {
 
     assert!(ok, "{text}");
     assert!(text.contains("base1 grub recovery dry-run"), "{text}");
+    assert_eq!(
+        text.matches("base1 grub recovery dry-run").count(),
+        1,
+        "{text}"
+    );
     assert!(text.contains("firmware    : Libreboot expected"), "{text}");
     assert!(text.contains("hardware    : X200-class expected"), "{text}");
     assert!(text.contains("bootloader  : GRUB first"), "{text}");

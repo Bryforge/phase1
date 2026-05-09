@@ -54,20 +54,3 @@ rollback    : metadata preview only
 trust       : no host trust escalation
 status      : GRUB recovery dry-run complete
 EOF
-
-cat <<'EOF'
-base1 grub recovery dry-run
-firmware    : Libreboot expected
-hardware    : X200-class expected
-bootloader  : GRUB first
-writes      : no
-boot_order  : no change
-boot_config : grub.cfg preview only
-boot_path   : /boot preview only
-emergency   : shell access required
-recovery_usb: recommended
-phase1_auto : no change
-rollback    : metadata preview only
-trust       : no host trust escalation
-status      : GRUB recovery dry-run complete
-EOF
