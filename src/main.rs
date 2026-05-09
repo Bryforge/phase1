@@ -837,13 +837,14 @@ fn fyr_expand_let_bindings(source: &str) -> Result<String, &'static str> {
                 return Err("invalid let binding name");
             }
 
-            let value = fyr_eval_integer_expression(value.trim(), &bindings).map_err(|err| {
-                if err == "division by zero" {
-                    err
-                } else {
-                    "expected integer let binding value"
+            let value = match fyr_eval_integer_expression(value.trim(), &bindings) {
+                Ok(value) => value,
+                Err("division by zero") => return Err("division by zero"),
+                Err("expected ')' in integer expression") => {
+                    return Err("expected ')' in integer expression")
                 }
-            })?;
+                Err(_) => return Err("expected integer let binding value"),
+            };
 
             bindings.push((name.to_string(), value));
             continue;
@@ -923,11 +924,7 @@ fn fyr_eval_integer_expression(raw: &str, bindings: &[(String, i32)]) -> Result<
         return Err("expected integer expression");
     }
 
-    for (idx, ch) in expr.char_indices().rev() {
-        if idx == 0 || !matches!(ch, '+' | '-') {
-            continue;
-        }
-
+    if let Some((idx, ch)) = fyr_find_top_level_operator(expr, &['+', '-'])? {
         let left = expr[..idx].trim();
         let right = expr[idx + ch.len_utf8()..].trim();
         if left.is_empty() || right.is_empty() {
@@ -952,11 +949,7 @@ fn fyr_eval_integer_term(raw: &str, bindings: &[(String, i32)]) -> Result<i32, &
         return Err("expected integer expression");
     }
 
-    for (idx, ch) in term.char_indices().rev() {
-        if idx == 0 || !matches!(ch, '*' | '/') {
-            continue;
-        }
-
+    if let Some((idx, ch)) = fyr_find_top_level_operator(term, &['*', '/'])? {
         let left = term[..idx].trim();
         let right = term[idx + ch.len_utf8()..].trim();
         if left.is_empty() || right.is_empty() {
@@ -982,8 +975,53 @@ fn fyr_eval_integer_term(raw: &str, bindings: &[(String, i32)]) -> Result<i32, &
     fyr_eval_integer_factor(term, bindings)
 }
 
+fn fyr_find_top_level_operator(
+    expr: &str,
+    operators: &[char],
+) -> Result<Option<(usize, char)>, &'static str> {
+    let mut depth = 0i32;
+    let mut found = None;
+
+    for (idx, ch) in expr.char_indices() {
+        match ch {
+            '(' => {
+                depth += 1;
+                continue;
+            }
+            ')' => {
+                if depth == 0 {
+                    return Err("expected integer expression");
+                }
+                depth -= 1;
+                continue;
+            }
+            _ => {}
+        }
+
+        if depth == 0 && idx > 0 && operators.contains(&ch) {
+            let left = expr[..idx].trim();
+            let right = expr[idx + ch.len_utf8()..].trim();
+            if left.is_empty() || right.is_empty() {
+                return Err("expected integer expression");
+            }
+            found = Some((idx, ch));
+        }
+    }
+
+    if depth != 0 {
+        return Err("expected ')' in integer expression");
+    }
+
+    Ok(found)
+}
+
 fn fyr_eval_integer_factor(raw: &str, bindings: &[(String, i32)]) -> Result<i32, &'static str> {
     let factor = raw.trim();
+
+    if factor.starts_with('(') {
+        let inner = fyr_parenthesized_inner(factor)?;
+        return fyr_eval_integer_expression(inner, bindings);
+    }
 
     if let Ok(value) = factor.parse::<i32>() {
         return Ok(value);
@@ -998,6 +1036,28 @@ fn fyr_eval_integer_factor(raw: &str, bindings: &[(String, i32)]) -> Result<i32,
         .rev()
         .find_map(|(name, value)| (name == factor).then_some(*value))
         .ok_or("unknown let binding")
+}
+
+fn fyr_parenthesized_inner(raw: &str) -> Result<&str, &'static str> {
+    let mut depth = 0i32;
+
+    for (idx, ch) in raw.char_indices() {
+        match ch {
+            '(' => depth += 1,
+            ')' => {
+                depth -= 1;
+                if depth == 0 {
+                    if idx + ch.len_utf8() == raw.len() {
+                        return Ok(&raw[1..idx]);
+                    }
+                    return Err("expected integer expression");
+                }
+            }
+            _ => {}
+        }
+    }
+
+    Err("expected ')' in integer expression")
 }
 
 fn fyr_is_identifier(raw: &str) -> bool {
