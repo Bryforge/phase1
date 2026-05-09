@@ -33,6 +33,7 @@ Confirm:
 
 Run these before any future USB-writing work:
 
+    sh scripts/base1-recovery-usb-hardware-checklist.sh
     sh scripts/base1-recovery-usb-index.sh
     sh scripts/base1-recovery-usb-validate.sh
     sh scripts/base1-recovery-usb-dry-run.sh --dry-run --target /dev/example
