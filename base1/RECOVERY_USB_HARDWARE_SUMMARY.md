@@ -75,3 +75,6 @@ See also: [RELEASE_BASE1_RECOVERY_USB_HARDWARE_READONLY_V1.md](../RELEASE_BASE1_
 
 
 See also: [Recovery USB target-device selection design](RECOVERY_USB_TARGET_SELECTION.md).
+
+
+See also: [Recovery USB target selection command index](RECOVERY_USB_TARGET_COMMAND_INDEX.md).
