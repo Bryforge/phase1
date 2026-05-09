@@ -72,6 +72,7 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("ned", &["nano", "vi"], "host", "ned <file>", "Edit a VFS file with a small line editor.", "fs.write"),
     cmd!("avim", &["vim", "edit"], "dev", "avim <file>", "Advanced VFS-only modal editor with search, undo, yank/paste, substitute, and a security-focused no-shell-escape design.", "fs.write"),
     cmd!("lang", &["language", "runlang"], "dev", "lang [list|support|status|doctor|detect|run|security]", "Native guarded multi-language runtime manager for major open-source programming languages.", "host.exec"),
+    cmd!("dev", &["dock", "selfdev"], "dev", "dev [status|sync|branch|quick|test|commit|push|pr|merge|close|doctor]", "Phase1 self-development dock for working on Phase1 from inside Phase1.", "host.exec"),
     cmd!("lspci", &[], "arch", "lspci", "List simulated PCIe devices.", "hw.read"),
     cmd!("pcie", &[], "arch", "pcie", "Show PCIe subsystem summary.", "hw.read"),
     cmd!("cr3", &[], "arch", "cr3", "Show simulated CR3 value.", "hw.read"),
@@ -231,6 +232,8 @@ mod tests {
         assert_eq!(lookup("language").map(|cmd| cmd.name), Some("lang"));
         assert_eq!(lookup("status").map(|cmd| cmd.name), Some("capabilities"));
         assert_eq!(lookup("nests").map(|cmd| cmd.name), Some("nest"));
+        assert_eq!(lookup("dock").map(|cmd| cmd.name), Some("dev"));
+        assert_eq!(lookup("selfdev").map(|cmd| cmd.name), Some("dev"));
     }
 
     #[test]
@@ -284,6 +287,7 @@ mod tests {
         assert!(map.contains("wasm"));
         assert!(map.contains("avim"));
         assert!(map.contains("lang"));
+        assert!(map.contains("dev"));
     }
 
     #[test]
@@ -329,6 +333,8 @@ mod tests {
         assert!(completions("a").contains(&"avim"));
         assert!(completions("v").contains(&"vim"));
         assert!(completions("la").contains(&"lang"));
+        assert!(completions("de").contains(&"dev"));
+        assert!(completions("do").contains(&"dock"));
         assert!(completions("ne").contains(&"nest"));
         assert!(completions("ne").contains(&"nests"));
     }

@@ -435,6 +435,11 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
         "git" | "gh" | "cargo" | "rustc" | "python3" | "go" => {
             run_guarded_host_passthrough(shell, command, args)
         }
+        "dev" => {
+            if !shell.try_plugin("dev", args) {
+                println!("dev: plugin missing at plugins/dev.py");
+            }
+        }
         "python" => run_python(shell, args),
         "gcc" => run_c(shell, args),
         "plugins" => print!("{}", shell.list_plugins()),
