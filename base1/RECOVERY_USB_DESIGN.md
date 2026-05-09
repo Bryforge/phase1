@@ -44,6 +44,7 @@ Run read-only checks first:
     sh scripts/base1-libreboot-docs.sh
     sh scripts/base1-libreboot-milestone.sh
     sh scripts/base1-libreboot-validate.sh
+    sh scripts/base1-recovery-usb-validate.sh
     sh scripts/base1-recovery-usb-index.sh
     sh scripts/base1-recovery-usb-dry-run.sh --dry-run --target /dev/example
     sh scripts/base1-grub-recovery-dry-run.sh --dry-run
