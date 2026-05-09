@@ -554,7 +554,10 @@ fn fyr_command(shell: &mut Phase1Shell, args: &[String]) -> String {
         None | Some("status") => fyr_status(),
         Some("spec") => fyr_spec(),
         Some("new") => fyr_new(shell, &args[1..]),
+        Some("init") => fyr_init(shell, &args[1..]),
         Some("cat") => fyr_cat(shell, &args[1..]),
+        Some("check") => fyr_check(shell, &args[1..]),
+        Some("build") => fyr_build(shell, &args[1..]),
         Some("self") => fyr_self(),
         Some("run") => fyr_run(shell, &args[1..]),
         Some("help") | Some("-h") | Some("--help") => fyr_help(),
@@ -563,7 +566,7 @@ fn fyr_command(shell: &mut Phase1Shell, args: &[String]) -> String {
 }
 
 fn fyr_status() -> String {
-    "fyr native language\nname      : Fyr\nextension : .fyr\ncommand   : fyr\nstatus    : authoring loop active; interpreter seed supports print literals\npurpose   : Phase1-owned language path for self-construction and VFS automation\n".to_string()
+    "fyr native language\nname      : Fyr\nextension : .fyr\ncommand   : fyr\nstatus    : toolchain bootstrap active; VFS-only init/check/build and print-literal run\npurpose   : Phase1-owned language path for self-construction and VFS automation\n".to_string()
 }
 
 fn fyr_spec() -> String {
@@ -586,6 +589,143 @@ fn fyr_new(shell: &mut Phase1Shell, args: &[String]) -> String {
     match shell.kernel.sys_write(&path, source, false) {
         Ok(()) => format!("fyr new: created {path}\n"),
         Err(err) => format!("fyr new: {err}\n"),
+    }
+}
+
+fn fyr_init(shell: &mut Phase1Shell, args: &[String]) -> String {
+    let Some(package) = args.first().and_then(|raw| fyr_package_name(raw)) else {
+        return "usage: fyr init <package>\n".to_string();
+    };
+
+    let root = package;
+    let src_dir = format!("{root}/src");
+    let tests_dir = format!("{root}/tests");
+    let manifest = format!("{root}/fyr.toml");
+    let main_file = format!("{root}/src/main.fyr");
+    let smoke_file = format!("{root}/tests/smoke.fyr");
+
+    for dir in [&root, &src_dir, &tests_dir] {
+        if let Err(err) = shell.kernel.vfs.mkdir(dir) {
+            let msg = err.to_string();
+            if !msg.contains("already exists") {
+                return format!("fyr init: {msg}\n");
+            }
+        }
+    }
+
+    let manifest_source = format!(
+        "name = \"{root}\"\nversion = \"0.1.0\"\nbackend = \"seed/interpreted\"\nhost = \"none\"\n"
+    );
+    let main_source = "fn main() -> i32 { print(\"Hello from Fyr package\"); return 0; }\n";
+    let smoke_source = "fn main() -> i32 { print(\"fyr smoke ok\"); return 0; }\n";
+
+    for (path, source) in [
+        (&manifest, manifest_source.as_str()),
+        (&main_file, main_source),
+        (&smoke_file, smoke_source),
+    ] {
+        if shell.kernel.sys_read(path).is_err() {
+            if let Err(err) = shell.kernel.sys_write(path, source, false) {
+                return format!("fyr init: {err}\n");
+            }
+        }
+    }
+
+    format!(
+        "fyr init: created package {root}\nmanifest: {manifest}\nmain    : {main_file}\ntests   : {smoke_file}\nhost    : none\n"
+    )
+}
+
+fn fyr_check(shell: &mut Phase1Shell, args: &[String]) -> String {
+    let Some(path) = args.first().map(String::as_str) else {
+        return "usage: fyr check <file.fyr|package>\n".to_string();
+    };
+
+    let source_path = fyr_source_target(path);
+    let source = match shell.kernel.sys_read(&source_path) {
+        Ok(source) => source,
+        Err(err) => return format!("fyr check: {err}\n"),
+    };
+
+    match fyr_check_source(&source) {
+        Ok(()) => format!("fyr check: ok {source_path}\n"),
+        Err(err) => format!("fyr check: {source_path}: {err}\n"),
+    }
+}
+
+fn fyr_build(shell: &mut Phase1Shell, args: &[String]) -> String {
+    let Some(target) = args.first().map(String::as_str) else {
+        return "usage: fyr build <file.fyr|package>\n".to_string();
+    };
+
+    let source_path = fyr_source_target(target);
+    let source = match shell.kernel.sys_read(&source_path) {
+        Ok(source) => source,
+        Err(err) => return format!("fyr build: {err}\n"),
+    };
+
+    if let Err(err) = fyr_check_source(&source) {
+        return format!("fyr build: {source_path}: {err}\n");
+    }
+
+    let package = if target.ends_with(".fyr") {
+        target
+            .rsplit('/')
+            .next()
+            .unwrap_or(target)
+            .trim_end_matches(".fyr")
+            .to_string()
+    } else {
+        target.trim_end_matches('/').to_string()
+    };
+
+    format!(
+        "fyr build\npackage : {package}\nsource  : {source_path}\nbackend : seed/interpreted\nhost    : none\nstatus  : dry-run artifact ready\n"
+    )
+}
+
+fn fyr_source_target(raw: &str) -> String {
+    let target = raw.trim().trim_end_matches('/');
+    if target.ends_with(".fyr") {
+        target.to_string()
+    } else {
+        format!("{target}/src/main.fyr")
+    }
+}
+
+fn fyr_check_source(source: &str) -> Result<(), &'static str> {
+    let trimmed = source.trim();
+    if trimmed.is_empty() {
+        return Err("empty source");
+    }
+    if !trimmed.contains("fn main") {
+        return Err("missing fn main entry point");
+    }
+    if !trimmed.contains("print(") {
+        return Err("seed checker requires at least one print literal");
+    }
+    if !trimmed.contains("return") {
+        return Err("missing return statement");
+    }
+    if parse_fyr_string_literal(trimmed).is_none() {
+        return Err("missing valid string literal");
+    }
+    Ok(())
+}
+
+fn fyr_package_name(raw: &str) -> Option<String> {
+    let trimmed = raw.trim();
+    if trimmed.is_empty() {
+        return None;
+    }
+
+    if trimmed
+        .chars()
+        .all(|ch| ch.is_ascii_alphanumeric() || matches!(ch, '_' | '-'))
+    {
+        Some(trimmed.to_string())
+    } else {
+        None
     }
 }
 
@@ -698,7 +838,7 @@ fn parse_fyr_string_literal(text: &str) -> Option<String> {
 }
 
 fn fyr_help() -> String {
-    "phase1 fyr command\n\nusage:\n  fyr status\n  fyr spec\n  fyr new <name>\n  fyr cat <file.fyr>\n  fyr self\n  fyr run <file.fyr>\n\nexample:\n  echo 'fn main() -> i32 { print(\"Hello, hacker!\"); return 0; }' > hello_hacker.fyr\n  fyr run hello_hacker.fyr\n".to_string()
+    "phase1 fyr command\n\nusage:\n  fyr status\n  fyr spec\n  fyr new <name>\n  fyr init <package>\n  fyr cat <file.fyr>\n  fyr check <file.fyr|package>\n  fyr build <file.fyr|package>\n  fyr self\n  fyr run <file.fyr>\n\nexample:\n  echo 'fn main() -> i32 { print(\"Hello, hacker!\"); return 0; }' > hello_hacker.fyr\n  fyr run hello_hacker.fyr\n".to_string()
 }
 
 fn repo_command(args: &[String]) -> String {
