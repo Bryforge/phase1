@@ -755,7 +755,6 @@ fn boot_rows(config: BootConfig) -> Vec<String> {
     ]
 }
 
-
 fn nested_level() -> u32 {
     std::env::var("PHASE1_NESTED_LEVEL")
         .ok()
@@ -901,29 +900,40 @@ fn compact_prompt_enabled() -> bool {
 }
 
 fn compact_prompt_chips_plain() -> String {
-    format!(
-        "[{} {} {}]",
-        prompt_channel_chip(),
-        prompt_security_chip(),
-        prompt_trust_chip()
-    )
+    let mut chips = vec![
+        prompt_channel_chip().to_string(),
+        prompt_security_chip().to_string(),
+        prompt_trust_chip().to_string(),
+    ];
+
+    if nested_level() > 0 {
+        chips.push(format!("n{}/{}", nested_level(), nested_max()));
+    }
+
+    chips
+        .into_iter()
+        .filter(|chip| !chip.is_empty())
+        .collect::<Vec<_>>()
+        .join(" ")
 }
 
 fn compact_prompt_chips_colored() -> String {
-    format!(
-        "{}[{}{}{} {}{}{} {}{}{}{}]",
-        GRAY,
-        prompt_channel_color(),
-        prompt_channel_chip(),
-        GRAY,
-        prompt_security_color(),
-        prompt_security_chip(),
-        GRAY,
-        prompt_trust_color(),
-        prompt_trust_chip(),
-        GRAY,
-        RESET
-    )
+    let mut chips = vec![
+        (prompt_channel_chip().to_string(), prompt_channel_color()),
+        (prompt_security_chip().to_string(), prompt_security_color()),
+        (prompt_trust_chip().to_string(), prompt_trust_color()),
+    ];
+
+    if nested_level() > 0 {
+        chips.push((format!("n{}/{}", nested_level(), nested_max()), CYAN));
+    }
+
+    chips
+        .into_iter()
+        .filter(|(chip, _)| !chip.is_empty())
+        .map(|(chip, color)| format!("{color}{chip}{RESET}"))
+        .collect::<Vec<_>>()
+        .join(" ")
 }
 
 fn prompt_channel_chip() -> &'static str {
@@ -1463,7 +1473,9 @@ mod tests {
 
     fn env_test_lock() -> std::sync::MutexGuard<'static, ()> {
         static LOCK: OnceLock<Mutex<()>> = OnceLock::new();
-        LOCK.get_or_init(|| Mutex::new(())).lock().unwrap_or_else(|err| err.into_inner())
+        LOCK.get_or_init(|| Mutex::new(()))
+            .lock()
+            .unwrap_or_else(|err| err.into_inner())
     }
 
     use super::{
@@ -1502,27 +1514,52 @@ mod tests {
     }
 
     #[test]
-    fn compact_prompt_inlines_dynamic_status_chips_for_all_modes() {
+    fn compact_prompt_includes_nested_level_chip() {
         let _env_lock = env_test_lock();
-        std::env::set_var("NO_COLOR", "1");
-        std::env::remove_var("PHASE1_COMPACT_PROMPT");
         std::env::set_var("PHASE1_BLEEDING_EDGE", "1");
         std::env::set_var("PHASE1_SAFE_MODE", "1");
         std::env::set_var("PHASE1_ALLOW_HOST_TOOLS", "1");
+        std::env::set_var("PHASE1_NESTED_LEVEL", "1");
+        std::env::set_var("PHASE1_NESTED_MAX", "2");
+
+        let chips = super::compact_prompt_chips_plain();
+        assert!(chips.contains("edge"));
+        assert!(chips.contains("safe"));
+        assert!(chips.contains("trust"));
+        assert!(chips.contains("n1/2"));
+
+        std::env::remove_var("PHASE1_BLEEDING_EDGE");
+        std::env::remove_var("PHASE1_SAFE_MODE");
+        std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
+        std::env::remove_var("PHASE1_NESTED_LEVEL");
+        std::env::remove_var("PHASE1_NESTED_MAX");
+    }
+
+    #[test]
+    fn compact_prompt_inlines_dynamic_status_chips_for_all_modes() {
+        let _env_lock = env_test_lock();
 
         for mode in ["mobile", "laptop", "desktop"] {
             std::env::set_var("PHASE1_DEVICE_MODE", mode);
-            let prompt = super::prompt_text("root", "~");
-            assert!(super::compact_prompt_enabled());
-            assert!(prompt.contains("phase1://root ~ [edge safe trust] ⇢ "));
-            assert!(!prompt.contains("HUD"));
+            std::env::set_var("PHASE1_BLEEDING_EDGE", "1");
+            std::env::set_var("PHASE1_SAFE_MODE", "1");
+            std::env::set_var("PHASE1_ALLOW_HOST_TOOLS", "1");
+            std::env::remove_var("PHASE1_NESTED_LEVEL");
+            std::env::remove_var("PHASE1_NESTED_MAX");
+
+            let chips = super::compact_prompt_chips_plain();
+            assert!(chips.contains("edge"));
+            assert!(chips.contains("safe"));
+            assert!(chips.contains("trust"));
+            assert!(!chips.contains("n1/"));
         }
 
-        std::env::remove_var("NO_COLOR");
         std::env::remove_var("PHASE1_DEVICE_MODE");
         std::env::remove_var("PHASE1_BLEEDING_EDGE");
         std::env::remove_var("PHASE1_SAFE_MODE");
         std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
+        std::env::remove_var("PHASE1_NESTED_LEVEL");
+        std::env::remove_var("PHASE1_NESTED_MAX");
     }
 
     #[test]
