@@ -345,6 +345,7 @@ First safe check:
 ```bash
 sh scripts/base1-preflight.sh
 sh scripts/base1-libreboot-preflight.sh
+sh scripts/base1-libreboot-report.sh
 sh scripts/base1-libreboot-validate.sh
 sh scripts/base1-libreboot-index.sh
 sh scripts/base1-libreboot-checklist.sh

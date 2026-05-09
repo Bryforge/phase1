@@ -19,6 +19,7 @@ This document is advisory and read-only. Do not store passwords, tokens, private
 
 Run and record whether each command completed:
 
+    sh scripts/base1-libreboot-report.sh
     sh scripts/base1-libreboot-validate.sh
     sh scripts/base1-libreboot-index.sh
     sh scripts/base1-libreboot-checklist.sh
