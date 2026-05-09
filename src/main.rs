@@ -1285,77 +1285,64 @@ fn fyr_parse_print_statement_ast(statement: &str) -> Result<(FyrStatementAst, &s
 fn fyr_parse_assert_statement_ast(
     statement: &str,
 ) -> Result<(FyrStatementAst, &str), &'static str> {
-    let Some(rest) = statement.strip_prefix("assert") else {
+    let Some(rest) = statement.strip_prefix("assert(") else {
         return Err("expected assert statement");
     };
 
-    let rest = rest.trim_start();
-    let Some(rest) = rest.strip_prefix('(') else {
-        return Err("expected '(' after assert");
+    let Some((assertion, rest)) = rest.split_once(");") else {
+        return Err("expected ');' after assert statement");
     };
 
-    let (assertion, rest) = fyr_parse_assertion_with_rest(rest)?;
-    let rest = rest.trim_start();
+    let assertion = assertion.trim();
 
-    let Some(rest) = rest.strip_prefix(')') else {
-        return Err("expected ')' after assert expression");
-    };
-
-    let rest = rest.trim_start();
-    let Some(rest) = rest.strip_prefix(';') else {
-        return Err("expected ';' after assert statement");
-    };
-
-    Ok((FyrStatementAst::Assert(assertion), rest))
-}
-
-fn fyr_parse_assertion_with_rest(text: &str) -> Result<(FyrAssertionAst, &str), &'static str> {
-    let rest = text.trim_start();
-
-    if let Some(next) = rest.strip_prefix("true") {
+    if assertion == "true" {
         return Ok((
-            FyrAssertionAst {
+            FyrStatementAst::Assert(FyrAssertionAst {
                 value: true,
-                label: "true".to_string(),
-            },
-            next,
+                label: assertion.to_string(),
+            }),
+            rest,
         ));
     }
 
-    if let Some(next) = rest.strip_prefix("false") {
+    if assertion == "false" {
         return Ok((
-            FyrAssertionAst {
+            FyrStatementAst::Assert(FyrAssertionAst {
                 value: false,
-                label: "false".to_string(),
-            },
-            next,
+                label: assertion.to_string(),
+            }),
+            rest,
         ));
     }
 
-    let (left, rest) = fyr_parse_integer_with_rest(rest)?;
-    let rest = rest.trim_start();
+    for op in [">=", "<=", "==", "!=", ">", "<"] {
+        if let Some((left, right)) = assertion.split_once(op) {
+            let left = fyr_eval_integer_expression(left.trim(), &[])
+                .map_err(|_| "expected integer value")?;
+            let right = fyr_eval_integer_expression(right.trim(), &[])
+                .map_err(|_| "expected integer value")?;
 
-    let operators: [(&str, fn(i32, i32) -> bool); 4] = [
-        ("==", |left, right| left == right),
-        ("!=", |left, right| left != right),
-        (">", |left, right| left > right),
-        ("<", |left, right| left < right),
-    ];
+            let value = match op {
+                ">=" => left >= right,
+                "<=" => left <= right,
+                "==" => left == right,
+                "!=" => left != right,
+                ">" => left > right,
+                "<" => left < right,
+                _ => unreachable!(),
+            };
 
-    for (operator, compare) in operators {
-        if let Some(rest) = rest.strip_prefix(operator) {
-            let (right, rest) = fyr_parse_integer_with_rest(rest)?;
             return Ok((
-                FyrAssertionAst {
-                    value: compare(left, right),
-                    label: format!("{left} {operator} {right}"),
-                },
+                FyrStatementAst::Assert(FyrAssertionAst {
+                    value,
+                    label: assertion.to_string(),
+                }),
                 rest,
             ));
         }
     }
 
-    Err("expected boolean literal or integer comparison")
+    Err("expected boolean assertion")
 }
 
 fn fyr_parse_assert_eq_statement_ast(
