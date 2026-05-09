@@ -24,5 +24,8 @@ fn fyr_brand_and_roadmap_are_documented() {
     let svg = fs::read_to_string("assets/fyr-flame.svg").expect("Fyr flame image exists");
     assert!(svg.contains("Fyr flame mark"));
     assert!(svg.contains(">fyr<"));
-    assert!(svg.contains("Phase1 Native Language"));
+    assert!(svg.contains("standalone flame symbol"));
+    assert!(!svg.contains("Phase1 Native Language"));
+    assert!(!svg.contains("C-shaped control"));
+    assert!(!svg.contains("README and social posting"));
 }
