@@ -8,19 +8,21 @@
 
 <p align="center">
   <strong>secure · private · powerful · open</strong><br>
-  A terminal-first Rust virtual OS console for operators, builders, and learners who want control.
+  Terminal-first Rust virtual OS console for operators, builders, and learners who want control.
 </p>
 
 <p align="center">
-  <a href="https://bryforge.github.io/phase1/"><strong>Open the website</strong></a>
+  <a href="https://bryforge.github.io/phase1/"><strong>Website</strong></a>
   ·
-  <a href="https://github.com/Bryforge/phase1#quick-start"><strong>Quick start</strong></a>
+  <a href="#quick-start"><strong>Quick start</strong></a>
   ·
   <a href="FEATURE_STATUS.md">Feature status</a>
   ·
+  <a href="docs/nest/CHECKPOINT.md">Nested Phase1</a>
+  ·
   <a href="PHASE1_NATIVE_LANGUAGE.md">Fyr language</a>
   ·
-  <a href="LEARNING.md">Learning system</a>
+  <a href="LEARNING.md">Learning</a>
   ·
   <a href="QUALITY.md">Quality</a>
   ·
@@ -32,10 +34,10 @@
 <p align="center">
   <img alt="Stable" src="https://img.shields.io/badge/stable-v4.3.0-39ff88">
   <img alt="Previous stable" src="https://img.shields.io/badge/previous%20stable-v4.2.0-7f8cff">
-  <img alt="Edge" src="https://img.shields.io/badge/edge-v4.3.0--dev-00d8ff">
+  <img alt="Edge" src="https://img.shields.io/badge/edge-v4.4.0--dev-00d8ff">
   <img alt="Rust" src="https://img.shields.io/badge/language-Rust-ff8a00">
   <img alt="Fyr" src="https://img.shields.io/badge/native%20language-Fyr-ff5a00">
-  <img alt="Security" src="https://img.shields.io/badge/safe%20mode-default%20on-39ff88">
+  <img alt="Safe mode" src="https://img.shields.io/badge/safe%20mode-default%20on-39ff88">
   <img alt="License" src="https://img.shields.io/badge/license-GPL--3.0-8a5cff">
 </p>
 
@@ -47,23 +49,50 @@
 
 ## What is Phase1?
 
-Phase1 is a Rust-built, terminal-first virtual operating-system console created by Chase Bryan / Bryforge. It presents a futuristic operator surface while staying grounded in practical systems ideas: a simulated kernel, virtual filesystem, process table, audit log, command metadata, guarded host access, documentation, storage tooling, runtime planning, and a local learning layer.
+Phase1 is a Rust-built, terminal-first virtual operating-system console created by Chase Bryan / Bryforge. It gives a futuristic operator surface backed by practical systems ideas: a simulated kernel, virtual filesystem, process table, audit log, command metadata, guarded host access, storage helpers, local learning, the Fyr native language, and the Nested Phase1 metadata-control surface.
 
-It is designed to look and feel like a serious cyber-console without pretending to be magic. Phase1 is inspectable, teachable, and safe by default.
+Phase1 is not a VM, not a hardened sandbox for hostile code, and not a full OS replacement. It is an inspectable, teachable, safe-by-default operator console for experimenting with system concepts.
 
-## Why it exists
+## Current edge highlights
 
-Phase1 is built around a simple public promise:
+| Area | Current surface |
+| --- | --- |
+| Operator console | Boot selector, dashboards, shell commands, help/man pages, autocomplete, mobile-safe UI, and theme controls. |
+| Virtual OS model | Simulated kernel, VFS, process table, `/proc`, `/dev`, `/var/log`, architecture reports, and system inspection commands. |
+| Guarded host access | Safe mode on by default, explicit trust gates, command capability metadata, and secret redaction. |
+| Fyr native language | `.fyr` scripts with prints, returns, let bindings, arithmetic, assertions, comparisons, boolean chains, grouped expressions, `if` return statements, test runner, package checks, and syntax color output. |
+| Nested Phase1 | Metadata-only recursive operator contexts with `nest status`, `nest spawn`, `nest enter`, `nest destroy`, `nest inspect`, and `nest tree`. |
+| Learning system | `phase1-learn` stores local sanitized memory, imports history, learns notes/rules, and suggests next actions. |
+| Storage and runtimes | Guarded storage/Git helper, Rust workflows, and a roadmap for broader programming-language support. |
+| Base1 foundation | Planned secure host layer for Raspberry Pi and ThinkPad X200-class systems. |
+| Quality system | Scorecards, smoke tests, release metadata checks, CI workflows, CodeQL, and repeatable validation scripts. |
 
-> Give operators a beautiful terminal-first environment for learning, building, inspecting, and experimenting with system concepts while keeping host access explicit and guarded.
+## Nested Phase1 checkpoint
 
-The project image is modern, neon, technical, and disciplined: advanced visuals, conservative security claims, repeatable validation, and clear separation between stable releases and experimental edge work.
+Nested Phase1 is the first recursive operator-environment checkpoint for Phase1. It introduces safe metadata-only child contexts before any real inner-kernel execution exists.
+
+Current nested commands:
+
+```text
+nest status
+nest spawn <name>
+nest list
+nest enter <name>
+nest exit
+nest destroy <name>
+nest rm <name>
+nest inspect <name>
+nest info <name>
+nest tree
+```
+
+The current surface is intentionally conservative: it tracks child contexts, active context, depth, paths, and topology while preserving the existing Phase1 host boundary. Start with [`docs/nest/CHECKPOINT.md`](docs/nest/CHECKPOINT.md).
 
 ## Fyr native language
 
-Fyr is the Phase1-native language target for VFS automation, self-construction, and operator-owned scripts. It is designed around C-style explicit control, Rust-style safety posture, and Python-style readability while staying owned by Phase1.
+Fyr is the Phase1-native language target for VFS automation, self-construction, and operator-owned scripts. It is designed around C-style explicit control, a Rust-style safety posture, and Python-style readability while staying owned by Phase1.
 
-Start with [`PHASE1_NATIVE_LANGUAGE.md`](PHASE1_NATIVE_LANGUAGE.md), then follow the dedicated [`Fyr roadmap`](docs/fyr/ROADMAP.md). The README/post flame mark lives at [`assets/fyr-flame.svg`](assets/fyr-flame.svg).
+Start with [`PHASE1_NATIVE_LANGUAGE.md`](PHASE1_NATIVE_LANGUAGE.md), then follow the dedicated [`Fyr roadmap`](docs/fyr/ROADMAP.md).
 
 First working script inside Phase1:
 
@@ -77,36 +106,6 @@ Expected output:
 ```text
 Hello, hacker!
 ```
-
-## Core capabilities
-
-| Area | What Phase1 provides |
-| --- | --- |
-| Operator console | A command-first interface with boot flow, dashboard, prompt, help, manual pages, and autocomplete. |
-| Virtual OS model | Simulated kernel, VFS, process table, `/proc`, `/dev`, `/var/log`, architecture and system inspection commands. |
-| Safe execution model | Safe mode on by default, host tools gated behind explicit trust, command capability metadata, and secret redaction. |
-| Fyr native language | Phase1-owned `.fyr` language path with initial command runner and roadmap for self-construction workflows. |
-| Learning system | `phase1-learn` stores local sanitized memory, imports history, learns notes/rules, and suggests next actions. |
-| Website and wiki | Public GitHub Pages site, browser terminal demo, docs hub, tutorials, and roadmap material. |
-| Storage and runtimes | Guarded storage/Git helper, Rust workflows, and a roadmap for broader programming-language support. |
-| Base1 foundation | Planned secure host foundation for Raspberry Pi and ThinkPad X200-class systems. |
-| Quality system | Scorecards, smoke tests, release metadata checks, CI workflows, CodeQL, and repeatable validation scripts. |
-
-## Implementation status
-
-Phase1 separates implemented features from experimental host integrations and future plans. The canonical matrix is [`FEATURE_STATUS.md`](FEATURE_STATUS.md).
-
-| Feature area | Status | Short answer |
-| --- | --- | --- |
-| Terminal shell, VFS, process table, audit log, `/proc`, text tools, and dashboards | Implemented | These are simulated Phase1 subsystems and are covered by tests/smoke checks. |
-| Local learning memory | Implemented | Local, sanitized, bounded, and git-ignored. |
-| WASI-lite plugins | Implemented | Phase1's sandboxed plugin path; no host shell/network passthrough. |
-| Python/Git/Cargo/Rust host-backed workflows | Experimental | Useful local integrations, but not hardened secure execution. |
-| Host network/admin mutation | Restricted | Requires explicit trust gates and safe-mode changes. |
-| Hardened VM/chroot/container sandbox | Not planned | Use a real VM/container for hostile code. |
-| Full OS replacement | Not planned | Phase1 is a virtual OS console, not a replacement for Linux/macOS/Windows. |
-
-Inside Phase1, run `capabilities` to inspect command-level gates and guard status. Use `FEATURE_STATUS.md` when you need the broader project-level answer to “is this implemented yet?”
 
 ## Quick start
 
@@ -152,10 +151,30 @@ help
 capabilities
 sysinfo
 security
+nest status
+nest tree
 wiki-quick
 version --compare
 roadmap
 ```
+
+## Implementation status
+
+Phase1 separates implemented features from experimental host integrations and future plans. The canonical matrix is [`FEATURE_STATUS.md`](FEATURE_STATUS.md).
+
+| Feature area | Status | Short answer |
+| --- | --- | --- |
+| Terminal shell, VFS, process table, audit log, `/proc`, text tools, and dashboards | Implemented | Simulated Phase1 subsystems covered by tests and smoke checks. |
+| Fyr native language | Implemented and growing | Current edge supports a practical seed language surface and package test flow. |
+| Nested Phase1 metadata contexts | Implemented checkpoint | Metadata-only context controls are present; runtime-backed child kernels are future work. |
+| Local learning memory | Implemented | Local, sanitized, bounded, and git-ignored. |
+| WASI-lite plugins | Implemented | Phase1's sandboxed plugin path; no host shell/network passthrough. |
+| Python/Git/Cargo/Rust host-backed workflows | Experimental | Useful local integrations, but not hardened secure execution. |
+| Host network/admin mutation | Restricted | Requires explicit trust gates and safe-mode changes. |
+| Hardened VM/chroot/container sandbox | Not planned | Use a real VM/container for hostile code. |
+| Full OS replacement | Not planned | Phase1 is a virtual OS console, not a replacement for Linux/macOS/Windows. |
+
+Inside Phase1, run `capabilities` to inspect command-level gates and guard status.
 
 ## Latest version check
 
@@ -220,6 +239,7 @@ src/bin/              Helper binaries including phase1-storage, phase1-install, 
 phase1-core/          Core package workspace member
 xtask/                Repository validation helper
 base1/                Secure host foundation docs and scripts
+docs/nest/            Nested Phase1 checkpoint documentation
 docs/wiki/            Manual and tutorial source
 scripts/              Quality, runtime, Base1, wiki, and learning helpers
 .github/workflows/    CI, CodeQL, Pages, and quality automation
@@ -246,6 +266,17 @@ cargo fmt --all -- --check
 cargo check --all-targets
 cargo clippy --all-targets -- -D warnings
 cargo test --all-targets
+```
+
+Nested Phase1 checkpoint validation:
+
+```bash
+cargo test -p phase1 --test nest_status
+cargo test -p phase1 --test nest_spawn
+cargo test -p phase1 --test nest_enter
+cargo test -p phase1 --test nest_destroy
+cargo test -p phase1 --test nest_inspect
+cargo test -p phase1 --test nest_tree
 ```
 
 Optional security tooling:
@@ -342,4 +373,3 @@ Keep the 4.3.0 image and stable base boring. Move tested work through edge/stabl
 - Active path: `edge/stable`
 - Docs are generated by `scripts/update-docs.py`.
 <!-- phase1:auto:current-status:end -->
-
