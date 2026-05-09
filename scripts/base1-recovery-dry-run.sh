@@ -9,7 +9,7 @@ usage:
   sh scripts/base1-recovery-dry-run.sh --dry-run
   sh scripts/base1-recovery-dry-run.sh --dry-run --target <disk>
 
-This command is preview-only. It does not mount disks, change boot settings,
+This command is preview-only. It does not attach disks, change boot settings,
 disable Phase1 auto-launch, export data, or modify host trust.
 EOF
 }
