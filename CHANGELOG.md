@@ -1,3 +1,9 @@
+# v5.1.0 Edge Checkpoint
+
+- Opened the next edge line after promoting v5.0.0 to stable.
+- Added Base1 recovery USB read-only development checkpoint coverage.
+- Preserved conservative OS-track and recovery-media non-claims.
+
 # v5.0.0 Edge Checkpoint
 
 - Moved the active package line from stable `4.3.0` to edge `5.0.0`.
