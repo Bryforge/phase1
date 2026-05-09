@@ -22,6 +22,8 @@
   ·
   <a href="docs/os/ROADMAP.md">OS track</a>
   ·
+  <a href="docs/os/BASE1_IMAGE_BUILDER.md">Base1 image-builder design</a>
+  ·
   <a href="PHASE1_NATIVE_LANGUAGE.md">Fyr language</a>
   ·
   <a href="LEARNING.md">Learning</a>
@@ -95,7 +97,7 @@ The current surface is intentionally conservative: it tracks child contexts, act
 
 Phase1 now has an explicit long-term operating-system track. The immediate goal is not to claim a finished OS. The goal is to move toward a bootable, recoverable, Phase1-first environment through Base1.
 
-Start with [`docs/os/ROADMAP.md`](docs/os/ROADMAP.md).
+Start with [`docs/os/ROADMAP.md`](docs/os/ROADMAP.md). The first Stage 1 design slice is [`docs/os/BASE1_IMAGE_BUILDER.md`](docs/os/BASE1_IMAGE_BUILDER.md).
 
 The staged path is:
 
@@ -260,7 +262,7 @@ phase1-core/          Core package workspace member
 xtask/                Repository validation helper
 base1/                Secure host foundation docs and scripts
 docs/nest/            Nested Phase1 checkpoint documentation
-docs/os/              Phase1 operating-system track roadmap
+docs/os/              Phase1 operating-system track and Base1 image-builder roadmap
 docs/wiki/            Manual and tutorial source
 scripts/              Quality, runtime, Base1, wiki, and learning helpers
 .github/workflows/    CI, CodeQL, Pages, and quality automation
@@ -304,6 +306,7 @@ OS-track documentation validation:
 
 ```bash
 cargo test -p phase1 --test os_replacement_track_docs
+cargo test -p phase1 --test base1_image_builder_docs
 ```
 
 Optional security tooling:
@@ -324,6 +327,7 @@ Base1 is the planned real-hardware host layer below Phase1. Its purpose is to ke
 Start here:
 
 - [`docs/os/ROADMAP.md`](docs/os/ROADMAP.md) — Phase1 operating-system track
+- [`docs/os/BASE1_IMAGE_BUILDER.md`](docs/os/BASE1_IMAGE_BUILDER.md) — Base1 image-builder design
 - [`base1/README.md`](base1/README.md) — Base1 overview
 - [`base1/SECURITY_MODEL.md`](base1/SECURITY_MODEL.md) — security model and boundary
 - [`base1/HARDWARE_TARGETS.md`](base1/HARDWARE_TARGETS.md) — Raspberry Pi and X200 target matrix
