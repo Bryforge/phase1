@@ -20,6 +20,8 @@
   ·
   <a href="docs/nest/CHECKPOINT.md">Nested Phase1</a>
   ·
+  <a href="docs/os/ROADMAP.md">OS track</a>
+  ·
   <a href="PHASE1_NATIVE_LANGUAGE.md">Fyr language</a>
   ·
   <a href="LEARNING.md">Learning</a>
@@ -49,9 +51,9 @@
 
 ## What is Phase1?
 
-Phase1 is a Rust-built, terminal-first virtual operating-system console created by Chase Bryan / Bryforge. It gives a futuristic operator surface backed by practical systems ideas: a simulated kernel, virtual filesystem, process table, audit log, command metadata, guarded host access, storage helpers, local learning, the Fyr native language, and the Nested Phase1 metadata-control surface.
+Phase1 is a Rust-built, terminal-first virtual operating-system console created by Chase Bryan / Bryforge. It gives a futuristic operator surface backed by practical systems ideas: a simulated kernel, virtual filesystem, process table, audit log, command metadata, guarded host access, storage helpers, local learning, the Fyr native language, Nested Phase1 metadata-control, and a long-term operating-system track through Base1.
 
-Phase1 is not a VM, not a hardened sandbox for hostile code, and not a full OS replacement. It is an inspectable, teachable, safe-by-default operator console for experimenting with system concepts.
+Phase1 is not yet a kernel, hardened sandbox, or drop-in replacement for Linux, macOS, or Windows. The OS track is a staged plan to make Phase1 the primary user environment on bootable hardware through a minimal Base1 foundation, recovery path, installer, hardware matrix, and conservative security claims.
 
 ## Current edge highlights
 
@@ -62,6 +64,7 @@ Phase1 is not a VM, not a hardened sandbox for hostile code, and not a full OS r
 | Guarded host access | Safe mode on by default, explicit trust gates, command capability metadata, and secret redaction. |
 | Fyr native language | `.fyr` scripts with prints, returns, let bindings, arithmetic, assertions, comparisons, boolean chains, grouped expressions, `if` return statements, test runner, package checks, and syntax color output. |
 | Nested Phase1 | Metadata-only recursive operator contexts with `nest status`, `nest spawn`, `nest enter`, `nest destroy`, `nest inspect`, and `nest tree`. |
+| Base1 OS track | Long-term path toward a bootable Phase1-first system with Base1 as the trusted host layer, recovery, installer, update, storage, network, and hardware validation. |
 | Learning system | `phase1-learn` stores local sanitized memory, imports history, learns notes/rules, and suggests next actions. |
 | Storage and runtimes | Guarded storage/Git helper, Rust workflows, and a roadmap for broader programming-language support. |
 | Base1 foundation | Planned secure host layer for Raspberry Pi and ThinkPad X200-class systems. |
@@ -87,6 +90,23 @@ nest tree
 ```
 
 The current surface is intentionally conservative: it tracks child contexts, active context, depth, paths, and topology while preserving the existing Phase1 host boundary. Start with [`docs/nest/CHECKPOINT.md`](docs/nest/CHECKPOINT.md).
+
+## Phase1 operating-system track
+
+Phase1 now has an explicit long-term operating-system track. The immediate goal is not to claim a finished OS. The goal is to move toward a bootable, recoverable, Phase1-first environment through Base1.
+
+Start with [`docs/os/ROADMAP.md`](docs/os/ROADMAP.md).
+
+The staged path is:
+
+1. Documentation pivot and guardrails.
+2. Base1 bootable foundation.
+3. Installer and recovery.
+4. Daily-driver basics.
+5. Phase1-owned system surface.
+6. Hardware target validation.
+
+Current guardrail: Phase1 remains a virtual OS console until boot images, recovery, update paths, hardware support, and audits exist.
 
 ## Fyr native language
 
@@ -172,7 +192,7 @@ Phase1 separates implemented features from experimental host integrations and fu
 | Python/Git/Cargo/Rust host-backed workflows | Experimental | Useful local integrations, but not hardened secure execution. |
 | Host network/admin mutation | Restricted | Requires explicit trust gates and safe-mode changes. |
 | Hardened VM/chroot/container sandbox | Not planned | Use a real VM/container for hostile code. |
-| Full OS replacement | Not planned | Phase1 is a virtual OS console, not a replacement for Linux/macOS/Windows. |
+| Phase1 OS track | Long-term roadmap | Base1-backed path toward a bootable Phase1-first environment; not a current drop-in OS replacement. |
 
 Inside Phase1, run `capabilities` to inspect command-level gates and guard status.
 
@@ -217,7 +237,7 @@ The learning memory is local, sanitized, bounded, and ignored by git. It does no
 | Previous stable | `v4.2.0` | Preserved previous stable release point. |
 | Edge | `v4.4.0-dev` | Experimental development branch beyond stable. |
 | Compatibility base | `v3.6.0` | Historical comparison base for compatibility references. |
-| Base1 | `foundation` | Secure host design for real hardware targets. |
+| Base1 | `foundation` | Secure host design for real hardware targets and the long-term Phase1 OS track. |
 
 Use stable release tags or release branches when you want the safest repository state. Use edge branches only for active development and experimental polish.
 
@@ -240,6 +260,7 @@ phase1-core/          Core package workspace member
 xtask/                Repository validation helper
 base1/                Secure host foundation docs and scripts
 docs/nest/            Nested Phase1 checkpoint documentation
+docs/os/              Phase1 operating-system track roadmap
 docs/wiki/            Manual and tutorial source
 scripts/              Quality, runtime, Base1, wiki, and learning helpers
 .github/workflows/    CI, CodeQL, Pages, and quality automation
@@ -279,6 +300,12 @@ cargo test -p phase1 --test nest_inspect
 cargo test -p phase1 --test nest_tree
 ```
 
+OS-track documentation validation:
+
+```bash
+cargo test -p phase1 --test os_replacement_track_docs
+```
+
 Optional security tooling:
 
 ```bash
@@ -292,10 +319,11 @@ CI validates formatting, workspace checks, tests, quality rules, security workfl
 
 ## Base1 secure host foundation
 
-Base1 is the planned real-hardware host layer below Phase1. Its purpose is to keep the host bootable, recoverable, and protected while Phase1 runs as a contained workload.
+Base1 is the planned real-hardware host layer below Phase1. Its purpose is to keep the host bootable, recoverable, and protected while Phase1 runs as a contained workload. Base1 is also the foundation for the long-term Phase1 operating-system track.
 
 Start here:
 
+- [`docs/os/ROADMAP.md`](docs/os/ROADMAP.md) — Phase1 operating-system track
 - [`base1/README.md`](base1/README.md) — Base1 overview
 - [`base1/SECURITY_MODEL.md`](base1/SECURITY_MODEL.md) — security model and boundary
 - [`base1/HARDWARE_TARGETS.md`](base1/HARDWARE_TARGETS.md) — Raspberry Pi and X200 target matrix
@@ -335,11 +363,11 @@ Phase1 should never need your GitHub password, personal access token, SSH privat
 
 Host-backed commands are explicit and guarded. Runtime files such as `phase1.state`, `phase1.history`, `phase1.learn`, and `phase1.log` are local operational artifacts. Command history, learning memory, and ops logs are sanitized before storage.
 
-Security claims stay conservative until they are backed by repeatable builds, tests, audits, and hardware validation.
+Security claims stay conservative until they are backed by repeatable builds, tests, audits, boot-image validation, recovery validation, and hardware validation.
 
 ## Contributing
 
-Phase1 values useful engineering over hype. Good contributions improve clarity, safety, documentation, validation, mobile fit, terminal usability, runtime support, or Base1 compatibility.
+Phase1 values useful engineering over hype. Good contributions improve clarity, safety, documentation, validation, mobile fit, terminal usability, runtime support, Base1 compatibility, or the staged OS track.
 
 Before opening release-facing work, run:
 
