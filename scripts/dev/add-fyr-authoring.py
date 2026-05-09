@@ -136,9 +136,9 @@ test_path.write_text('''use std::fs;
 #[test]
 fn fyr_authoring_commands_are_wired() {
     let main = fs::read_to_string("src/main.rs").expect("main source exists");
-    assert!(main.contains("Some(\\\"new\\\") => fyr_new(shell, &args[1..])"));
-    assert!(main.contains("Some(\\\"cat\\\") => fyr_cat(shell, &args[1..])"));
-    assert!(main.contains("Some(\\\"self\\\") => fyr_self()"));
+    assert!(main.contains("Some(\"new\") => fyr_new(shell, &args[1..])"));
+    assert!(main.contains("Some(\"cat\") => fyr_cat(shell, &args[1..])"));
+    assert!(main.contains("Some(\"self\") => fyr_self()"));
     assert!(main.contains("fn fyr_new(shell: &mut Phase1Shell"));
     assert!(main.contains("fn fyr_cat(shell: &mut Phase1Shell"));
     assert!(main.contains("fn fyr_self()"));
