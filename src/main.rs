@@ -2026,6 +2026,8 @@ fn repo_help() -> String {
 fn nest_command(shell: &mut Phase1Shell, args: &[String]) -> String {
     match args.first().map(String::as_str) {
         None | Some("status") => nest_status(shell),
+        Some("spawn") => nest_spawn(shell, &args[1..]),
+        Some("list") | Some("ls") => nest_list(shell),
         Some("target") | Some("use") => {
             let Some(raw) = args.get(1).map(String::as_str) else {
                 return "usage: nest target <self|parent|root|level>\n".to_string();
@@ -2065,6 +2067,88 @@ fn nest_command(shell: &mut Phase1Shell, args: &[String]) -> String {
         Some("help") | Some("-h") | Some("--help") => nest_help(),
         Some(other) => format!("nest: unknown action '{other}'\n{}", nest_help()),
     }
+}
+
+fn nest_spawn(shell: &mut Phase1Shell, args: &[String]) -> String {
+    let Some(name) = args.first().map(String::as_str) else {
+        return "usage: nest spawn <name>\n".to_string();
+    };
+
+    let level = nested_level();
+    let max = nested_max();
+
+    if level >= max {
+        return format!("nest spawn: max depth reached {level}/{max}\n");
+    }
+
+    if !nest_name_is_valid(name) {
+        return "nest spawn: invalid nest name\n".to_string();
+    }
+
+    let mut children = nest_children(shell);
+    if children.iter().any(|child| child == name) {
+        return format!("nest spawn: {name} already exists\n");
+    }
+
+    let _ = shell.kernel.vfs.mkdir("/nest");
+    let _ = shell.kernel.vfs.mkdir(&format!("/nest/{name}"));
+
+    children.push(name.to_string());
+    nest_store_children(shell, &children);
+
+    format!(
+        "nest spawn: created {name}\nlevel   : {}/{}\nmode    : isolated\nroot    : /nest/{name}\nhost    : inherited-safe-defaults\n",
+        level + 1,
+        max
+    )
+}
+
+fn nest_list(shell: &Phase1Shell) -> String {
+    let children = nest_children(shell);
+    let level = nested_level();
+    let max = nested_max();
+
+    if children.is_empty() {
+        return "nest list\nchildren: none\n".to_string();
+    }
+
+    let mut out = "nest list\n".to_string();
+    for child in children {
+        out.push_str(&format!(
+            "{child}\nlevel   : {}/{}\nmode    : isolated\nroot    : /nest/{child}\n",
+            level + 1,
+            max
+        ));
+    }
+    out
+}
+
+fn nest_children(shell: &Phase1Shell) -> Vec<String> {
+    shell
+        .env
+        .get("PHASE1_NEST_CHILDREN")
+        .map(|raw| {
+            raw.split(',')
+                .map(str::trim)
+                .filter(|item| !item.is_empty())
+                .map(ToString::to_string)
+                .collect()
+        })
+        .unwrap_or_default()
+}
+
+fn nest_store_children(shell: &mut Phase1Shell, children: &[String]) {
+    shell
+        .env
+        .insert("PHASE1_NEST_CHILDREN".to_string(), children.join(","));
+}
+
+fn nest_name_is_valid(name: &str) -> bool {
+    !name.is_empty()
+        && name.len() <= 32
+        && name
+            .chars()
+            .all(|ch| ch.is_ascii_alphanumeric() || ch == '-' || ch == '_')
 }
 
 fn nest_status(_shell: &Phase1Shell) -> String {
