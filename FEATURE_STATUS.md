@@ -85,3 +85,14 @@ Phase1 is a **terminal-first virtual OS console**, not a full bare-metal operati
 - **Does Phase1 run untrusted code safely?** No. Do not treat host-backed runtimes as a hardened sandbox.
 - **What is implemented today?** The shell, simulated VFS/process/kernel model, docs, local learning, prompt/UI, quality checks, WASI-lite plugin path, and guarded runtime pathways described above.
 - **What should users run to inspect command-level gates?** Run `status features`, `status`, or `capabilities` inside Phase1.
+
+<!-- phase1:auto:repo-model:start -->
+## Phase1 repository model
+
+- `base/v4.2.0` is the frozen stable base.
+- `edge/stable` is the active default development path.
+- `checkpoint/*` branches are verified milestone snapshots.
+- `feature/*` branches target `edge/stable`.
+
+Keep the 4.2.0 image and stable base boring. Move tested work through edge/stable.
+<!-- phase1:auto:repo-model:end -->
