@@ -86,3 +86,6 @@ Future Libreboot-aware validation may add read-only firmware notes, but firmware
 
 
 See also: [Libreboot operator checklist](LIBREBOOT_OPERATOR_CHECKLIST.md).
+
+
+See also: [Libreboot command index](LIBREBOOT_COMMAND_INDEX.md).

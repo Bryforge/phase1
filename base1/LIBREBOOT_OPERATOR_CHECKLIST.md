@@ -59,3 +59,6 @@ Run these before any future destructive installer work:
 ## Ready marker
 
 A Libreboot-backed Base1 target is only ready for later install work when the operator can explain the normal boot path, recovery boot path, Phase1 launch path, rollback path, and emergency shell path without relying on hidden host mutation.
+
+
+See also: [Libreboot command index](LIBREBOOT_COMMAND_INDEX.md).
