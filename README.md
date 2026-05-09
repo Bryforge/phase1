@@ -370,6 +370,7 @@ sh scripts/base1-recovery-usb-hardware-validate.sh
 sh scripts/base1-recovery-usb-hardware-checklist.sh
 sh scripts/base1-recovery-usb-index.sh
 sh scripts/base1-recovery-usb-target-dry-run.sh --dry-run --target /dev/example
+sh scripts/base1-recovery-usb-image-validate.sh
 sh scripts/base1-recovery-usb-image-report.sh
 sh scripts/base1-recovery-usb-target-summary.sh
 sh scripts/base1-recovery-usb-target-validate.sh
