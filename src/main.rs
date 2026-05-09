@@ -1023,6 +1023,14 @@ fn fyr_find_top_level_operator(
 fn fyr_eval_integer_factor(raw: &str, bindings: &[(String, i32)]) -> Result<i32, &'static str> {
     let factor = raw.trim();
 
+    if let Some(inner) = factor.strip_prefix('-') {
+        let inner = inner.trim();
+        if inner.is_empty() {
+            return Err("expected integer expression");
+        }
+        return fyr_eval_integer_factor(inner, bindings).map(|value| -value);
+    }
+
     if factor.starts_with('(') {
         let inner = fyr_parenthesized_inner(factor)?;
         return fyr_eval_integer_expression(inner, bindings);
@@ -1383,28 +1391,34 @@ fn fyr_parse_assert_eq_statement_ast(
 }
 
 fn fyr_parse_integer_with_rest(text: &str) -> Result<(i32, &str), &'static str> {
-    let rest = text.trim_start();
+    let raw = text.trim_start();
     let mut end = 0usize;
-    let mut saw_digit = false;
+    let mut seen_digit = false;
 
-    for (idx, ch) in rest.char_indices() {
-        if ch.is_ascii_digit() {
-            saw_digit = true;
-            end = idx + ch.len_utf8();
-        } else {
-            break;
+    for (idx, ch) in raw.char_indices() {
+        if idx == 0 && ch == '-' {
+            end = ch.len_utf8();
+            continue;
         }
+
+        if ch.is_ascii_digit() {
+            seen_digit = true;
+            end = idx + ch.len_utf8();
+            continue;
+        }
+
+        break;
     }
 
-    if !saw_digit {
+    if !seen_digit {
         return Err("expected integer value");
     }
 
-    let value = rest[..end]
+    let value = raw[..end]
         .parse::<i32>()
         .map_err(|_| "expected integer value")?;
 
-    Ok((value, &rest[end..]))
+    Ok((value, &raw[end..]))
 }
 
 fn fyr_eval_test_ast(ast: &FyrSourceAst) -> Result<(), String> {
@@ -1432,31 +1446,12 @@ fn fyr_parse_return_statement_ast(
         return Err("expected return statement");
     };
 
-    let rest = rest.trim_start();
-    let mut end = 0usize;
-    let mut saw_digit = false;
-
-    for (idx, ch) in rest.char_indices() {
-        if ch.is_ascii_digit() {
-            saw_digit = true;
-            end = idx + ch.len_utf8();
-        } else {
-            break;
-        }
-    }
-
-    if !saw_digit {
-        return Err("expected integer return value");
-    }
-
-    let value = rest[..end]
-        .parse::<i32>()
-        .map_err(|_| "expected integer return value")?;
-    let rest = rest[end..].trim_start();
-
-    let Some(rest) = rest.strip_prefix(';') else {
+    let Some((raw_value, rest)) = rest.split_once(';') else {
         return Err("expected ';' after return statement");
     };
+
+    let value = fyr_eval_integer_expression(raw_value.trim(), &[])
+        .map_err(|_| "expected integer return value")?;
 
     Ok((FyrStatementAst::Return(value), rest))
 }
