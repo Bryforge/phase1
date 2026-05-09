@@ -160,3 +160,8 @@ Each target needs:
 ## Stage 2 rollback metadata dry-run script
 
 - `scripts/base1-rollback-metadata-dry-run.sh` is the first non-destructive rollback metadata preview command. It requires `--dry-run`, stores no secrets, writes nothing, and reports `operator_confirmed: no`.
+
+
+## Stage 2 dry-run command index
+
+- [`Base1 dry-run command index`](BASE1_DRY_RUN_COMMANDS.md) lists the current non-destructive Base1 preview commands and their shared guardrails.
