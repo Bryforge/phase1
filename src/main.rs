@@ -2031,6 +2031,7 @@ fn nest_command(shell: &mut Phase1Shell, args: &[String]) -> String {
         Some("enter") => nest_enter(shell, &args[1..]),
         Some("destroy") | Some("rm") => nest_destroy(shell, &args[1..]),
         Some("inspect") | Some("info") => nest_inspect(shell, &args[1..]),
+        Some("tree") => nest_tree(shell),
         Some("target") | Some("use") => {
             let Some(raw) = args.get(1).map(String::as_str) else {
                 return "usage: nest target <self|parent|root|level>\n".to_string();
@@ -2179,6 +2180,36 @@ fn nest_active_path(shell: &Phase1Shell) -> String {
     } else {
         format!("/nest/{active}")
     }
+}
+
+fn nest_tree(shell: &Phase1Shell) -> String {
+    let children = nest_children(shell);
+    let active = nest_active_name(shell);
+    let level = nest_current_level(shell);
+    let max = nested_max();
+
+    let mut out = format!(
+        "nest tree\nroot{}\nlevel   : {level}/{max}\n",
+        if active == "root" { " *" } else { "" }
+    );
+
+    if children.is_empty() {
+        out.push_str("children: none\n");
+        return out;
+    }
+
+    out.push_str(&format!("active  : {active}\n"));
+
+    for child in children {
+        let marker = if active == child { " *" } else { "" };
+        out.push_str(&format!(
+            "|- {child}{marker}\n   level   : {}/{}\n   path    : /nest/{child}\n   mode    : isolated\n",
+            level + 1,
+            max
+        ));
+    }
+
+    out
 }
 
 fn nest_inspect(shell: &Phase1Shell, args: &[String]) -> String {
@@ -2343,12 +2374,7 @@ fn request_nest_exit_all(shell: &mut Phase1Shell) -> String {
 }
 
 fn nest_help() -> String {
-    "phase1 nest control\n\nusage:\n  nest status\n  nest target <self|parent|root|level>\n  nest exit self\n  nest exit all\n  exit all\n\nnotes:\n  target is an operator context marker for nested workflows\n  nest exit-all is an alias for nest exit all
-  nest exit-all is an alias for nest exit all
-  nest exit-all is an alias for nest exit all
-  nest exit-all is an alias for nest exit all
-  exit all writes a local Phase1 exit signal so parent shells unwind when they regain control\n"
-        .to_string()
+    "phase1 nest control\n\nusage:\n  nest status\n  nest spawn <name>\n  nest list\n  nest enter <name>\n  nest exit\n  nest destroy <name>\n  nest inspect <name>\n  nest tree\n  nest target <self|parent|root|level>\n  nest exit self\n  nest exit all\n  nest exit-all\n  exit all\n\nnotes:\n  target is an operator context marker for nested workflows\n  nest exit-all is an alias for nest exit all\n  exit all writes a local Phase1 exit signal so parent shells unwind when they regain control\n".to_string()
 }
 
 fn request_reboot(shell: &mut Phase1Shell) {
