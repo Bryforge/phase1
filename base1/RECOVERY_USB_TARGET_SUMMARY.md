@@ -78,3 +78,6 @@ See also: [RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md](../RELEASE_BASE1_RE
 
 
 See also: [Recovery USB image provenance and checksum design](RECOVERY_USB_IMAGE_PROVENANCE.md).
+
+
+See also: [Recovery USB image provenance summary](RECOVERY_USB_IMAGE_SUMMARY.md).
