@@ -88,7 +88,7 @@ pub fn edit(vfs: &mut Vfs, args: &[String]) {
     println!(
         "{}",
         paint(
-            "quick: i text insert | a text append | e text replace | h/l cursor | o/O lines | :wq save+quit | Tab completes",
+            "quick: i text insert | a text append | e text replace | :status | :template go | :wq | :help pro | Tab",
             DIM,
             CYAN,
         )
@@ -140,7 +140,11 @@ fn handle_normal(vfs: &mut Vfs, state: &mut AvimState, input: &str) -> bool {
     }
     if input == ":" {
         state.mode = Mode::Command;
-        render_status(state, "COMMAND mode: w q wq help read search set", YELLOW);
+        render_status(
+            state,
+            "COMMAND mode: w q wq status template help pro read search set",
+            YELLOW,
+        );
         return false;
     }
     if let Some(command) = input.strip_prefix(':') {
@@ -314,6 +318,10 @@ fn handle_command(vfs: &mut Vfs, state: &mut AvimState, command: &str) -> bool {
     let (head, rest) = split_command(command);
     let lower = head.to_ascii_lowercase();
     match command {
+        "status" | "buffer" | "info" => {
+            print_buffer_status(state);
+            false
+        }
         "q" | "quit" | "exit" => {
             if state.dirty {
                 render_status(
@@ -331,13 +339,21 @@ fn handle_command(vfs: &mut Vfs, state: &mut AvimState, command: &str) -> bool {
             println!("avim: discarded changes to {}", state.filename);
             true
         }
-        "w" | "save" => {
-            save(vfs, state);
+        _ if lower == "w" || lower == "write" || lower == "save" => {
+            if rest.trim().is_empty() {
+                save(vfs, state);
+            } else {
+                save_as(vfs, state, rest);
+            }
             false
         }
         "wq" | "x" | "savequit" => {
             save(vfs, state);
             !state.dirty
+        }
+        _ if matches!(lower.as_str(), "help" | "h") && rest.eq_ignore_ascii_case("pro") => {
+            print_pro_help();
+            false
         }
         "help" | "h" => {
             print_help();
@@ -381,6 +397,10 @@ fn handle_command(vfs: &mut Vfs, state: &mut AvimState, command: &str) -> bool {
             substitute(state, raw);
             false
         }
+        _ if lower == "template" || lower == "tmpl" => {
+            insert_template(state, rest);
+            false
+        }
         _ if lower == "read" || lower == "r" => {
             read_file_below_cursor(vfs, state, rest);
             false
@@ -410,6 +430,126 @@ fn save(vfs: &mut Vfs, state: &mut AvimState) {
         }
         Err(err) => println!("avim: write failed: {err}"),
     }
+}
+
+fn save_as(vfs: &mut Vfs, state: &mut AvimState, path: &str) {
+    let target = path.trim();
+    if target.is_empty() {
+        render_status(state, "usage: :w <vfs-file>", YELLOW);
+        return;
+    }
+    if !safe_vfs_target(target) {
+        render_status(state, "save blocked: unsafe VFS path", RED);
+        return;
+    }
+
+    let content = lines_to_content(&state.lines);
+    if content.len() > MAX_FILE_BYTES {
+        render_status(
+            state,
+            &format!("save blocked; file would exceed {MAX_FILE_BYTES} bytes"),
+            RED,
+        );
+        return;
+    }
+
+    match vfs.write_file(target, &content, false) {
+        Ok(()) => render_status(
+            state,
+            &format!("wrote copy to {target} ({} bytes)", content.len()),
+            GREEN,
+        ),
+        Err(err) => render_status(state, &format!("write failed: {err}"), RED),
+    }
+}
+
+fn buffer_status(state: &AvimState) -> String {
+    let content = lines_to_content(&state.lines);
+    format!(
+        "file      : {}\ndirty     : {}\nbytes     : {}\nlines     : {}\ncursor    : L{} C{}\nundo depth: {}",
+        state.filename,
+        state.dirty,
+        content.len(),
+        state.lines.len().max(1),
+        state.cursor + 1,
+        state.column + 1,
+        state.undo.len(),
+    )
+}
+
+fn print_buffer_status(state: &AvimState) {
+    println!("{}", paint("AVIM Pro status", BOLD, CYAN));
+    println!("{}", buffer_status(state));
+}
+
+fn insert_template(state: &mut AvimState, language: &str) {
+    let lang = language.trim().to_ascii_lowercase();
+    let Some((label, lines)) = template_lines(&lang) else {
+        render_status(state, "usage: :template go|rust|python|c", YELLOW);
+        return;
+    };
+
+    push_undo(state);
+    state.lines = lines.into_iter().map(str::to_string).collect();
+    state.cursor = 0;
+    state.column = 0;
+    state.dirty = true;
+    render_status(state, &format!("inserted {label} starter template"), GREEN);
+    render(state);
+}
+
+fn template_lines(language: &str) -> Option<(&'static str, Vec<&'static str>)> {
+    match language {
+        "go" | "golang" => Some((
+            "Go",
+            vec![
+                "package main",
+                "",
+                "import \"fmt\"",
+                "",
+                "func main() {",
+                "    fmt.Println(\"hello from avim + Go inside Phase1\")",
+                "}",
+            ],
+        )),
+        "rust" | "rs" => Some((
+            "Rust",
+            vec![
+                "fn main() {",
+                "    println!(\"hello from avim + Rust inside Phase1\");",
+                "}",
+            ],
+        )),
+        "python" | "py" | "python3" => Some((
+            "Python",
+            vec!["print(\"hello from avim + Python inside Phase1\")"],
+        )),
+        "c" | "gcc" | "cc" => Some((
+            "C",
+            vec![
+                "#include <stdio.h>",
+                "",
+                "int main(void) {",
+                "    puts(\"hello from avim + C inside Phase1\");",
+                "    return 0;",
+                "}",
+            ],
+        )),
+        _ => None,
+    }
+}
+
+fn print_pro_help() {
+    println!("{}", paint("AVIM Pro", BOLD, CYAN));
+    println!("  :status              show buffer status");
+    println!("  :w <file>            save current buffer as another VFS file");
+    println!("  :template go         insert Go starter template");
+    println!("  :template rust       insert Rust starter template");
+    println!("  :template python     insert Python starter template");
+    println!("  :template c          insert C starter template");
+    println!("  :help pro            show this pro command guide");
+    println!("  planned next         :open, :files, :run, :diff, N, redo");
+    println!("  safety               VFS-native; no shell escapes or host file reads");
 }
 
 fn move_cursor(state: &mut AvimState, delta: isize) {
@@ -888,7 +1028,14 @@ fn avim_completion_matches(prefix: &str) -> Vec<String> {
         "set",
         "set number",
         "set nonumber",
+        ":status",
         ":w",
+        ":w <file>",
+        ":template go",
+        ":template rust",
+        ":template python",
+        ":template c",
+        ":help pro",
         ":wq",
         ":q",
         ":q!",
@@ -1205,5 +1352,55 @@ mod tests {
         let matches = avim_completion_matches("w");
         assert!(matches.contains(&":w".to_string()));
         assert!(matches.contains(&":wq".to_string()));
+    }
+}
+
+#[cfg(test)]
+mod avim_pro_slice_tests {
+    use super::*;
+
+    fn demo_state() -> AvimState {
+        AvimState {
+            filename: "jesse.go".to_string(),
+            lines: vec!["package main".to_string()],
+            cursor: 0,
+            column: 0,
+            mode: Mode::Normal,
+            pending_edit: None,
+            dirty: false,
+            show_numbers: true,
+            yank: None,
+            last_search: None,
+            undo: Vec::new(),
+        }
+    }
+
+    #[test]
+    fn pro_status_reports_buffer_details() {
+        let state = demo_state();
+        let status = buffer_status(&state);
+        assert!(status.contains("file      : jesse.go"));
+        assert!(status.contains("dirty     : false"));
+        assert!(status.contains("lines     : 1"));
+        assert!(status.contains("cursor    : L1 C1"));
+        assert!(status.contains("undo depth: 0"));
+    }
+
+    #[test]
+    fn pro_template_go_is_runnable_starter_shape() {
+        let (_, lines) = template_lines("go").expect("go template");
+        let text = lines.join("\n");
+        assert!(text.contains("package main"));
+        assert!(text.contains("func main()"));
+        assert!(text.contains("hello from avim + Go inside Phase1"));
+    }
+
+    #[test]
+    fn pro_completion_lists_first_slice_commands() {
+        let completions = avim_completion_matches(":template");
+        assert!(completions.contains(&":template go".to_string()));
+        assert!(completions.contains(&":template rust".to_string()));
+        assert!(avim_completion_matches(":status").contains(&":status".to_string()));
+        assert!(avim_completion_matches(":help").contains(&":help pro".to_string()));
     }
 }
