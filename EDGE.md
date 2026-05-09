@@ -1,13 +1,13 @@
 # Phase1 Edge Development
 
-`v5.1.0` is the active development line after the stable `v5.0.0` release point.
+`v6.0.0` is the active development line after the stable `v5.0.0` release point.
 
 ## Current identity
 
 | Item | Value |
 | --- | --- |
-| Current package version | `5.1.0` |
-| Current edge label | `v5.1.0` |
+| Current package version | `6.0.0` |
+| Current edge label | `v6.0.0` |
 | Stable package version | `4.3.0` |
 | Stable release point | `v4.3.0` |
 | Previous stable | `v4.4.0` |

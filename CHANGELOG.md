@@ -1,3 +1,9 @@
+# v6.0.0 Edge Checkpoint
+
+- Opened the v6.0.0 edge line after the v5.0.0 stable promotion.
+- Keeps Base1 recovery USB target-selection and image-provenance work read-only.
+- Preserves OS-replacement non-claims until boot images, recovery, update paths, hardware support, and audits exist.
+
 # v5.1.0 Edge Checkpoint
 
 - Opened the next edge line after promoting v5.0.0 to stable.
