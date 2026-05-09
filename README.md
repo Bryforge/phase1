@@ -367,6 +367,7 @@ sh scripts/base1-recovery-usb-hardware-validate.sh
 sh scripts/base1-recovery-usb-hardware-checklist.sh
 sh scripts/base1-recovery-usb-index.sh
 sh scripts/base1-recovery-usb-target-dry-run.sh --dry-run --target /dev/example
+sh scripts/base1-recovery-usb-target-report.sh
 sh scripts/base1-recovery-usb-dry-run.sh --dry-run --target /dev/example
 sh scripts/base1-libreboot-milestone.sh
 sh scripts/base1-libreboot-docs.sh
