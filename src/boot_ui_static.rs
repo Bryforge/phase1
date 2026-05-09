@@ -682,6 +682,7 @@ fn splash_info(version: &str, config: BootConfig, boot_stamp: &str) -> Vec<Strin
         status_row(config, "state", state_mode, config.persistent_state),
         status_row(config, "log", crate::ops_log::LOG_PATH, true),
         status_row(config, "workspace", &workspace, true),
+        status_row(config, "nest", &nested_label(), nested_level() > 0),
     ]
 }
 
@@ -752,6 +753,25 @@ fn boot_rows(config: BootConfig) -> Vec<String> {
         option_row(config, "[9] SAVE", "phase1.conf", true),
         option_row(config, "[0] RESET", "defaults", true),
     ]
+}
+
+
+fn nested_level() -> u32 {
+    std::env::var("PHASE1_NESTED_LEVEL")
+        .ok()
+        .and_then(|raw| raw.trim().parse::<u32>().ok())
+        .unwrap_or(0)
+}
+
+fn nested_max() -> u32 {
+    std::env::var("PHASE1_NESTED_MAX")
+        .ok()
+        .and_then(|raw| raw.trim().parse::<u32>().ok())
+        .unwrap_or(1)
+}
+
+fn nested_label() -> String {
+    format!("level {}/{}", nested_level(), nested_max())
 }
 
 fn trust_label(config: BootConfig) -> &'static str {
@@ -1467,6 +1487,18 @@ mod tests {
     #[test]
     fn clock_uses_utc_suffix() {
         assert!(clock_utc().ends_with(" UTC"));
+    }
+
+    #[test]
+    fn boot_hud_reports_nested_level() {
+        let _env_lock = env_test_lock();
+        std::env::set_var("PHASE1_NESTED_LEVEL", "1");
+        std::env::set_var("PHASE1_NESTED_MAX", "2");
+        let rows = super::splash_info("4.3.0-dev", config(), "00:00:00 UTC");
+        assert!(rows.iter().any(|row| row.contains("nest")));
+        assert!(rows.iter().any(|row| row.contains("level 1/2")));
+        std::env::remove_var("PHASE1_NESTED_LEVEL");
+        std::env::remove_var("PHASE1_NESTED_MAX");
     }
 
     #[test]
