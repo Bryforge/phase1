@@ -6,7 +6,7 @@ This document is advisory and read-only. It does not flash firmware, change boot
 
 ## Start here
 
-1. `base1/LIBREBOOT_MILESTONE.md`
+1. `base1/LIBREBOOT_MILESTONE.md` — Libreboot milestone checkpoint
 1. `base1/LIBREBOOT_QUICKSTART.md`
 2. `base1/LIBREBOOT_COMMAND_INDEX.md`
 3. `base1/LIBREBOOT_PROFILE.md`
