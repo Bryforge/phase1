@@ -808,8 +808,187 @@ fn fyr_resolve_target(shell: &mut Phase1Shell, raw: &str) -> Result<FyrResolvedT
     })
 }
 
+fn fyr_expand_let_bindings(source: &str) -> Result<String, &'static str> {
+    if !source.contains("let ") {
+        return Ok(source.to_string());
+    }
+
+    let Some((body_start, body_end)) = fyr_main_body_bounds(source) else {
+        return Ok(source.to_string());
+    };
+
+    let body = &source[body_start..body_end];
+    let mut bindings: Vec<(String, String)> = Vec::new();
+    let mut rewritten_body = String::new();
+
+    for statement in fyr_split_seed_statements(body)? {
+        let statement = statement.trim();
+        if statement.is_empty() {
+            continue;
+        }
+
+        if let Some(rest) = statement.strip_prefix("let ") {
+            let Some((name, value)) = rest.split_once('=') else {
+                return Err("expected '=' in let binding");
+            };
+
+            let name = name.trim();
+            if !fyr_is_identifier(name) {
+                return Err("invalid let binding name");
+            }
+
+            let value = value
+                .trim()
+                .parse::<i32>()
+                .map_err(|_| "expected integer let binding value")?;
+
+            bindings.push((name.to_string(), value.to_string()));
+            continue;
+        }
+
+        let mut expanded = statement.to_string();
+        for (name, value) in &bindings {
+            expanded = fyr_replace_identifier_outside_strings(&expanded, name, value);
+        }
+
+        rewritten_body.push_str(&expanded);
+        rewritten_body.push_str("; ");
+    }
+
+    let mut out = String::new();
+    out.push_str(&source[..body_start]);
+    out.push_str(&rewritten_body);
+    out.push_str(&source[body_end..]);
+    Ok(out)
+}
+
+fn fyr_main_body_bounds(source: &str) -> Option<(usize, usize)> {
+    let fn_start = source.find("fn main")?;
+    let open = fn_start + source[fn_start..].find('{')?;
+    let close = source.rfind('}')?;
+
+    if close <= open {
+        return None;
+    }
+
+    Some((open + 1, close))
+}
+
+fn fyr_split_seed_statements(body: &str) -> Result<Vec<String>, &'static str> {
+    let mut statements = Vec::new();
+    let mut current = String::new();
+    let mut in_string = false;
+    let mut escaped = false;
+
+    for ch in body.chars() {
+        if in_string {
+            current.push(ch);
+            if escaped {
+                escaped = false;
+            } else if ch == '\\' {
+                escaped = true;
+            } else if ch == '"' {
+                in_string = false;
+            }
+            continue;
+        }
+
+        match ch {
+            '"' => {
+                in_string = true;
+                current.push(ch);
+            }
+            ';' => {
+                statements.push(current.trim().to_string());
+                current.clear();
+            }
+            _ => current.push(ch),
+        }
+    }
+
+    if !current.trim().is_empty() {
+        return Err("expected ';' after statement");
+    }
+
+    Ok(statements)
+}
+
+fn fyr_is_identifier(raw: &str) -> bool {
+    let mut chars = raw.chars();
+    let Some(first) = chars.next() else {
+        return false;
+    };
+
+    if !(first.is_ascii_alphabetic() || first == '_') {
+        return false;
+    }
+
+    if !chars.all(fyr_identifier_char) {
+        return false;
+    }
+
+    !matches!(
+        raw,
+        "fn" | "main" | "print" | "assert" | "assert_eq" | "return" | "let" | "i32"
+    )
+}
+
+fn fyr_identifier_char(ch: char) -> bool {
+    ch.is_ascii_alphanumeric() || ch == '_'
+}
+
+fn fyr_replace_identifier_outside_strings(input: &str, name: &str, value: &str) -> String {
+    let mut out = String::new();
+    let mut token = String::new();
+    let mut in_string = false;
+    let mut escaped = false;
+
+    let flush_token = |token: &mut String, out: &mut String| {
+        if token.is_empty() {
+            return;
+        }
+
+        if token == name {
+            out.push_str(value);
+        } else {
+            out.push_str(token);
+        }
+
+        token.clear();
+    };
+
+    for ch in input.chars() {
+        if in_string {
+            out.push(ch);
+            if escaped {
+                escaped = false;
+            } else if ch == '\\' {
+                escaped = true;
+            } else if ch == '"' {
+                in_string = false;
+            }
+            continue;
+        }
+
+        if ch == '"' {
+            flush_token(&mut token, &mut out);
+            in_string = true;
+            out.push(ch);
+        } else if fyr_identifier_char(ch) {
+            token.push(ch);
+        } else {
+            flush_token(&mut token, &mut out);
+            out.push(ch);
+        }
+    }
+
+    flush_token(&mut token, &mut out);
+    out
+}
+
 fn fyr_parse_source_ast(source: &str) -> Result<FyrSourceAst, &'static str> {
-    let function = fyr_parse_main_function(source)?;
+    let expanded_source = fyr_expand_let_bindings(source)?;
+    let function = fyr_parse_main_function(&expanded_source)?;
     Ok(FyrSourceAst {
         functions: vec![function],
     })
