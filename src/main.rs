@@ -481,7 +481,10 @@ fn execute_one(
             let canonical = registry::canonical_name(cmd).unwrap_or(cmd);
             let known = registry::lookup(cmd).is_some()
                 || plugin_exists(shell, canonical)
-                || matches!(canonical, "avim" | "emacs" | "repo" | "lang" | "opslog");
+                || matches!(
+                    canonical,
+                    "avim" | "emacs" | "repo" | "lang" | "fyr" | "opslog"
+                );
             match canonical {
                 "help" => ui::print_help(),
                 "accounts" => print!("{}", accounts_report(shell)),
@@ -506,6 +509,7 @@ fn execute_one(
                 "avim" => avim::edit(&mut shell.kernel.vfs, args),
                 "emacs" => avim::edit(&mut shell.kernel.vfs, args),
                 "lang" => print!("{}", languages::run(shell, args)),
+                "fyr" => print!("{}", fyr_command(shell, args)),
                 "opslog" => print!("{}", ops_log::run(args)),
                 "bootcfg" => handle_bootcfg(boot_config, args),
                 "nest" => print!("{}", nest_command(shell, args)),
@@ -543,6 +547,102 @@ fn theme_command(shell: &mut Phase1Shell, args: &[String]) -> String {
         out.push_str(&format!("pack   : {}\n", linux_colors::summary(shell)));
     }
     out
+}
+
+fn fyr_command(shell: &mut Phase1Shell, args: &[String]) -> String {
+    match args.first().map(String::as_str) {
+        None | Some("status") => fyr_status(),
+        Some("spec") => fyr_spec(),
+        Some("run") => fyr_run(shell, &args[1..]),
+        Some("help") | Some("-h") | Some("--help") => fyr_help(),
+        Some(other) => format!("fyr: unknown action {other}\n{}", fyr_help()),
+    }
+}
+
+fn fyr_status() -> String {
+    "fyr native language\nname      : Fyr\nextension : .fyr\ncommand   : fyr\nstatus    : command stub active; interpreter seed supports print literals\npurpose   : Phase1-owned language path for self-construction and VFS automation\n".to_string()
+}
+
+fn fyr_spec() -> String {
+    match fs::read_to_string("PHASE1_NATIVE_LANGUAGE.md") {
+        Ok(spec) => spec,
+        Err(err) => format!("fyr: could not read PHASE1_NATIVE_LANGUAGE.md: {err}\n"),
+    }
+}
+
+fn fyr_run(shell: &mut Phase1Shell, args: &[String]) -> String {
+    let Some(path) = args.first() else {
+        return "usage: fyr run <file.fyr>\n".to_string();
+    };
+
+    if !path.ends_with(".fyr") {
+        return "fyr: expected a .fyr file\n".to_string();
+    }
+
+    let source = match shell.kernel.sys_read(path) {
+        Ok(source) => source,
+        Err(err) => return format!("fyr: {err}\n"),
+    };
+
+    let output = fyr_print_output(&source);
+    if output.is_empty() {
+        "fyr: interpreter planned; no printable output found\n".to_string()
+    } else {
+        output
+    }
+}
+
+fn fyr_print_output(source: &str) -> String {
+    let mut out = String::new();
+    let mut rest = source;
+
+    while let Some(pos) = rest.find("print(") {
+        rest = &rest[pos + "print(".len()..];
+
+        if let Some(message) = parse_fyr_string_literal(rest) {
+            out.push_str(&message);
+            out.push('\n');
+        }
+
+        let Some(close) = rest.find(')') else {
+            break;
+        };
+        rest = &rest[close + 1..];
+    }
+
+    out
+}
+
+fn parse_fyr_string_literal(text: &str) -> Option<String> {
+    let start = text.find('"')?;
+    let mut out = String::new();
+    let mut escaped = false;
+
+    for ch in text[start + 1..].chars() {
+        if escaped {
+            match ch {
+                'n' => out.push('\n'),
+                't' => out.push('\t'),
+                '"' => out.push('"'),
+                '\\' => out.push('\\'),
+                other => out.push(other),
+            }
+            escaped = false;
+            continue;
+        }
+
+        match ch {
+            '\\' => escaped = true,
+            '"' => return Some(out),
+            other => out.push(other),
+        }
+    }
+
+    None
+}
+
+fn fyr_help() -> String {
+    "phase1 fyr command\n\nusage:\n  fyr status\n  fyr spec\n  fyr run <file.fyr>\n\nexample:\n  echo 'fn main() -> i32 { print(\"Hello, hacker!\"); return 0; }' > hello_hacker.fyr\n  fyr run hello_hacker.fyr\n".to_string()
 }
 
 fn repo_command(args: &[String]) -> String {
