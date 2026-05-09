@@ -481,7 +481,7 @@ fn execute_one(
             let canonical = registry::canonical_name(cmd).unwrap_or(cmd);
             let known = registry::lookup(cmd).is_some()
                 || plugin_exists(shell, canonical)
-                || matches!(canonical, "avim" | "lang" | "opslog");
+                || matches!(canonical, "avim" | "emacs" | "lang" | "opslog");
             match canonical {
                 "help" => ui::print_help(),
                 "accounts" => print!("{}", accounts_report(shell)),
@@ -504,6 +504,7 @@ fn execute_one(
                 "find" => print!("{}", text::find(&shell.kernel.vfs, args)),
                 "matrix" => matrix::run(args),
                 "avim" => avim::edit(&mut shell.kernel.vfs, args),
+                "emacs" => avim::edit(&mut shell.kernel.vfs, args),
                 "lang" => print!("{}", languages::run(shell, args)),
                 "opslog" => print!("{}", ops_log::run(args)),
                 "bootcfg" => handle_bootcfg(boot_config, args),
