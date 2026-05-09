@@ -2067,18 +2067,12 @@ fn nest_command(shell: &mut Phase1Shell, args: &[String]) -> String {
     }
 }
 
-fn nest_status(shell: &Phase1Shell) -> String {
-    let target = shell
-        .env
-        .get("PHASE1_NEST_TARGET")
-        .cloned()
-        .unwrap_or_else(|| nested_level().to_string());
+fn nest_status(_shell: &Phase1Shell) -> String {
+    let level = nested_level();
+    let max = nested_max();
     format!(
-        "phase1 nest status\nlevel     : {}/{}\ntarget    : {}\nexit-all  : {}\ncommands  : nest target <self|parent|root|level> | nest exit self | nest exit all | exit all\n",
-        nested_level(),
-        nested_max(),
-        target,
-        if nest_exit_all_requested() { "armed" } else { "clear" }
+        "nest status\nlevel   : {level}/{max}\nroot    : {}\nmode    : isolated\nhost    : inherited-safe-defaults\n",
+        if level == 0 { "yes" } else { "no" }
     )
 }
 
@@ -2125,7 +2119,8 @@ fn request_nest_exit_all(shell: &mut Phase1Shell) -> String {
 }
 
 fn nest_help() -> String {
-    "phase1 nest control\n\nusage:\n  nest status\n  nest target <self|parent|root|level>\n  nest exit self\n  nest exit all\n  exit all\n\nnotes:\n  target is an operator context marker for nested workflows\n  exit all writes a local Phase1 exit signal so parent shells unwind when they regain control\n"
+    "phase1 nest control\n\nusage:\n  nest status\n  nest target <self|parent|root|level>\n  nest exit self\n  nest exit all\n  exit all\n\nnotes:\n  target is an operator context marker for nested workflows\n  nest exit-all is an alias for nest exit all
+  exit all writes a local Phase1 exit signal so parent shells unwind when they regain control\n"
         .to_string()
 }
 
