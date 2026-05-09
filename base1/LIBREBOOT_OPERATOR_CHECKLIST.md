@@ -33,6 +33,7 @@ Confirm:
 
 Run these before any future destructive installer work:
 
+    sh scripts/base1-libreboot-checklist.sh
     sh scripts/base1-preflight.sh
     sh scripts/base1-libreboot-preflight.sh
     sh scripts/base1-grub-recovery-dry-run.sh --dry-run
