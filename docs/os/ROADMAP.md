@@ -125,3 +125,8 @@ Each target needs:
 4. Add the [`Base1 installer dry-run design`](BASE1_INSTALLER_DRY_RUN.md).
 5. Add system-surface command stubs behind safe defaults.
 6. Add hardware-target checklists.
+
+
+## Stage 1 recovery command design
+
+- [`Base1 recovery command design`](BASE1_RECOVERY_COMMAND.md) defines the first read-only recovery command surface for status and planning.
