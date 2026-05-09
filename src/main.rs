@@ -2030,6 +2030,7 @@ fn nest_command(shell: &mut Phase1Shell, args: &[String]) -> String {
         Some("list") | Some("ls") => nest_list(shell),
         Some("enter") => nest_enter(shell, &args[1..]),
         Some("destroy") | Some("rm") => nest_destroy(shell, &args[1..]),
+        Some("inspect") | Some("info") => nest_inspect(shell, &args[1..]),
         Some("target") | Some("use") => {
             let Some(raw) = args.get(1).map(String::as_str) else {
                 return "usage: nest target <self|parent|root|level>\n".to_string();
@@ -2178,6 +2179,29 @@ fn nest_active_path(shell: &Phase1Shell) -> String {
     } else {
         format!("/nest/{active}")
     }
+}
+
+fn nest_inspect(shell: &Phase1Shell, args: &[String]) -> String {
+    let Some(name) = args.first().map(String::as_str) else {
+        return "usage: nest inspect <name>\n".to_string();
+    };
+
+    if !nest_name_is_valid(name) {
+        return "nest inspect: invalid nest name\n".to_string();
+    }
+
+    let children = nest_children(shell);
+    if !children.iter().any(|child| child == name) {
+        return format!("nest inspect: {name} not found\n");
+    }
+
+    let active = nest_active_name(shell) == name;
+    format!(
+        "nest inspect\nname    : {name}\nlevel   : {}/{}\nactive  : {}\npath    : /nest/{name}\nmode    : isolated\nhost    : inherited-safe-defaults\n",
+        nested_level() + 1,
+        nested_max(),
+        if active { "yes" } else { "no" }
+    )
 }
 
 fn nest_destroy(shell: &mut Phase1Shell, args: &[String]) -> String {
