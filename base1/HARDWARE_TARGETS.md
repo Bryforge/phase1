@@ -69,6 +69,7 @@ optional recovery image
 ### Security goals
 
 - Support firmware-aware documentation for libreboot or coreboot-friendly use cases.
+- Use the dedicated [Libreboot profile](LIBREBOOT_PROFILE.md) for Libreboot-backed X200-class systems.
 - Keep Phase1 isolated from host package, boot, and recovery controls.
 - Prefer minimal desktop or terminal-only install.
 - Prefer storage encryption where practical.
