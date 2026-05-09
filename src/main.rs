@@ -837,8 +837,13 @@ fn fyr_expand_let_bindings(source: &str) -> Result<String, &'static str> {
                 return Err("invalid let binding name");
             }
 
-            let value = fyr_eval_integer_expression(value.trim(), &bindings)
-                .map_err(|_| "expected integer let binding value")?;
+            let value = fyr_eval_integer_expression(value.trim(), &bindings).map_err(|err| {
+                if err == "division by zero" {
+                    err
+                } else {
+                    "expected integer let binding value"
+                }
+            })?;
 
             bindings.push((name.to_string(), value));
             continue;
@@ -918,7 +923,7 @@ fn fyr_eval_integer_expression(raw: &str, bindings: &[(String, i32)]) -> Result<
         return Err("expected integer expression");
     }
 
-    for (idx, ch) in expr.char_indices() {
+    for (idx, ch) in expr.char_indices().rev() {
         if idx == 0 || !matches!(ch, '+' | '-') {
             continue;
         }
@@ -929,7 +934,7 @@ fn fyr_eval_integer_expression(raw: &str, bindings: &[(String, i32)]) -> Result<
             return Err("expected integer expression");
         }
 
-        let left = fyr_eval_integer_term(left, bindings)?;
+        let left = fyr_eval_integer_expression(left, bindings)?;
         let right = fyr_eval_integer_term(right, bindings)?;
         return match ch {
             '+' => Ok(left + right),
@@ -943,19 +948,55 @@ fn fyr_eval_integer_expression(raw: &str, bindings: &[(String, i32)]) -> Result<
 
 fn fyr_eval_integer_term(raw: &str, bindings: &[(String, i32)]) -> Result<i32, &'static str> {
     let term = raw.trim();
+    if term.is_empty() {
+        return Err("expected integer expression");
+    }
 
-    if let Ok(value) = term.parse::<i32>() {
+    for (idx, ch) in term.char_indices().rev() {
+        if idx == 0 || !matches!(ch, '*' | '/') {
+            continue;
+        }
+
+        let left = term[..idx].trim();
+        let right = term[idx + ch.len_utf8()..].trim();
+        if left.is_empty() || right.is_empty() {
+            return Err("expected integer expression");
+        }
+
+        let left = fyr_eval_integer_term(left, bindings)?;
+        let right = fyr_eval_integer_factor(right, bindings)?;
+
+        return match ch {
+            '*' => Ok(left * right),
+            '/' => {
+                if right == 0 {
+                    Err("division by zero")
+                } else {
+                    Ok(left / right)
+                }
+            }
+            _ => unreachable!(),
+        };
+    }
+
+    fyr_eval_integer_factor(term, bindings)
+}
+
+fn fyr_eval_integer_factor(raw: &str, bindings: &[(String, i32)]) -> Result<i32, &'static str> {
+    let factor = raw.trim();
+
+    if let Ok(value) = factor.parse::<i32>() {
         return Ok(value);
     }
 
-    if !fyr_is_identifier(term) {
+    if !fyr_is_identifier(factor) {
         return Err("expected integer expression");
     }
 
     bindings
         .iter()
         .rev()
-        .find_map(|(name, value)| (name == term).then_some(*value))
+        .find_map(|(name, value)| (name == factor).then_some(*value))
         .ok_or("unknown let binding")
 }
 
