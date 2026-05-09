@@ -73,3 +73,6 @@ Recovery USB target selection must remain read-only until target identity, image
 
 
 See also: [RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md](../RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md).
+
+
+See also: [Recovery USB image provenance and checksum design](RECOVERY_USB_IMAGE_PROVENANCE.md).
