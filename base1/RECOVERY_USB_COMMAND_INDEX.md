@@ -25,6 +25,7 @@ This document is advisory and read-only. It does not write USB media, partition 
 - `scripts/base1-recovery-usb-hardware-checklist.sh`
 - `scripts/base1-recovery-usb-validate.sh`
 - `scripts/base1-recovery-usb-index.sh`
+- `scripts/base1-recovery-usb-target-dry-run.sh --dry-run --target /dev/example`
 - `scripts/base1-recovery-usb-dry-run.sh --dry-run --target /dev/example`
 - `scripts/base1-libreboot-validate.sh`
 - `scripts/base1-libreboot-report.sh`
