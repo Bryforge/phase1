@@ -74,7 +74,7 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("emacs", &["emac", "phase1-emacs", "phase1emacs", "pemacs"], "editor", "emacs <file>", "Phase1 eMacs editor: VFS-native advanced editor powered by AVIM Pro.", "fs.write"),
     cmd!("dev", &["dock", "selfdev"], "dev", "dev [status|sync|branch|quick|test|commit|push|pr|merge|close|doctor]", "Phase1 self-development dock for working on Phase1 from inside Phase1.", "host.exec"),
     cmd!("repo", &["channels", "branches", "doctrine"], "dev", "repo [status|base|edge|checkpoint]", "Show the Phase1 repository channel doctrine: frozen base, active edge/stable path, checkpoints, and feature branch targets.", "none"),
-    cmd!("fyr", &["phase1lang", "forge"], "dev", "fyr [status|spec|new|init|cat|check|build|test|self|run <file.fyr>]", "Phase1-native language target for self-construction and VFS automation.", "none"),
+    cmd!("fyr", &["phase1lang", "forge"], "dev", "fyr [status|spec|new|init|cat|color|check|build|test|self|run <file.fyr>]", "Phase1-native language target for self-construction and VFS automation.", "none"),
     cmd!("lang", &["language", "runlang"], "dev", "lang [list|support|status|doctor|detect|run|security]", "Native guarded multi-language runtime manager for major open-source programming languages.", "host.exec"),
     cmd!("lspci", &[], "arch", "lspci", "List simulated PCIe devices.", "hw.read"),
     cmd!("pcie", &[], "arch", "pcie", "Show PCIe subsystem summary.", "hw.read"),
