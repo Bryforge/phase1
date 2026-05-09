@@ -150,3 +150,8 @@ Each target needs:
 ## Stage 2 recovery dry-run script
 
 - `scripts/base1-recovery-dry-run.sh` is the first non-destructive recovery preview command. It requires `--dry-run`, keeps boot settings unchanged, and reports `writes: no`.
+
+
+## Stage 2 storage layout dry-run script
+
+- `scripts/base1-storage-layout-dry-run.sh` is the first non-destructive storage layout preview command. It requires `--dry-run`, requires an explicit target, and reports `writes: no`.
