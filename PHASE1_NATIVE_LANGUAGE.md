@@ -55,3 +55,15 @@ Hello, hacker!
 - Lexer and parser design.
 - VFS-safe standard library modules.
 - WASI-lite or compiler target decision.
+
+
+## Authoring commands
+
+```text
+fyr new hello_hacker
+fyr cat hello_hacker.fyr
+fyr run hello_hacker.fyr
+fyr self
+```
+
+These commands let Phase1 create, inspect, and run Fyr files from inside the Phase1 shell without manually echoing source code.

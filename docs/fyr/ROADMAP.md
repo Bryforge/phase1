@@ -15,7 +15,7 @@ Fyr is the Phase1-native language path for VFS automation, self-construction, an
 | --- | --- | --- | --- |
 | F0 — Identity | Establish the language name, file extension, command, and visual mark. | `assets/fyr-flame.svg`, README reference, native language spec, roadmap. | Active |
 | F1 — Seed runner | Let Phase1 run simple `.fyr` programs from the VFS. | `fyr status`, `fyr spec`, `fyr run`, print literal support, guard tests. | Active |
-| F2 — Authoring loop | Make Fyr usable without manually echoing source code. | `fyr new <name>`, `fyr cat <file>`, starter templates, safer VFS writes. | Next |
+| F2 — Authoring loop | Make Fyr usable without manually echoing source code. | `fyr new <name>`, `fyr cat <file>`, `fyr self`, starter templates, safer VFS writes. | Active |
 | F3 — Core syntax | Define stable parser behavior inspired by C, Rust, and Python. | Lexer, parser, function blocks, variables, return values, comments, diagnostics. | Planned |
 | F4 — Safe runtime | Execute useful scripts without exposing the host. | VFS reads/writes, command metadata, bounded runtime, redacted errors, deterministic tests. | Planned |
 | F5 — Phase1 self-workflows | Use Fyr to help Phase1 inspect, copy, construct, and validate itself. | `fyr self`, repository manifest readers, docs sync helpers, checkpoint helpers. | Planned |

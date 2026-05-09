@@ -553,6 +553,9 @@ fn fyr_command(shell: &mut Phase1Shell, args: &[String]) -> String {
     match args.first().map(String::as_str) {
         None | Some("status") => fyr_status(),
         Some("spec") => fyr_spec(),
+        Some("new") => fyr_new(shell, &args[1..]),
+        Some("cat") => fyr_cat(shell, &args[1..]),
+        Some("self") => fyr_self(),
         Some("run") => fyr_run(shell, &args[1..]),
         Some("help") | Some("-h") | Some("--help") => fyr_help(),
         Some(other) => format!("fyr: unknown action {other}\n{}", fyr_help()),
@@ -560,13 +563,66 @@ fn fyr_command(shell: &mut Phase1Shell, args: &[String]) -> String {
 }
 
 fn fyr_status() -> String {
-    "fyr native language\nname      : Fyr\nextension : .fyr\ncommand   : fyr\nstatus    : command stub active; interpreter seed supports print literals\npurpose   : Phase1-owned language path for self-construction and VFS automation\n".to_string()
+    "fyr native language\nname      : Fyr\nextension : .fyr\ncommand   : fyr\nstatus    : authoring loop active; interpreter seed supports print literals\npurpose   : Phase1-owned language path for self-construction and VFS automation\n".to_string()
 }
 
 fn fyr_spec() -> String {
     match fs::read_to_string("PHASE1_NATIVE_LANGUAGE.md") {
         Ok(spec) => spec,
         Err(err) => format!("fyr: could not read PHASE1_NATIVE_LANGUAGE.md: {err}\n"),
+    }
+}
+
+fn fyr_new(shell: &mut Phase1Shell, args: &[String]) -> String {
+    let Some(path) = args.first().and_then(|raw| fyr_file_name(raw)) else {
+        return "usage: fyr new <name>\n".to_string();
+    };
+
+    if shell.kernel.sys_read(&path).is_ok() {
+        return format!("fyr new: {path} already exists\n");
+    }
+
+    let source = "fn main() -> i32 { print(\"Hello, hacker!\"); return 0; }\n";
+    match shell.kernel.sys_write(&path, source, false) {
+        Ok(()) => format!("fyr new: created {path}\n"),
+        Err(err) => format!("fyr new: {err}\n"),
+    }
+}
+
+fn fyr_cat(shell: &mut Phase1Shell, args: &[String]) -> String {
+    let Some(path) = args.first().and_then(|raw| fyr_file_name(raw)) else {
+        return "usage: fyr cat <file.fyr>\n".to_string();
+    };
+
+    match shell.kernel.sys_read(&path) {
+        Ok(mut source) => {
+            if !source.ends_with('\n') {
+                source.push('\n');
+            }
+            source
+        }
+        Err(err) => format!("fyr cat: {err}\n"),
+    }
+}
+
+fn fyr_self() -> String {
+    "fyr self\nstatus : online\nvfs    : available\nrunner : print literal seed\nnext   : lexer, parser, VFS-safe standard library\n".to_string()
+}
+
+fn fyr_file_name(raw: &str) -> Option<String> {
+    let trimmed = raw.trim();
+    if trimmed.is_empty() {
+        return None;
+    }
+
+    let base = trimmed.strip_suffix(".fyr").unwrap_or(trimmed);
+    if base
+        .chars()
+        .all(|ch| ch.is_ascii_alphanumeric() || matches!(ch, '_' | '-'))
+    {
+        Some(format!("{base}.fyr"))
+    } else {
+        None
     }
 }
 
@@ -642,7 +698,7 @@ fn parse_fyr_string_literal(text: &str) -> Option<String> {
 }
 
 fn fyr_help() -> String {
-    "phase1 fyr command\n\nusage:\n  fyr status\n  fyr spec\n  fyr run <file.fyr>\n\nexample:\n  echo 'fn main() -> i32 { print(\"Hello, hacker!\"); return 0; }' > hello_hacker.fyr\n  fyr run hello_hacker.fyr\n".to_string()
+    "phase1 fyr command\n\nusage:\n  fyr status\n  fyr spec\n  fyr new <name>\n  fyr cat <file.fyr>\n  fyr self\n  fyr run <file.fyr>\n\nexample:\n  echo 'fn main() -> i32 { print(\"Hello, hacker!\"); return 0; }' > hello_hacker.fyr\n  fyr run hello_hacker.fyr\n".to_string()
 }
 
 fn repo_command(args: &[String]) -> String {
