@@ -37,6 +37,8 @@ dev sync
 dev branch <name>
 dev quick
 dev test
+dev docs
+dev checkpoint <title>
 dev commit <message>
 dev push
 dev pr <title>
@@ -80,7 +82,7 @@ def cmd_status() -> int:
 
 
 def cmd_sync() -> int:
-    run(["git", "checkout", "master"])
+    run(["git", "checkout", "edge/stable"])
     run(["git", "pull", "--ff-only"])
     return 0
 
@@ -145,7 +147,7 @@ def cmd_pr(args: list[str]) -> int:
         "--body",
         f"{title}. Created from inside Phase1 Dev Dock.",
         "--base",
-        "master",
+        "edge/stable",
         "--head",
         branch,
     ])
@@ -157,7 +159,7 @@ def cmd_merge(args: list[str]) -> int:
         print("dev merge <number>")
         return 2
     run(["gh", "pr", "merge", args[0], "--squash"])
-    run(["git", "checkout", "master"])
+    run(["git", "checkout", "edge/stable"])
     run(["git", "pull", "--ff-only"])
     return 0
 
@@ -168,6 +170,53 @@ def cmd_close(args: list[str]) -> int:
         return 2
     run(["gh", "pr", "close", args[0]])
     return 0
+
+
+
+def cmd_docs() -> int:
+    run(["python3", "scripts/update-docs.py"])
+    run(["cargo", "fmt", "--all", "--", "--check"])
+    return 0
+
+
+def cmd_checkpoint(args: list[str]) -> int:
+    title = " ".join(args).strip() or "Checkpoint edge stable"
+    slug = title.lower()
+    for ch in " /_:.":
+        slug = slug.replace(ch, "-")
+    slug = "".join(ch for ch in slug if ch.isalnum() or ch == "-").strip("-") or "edge-stable"
+    branch = f"checkpoint/{slug}"
+
+    for cmd in [
+        ["git", "fetch", "origin"],
+        ["git", "checkout", "edge/stable"],
+        ["git", "pull", "--ff-only"],
+        ["git", "checkout", "-B", branch],
+        ["python3", "scripts/update-docs.py"],
+        ["cargo", "fmt", "--all", "--", "--check"],
+        ["cargo", "test", "--workspace", "--all-targets"],
+    ]:
+        code = run(cmd)
+        if code != 0:
+            return code
+
+    run(["git", "add", "README.md", "REPO_DOCTRINE.md", "EDGE.md", "EDGE_STABLE_CHECKPOINT.md", "FEATURE_STATUS.md", "WIKI_ROADMAP.md", "docs/wiki", "scripts/update-docs.py"])
+
+    changed = subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=ROOT).returncode != 0
+    if not changed:
+        print("dev checkpoint: no changes; edge/stable is already current, no PR needed")
+        return 0
+
+    code = run(["git", "commit", "-m", title])
+    if code != 0:
+        return code
+
+    code = run(["git", "push", "-u", "origin", branch])
+    if code != 0:
+        return code
+
+    return run(["gh", "pr", "create", "--title", title, "--body", "Automated Phase1 checkpoint created from inside Phase1.", "--base", "edge/stable", "--head", branch])
+
 
 
 def cmd_doctor() -> int:
@@ -198,6 +247,8 @@ def main() -> int:
         "pr": lambda: cmd_pr(rest),
         "merge": lambda: cmd_merge(rest),
         "close": lambda: cmd_close(rest),
+        "docs": lambda: cmd_docs(),
+        "checkpoint": lambda: cmd_checkpoint(rest),
         "doctor": lambda: cmd_doctor(),
     }
 
