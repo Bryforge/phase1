@@ -135,3 +135,8 @@ Each target needs:
 ## Stage 2 storage layout checker design
 
 - [`Base1 storage layout checker design`](BASE1_STORAGE_LAYOUT_CHECKER.md) defines the first read-only disk-layout validation surface for Base1 installer planning.
+
+
+## Stage 2 rollback metadata design
+
+- [`Base1 rollback metadata design`](BASE1_ROLLBACK_METADATA.md) defines the first safe restore-record contract for Base1 installer, update, and recovery planning.
