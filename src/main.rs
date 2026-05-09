@@ -809,26 +809,34 @@ fn fyr_resolve_target(shell: &mut Phase1Shell, raw: &str) -> Result<FyrResolvedT
 }
 
 fn fyr_expand_let_bindings(source: &str) -> Result<String, &'static str> {
-    if !source.contains("let ") {
-        return Ok(source.to_string());
-    }
-
     let Some((body_start, body_end)) = fyr_main_body_bounds(source) else {
         return Ok(source.to_string());
     };
 
     let body = &source[body_start..body_end];
+
+    if !body.contains("let ") && !body.contains("if ") {
+        return Ok(source.to_string());
+    }
+
     let mut bindings: Vec<(String, i32)> = Vec::new();
     let mut rewritten_body = String::new();
+    let mut rest = body;
 
-    for statement in fyr_split_seed_statements(body)? {
-        let statement = statement.trim();
-        if statement.is_empty() {
-            continue;
+    loop {
+        rest = rest.trim_start();
+
+        if rest.is_empty() {
+            break;
         }
 
-        if let Some(rest) = statement.strip_prefix("let ") {
-            let Some((name, value)) = rest.split_once('=') else {
+        if let Some(after_let) = rest.strip_prefix("let ") {
+            let Some(statement_end) = after_let.find(';') else {
+                return Err("expected ';' after let binding");
+            };
+
+            let statement = &after_let[..statement_end];
+            let Some((name, value)) = statement.split_once('=') else {
                 return Err("expected '=' in let binding");
             };
 
@@ -841,30 +849,131 @@ fn fyr_expand_let_bindings(source: &str) -> Result<String, &'static str> {
                 Ok(value) => value,
                 Err("division by zero") => return Err("division by zero"),
                 Err("expected ')' in integer expression") => {
-                    return Err("expected ')' in integer expression")
+                    return Err("expected ')' in integer expression");
                 }
                 Err(_) => return Err("expected integer let binding value"),
             };
 
             bindings.push((name.to_string(), value));
+            rest = &after_let[statement_end + 1..];
             continue;
         }
 
-        let mut expanded = statement.to_string();
-        for (name, value) in &bindings {
-            let value = value.to_string();
-            expanded = fyr_replace_identifier_outside_strings(&expanded, name, &value);
+        if let Some(after_if) = rest.strip_prefix("if ") {
+            let Some(condition_end) = after_if.find('{') else {
+                return Err("expected '{' after if condition");
+            };
+
+            let condition =
+                fyr_substitute_integer_bindings(after_if[..condition_end].trim(), &bindings);
+            let after_open = &after_if[condition_end + 1..];
+
+            let Some(body_end) = after_open.find('}') else {
+                return Err("expected '}' after if body");
+            };
+
+            let if_body = after_open[..body_end].trim();
+            let assertion =
+                fyr_parse_assertion_ast(&condition).map_err(|_| "expected boolean if condition")?;
+
+            let Some(return_expr) = if_body
+                .strip_prefix("return")
+                .and_then(|raw| raw.trim().strip_suffix(';'))
+            else {
+                return Err("expected return statement in if body");
+            };
+
+            let return_value = match fyr_eval_integer_expression(return_expr.trim(), &bindings) {
+                Ok(value) => value,
+                Err("division by zero") => return Err("division by zero"),
+                Err("expected ')' in integer expression") => {
+                    return Err("expected ')' in integer expression");
+                }
+                Err(_) => return Err("expected integer return value"),
+            };
+
+            if assertion.value {
+                rewritten_body.push_str(&format!(" return {return_value};"));
+            }
+
+            rest = &after_open[body_end + 1..];
+            continue;
         }
 
-        rewritten_body.push_str(&expanded);
-        rewritten_body.push_str("; ");
+        let Some(statement_end) = rest.find(';') else {
+            return Err("expected ';' after statement");
+        };
+
+        let statement = rest[..statement_end].trim();
+        let statement = fyr_substitute_integer_bindings(statement, &bindings);
+
+        rewritten_body.push(' ');
+        rewritten_body.push_str(&statement);
+        rewritten_body.push(';');
+
+        rest = &rest[statement_end + 1..];
     }
 
+    Ok(format!(
+        "{}{}{}",
+        &source[..body_start],
+        rewritten_body,
+        &source[body_end..]
+    ))
+}
+
+fn fyr_substitute_integer_bindings(raw: &str, bindings: &[(String, i32)]) -> String {
     let mut out = String::new();
-    out.push_str(&source[..body_start]);
-    out.push_str(&rewritten_body);
-    out.push_str(&source[body_end..]);
-    Ok(out)
+    let mut chars = raw.chars().peekable();
+    let mut in_string = false;
+    let mut escaped = false;
+
+    while let Some(ch) = chars.next() {
+        if in_string {
+            out.push(ch);
+
+            if escaped {
+                escaped = false;
+            } else if ch == '\\' {
+                escaped = true;
+            } else if ch == '"' {
+                in_string = false;
+            }
+
+            continue;
+        }
+
+        if ch == '"' {
+            in_string = true;
+            out.push(ch);
+            continue;
+        }
+
+        if ch == '_' || ch.is_ascii_alphabetic() {
+            let mut ident = String::from(ch);
+
+            while let Some(next) = chars.peek().copied() {
+                if next == '_' || next.is_ascii_alphanumeric() {
+                    ident.push(next);
+                    chars.next();
+                } else {
+                    break;
+                }
+            }
+
+            if let Some((_, value)) = bindings.iter().rev().find(|(name, _)| name == &ident) {
+                out.push_str(&value.to_string());
+            } else {
+                out.push_str(&ident);
+            }
+
+            continue;
+        }
+
+        out.push(ch);
+    }
+
+    out
 }
 
 fn fyr_main_body_bounds(source: &str) -> Option<(usize, usize)> {
@@ -879,6 +988,7 @@ fn fyr_main_body_bounds(source: &str) -> Option<(usize, usize)> {
     Some((open + 1, close))
 }
 
+#[allow(dead_code)]
 fn fyr_split_seed_statements(body: &str) -> Result<Vec<String>, &'static str> {
     let mut statements = Vec::new();
     let mut current = String::new();
@@ -1097,6 +1207,7 @@ fn fyr_identifier_char(ch: char) -> bool {
     ch.is_ascii_alphanumeric() || ch == '_'
 }
 
+#[allow(dead_code)]
 fn fyr_replace_identifier_outside_strings(input: &str, name: &str, value: &str) -> String {
     let mut out = String::new();
     let mut token = String::new();
@@ -1218,11 +1329,12 @@ fn fyr_parse_statements(body: &str) -> Result<Vec<FyrStatementAst>, &'static str
             FyrStatementAst::Print(_)
                 | FyrStatementAst::Assert(_)
                 | FyrStatementAst::AssertEq(_, _)
+                | FyrStatementAst::Return(_)
         )
     });
 
     if !has_observable_statement {
-        return Err("seed checker requires at least one print literal or assertion");
+        return Err("seed checker requires at least one executable statement");
     }
 
     if !statements
