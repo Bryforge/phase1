@@ -77,3 +77,6 @@ Record yes/no/notes:
 ## Promotion rule
 
 A recovery USB media builder can only follow after this checklist, the validation report, target-device selection, image provenance, checksum verification, emergency shell path, and rollback metadata path are documented and tested.
+
+
+See also: [Recovery USB hardware validation summary](RECOVERY_USB_HARDWARE_SUMMARY.md).

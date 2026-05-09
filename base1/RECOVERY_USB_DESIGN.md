@@ -77,3 +77,6 @@ See also: [Recovery USB validation report](RECOVERY_USB_VALIDATION_REPORT.md).
 
 
 See also: [Recovery USB hardware validation checklist](RECOVERY_USB_HARDWARE_CHECKLIST.md).
+
+
+See also: [Recovery USB hardware validation summary](RECOVERY_USB_HARDWARE_SUMMARY.md).

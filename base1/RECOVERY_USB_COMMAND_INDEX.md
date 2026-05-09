@@ -9,6 +9,7 @@ This document is advisory and read-only. It does not write USB media, partition 
 - `base1/RECOVERY_USB_DESIGN.md` — recovery USB design and safety contract.
 - `base1/RECOVERY_USB_VALIDATION_REPORT.md` — Recovery USB validation report.
 - `base1/RECOVERY_USB_HARDWARE_CHECKLIST.md` — Recovery USB hardware validation checklist.
+- `base1/RECOVERY_USB_HARDWARE_SUMMARY.md` — Recovery USB hardware validation summary.
 - `base1/LIBREBOOT_DOCS_SUMMARY.md` — Libreboot documentation path.
 - `base1/LIBREBOOT_MILESTONE.md` — Libreboot read-only milestone checkpoint.
 - `base1/LIBREBOOT_VALIDATION_REPORT.md` — validation report template.
