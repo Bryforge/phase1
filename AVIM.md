@@ -4,6 +4,8 @@
 
 The current edge build is designed to be easier on small machines and mobile terminals: it shows a visible pink cursor, uses color-coded modes, supports line and character-level editing, and exposes simple command completion help from inside the editor.
 
+The next pro-editor layer is tracked in [`AVIM_PRO.md`](AVIM_PRO.md). That document defines the planned `:status`, `:open`, `:w <file>`, `:files`, `N`, `redo`, `:template`, `:run`, `:diff`, and `:help pro` workflow so AVIM can become the full write-save-run-fix editor inside Phase1 while staying VFS-native and safe.
+
 ## Goals
 
 - Provide a capable terminal editor from inside Phase1.
@@ -97,11 +99,30 @@ Use `Esc`, `escape`, `normal`, or `cancel` to cancel a pending edit and return t
 :read <file>    read another VFS file below the cursor
 ```
 
+## Pro editor target
+
+```text
+avim jesse.go
+:template go
+:w
+:run
+```
+
+Expected future workflow:
+
+```text
+avim: inserted Go starter template
+avim: wrote jesse.go
+avim: running go through Phase1 guarded language runtime
+hello from avim + Go inside Phase1
+```
+
 ## Completion behavior
 
 - Shell-level Tab completes `avim` itself and common VFS file names before the editor opens.
 - Inside `avim`, pressing Tab or typing a command containing a tab prints matching editor commands.
 - Completion suggestions include editing, movement, save, search, read, set, and security commands.
+- The pro layer should extend completions for `:status`, `:open`, `:w <file>`, `:files`, `:template`, `:run`, `:diff`, `redo`, and `N`.
 
 ## Color model
 
@@ -133,6 +154,7 @@ Additional controls:
 - Reads and writes use the existing Phase1 VFS paths.
 - Persistence follows the normal Phase1 persistent-state setting.
 - The editor does not need GitHub credentials, host tokens, shell profiles, SSH keys, or browser cookies.
+- The pro `:run` target must reuse guarded Phase1 runtime paths and must not introduce Vim-style shell execution.
 
 ## Why not copy Vim?
 
