@@ -16,6 +16,7 @@ This document is advisory and read-only. It does not flash firmware, change boot
 
 ## Libreboot scripts
 
+- `scripts/base1-libreboot-docs.sh`
 - `scripts/base1-libreboot-report.sh`
 - `scripts/base1-libreboot-validate.sh`
 - `scripts/base1-libreboot-index.sh`
