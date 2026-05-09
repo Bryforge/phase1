@@ -1,6 +1,6 @@
-# v4.4.0-dev Edge Checkpoint
+# v5.0.0 Edge Checkpoint
 
-- Moved the active package line from stable `4.3.0` to edge `4.4.0-dev`.
+- Moved the active package line from stable `4.3.0` to edge `5.0.0`.
 - Preserved `v4.3.0` as the stable public representation, `v4.2.0` as previous stable, and `v3.6.0` as compatibility base.
 - Checkpointed guarded host runtime execution so trusted language/runtime commands can run with safe mode still enabled while privileged host mutation remains gated.
 - Checkpointed compact dynamic prompt chips across mobile, laptop, and desktop modes: `phase1://root ~ [edge safe trust] ⇢`.
