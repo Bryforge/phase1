@@ -8,6 +8,7 @@
 dev status
 dev sync
 dev docs
+dev cycle
 dev quick
 dev test
 dev checkpoint Docs guard edge stable
@@ -19,6 +20,10 @@ dev merge 123
 dev close 123
 dev doctor
 ```
+
+## Daily cycle
+
+Use `dev cycle` for the normal status, docs sync, and final git status loop without opening an editor or creating a checkpoint.
 
 ## Purpose
 

@@ -38,6 +38,7 @@ dev branch <name>
 dev quick
 dev test
 dev docs
+dev cycle
 dev checkpoint <title>
 dev commit <message>
 dev push
@@ -179,6 +180,14 @@ def cmd_docs() -> int:
     return 0
 
 
+def cmd_cycle() -> int:
+    """Run the normal self-hosted status/docs/status loop without checkpointing."""
+    cmd_status()
+    cmd_docs()
+    run(["git", "status"], check=False)
+    return 0
+
+
 def cmd_checkpoint(args: list[str]) -> int:
     title = " ".join(args).strip() or "Checkpoint edge stable"
     slug = title.lower()
@@ -249,6 +258,7 @@ def main() -> int:
         "merge": lambda: cmd_merge(rest),
         "close": lambda: cmd_close(rest),
         "docs": lambda: cmd_docs(),
+        "cycle": lambda: cmd_cycle(),
         "checkpoint": lambda: cmd_checkpoint(rest),
         "doctor": lambda: cmd_doctor(),
     }
