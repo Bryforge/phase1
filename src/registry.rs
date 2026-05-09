@@ -112,7 +112,8 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("version", &["ver"], "misc", "version [--compare]", "Show release version or compare release with bleeding edge.", "none"),
     cmd!("roadmap", &["map"], "misc", "roadmap", "Show roadmap completion status for release versus bleeding edge.", "none"),
     cmd!("sandbox", &["nsinfo"], "misc", "sandbox", "Show safety model.", "none"),
-    cmd!("exit", &["quit", "shutdown", "poweroff"], "misc", "exit", "Terminate simulator.", "none"),
+    cmd!("nest", &["nests"], "misc", "nest [status|target|exit]", "Inspect and control nested Phase1 sessions, including exit-all unwinding.", "none"),
+    cmd!("exit", &["quit", "shutdown", "poweroff"], "misc", "exit [all]", "Terminate simulator or unwind all nested Phase1 sessions.", "none"),
 ];
 
 pub fn lookup(name: &str) -> Option<&'static CommandSpec> {
@@ -229,6 +230,7 @@ mod tests {
         assert_eq!(lookup("vim").map(|cmd| cmd.name), Some("avim"));
         assert_eq!(lookup("language").map(|cmd| cmd.name), Some("lang"));
         assert_eq!(lookup("status").map(|cmd| cmd.name), Some("capabilities"));
+        assert_eq!(lookup("nests").map(|cmd| cmd.name), Some("nest"));
     }
 
     #[test]
@@ -264,6 +266,7 @@ mod tests {
         assert!(map.contains("dash"));
         assert!(map.contains("matrix"));
         assert!(map.contains("bootcfg"));
+        assert!(map.contains("nest"));
         assert!(map.contains("accounts"));
         assert!(map.contains("security"));
         assert!(map.contains("sysinfo"));
@@ -326,6 +329,8 @@ mod tests {
         assert!(completions("a").contains(&"avim"));
         assert!(completions("v").contains(&"vim"));
         assert!(completions("la").contains(&"lang"));
+        assert!(completions("ne").contains(&"nest"));
+        assert!(completions("ne").contains(&"nests"));
     }
 
     #[test]

@@ -33,6 +33,7 @@ use std::path::Path;
 use std::process::{Command, Stdio};
 
 const PERSISTENT_STATE_PATH: &str = "phase1.state";
+const NEST_EXIT_ALL_PATH: &str = "phase1.nest.exit-all";
 const RESET: &str = "\x1b[0m";
 const BOLD: &str = "\x1b[1m";
 const GREEN: &str = "\x1b[32m";
@@ -70,6 +71,30 @@ fn compact_path(path: &Path) -> String {
         raw.replacen("/home", "~", 1)
     } else {
         raw
+    }
+}
+
+fn nested_level() -> u32 {
+    std::env::var("PHASE1_NESTED_LEVEL")
+        .ok()
+        .and_then(|raw| raw.trim().parse::<u32>().ok())
+        .unwrap_or(0)
+}
+
+fn nested_max() -> u32 {
+    std::env::var("PHASE1_NESTED_MAX")
+        .ok()
+        .and_then(|raw| raw.trim().parse::<u32>().ok())
+        .unwrap_or(1)
+}
+
+fn nest_exit_all_requested() -> bool {
+    Path::new(NEST_EXIT_ALL_PATH).exists()
+}
+
+fn clear_nest_exit_all_if_root() {
+    if nested_level() == 0 {
+        let _ = fs::remove_file(NEST_EXIT_ALL_PATH);
     }
 }
 
@@ -172,6 +197,7 @@ fn run_storage_boot_option(boot_config: ui::BootConfig) {
 
 fn run_shell(boot_config: ui::BootConfig) -> ShellExit {
     boot_config.apply();
+    clear_nest_exit_all_if_root();
 
     let mut shell = Phase1Shell::new();
     let history_store = history::HistoryStore::from_env(boot_config.persistent_state);
@@ -277,6 +303,16 @@ fn run_shell(boot_config: ui::BootConfig) -> ShellExit {
 
     let mut shell_exit = ShellExit::Shutdown;
     loop {
+        if nest_exit_all_requested() {
+            println!(
+                "nest: exit-all signal observed at level {}/{}",
+                nested_level(),
+                nested_max()
+            );
+            clear_nest_exit_all_if_root();
+            break;
+        }
+
         shell.kernel.tick();
 
         let path = compact_path(&shell.kernel.vfs.cwd);
@@ -319,6 +355,24 @@ fn run_shell(boot_config: ui::BootConfig) -> ShellExit {
                 ops_log::log_error("parse", &err);
                 eprintln!("parse error: {err}");
             }
+        }
+
+        if shell
+            .env
+            .get("PHASE1_NEST_EXIT_REQUESTED")
+            .is_some_and(|value| value == "1")
+        {
+            break;
+        }
+
+        if nest_exit_all_requested() {
+            println!(
+                "nest: exit-all signal observed at level {}/{}",
+                nested_level(),
+                nested_max()
+            );
+            clear_nest_exit_all_if_root();
+            break;
         }
 
         if shell
@@ -423,6 +477,14 @@ fn execute_one(
                 "lang" => print!("{}", languages::run(shell, args)),
                 "opslog" => print!("{}", ops_log::run(args)),
                 "bootcfg" => handle_bootcfg(boot_config, args),
+                "nest" => print!("{}", nest_command(shell, args)),
+                "exit"
+                    if args
+                        .first()
+                        .is_some_and(|arg| matches!(arg.as_str(), "all" | "--all")) =>
+                {
+                    print!("{}", request_nest_exit_all(shell))
+                }
                 "reboot" => request_reboot(shell),
                 _ => dispatch(shell, cmd, args),
             }
@@ -449,6 +511,112 @@ fn theme_command(shell: &mut Phase1Shell, args: &[String]) -> String {
         out.push_str(&format!("pack   : {}\n", linux_colors::summary(shell)));
     }
     out
+}
+
+fn nest_command(shell: &mut Phase1Shell, args: &[String]) -> String {
+    match args.first().map(String::as_str) {
+        None | Some("status") => nest_status(shell),
+        Some("target") | Some("use") => {
+            let Some(raw) = args.get(1).map(String::as_str) else {
+                return "usage: nest target <self|parent|root|level>\n".to_string();
+            };
+            match parse_nest_target(raw) {
+                Some(level) => {
+                    shell
+                        .env
+                        .insert("PHASE1_NEST_TARGET".to_string(), level.to_string());
+                    format!("nest: target set to level {level}/{}\n", nested_max())
+                }
+                None => format!("nest: invalid target '{raw}'\n"),
+            }
+        }
+        Some("exit") => match args.get(1).map(String::as_str) {
+            None | Some("self") => request_nest_exit_self(shell),
+            Some("all") | Some("--all") => request_nest_exit_all(shell),
+            Some("target") => {
+                let target = shell
+                    .env
+                    .get("PHASE1_NEST_TARGET")
+                    .and_then(|raw| raw.parse::<u32>().ok())
+                    .unwrap_or_else(nested_level);
+                if target == nested_level() {
+                    request_nest_exit_self(shell)
+                } else if target == 0 {
+                    request_nest_exit_all(shell)
+                } else {
+                    format!(
+                        "nest: target level {target} is not directly addressable from level {}; use `nest exit all` to unwind safely\n",
+                        nested_level()
+                    )
+                }
+            }
+            Some(other) => format!("nest: unknown exit target '{other}'\n"),
+        },
+        Some("help") | Some("-h") | Some("--help") => nest_help(),
+        Some(other) => format!("nest: unknown action '{other}'\n{}", nest_help()),
+    }
+}
+
+fn nest_status(shell: &Phase1Shell) -> String {
+    let target = shell
+        .env
+        .get("PHASE1_NEST_TARGET")
+        .cloned()
+        .unwrap_or_else(|| nested_level().to_string());
+    format!(
+        "phase1 nest status\nlevel     : {}/{}\ntarget    : {}\nexit-all  : {}\ncommands  : nest target <self|parent|root|level> | nest exit self | nest exit all | exit all\n",
+        nested_level(),
+        nested_max(),
+        target,
+        if nest_exit_all_requested() { "armed" } else { "clear" }
+    )
+}
+
+fn parse_nest_target(raw: &str) -> Option<u32> {
+    match raw {
+        "self" | "." => Some(nested_level()),
+        "parent" | ".." => Some(nested_level().saturating_sub(1)),
+        "root" => Some(0),
+        _ => raw
+            .parse::<u32>()
+            .ok()
+            .filter(|level| *level <= nested_max()),
+    }
+}
+
+fn request_nest_exit_self(shell: &mut Phase1Shell) -> String {
+    shell
+        .env
+        .insert("PHASE1_NEST_EXIT_REQUESTED".to_string(), "1".to_string());
+    format!(
+        "nest: exiting current level {}/{}\n",
+        nested_level(),
+        nested_max()
+    )
+}
+
+fn request_nest_exit_all(shell: &mut Phase1Shell) -> String {
+    shell
+        .env
+        .insert("PHASE1_NEST_EXIT_REQUESTED".to_string(), "1".to_string());
+    let payload = format!(
+        "requested_by_level={}\nmax={}\n",
+        nested_level(),
+        nested_max()
+    );
+    match fs::write(NEST_EXIT_ALL_PATH, payload) {
+        Ok(()) => format!(
+            "nest: exit-all armed from level {}/{}; parent levels will exit as they regain control\n",
+            nested_level(),
+            nested_max()
+        ),
+        Err(err) => format!("nest: could not arm exit-all signal: {err}\n"),
+    }
+}
+
+fn nest_help() -> String {
+    "phase1 nest control\n\nusage:\n  nest status\n  nest target <self|parent|root|level>\n  nest exit self\n  nest exit all\n  exit all\n\nnotes:\n  target is an operator context marker for nested workflows\n  exit all writes a local Phase1 exit signal so parent shells unwind when they regain control\n"
+        .to_string()
 }
 
 fn request_reboot(shell: &mut Phase1Shell) {
