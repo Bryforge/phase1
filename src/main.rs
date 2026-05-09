@@ -556,6 +556,7 @@ fn fyr_command(shell: &mut Phase1Shell, args: &[String]) -> String {
         Some("new") => fyr_new(shell, &args[1..]),
         Some("init") => fyr_init(shell, &args[1..]),
         Some("cat") => fyr_cat(shell, &args[1..]),
+        Some("color") | Some("highlight") => fyr_color(shell, &args[1..]),
         Some("check") => fyr_check(shell, &args[1..]),
         Some("build") => fyr_build(shell, &args[1..]),
         Some("test") => fyr_test(shell, &args[1..]),
@@ -1178,6 +1179,101 @@ fn fyr_package_name(raw: &str) -> Option<String> {
     } else {
         None
     }
+}
+
+fn fyr_color(shell: &mut Phase1Shell, args: &[String]) -> String {
+    let Some(target) = args.first().map(String::as_str) else {
+        return "usage: fyr color <file.fyr>\n".to_string();
+    };
+
+    let target = target.trim();
+    match shell.kernel.sys_read(target) {
+        Ok(source) => fyr_colorize_source(&source),
+        Err(_) => format!("fyr color: no such file: {target}\n"),
+    }
+}
+
+fn fyr_colorize_source(source: &str) -> String {
+    let mut out = String::new();
+
+    for line in source.lines() {
+        let mut chars = line.chars().peekable();
+
+        while let Some(ch) = chars.next() {
+            if ch == '"' {
+                let mut literal = String::from("\"");
+                let mut escaped = false;
+
+                for next in chars.by_ref() {
+                    literal.push(next);
+                    if escaped {
+                        escaped = false;
+                    } else if next == '\\' {
+                        escaped = true;
+                    } else if next == '"' {
+                        break;
+                    }
+                }
+
+                out.push_str("\x1b[35m");
+                out.push_str(&literal);
+                out.push_str("\x1b[0m");
+                continue;
+            }
+
+            if ch.is_ascii_digit() {
+                let mut number = ch.to_string();
+                while let Some(next) = chars.peek() {
+                    if next.is_ascii_digit() {
+                        number.push(*next);
+                        chars.next();
+                    } else {
+                        break;
+                    }
+                }
+
+                out.push_str("\x1b[33m");
+                out.push_str(&number);
+                out.push_str("\x1b[0m");
+                continue;
+            }
+
+            if ch.is_ascii_alphabetic() || ch == '_' {
+                let mut word = ch.to_string();
+                while let Some(next) = chars.peek() {
+                    if next.is_ascii_alphanumeric() || *next == '_' {
+                        word.push(*next);
+                        chars.next();
+                    } else {
+                        break;
+                    }
+                }
+
+                let color = match word.as_str() {
+                    "fn" | "return" => Some("\x1b[36m"),
+                    "print" | "assert" | "assert_eq" => Some("\x1b[32m"),
+                    "true" | "false" | "i32" => Some("\x1b[34m"),
+                    _ => None,
+                };
+
+                if let Some(color) = color {
+                    out.push_str(color);
+                    out.push_str(&word);
+                    out.push_str("\x1b[0m");
+                } else {
+                    out.push_str(&word);
+                }
+
+                continue;
+            }
+
+            out.push(ch);
+        }
+
+        out.push('\n');
+    }
+
+    out
 }
 
 fn fyr_cat(shell: &mut Phase1Shell, args: &[String]) -> String {
