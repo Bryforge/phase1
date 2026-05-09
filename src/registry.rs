@@ -98,7 +98,7 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("help", &["commands"], "misc", "help", "Show grouped command map.", "none"),
     cmd!("man", &[], "misc", "man <command>", "Show generated command manual page.", "none"),
     cmd!("complete", &[], "misc", "complete [prefix]", "Show registry-backed command completions.", "none"),
-    cmd!("capabilities", &["caps"], "misc", "capabilities", "Show command capability metadata and guard status.", "none"),
+    cmd!("capabilities", &["caps", "status"], "misc", "capabilities [features|--status]", "Show implementation status, command capability metadata, and guard status.", "none"),
     cmd!("dash", &["dashboard"], "misc", "dash [--compact]", "Show a compact operator dashboard snapshot.", "sys.read"),
     cmd!("matrix", &["rain"], "misc", "matrix [seconds|0|forever] [--speed ms] [--density n] [--chars set]", "Run enhanced Matrix rain. Press q to exit interactively; 0/forever runs until quit.", "none"),
     cmd!("bootcfg", &["bootconfig"], "misc", "bootcfg [show|save|reset|path]", "Show, save, reset, or locate the persisted boot profile in phase1.conf.", "none"),
@@ -130,7 +130,7 @@ pub fn command_map() -> String {
             .join(" ");
         out.push_str(&format!("{:<5}: {}\n", category, names));
     }
-    out.push_str("\nquick : version --compare | roadmap | lang support | lang security | avim notes.rs | update test quick | update test full | learn status | learn import-history | learn suggest | theme list | theme matrix | pipeline | wasm list | update protocol | sysinfo\n");
+    out.push_str("\nquick : status features | capabilities | version --compare | roadmap | lang support | lang security | avim notes.rs | update test quick | update test full | learn status | learn import-history | learn suggest | theme list | theme matrix | pipeline | wasm list | update protocol | sysinfo\n");
     out
 }
 
@@ -165,7 +165,8 @@ pub fn completions(prefix: &str) -> Vec<&'static str> {
 }
 
 pub fn capabilities_report() -> String {
-    let mut out = String::from("command        category capability  guard\n");
+    let mut out = feature_status_summary();
+    out.push_str("\ncommand        category capability  guard\n");
     for cmd in COMMANDS {
         out.push_str(&format!(
             "{:<14} {:<8} {:<11} {}\n",
@@ -176,6 +177,11 @@ pub fn capabilities_report() -> String {
         ));
     }
     out
+}
+
+fn feature_status_summary() -> String {
+    "Phase1 feature status\n\nImplemented:\n  shell, VFS, simulated process table, audit log, /proc, text tools, dashboards, local learning, WASI-lite plugins\n\nExperimental:\n  lang run, direct Python wrapper, direct C/GCC wrapper, Git/storage helper, Rust/Cargo host workflows, browser host fetch\n\nRestricted:\n  host network inspection, host network mutation, self-update execution\n\nPlanned:\n  unified legacy runtime wrappers, doctor mobile, named boot profiles, broader language support\n\nNot planned:\n  full OS replacement, hardened VM/chroot/container sandbox\n\nMore detail:\n  FEATURE_STATUS.md\n"
+        .to_string()
 }
 
 fn guard_status(capability: &str) -> &'static str {
@@ -216,6 +222,7 @@ mod tests {
         assert_eq!(lookup("wasi").map(|cmd| cmd.name), Some("wasm"));
         assert_eq!(lookup("vim").map(|cmd| cmd.name), Some("avim"));
         assert_eq!(lookup("language").map(|cmd| cmd.name), Some("lang"));
+        assert_eq!(lookup("status").map(|cmd| cmd.name), Some("capabilities"));
     }
 
     #[test]
@@ -223,6 +230,7 @@ mod tests {
         assert_eq!(canonical_name("py"), Some("python"));
         assert_eq!(canonical_name("commands"), Some("help"));
         assert_eq!(canonical_name("caps"), Some("capabilities"));
+        assert_eq!(canonical_name("status"), Some("capabilities"));
         assert_eq!(canonical_name("dashboard"), Some("dash"));
         assert_eq!(canonical_name("rain"), Some("matrix"));
         assert_eq!(canonical_name("bootconfig"), Some("bootcfg"));
@@ -246,6 +254,7 @@ mod tests {
         assert!(map.contains("audit"));
         assert!(map.contains("complete"));
         assert!(map.contains("capabilities"));
+        assert!(map.contains("status features"));
         assert!(map.contains("dash"));
         assert!(map.contains("matrix"));
         assert!(map.contains("bootcfg"));
@@ -286,6 +295,9 @@ mod tests {
         assert!(avim.contains("modal editor"));
         let lang = man_page("lang").expect("lang man page");
         assert!(lang.contains("multi-language"));
+        let status = man_page("status").expect("status man page");
+        assert!(status.contains("capabilities [features|--status]"));
+        assert!(status.contains("implementation status"));
     }
 
     #[test]
@@ -297,6 +309,7 @@ mod tests {
         assert!(completions("r").contains(&"roadmap"));
         assert!(completions("boot").contains(&"bootcfg"));
         assert!(completions("sec").contains(&"security"));
+        assert!(completions("st").contains(&"status"));
         assert!(completions("the").contains(&"theme"));
         assert!(completions("f").contains(&"find"));
         assert!(completions("g").contains(&"grep"));
@@ -312,6 +325,13 @@ mod tests {
     #[test]
     fn capabilities_report_includes_guard_status() {
         let report = capabilities_report();
+        assert!(report.contains("Phase1 feature status"));
+        assert!(report.contains("Implemented:"));
+        assert!(report.contains("Experimental:"));
+        assert!(report.contains("Restricted:"));
+        assert!(report.contains("Not planned:"));
+        assert!(report.contains("full OS replacement"));
+        assert!(report.contains("FEATURE_STATUS.md"));
         assert!(report.contains("wifi-connect"));
         assert!(report.contains("network-change opt-in"));
         assert!(report.contains("PHASE1_ALLOW_HOST_TOOLS"));
