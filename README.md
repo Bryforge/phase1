@@ -340,6 +340,7 @@ First safe check:
 
 ```bash
 sh scripts/base1-preflight.sh
+sh scripts/base1-libreboot-preflight.sh
 sh scripts/base1-install-dry-run.sh --dry-run --target /dev/example
 sh scripts/base1-recovery-dry-run.sh --dry-run
 sh scripts/base1-storage-layout-dry-run.sh --dry-run --target /dev/example
