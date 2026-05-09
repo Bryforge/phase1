@@ -6,6 +6,7 @@ This document is advisory and read-only. It does not flash firmware, change boot
 
 ## Libreboot documents
 
+- `base1/LIBREBOOT_DOCS_SUMMARY.md` — Libreboot docs summary.
 - `base1/LIBREBOOT_QUICKSTART.md` — Libreboot quickstart.
 - `base1/LIBREBOOT_PROFILE.md` — firmware-aware Base1 profile for Libreboot-backed X200-class systems.
 - `base1/LIBREBOOT_PREFLIGHT.md` — read-only Libreboot and GRUB-first preflight notes.
