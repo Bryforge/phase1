@@ -155,3 +155,8 @@ Each target needs:
 ## Stage 2 storage layout dry-run script
 
 - `scripts/base1-storage-layout-dry-run.sh` is the first non-destructive storage layout preview command. It requires `--dry-run`, requires an explicit target, and reports `writes: no`.
+
+
+## Stage 2 rollback metadata dry-run script
+
+- `scripts/base1-rollback-metadata-dry-run.sh` is the first non-destructive rollback metadata preview command. It requires `--dry-run`, stores no secrets, writes nothing, and reports `operator_confirmed: no`.
