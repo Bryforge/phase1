@@ -1300,7 +1300,7 @@ fn fyr_parse_assert_statement_ast(
 }
 
 fn fyr_parse_assertion_ast(assertion: &str) -> Result<FyrAssertionAst, &'static str> {
-    let assertion = assertion.trim();
+    let assertion = fyr_strip_wrapping_assertion_parens(assertion.trim());
 
     if assertion.is_empty() {
         return Err("expected boolean assertion");
@@ -1339,13 +1339,6 @@ fn fyr_parse_assertion_ast(assertion: &str) -> Result<FyrAssertionAst, &'static 
     }
 
     if let Some(inner) = assertion.strip_prefix('!') {
-        let inner = inner.trim();
-        let inner = if inner.starts_with('(') && inner.ends_with(')') && inner.len() >= 2 {
-            &inner[1..inner.len() - 1]
-        } else {
-            inner
-        };
-
         let parsed = fyr_parse_assertion_ast(inner)?;
         return Ok(FyrAssertionAst {
             value: !parsed.value,
@@ -1354,6 +1347,44 @@ fn fyr_parse_assertion_ast(assertion: &str) -> Result<FyrAssertionAst, &'static 
     }
 
     fyr_parse_atomic_assertion_ast(assertion)
+}
+
+fn fyr_strip_wrapping_assertion_parens(assertion: &str) -> &str {
+    let mut current = assertion.trim();
+
+    loop {
+        if !(current.starts_with('(') && current.ends_with(')')) {
+            return current;
+        }
+
+        let mut depth = 0i32;
+        let mut wraps_entire_expression = true;
+
+        for (idx, ch) in current.char_indices() {
+            match ch {
+                '(' => depth += 1,
+                ')' => {
+                    depth -= 1;
+                    if depth == 0 && idx != current.len() - 1 {
+                        wraps_entire_expression = false;
+                        break;
+                    }
+                }
+                _ => {}
+            }
+
+            if depth < 0 {
+                wraps_entire_expression = false;
+                break;
+            }
+        }
+
+        if !wraps_entire_expression || depth != 0 {
+            return current;
+        }
+
+        current = current[1..current.len() - 1].trim();
+    }
 }
 
 fn fyr_split_assertion_chain<'a>(assertion: &'a str, op: &str) -> Option<Vec<&'a str>> {
