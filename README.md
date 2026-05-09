@@ -337,6 +337,7 @@ Start here:
 - [`base1/LIBREBOOT_OPERATOR_CHECKLIST.md`](base1/LIBREBOOT_OPERATOR_CHECKLIST.md) — Libreboot operator checklist
 - [`base1/LIBREBOOT_MILESTONE.md`](base1/LIBREBOOT_MILESTONE.md) — Libreboot milestone checkpoint
 - [`base1/RECOVERY_USB_DESIGN.md`](base1/RECOVERY_USB_DESIGN.md) — Recovery USB design
+- [`base1/RECOVERY_USB_COMMAND_INDEX.md`](base1/RECOVERY_USB_COMMAND_INDEX.md) — Recovery USB command index
 - [`RELEASE_BASE1_LIBREBOOT_READONLY_V1.md`](RELEASE_BASE1_LIBREBOOT_READONLY_V1.md) — Libreboot read-only checkpoint release notes
 - [`RELEASE_BASE1_LIBREBOOT_READONLY_V1_1.md`](RELEASE_BASE1_LIBREBOOT_READONLY_V1_1.md) — Libreboot read-only checkpoint v1.1 release notes
 - [`base1/LIBREBOOT_DOCS_SUMMARY.md`](base1/LIBREBOOT_DOCS_SUMMARY.md) — Libreboot docs summary

@@ -66,3 +66,6 @@ Run read-only checks first:
 ## Promotion rule
 
 A future recovery USB builder can only exist after the dry-run path, target selection, image provenance, checksum verification, rollback metadata, and emergency shell path are documented and tested.
+
+
+See also: [Recovery USB command index](RECOVERY_USB_COMMAND_INDEX.md).
