@@ -29,8 +29,14 @@ fn generated_docs_preserve_stable_base_and_edge_path() {
 
     for path in docs {
         let body = read(path);
-        assert!(body.contains("base/v4.2.0"), "{path} lost the frozen stable base");
-        assert!(body.contains("edge/stable"), "{path} lost the active edge path");
+        assert!(
+            body.contains("base/v4.2.0"),
+            "{path} lost the frozen stable base"
+        );
+        assert!(
+            body.contains("edge/stable"),
+            "{path} lost the active edge path"
+        );
     }
 }
 
