@@ -353,6 +353,7 @@ sh scripts/base1-preflight.sh
 sh scripts/base1-libreboot-preflight.sh
 sh scripts/base1-libreboot-report.sh
 sh scripts/base1-libreboot-validate.sh
+sh scripts/base1-recovery-usb-dry-run.sh --dry-run --target /dev/example
 sh scripts/base1-libreboot-milestone.sh
 sh scripts/base1-libreboot-docs.sh
 sh scripts/base1-libreboot-index.sh
