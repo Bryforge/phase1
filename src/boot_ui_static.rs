@@ -1439,6 +1439,13 @@ fn stty(args: &[&str]) -> io::Result<String> {
 
 #[cfg(test)]
 mod tests {
+    use std::sync::{Mutex, OnceLock};
+
+    fn env_test_lock() -> std::sync::MutexGuard<'static, ()> {
+        static LOCK: OnceLock<Mutex<()>> = OnceLock::new();
+        LOCK.get_or_init(|| Mutex::new(())).lock().unwrap_or_else(|err| err.into_inner())
+    }
+
     use super::{
         clock_utc, default_large_screen_device, display_version, parse_bool, prompt_status_bar,
         strip_ansi, BootConfig, DeviceMode, ThemePalette,
@@ -1464,6 +1471,7 @@ mod tests {
 
     #[test]
     fn compact_prompt_inlines_dynamic_status_chips_for_all_modes() {
+        let _env_lock = env_test_lock();
         std::env::set_var("NO_COLOR", "1");
         std::env::remove_var("PHASE1_COMPACT_PROMPT");
         std::env::set_var("PHASE1_BLEEDING_EDGE", "1");
@@ -1487,6 +1495,7 @@ mod tests {
 
     #[test]
     fn compact_prompt_can_be_disabled_for_legacy_hud_prompt() {
+        let _env_lock = env_test_lock();
         std::env::set_var("PHASE1_COMPACT_PROMPT", "0");
         assert!(!super::compact_prompt_enabled());
         std::env::remove_var("PHASE1_COMPACT_PROMPT");
@@ -1494,6 +1503,7 @@ mod tests {
 
     #[test]
     fn compact_prompt_colorizes_dynamic_chips_when_color_is_enabled() {
+        let _env_lock = env_test_lock();
         std::env::remove_var("NO_COLOR");
         std::env::remove_var("PHASE1_NO_COLOR");
         std::env::remove_var("PHASE1_ASCII");
@@ -1519,6 +1529,7 @@ mod tests {
 
     #[test]
     fn prompt_status_bar_contains_clock_without_overflowing() {
+        let _env_lock = env_test_lock();
         std::env::set_var("NO_COLOR", "1");
         std::env::set_var("COLUMNS", "32");
         let bar = prompt_status_bar();
@@ -1542,6 +1553,7 @@ mod tests {
 
     #[test]
     fn display_version_uses_edge_channel_when_requested() {
+        let _env_lock = env_test_lock();
         let mut edge = config();
         edge.bleeding_edge = true;
         assert_ne!(display_version("3.6.0", edge), "3.6.0");
@@ -1561,6 +1573,7 @@ mod tests {
 
     #[test]
     fn laptop_is_default_for_x200_width() {
+        let _env_lock = env_test_lock();
         std::env::set_var("COLUMNS", "80");
         assert_eq!(default_large_screen_device(), DeviceMode::Laptop);
         std::env::remove_var("COLUMNS");
