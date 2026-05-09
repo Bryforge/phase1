@@ -78,3 +78,6 @@ Run first:
 ## Promotion rule
 
 A future recovery USB writer can only follow after image provenance, checksum verification, target identity, emergency shell behavior, rollback metadata, storage layout, and actual Libreboot/X200-class boot behavior are verified.
+
+
+See also: [Recovery USB image provenance summary](RECOVERY_USB_IMAGE_SUMMARY.md).
