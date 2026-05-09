@@ -2029,6 +2029,7 @@ fn nest_command(shell: &mut Phase1Shell, args: &[String]) -> String {
         Some("spawn") => nest_spawn(shell, &args[1..]),
         Some("list") | Some("ls") => nest_list(shell),
         Some("enter") => nest_enter(shell, &args[1..]),
+        Some("destroy") | Some("rm") => nest_destroy(shell, &args[1..]),
         Some("target") | Some("use") => {
             let Some(raw) = args.get(1).map(String::as_str) else {
                 return "usage: nest target <self|parent|root|level>\n".to_string();
@@ -2177,6 +2178,37 @@ fn nest_active_path(shell: &Phase1Shell) -> String {
     } else {
         format!("/nest/{active}")
     }
+}
+
+fn nest_destroy(shell: &mut Phase1Shell, args: &[String]) -> String {
+    let Some(name) = args.first().map(String::as_str) else {
+        return "usage: nest destroy <name>\n".to_string();
+    };
+
+    if !nest_name_is_valid(name) {
+        return "nest destroy: invalid nest name\n".to_string();
+    }
+
+    let mut children = nest_children(shell);
+    let Some(index) = children.iter().position(|child| child == name) else {
+        return format!("nest destroy: {name} not found\n");
+    };
+
+    children.remove(index);
+    nest_store_children(shell, &children);
+
+    let was_active = nest_active_name(shell) == name;
+    if was_active {
+        shell.env.remove("PHASE1_NEST_ACTIVE");
+        shell.env.remove("PHASE1_NEST_ACTIVE_LEVEL");
+        return format!(
+            "nest destroy: removed {name}\nactive  : root\nlevel   : {}/{}\npath    : /\n",
+            nested_level(),
+            nested_max()
+        );
+    }
+
+    format!("nest destroy: removed {name}\n")
 }
 
 fn nest_enter(shell: &mut Phase1Shell, args: &[String]) -> String {
