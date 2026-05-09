@@ -211,8 +211,8 @@ const demoResponses = {
   ].join("\n"),
   version: [
     "phase1 // advanced operator kernel",
-    "stable: v4.3.0",
-    "previous stable: v4.2.0",
+    "stable: v4.4.0",
+    "previous stable: v4.3.0",
     "next edge: v5.0.0",
     "compatibility base: v3.6.0",
     "language: Rust",
