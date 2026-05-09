@@ -67,7 +67,7 @@ The `:run` command should never use a shell. It should reuse the Phase1 language
 ## AVIM Pro demo target
 
 ```text
-avim jesse.go
+avim demo.go
 :template go
 :w
 :run
@@ -77,7 +77,7 @@ Expected output:
 
 ```text
 avim: inserted Go starter template
-avim: wrote jesse.go
+avim: wrote demo.go
 avim: running go through Phase1 guarded language runtime
 hello from avim + Go inside Phase1
 ```
