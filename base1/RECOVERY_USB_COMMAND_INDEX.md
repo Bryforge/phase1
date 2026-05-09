@@ -15,6 +15,7 @@ This document is advisory and read-only. It does not write USB media, partition 
 - `base1/RECOVERY_USB_TARGET_SUMMARY.md` — Recovery USB target selection summary.
 - `base1/RECOVERY_USB_IMAGE_PROVENANCE.md` — Recovery USB image provenance and checksum design.
 - `base1/RECOVERY_USB_IMAGE_SUMMARY.md` — Recovery USB image provenance summary.
+- `base1/RECOVERY_USB_IMAGE_COMMAND_INDEX.md` — Recovery USB image provenance command index.
 - `scripts/base1-recovery-usb-image-report.sh` — Recovery USB image provenance report command.
 - `scripts/base1-recovery-usb-image-validate.sh` — Recovery USB image provenance validation bundle.
 - `scripts/base1-recovery-usb-image-summary.sh` — Recovery USB image provenance summary command.
