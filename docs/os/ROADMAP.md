@@ -19,7 +19,7 @@ The Phase1 operating-system track means:
 - No claim that the current terminal console replaces a kernel.
 - No claim that host-backed execution is hardened against hostile code.
 - No removal of recovery access to the underlying host.
-- No silent privilege escalation.
+- No silent privilege change.
 - No unsupported hardware promises.
 
 ## Stage 0: Documentation pivot
@@ -28,7 +28,7 @@ Status: active.
 
 Goals:
 
-- Replace blanket “not planned” language with a staged long-term OS track.
+- Use a staged long-term OS track.
 - Keep current limitations clear.
 - Link the track from README and Base1 documentation.
 - Add tests that prevent overclaiming.
@@ -46,6 +46,8 @@ Required pieces:
 - First-boot setup flow.
 - Hardware preflight checks.
 - Reproducible image build notes.
+
+First design slice: [`Base1 image-builder design`](BASE1_IMAGE_BUILDER.md).
 
 ## Stage 2: Installer and recovery
 
@@ -118,7 +120,7 @@ Each target needs:
 ## First engineering slices
 
 1. Add this roadmap and README positioning.
-2. Add Base1 image-builder design documentation.
+2. Add the [`Base1 image-builder design`](BASE1_IMAGE_BUILDER.md).
 3. Add installer design documentation.
 4. Add recovery design documentation.
 5. Add system-surface command stubs behind safe defaults.
