@@ -1,21 +1,21 @@
 # Phase1 Edge Development
 
-`v4.3.0-dev` is the active development line after the stable `v4.2.0` release point.
+`v4.4.0-dev` is the active development line after the stable `v4.3.0` release point.
 
 ## Current identity
 
 | Item | Value |
 | --- | --- |
-| Current package version | `4.3.0-dev` |
-| Current edge label | `v4.3.0-dev` |
-| Stable package version | `4.2.0` |
-| Stable release point | `v4.2.0` |
-| Previous stable | `v4.1.0` |
+| Current package version | `4.4.0-dev` |
+| Current edge label | `v4.4.0-dev` |
+| Stable package version | `4.3.0` |
+| Stable release point | `v4.3.0` |
+| Previous stable | `v4.2.0` |
 | Compatibility base | `v3.6.0` |
 
 ## Current checkpoint
 
-The current edge checkpoint includes the post-`v4.2.0` development work that made Phase1 more practical from mobile and trusted-host workflows:
+The current edge checkpoint includes the post-`v4.3.0` development work that made Phase1 more practical from mobile and trusted-host workflows:
 
 - Guarded host runtime execution can run with safe mode still enabled when the host trust gate is explicit.
 - Privileged host mutation remains behind safe mode off plus the trust gate.
@@ -27,7 +27,7 @@ The current edge checkpoint includes the post-`v4.2.0` development work that mad
 ## Development rules
 
 - Keep the `-dev` suffix on future development work until the next stable promotion.
-- Keep `v4.2.0` documentation intact for stable users.
+- Keep `v4.3.0` documentation intact for stable users.
 - Label experimental work clearly in docs, tests, and command output.
 - Keep safe defaults enabled while adding new capabilities.
 - Run formatting, compile, Clippy, tests, quality, release metadata, and website validation before merging.
@@ -52,6 +52,6 @@ sh scripts/test-website.sh
 - `checkpoint/*` branches are verified milestone snapshots.
 - `feature/*` branches target `edge/stable`.
 
-Keep the 4.2.0 image and stable base boring. Move tested work through edge/stable.
+Keep the 4.3.0 image and stable base boring. Move tested work through edge/stable.
 <!-- phase1:auto:repo-model:end -->
 
