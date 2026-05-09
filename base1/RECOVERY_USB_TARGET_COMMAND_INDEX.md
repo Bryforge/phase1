@@ -64,3 +64,6 @@ Every target-selection document or command must preserve these rules:
 ## Promotion rule
 
 A future recovery USB writer can only follow after target identity, image provenance, checksum verification, emergency shell behavior, rollback metadata, storage layout, and actual Libreboot/X200-class boot behavior are verified.
+
+
+See also: [`RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md`](../RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md) — recovery USB target selection read-only checkpoint release notes.
