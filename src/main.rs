@@ -558,6 +558,7 @@ fn fyr_command(shell: &mut Phase1Shell, args: &[String]) -> String {
         Some("cat") => fyr_cat(shell, &args[1..]),
         Some("check") => fyr_check(shell, &args[1..]),
         Some("build") => fyr_build(shell, &args[1..]),
+        Some("test") => fyr_test(shell, &args[1..]),
         Some("self") => fyr_self(),
         Some("run") => fyr_run(shell, &args[1..]),
         Some("help") | Some("-h") | Some("--help") => fyr_help(),
@@ -1019,6 +1020,44 @@ fn fyr_cat(shell: &mut Phase1Shell, args: &[String]) -> String {
     }
 }
 
+fn fyr_test(shell: &mut Phase1Shell, args: &[String]) -> String {
+    let Some(package) = args.first().map(String::as_str) else {
+        return "usage: fyr test <package>\n".to_string();
+    };
+
+    let package = package.trim().trim_end_matches('/');
+    let manifest = format!("{package}/fyr.toml");
+    if shell.kernel.sys_read(&manifest).is_err() {
+        return format!("fyr test: {package}: missing package manifest {manifest}\n");
+    }
+
+    let tests_dir = format!("{package}/tests");
+    let listing = shell.kernel.vfs.ls(Some(&tests_dir), false);
+
+    let mut tests = 0usize;
+    let mut passed = 0usize;
+    let mut failed = 0usize;
+
+    for name in listing
+        .lines()
+        .map(str::trim)
+        .filter(|name| name.ends_with(".fyr"))
+    {
+        tests += 1;
+        let path = format!("{tests_dir}/{name}");
+        match shell.kernel.sys_read(&path) {
+            Ok(source) if fyr_parse_source_ast(&source).is_ok() => passed += 1,
+            _ => failed += 1,
+        }
+    }
+
+    let status = if failed == 0 { "ok" } else { "failed" };
+
+    format!(
+        "fyr test\npackage : {package}\ntests   : {tests}\npassed  : {passed}\nfailed  : {failed}\nstatus  : {status}\n"
+    )
+}
+
 fn fyr_self() -> String {
     "fyr self\nstatus : online\nvfs    : available\nrunner : print literal seed\nnext   : lexer, parser, VFS-safe standard library\n".to_string()
 }
@@ -1112,7 +1151,7 @@ fn parse_fyr_string_literal(text: &str) -> Option<String> {
 }
 
 fn fyr_help() -> String {
-    "phase1 fyr command\n\nusage:\n  fyr status\n  fyr spec\n  fyr new <name>\n  fyr init <package>\n  fyr cat <file.fyr>\n  fyr check <file.fyr|package>\n  fyr build <file.fyr|package>\n  fyr self\n  fyr run <file.fyr>\n\nexample:\n  echo 'fn main() -> i32 { print(\"Hello, hacker!\"); return 0; }' > hello_hacker.fyr\n  fyr run hello_hacker.fyr\n".to_string()
+    "phase1 fyr command\n\nusage:\n  fyr status\n  fyr spec\n  fyr new <name>\n  fyr init <package>\n  fyr cat <file.fyr>\n  fyr check <file.fyr|package>\n  fyr build <file.fyr|package>\n  fyr test <package>\n  fyr self\n  fyr run <file.fyr>\n\nexample:\n  echo 'fn main() -> i32 { print(\"Hello, hacker!\"); return 0; }' > hello_hacker.fyr\n  fyr run hello_hacker.fyr\n".to_string()
 }
 
 fn repo_command(args: &[String]) -> String {
