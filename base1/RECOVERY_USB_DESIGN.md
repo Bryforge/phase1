@@ -74,3 +74,6 @@ See also: [Recovery USB command index](RECOVERY_USB_COMMAND_INDEX.md).
 
 
 See also: [Recovery USB validation report](RECOVERY_USB_VALIDATION_REPORT.md).
+
+
+See also: [Recovery USB hardware validation checklist](RECOVERY_USB_HARDWARE_CHECKLIST.md).

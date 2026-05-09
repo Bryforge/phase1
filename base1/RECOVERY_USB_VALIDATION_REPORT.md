@@ -66,3 +66,6 @@ Status: not validated yet.
 Notes:
 
 - Add hardware-specific notes here after running read-only checks.
+
+
+See also: [Recovery USB hardware validation checklist](RECOVERY_USB_HARDWARE_CHECKLIST.md).
