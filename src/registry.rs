@@ -63,6 +63,7 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("cargo", &[], "host", "cargo <args...>", "Run host Cargo through guarded operator passthrough at any Phase1 nest level.", "host.exec"),
     cmd!("rustc", &[], "host", "rustc <args...>", "Run host rustc through guarded operator passthrough at any Phase1 nest level.", "host.exec"),
     cmd!("python3", &[], "host", "python3 <args...>", "Run host Python 3 through guarded operator passthrough at any Phase1 nest level.", "host.exec"),
+    cmd!("go", &["golang"], "host", "go <args...>", "Run host Go tooling through guarded operator passthrough at any Phase1 nest level.", "host.exec"),
     cmd!("python", &["py"], "host", "python <file.py> | python -c <code>", "Run Python with a timeout.", "host.exec"),
     cmd!("gcc", &["cc"], "host", "gcc <file.c> | gcc <code>", "Compile and run C with host compiler timeout guards.", "host.exec"),
     cmd!("plugins", &["plugin"], "host", "plugins", "List Python and WASI-lite plugins in ./plugins.", "host.exec"),
@@ -329,12 +330,13 @@ mod tests {
 
     #[test]
     fn host_passthrough_commands_are_registered() {
-        for name in ["git", "gh", "cargo", "rustc", "python3"] {
+        for name in ["git", "gh", "cargo", "rustc", "python3", "go"] {
             let cmd = lookup(name).expect("host passthrough command registered");
             assert_eq!(cmd.category, "host");
             assert_eq!(cmd.capability, "host.exec");
         }
         assert_eq!(canonical_name("github"), Some("gh"));
+        assert_eq!(canonical_name("golang"), Some("go"));
     }
 
     #[test]
