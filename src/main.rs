@@ -481,7 +481,7 @@ fn execute_one(
             let canonical = registry::canonical_name(cmd).unwrap_or(cmd);
             let known = registry::lookup(cmd).is_some()
                 || plugin_exists(shell, canonical)
-                || matches!(canonical, "avim" | "emacs" | "lang" | "opslog");
+                || matches!(canonical, "avim" | "emacs" | "repo" | "lang" | "opslog");
             match canonical {
                 "help" => ui::print_help(),
                 "accounts" => print!("{}", accounts_report(shell)),
@@ -509,6 +509,7 @@ fn execute_one(
                 "opslog" => print!("{}", ops_log::run(args)),
                 "bootcfg" => handle_bootcfg(boot_config, args),
                 "nest" => print!("{}", nest_command(shell, args)),
+                "repo" => print!("{}", repo_command(args)),
                 "exit"
                     if args
                         .first()
@@ -542,6 +543,37 @@ fn theme_command(shell: &mut Phase1Shell, args: &[String]) -> String {
         out.push_str(&format!("pack   : {}\n", linux_colors::summary(shell)));
     }
     out
+}
+
+fn repo_command(args: &[String]) -> String {
+    match args.first().map(String::as_str) {
+        None | Some("status") => repo_status(),
+        Some("base") => repo_base(),
+        Some("edge") | Some("stable") => repo_edge(),
+        Some("checkpoint") | Some("checkpoints") => repo_checkpoint(),
+        Some("help") | Some("-h") | Some("--help") => repo_help(),
+        Some(other) => format!("repo: unknown action {other}\n{}", repo_help()),
+    }
+}
+
+fn repo_status() -> String {
+    "phase1 repo doctrine\nbase       : base/v4.2.0 frozen stable base\nedge       : edge/stable active default development path\ncheckpoint : checkpoint/* verified milestone snapshots\nfeature    : feature/* working branches targeting edge/stable\nrule       : stable base stays boring; edge/stable carries current tested work\ncommands   : repo base | repo edge | repo checkpoint | repo help\n".to_string()
+}
+
+fn repo_base() -> String {
+    "phase1 repo base\nbranch : base/v4.2.0\nrole   : frozen stable base\npolicy : no feature work; only emergency metadata or archival fixes\nreason : gives Phase1 a known-good recovery and comparison point\n".to_string()
+}
+
+fn repo_edge() -> String {
+    "phase1 repo edge\nbranch : edge/stable\nrole   : active default development path\npolicy : new tested work lands here through PRs\nreason : keeps forward motion separate from the frozen 4.2.0 base\n".to_string()
+}
+
+fn repo_checkpoint() -> String {
+    "phase1 repo checkpoints\npattern : checkpoint/*\nrole    : verified milestone snapshots\npolicy  : cut checkpoints after test-passing milestones\nexample : checkpoint/edge-stable-4.3.0-dev\n".to_string()
+}
+
+fn repo_help() -> String {
+    "phase1 repo command\n\nusage:\n  repo status\n  repo base\n  repo edge\n  repo checkpoint\n\nmodel:\n  base/v4.2.0  frozen stable base\n  edge/stable  active tested development path\n  checkpoint/* verified milestone snapshots\n  feature/*    working branches into edge/stable\n".to_string()
 }
 
 fn nest_command(shell: &mut Phase1Shell, args: &[String]) -> String {
