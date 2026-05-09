@@ -122,6 +122,6 @@ Each target needs:
 1. Add this roadmap and README positioning.
 2. Add the [`Base1 image-builder design`](BASE1_IMAGE_BUILDER.md).
 3. Add the [`Base1 installer and recovery design`](INSTALLER_RECOVERY.md).
-4. Add recovery design documentation.
+4. Add the [`Base1 installer dry-run design`](BASE1_INSTALLER_DRY_RUN.md).
 5. Add system-surface command stubs behind safe defaults.
 6. Add hardware-target checklists.
