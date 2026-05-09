@@ -2122,6 +2122,7 @@ fn nest_help() -> String {
     "phase1 nest control\n\nusage:\n  nest status\n  nest target <self|parent|root|level>\n  nest exit self\n  nest exit all\n  exit all\n\nnotes:\n  target is an operator context marker for nested workflows\n  nest exit-all is an alias for nest exit all
   nest exit-all is an alias for nest exit all
   nest exit-all is an alias for nest exit all
+  nest exit-all is an alias for nest exit all
   exit all writes a local Phase1 exit signal so parent shells unwind when they regain control\n"
         .to_string()
 }
