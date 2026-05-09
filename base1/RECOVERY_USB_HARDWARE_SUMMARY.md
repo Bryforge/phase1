@@ -27,6 +27,7 @@ This document is advisory and read-only. It does not write USB media, partition 
 
 Run the read-only commands first:
 
+    sh scripts/base1-recovery-usb-hardware-summary.sh
     sh scripts/base1-recovery-usb-index.sh
     sh scripts/base1-recovery-usb-hardware-checklist.sh
     sh scripts/base1-recovery-usb-hardware-validate.sh
