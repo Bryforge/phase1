@@ -33,6 +33,7 @@ Confirm:
 
 Run these before any future USB-writing work:
 
+    sh scripts/base1-recovery-usb-hardware-report.sh
     sh scripts/base1-recovery-usb-hardware-validate.sh
     sh scripts/base1-recovery-usb-hardware-checklist.sh
     sh scripts/base1-recovery-usb-index.sh
