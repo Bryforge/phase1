@@ -71,6 +71,8 @@ The profile should document:
 - Do not remove emergency shell access.
 - Do not hide host and Phase1 authority boundaries.
 
+See also: [Libreboot preflight notes](LIBREBOOT_PREFLIGHT.md).
+
 ## First validation command
 
 ```bash
