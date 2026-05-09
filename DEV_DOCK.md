@@ -1,31 +1,35 @@
 # Phase1 Dev Dock
 
-dev lets Phase1 work on itself from inside Phase1.
+`dev` lets Phase1 work on itself from inside Phase1.
 
-## Start
+## Inside Phase1 workflow
 
-Run Phase1 with guarded host tools:
-
-PHASE1_SAFE_MODE=1 PHASE1_ALLOW_HOST_TOOLS=1 cargo run
-
-## Commands inside Phase1
-
+```text
 dev status
 dev sync
-dev branch feature/example
+dev docs
 dev quick
 dev test
+dev checkpoint Docs guard edge stable
+dev branch feature/example
 dev commit Add example feature
 dev push
 dev pr Add example feature
 dev merge 123
 dev close 123
 dev doctor
+```
+
+## Purpose
+
+- Work on Phase1 from inside Phase1.
+- Run docs sync without opening an editor.
+- Create checkpoint PRs only when there are actual changes.
+- Keep `base/v4.2.0` frozen as the stable base.
+- Keep `edge/stable` as the active development path.
 
 ## Safety
 
 - Uses guarded host tools.
 - Safe mode can stay enabled.
-- Intended for Phase1 self-development.
-- Avoids staging runtime files like phase1.history, phase1.state, phase1.log, and phase1.learn.
-- Keeps normal copy/paste development workflows inside Phase1.
+- Avoids staging runtime files like `phase1.history`, `phase1.state`, `phase1.log`, and `phase1.learn`.
