@@ -56,3 +56,4 @@ Roadmap -> Design -> Dry-run -> Preview -> Validated
 
 Add reports only when there is evidence to preserve.
 - [`2026-05-10-qemu-phase1-marker.md`](2026-05-10-qemu-phase1-marker.md)
+- [`2026-05-10-qemu-real-phase1-binary.md`](2026-05-10-qemu-real-phase1-binary.md)
