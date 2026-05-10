@@ -44,10 +44,7 @@ result model:
   failed        marker missing or bundle invalid
 
 non-claims:
-  This is emulator-only boot evidence. It does not install Base1, validate real
-  hardware, validate recovery, validate an installer, or prove daily-driver
-  readiness. A pass only means the selected bundle emitted the expected marker
-  during this QEMU run.
+  This is emulator-only boot evidence. It does not install Base1, validate real hardware, validate recovery, validate an installer, or prove daily-driver readiness. A pass only means the selected bundle emitted the expected marker during this QEMU run.
 USAGE
 }
 
