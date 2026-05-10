@@ -277,8 +277,8 @@ fn bleeding_edge_boot_switch_updates_ui_channel_and_version() {
         "dash edge version missing:\n{output}"
     );
     assert!(
-        output.contains("active : bleeding-edge"),
-        "edge theme not automatic:\n{output}"
+        output.contains("active : crimson"),
+        "edge mode did not select the v6 crimson visual default:\n{output}"
     );
     assert!(
         output.contains("display : bleeding-edge"),
