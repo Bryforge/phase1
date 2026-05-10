@@ -25,6 +25,7 @@ The path is designed to collect evidence without writes, installation, formattin
 - Real-device read-only runbook
 - Real-device read-only checklist
 - Real-device read-only evidence capture report instance
+- Real-device read-only doctor
 
 ## Primary Command
 
