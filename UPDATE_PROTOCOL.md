@@ -95,3 +95,6 @@ RELEASE_NOTES_vX.Y.Z.md
 ## Privacy promise
 
 phase1 update logic should never expose real emails, private account identifiers, tokens, cookies, SSH keys, or recovery codes. Keep examples generic and redact host command output before showing it in the terminal.
+
+## Evidence Reports
+- [2026-05-10 updater edge/stable target evidence](docs/update/2026-05-10-updater-edge-stable-target.md)
