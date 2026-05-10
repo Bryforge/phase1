@@ -146,6 +146,11 @@ fn guarded_execute(request: UpdateRequest) -> String {
     out.push_str("mode       : guarded host git update from inside phase1\n");
     out.push_str("host tools : enabled by boot TRUST HOST + --trust-host\n");
     out.push_str(&format!("protocol   : {}\n", UPDATE_PROTOCOL_FILE));
+    out.push_str(&format!(
+        "target     : {}/{}\n",
+        DEFAULT_REMOTE,
+        target.branch()
+    ));
     out.push_str("privacy    : command output is sanitized before display\n");
 
     if let Err(err) = ensure_git_repo() {
