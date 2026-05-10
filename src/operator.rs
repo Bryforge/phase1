@@ -14,7 +14,7 @@ const TIPS: &[&str] = &[
 
 pub fn theme(shell: &mut Phase1Shell, args: &[String]) -> String {
     match args.first().map(String::as_str) {
-        None | Some("show") => theme_status(shell),
+        None | Some("show") | Some("status") => theme_status(shell),
         Some("list") | Some("ls") => theme_list(),
         Some("mono") | Some("plain") => {
             std::env::set_var("PHASE1_NO_COLOR", "1");
@@ -46,8 +46,8 @@ pub fn theme(shell: &mut Phase1Shell, args: &[String]) -> String {
         }
         Some("reset") => {
             if bleeding_edge_active() {
-                set_palette(shell, ThemePalette::BleedingEdge);
-                "theme: reset to bleeding-edge default\n".to_string()
+                set_palette(shell, ThemePalette::Crimson);
+                "theme: reset to crimson edge default\n".to_string()
             } else {
                 set_palette(shell, ThemePalette::Rainbow);
                 "theme: reset to rainbow default\n".to_string()
@@ -55,8 +55,8 @@ pub fn theme(shell: &mut Phase1Shell, args: &[String]) -> String {
         }
         Some("default") => {
             if bleeding_edge_active() {
-                set_palette(shell, ThemePalette::BleedingEdge);
-                "theme: bleeding-edge default enabled\n".to_string()
+                set_palette(shell, ThemePalette::Crimson);
+                "theme: crimson edge default enabled\n".to_string()
             } else {
                 set_palette(shell, ThemePalette::Rainbow);
                 "theme: rainbow default enabled\n".to_string()
@@ -312,7 +312,7 @@ fn theme_status(shell: &Phase1Shell) -> String {
             })
             .unwrap_or_else(|| {
                 if bleeding_edge_active() {
-                    ThemePalette::BleedingEdge.name().to_string()
+                    ThemePalette::Crimson.name().to_string()
                 } else {
                     ThemePalette::Rainbow.name().to_string()
                 }

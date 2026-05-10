@@ -77,3 +77,19 @@ Phase1 v6 exposes a topic-aware help deck:
     complete <prefix>
 
 The boot LIVE OPS panel now points operators toward the compact help map, category help, dashboard, security status, ops log, theme list, tips, and update protocol.
+
+### Help command palette
+
+The modern help surface includes a visual command palette and workflow deck:
+
+    help ui
+    help flows
+    help --compact
+    help <category>
+    help <command>
+
+Use `help ui` for a launch-pad view and `help flows` for daily check, safe update, development, recovery planning, and discovery workflows.
+
+### v6 visual default
+
+The v6 edge console defaults to the `crimson` palette when no `PHASE1_THEME` override is set. The legacy bleeding-edge palette remains available manually with `theme edge`.

@@ -55,3 +55,7 @@ Recommended follow-up work after this checkpoint:
 The v6.0.0 edge line opens after the Base1 recovery USB target-selection and image-provenance read-only checkpoints.
 
 This is still an edge line. It does not claim a finished OS replacement, bootable Base1 image readiness, destructive installer readiness, USB media writing readiness, or real-hardware recovery completion.
+
+### v6 visual default
+
+The v6 edge console defaults to the `crimson` palette when no `PHASE1_THEME` override is set. The legacy bleeding-edge palette remains available manually with `theme edge`.
