@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://bryforge.github.io/phase1/">
-    <img src="assets/phase1-banner.jpeg" alt="Phase1 neon rainbow advanced operator kernel logo" width="780">
+    <img src="assets/phase1_base1_fyr_banner.png" alt="Phase1 Base1 Fyr banner logo" width="780">
   </a>
 </p>
 
