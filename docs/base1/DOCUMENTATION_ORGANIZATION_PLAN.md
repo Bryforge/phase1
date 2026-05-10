@@ -5,13 +5,21 @@ Scope: Base1 markdown organization only
 
 ## Purpose
 
-Define a safer documentation layout for Base1 without moving files in this PR.
+Define a safer documentation layout for Base1.
 
-This plan exists so future file moves can happen one group at a time with tests and link updates.
+This plan exists so future file organization can happen one group at a time with tests and link updates.
 
 ## Current Rule
 
+Keep existing Base1 markdown files available unless a later explicit approval says otherwise.
+
 Do not move existing Base1 markdown files unless the same PR updates every link, test, and index reference.
+
+## Preservation Rule
+
+Base1 organization work is preservation-first. Old locations should remain available as legacy, mirrored, or compatibility paths after new canonical locations are added.
+
+If material ever needs to leave the main repository, place it in a separate holding repository first so it remains recoverable.
 
 ## Proposed Groups
 
@@ -47,13 +55,12 @@ Do not move existing Base1 markdown files unless the same PR updates every link,
 - Add or update tests for every moved document.
 - Preserve non-claims and promotion rules.
 - Prefer indexes before file movement.
+- Keep legacy paths recoverable.
 
 ## Non-Claims
 
-- No file moves in this plan.
 - No runtime behavior change.
 - Not installer-ready.
 - Not hardware-validated.
 - Not daily-driver ready.
-- No destructive disk writes.
 - No real-device write path.
