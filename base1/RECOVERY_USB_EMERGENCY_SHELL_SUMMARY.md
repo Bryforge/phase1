@@ -78,3 +78,6 @@ This summary does not claim:
 ## Promotion rule
 
 Recovery USB emergency shell behavior must remain read-only until shell entry, exit, state access, rollback metadata, log collection, storage layout, and actual Libreboot/X200-class boot behavior are verified.
+
+
+See also: [Recovery USB emergency shell command index](RECOVERY_USB_EMERGENCY_SHELL_COMMAND_INDEX.md).

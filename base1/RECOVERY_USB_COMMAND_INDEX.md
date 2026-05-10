@@ -18,6 +18,7 @@ This document is advisory and read-only. It does not write USB media, partition 
 - `base1/RECOVERY_USB_IMAGE_COMMAND_INDEX.md` — Recovery USB image provenance command index.
 - `base1/RECOVERY_USB_EMERGENCY_SHELL.md` — Recovery USB emergency shell behavior design.
 - `base1/RECOVERY_USB_EMERGENCY_SHELL_SUMMARY.md` — Recovery USB emergency shell summary.
+- `base1/RECOVERY_USB_EMERGENCY_SHELL_COMMAND_INDEX.md` — Recovery USB emergency shell command index.
 - `scripts/base1-recovery-usb-emergency-shell-report.sh` — Recovery USB emergency shell report command.
 - `scripts/base1-recovery-usb-emergency-shell-validate.sh` — Recovery USB emergency shell validation bundle.
 - `scripts/base1-recovery-usb-emergency-shell-summary.sh` — Recovery USB emergency shell summary command.

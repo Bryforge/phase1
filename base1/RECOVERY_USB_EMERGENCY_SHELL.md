@@ -84,3 +84,6 @@ A future recovery USB environment can only promote emergency shell behavior afte
 
 
 See also: [Recovery USB emergency shell summary](RECOVERY_USB_EMERGENCY_SHELL_SUMMARY.md).
+
+
+See also: [Recovery USB emergency shell command index](RECOVERY_USB_EMERGENCY_SHELL_COMMAND_INDEX.md).
