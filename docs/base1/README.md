@@ -62,3 +62,4 @@ Use [`VALIDATION_REPORT_TEMPLATE.md`](VALIDATION_REPORT_TEMPLATE.md) when record
 Store future Base1 reports under [`validation/`](validation/) so evidence remains discoverable and reviewable.
 - [Base1 real-device read-only validation plan](real-device/READONLY_VALIDATION_PLAN.md)
 - [Real-device read-only report template](real-device/READONLY_REPORT_TEMPLATE.md)
+- [Real-device read-only validation bundle report](real-device/READONLY_VALIDATION_BUNDLE_REPORT.md)
