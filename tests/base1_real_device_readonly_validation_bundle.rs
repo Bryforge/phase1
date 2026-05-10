@@ -67,6 +67,9 @@ fn real_device_readonly_validation_bundle_runs_non_mutating_previews() {
     assert!(stdout.contains("daily-driver-claim: false"));
     assert!(stdout.contains("READONLY_VALIDATION_PLAN.md: present"));
     assert!(stdout.contains("READONLY_REPORT_TEMPLATE.md: present"));
+    assert!(stdout.contains("running read-only doctor:"));
+    assert!(stdout.contains("Base1 real-device read-only doctor"));
+    assert!(stdout.contains("scope: documentation, scripts, and local tool availability only"));
     assert!(stdout.contains("Base1 real-device read-only preview"));
     assert!(stdout.contains("Base1 Real-Device Read-Only Validation Report"));
     assert!(stdout.contains("not installer-ready"));
