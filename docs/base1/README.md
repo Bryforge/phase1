@@ -2,7 +2,7 @@
 
 > **Status:** Roadmap and design index.
 >
-> **Validation:** Links to current Base1 design docs, dry-run scripts, inventory, test inventory, migration table, readiness checklist, compatibility maps, validation runbook, validation report template, validation reports archive, preview stack runbook, preview checks, and future validation reports.
+> **Validation:** Links to current Base1 design docs, dry-run scripts, inventory, test inventory, migration table, script compatibility plan, readiness checklist, compatibility maps, validation runbook, validation report template, validation reports archive, preview stack runbook, preview checks, and future validation reports.
 >
 > **Non-claims:** Base1 is not currently documented here as a released bootable daily-driver image, finished secure OS replacement, or destructive installer-ready system.
 
@@ -29,6 +29,7 @@ Base1 is the planned minimal host foundation for future Phase1-first bootable en
 - [`INVENTORY.md`](INVENTORY.md)
 - [`TEST_INVENTORY.md`](TEST_INVENTORY.md)
 - [`MIGRATION_TABLE.md`](MIGRATION_TABLE.md)
+- [`SCRIPT_COMPATIBILITY_PLAN.md`](SCRIPT_COMPATIBILITY_PLAN.md)
 - [`REORGANIZATION_READINESS.md`](REORGANIZATION_READINESS.md)
 - [`DOCUMENTATION_ORGANIZATION_PLAN.md`](DOCUMENTATION_ORGANIZATION_PLAN.md)
 - [`ROOT_COMPATIBILITY_MAP.md`](ROOT_COMPATIBILITY_MAP.md)
@@ -59,6 +60,8 @@ Use [`TEST_INVENTORY.md`](TEST_INVENTORY.md) before moving or renaming tests. It
 
 Use [`MIGRATION_TABLE.md`](MIGRATION_TABLE.md) before relocating any Base1 group. It records current paths, proposed organized paths, compatibility decisions, and readiness blockers.
 
+Use [`SCRIPT_COMPATIBILITY_PLAN.md`](SCRIPT_COMPATIBILITY_PLAN.md) before moving any Base1 script path. It preserves the current `scripts/base1-*.sh` operator interface through wrappers or compatibility entry points.
+
 ## Base1 wording rule
 
 Use `planned`, `design`, `dry-run`, `preview`, or `validated` according to evidence. Do not call Base1 bootable, daily-driver ready, recovery-complete, or installer-ready without release artifacts and validation reports.
@@ -88,6 +91,7 @@ Store future Base1 reports under [`validation/`](validation/) so evidence remain
 - [Base1 inventory](INVENTORY.md)
 - [Base1 test inventory](TEST_INVENTORY.md)
 - [Base1 migration table](MIGRATION_TABLE.md)
+- [Base1 script compatibility plan](SCRIPT_COMPATIBILITY_PLAN.md)
 - [Reorganization readiness checklist](REORGANIZATION_READINESS.md)
 - [Documentation organization plan](DOCUMENTATION_ORGANIZATION_PLAN.md)
 - [Root compatibility map](ROOT_COMPATIBILITY_MAP.md)
