@@ -2,8 +2,9 @@
 # Base1 documentation integrity gate.
 #
 # This check is read-only. It verifies the current Base1 documentation layout,
-# core references, release-note mirrors, root compatibility paths, and dry-run
-# guardrails before file reorganization continues.
+# inventory, readiness checklist, core references, release-note mirrors, root
+# compatibility paths, and dry-run guardrails before file reorganization
+# continues.
 
 set -eu
 
@@ -48,6 +49,8 @@ check_core_docs() {
     docs/base1/DOCUMENTATION_MAP.md \
     docs/base1/DOCUMENTATION_ORGANIZATION_PLAN.md \
     docs/base1/ROOT_COMPATIBILITY_MAP.md \
+    docs/base1/INVENTORY.md \
+    docs/base1/REORGANIZATION_READINESS.md \
     docs/base1/VALIDATION_RUNBOOK.md \
     docs/base1/VALIDATION_REPORT_TEMPLATE.md \
     docs/base1/VALIDATION_REPORTS.md \
@@ -127,12 +130,21 @@ check_references() {
   check_contains docs/base1/README.md 'DOCUMENTATION_MAP.md'
   check_contains docs/base1/README.md 'DOCUMENTATION_ORGANIZATION_PLAN.md'
   check_contains docs/base1/README.md 'ROOT_COMPATIBILITY_MAP.md'
+  check_contains docs/base1/README.md 'INVENTORY.md'
+  check_contains docs/base1/README.md 'REORGANIZATION_READINESS.md'
   check_contains docs/base1/README.md 'releases/README.md'
   check_contains docs/base1/DOCUMENTATION_MAP.md '../../base1/README.md'
   check_contains docs/base1/DOCUMENTATION_MAP.md '../../base1/NETWORK_LOCKDOWN_DRY_RUN.md'
+  check_contains docs/base1/DOCUMENTATION_MAP.md 'INVENTORY.md'
+  check_contains docs/base1/DOCUMENTATION_MAP.md 'REORGANIZATION_READINESS.md'
   check_contains docs/base1/DOCUMENTATION_MAP.md 'ROOT_COMPATIBILITY_MAP.md'
   check_contains docs/base1/DOCUMENTATION_MAP.md 'docs/base1/releases/'
   check_contains docs/base1/DOCUMENTATION_MAP.md 'sh scripts/base1-doc-integrity.sh'
+  check_contains docs/base1/INVENTORY.md 'Release and checkpoint notes'
+  check_contains docs/base1/INVENTORY.md 'Base1 scripts'
+  check_contains docs/base1/INVENTORY.md 'Test groups'
+  check_contains docs/base1/REORGANIZATION_READINESS.md 'Base1 is not ready for a full reorganization yet.'
+  check_contains docs/base1/REORGANIZATION_READINESS.md 'complete inventory'
   check_contains docs/base1/ROOT_COMPATIBILITY_MAP.md 'RELEASE_BASE1_LIBREBOOT_READONLY_V1.md'
   check_contains docs/base1/ROOT_COMPATIBILITY_MAP.md 'docs/base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1.md'
   check_contains docs/base1/ROOT_COMPATIBILITY_MAP.md 'RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md'
@@ -153,6 +165,8 @@ check_non_claims() {
   check_contains docs/base1/DOCUMENTATION_MAP.md 'Not hardware-validated'
   check_contains docs/base1/DOCUMENTATION_MAP.md 'No destructive disk writes'
   check_contains docs/base1/DOCUMENTATION_ORGANIZATION_PLAN.md 'Keep existing Base1 markdown files available'
+  check_contains docs/base1/INVENTORY.md 'does not make Base1 installer-ready'
+  check_contains docs/base1/REORGANIZATION_READINESS.md 'does not make Base1 installer-ready'
   check_contains docs/base1/releases/README.md 'No destructive disk writes'
   check_contains docs/base1/ROOT_COMPATIBILITY_MAP.md 'Base1 installer-ready'
   check_contains base1/README.md 'They do not yet constitute a destructive installer or complete operating system image.'
@@ -166,5 +180,5 @@ check_scripts
 check_references
 check_non_claims
 
-info 'integrity complete; Base1 docs, root compatibility paths, release mirrors, and dry-run references are present'
+info 'integrity complete; Base1 docs, inventory, readiness checklist, root compatibility paths, release mirrors, and dry-run references are present'
 info 'writes: no'
