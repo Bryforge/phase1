@@ -25,7 +25,8 @@ Phase1 should be:
 | Lint | Rust mistakes are caught early | `cargo clippy --all-targets -- -D warnings` |
 | Test | Behavior is backed by tests | `cargo test --all-targets` |
 | Scripts | Shell tooling stays valid | `sh -n` checks and script-specific tests |
-| Docs | User-facing claims stay discoverable | required docs and links exist |
+| Docs | User-facing claims stay discoverable | required docs, links, maps, and compatibility paths exist |
+| Base1 integrity | Base1 organization preserves root compatibility and release mirrors | `sh scripts/base1-doc-integrity.sh` |
 | Release | Version and release metadata stay aligned | release metadata checks |
 | Safety | Risky behavior remains explicit and guarded | safety docs and policy checks |
 | Dependency | Dependency risk is reviewed | `cargo audit`, `cargo deny check` when tools are available |
@@ -38,7 +39,15 @@ Phase1 should be:
 sh scripts/quality-check.sh quick
 ```
 
-The quick gate validates formatting, compilation, Clippy, tests, script syntax, required docs, and quality score generation.
+The quick gate validates formatting, compilation, Clippy, tests, script syntax, required docs, Base1 documentation integrity, and quality score generation.
+
+### Base1 documentation integrity only
+
+```bash
+sh scripts/quality-check.sh base1-docs
+```
+
+This focused gate runs the Base1 documentation integrity checker. It verifies the current Base1 documentation map, root compatibility paths, organized release mirrors, real-device read-only docs, script syntax, non-claims, and dry-run guardrails.
 
 ### Required before release
 
@@ -91,9 +100,31 @@ Quality-critical scripts:
 scripts/quality-check.sh
 scripts/quality-score.sh
 scripts/base1-preflight.sh
+scripts/base1-doc-integrity.sh
 scripts/test-release-metadata.sh
 scripts/test-website.sh
 ```
+
+## Base1 organization integrity
+
+Base1 documentation reorganization is preservation-first. Root checkpoint-note files remain compatibility paths while organized mirrors live under `docs/base1/releases/`.
+
+Before and after Base1 documentation organization work, run:
+
+```bash
+sh scripts/quality-check.sh base1-docs
+```
+
+The Base1 integrity gate should verify:
+
+- required Base1 docs are present
+- root checkpoint-note compatibility files are present
+- organized release mirrors are present
+- `docs/base1/ROOT_COMPATIBILITY_MAP.md` links old paths to organized mirrors
+- real-device read-only docs remain present
+- Base1 shell scripts pass `sh -n`
+- dry-run guardrails remain visible
+- non-claims are preserved
 
 ## PR review checklist
 
@@ -116,10 +147,10 @@ Every PR should answer:
 | Virtual system | `src/kernel.rs`, `src/policy.rs`, `src/ops_log.rs` |
 | Text and editors | `src/text.rs`, `src/ned.rs`, `src/avim.rs` |
 | Host-facing helpers | `src/bin/phase1-storage.rs`, `scripts/` |
-| Base1 | `base1/`, `scripts/base1-*` |
+| Base1 | `base1/`, `docs/base1/`, `docs/os/BASE1_*`, `scripts/base1-*` |
 | Website/wiki | `index.html`, `docs/wiki/`, `WIKI_ROADMAP.md` |
 | Release/update | `UPDATE_PROTOCOL.md`, `CHANGELOG.md`, `Cargo.toml` |
-| Quality system | `QUALITY.md`, `QUALITY_SCORECARD.md`, `scripts/quality-*`, `.github/workflows/quality.yml` |
+| Quality system | `QUALITY.md`, `QUALITY_SCORECARD.md`, `scripts/quality-*`, `scripts/base1-doc-integrity.sh`, `.github/workflows/quality.yml` |
 
 ## Safety baseline
 
@@ -131,11 +162,13 @@ Quality work must preserve these defaults:
 - credential-like values are not printed intentionally
 - docs do not overclaim unimplemented features
 - tests are preferred over claims
+- Base1 organization keeps compatibility paths recoverable
 
 ## Local workflow
 
 ```bash
 sh scripts/quality-score.sh
+sh scripts/quality-check.sh base1-docs
 sh scripts/quality-check.sh quick
 ```
 
