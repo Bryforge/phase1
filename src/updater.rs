@@ -7,12 +7,13 @@ use std::thread;
 use std::time::{Duration, Instant};
 
 const DEFAULT_REMOTE: &str = "origin";
-const BLEEDING_BRANCH: &str = "master";
+const BLEEDING_BRANCH: &str = "edge/stable";
 const STABLE_BRANCH: &str = "stable";
 const UPDATE_PROTOCOL_FILE: &str = "UPDATE_PROTOCOL.md";
 const VERSION_SCHEME: &str = "MAJOR.MINOR.PATCH[-dev]";
 pub const CURRENT_EDGE_VERSION: &str = env!("CARGO_PKG_VERSION");
 const COMMAND_TIMEOUT: Duration = Duration::from_secs(20);
+const BUILD_TIMEOUT: Duration = Duration::from_secs(180);
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum Target {
@@ -176,7 +177,11 @@ fn guarded_execute(request: UpdateRequest) -> String {
     }
 
     if request.build {
-        let (step_out, ok) = run_step("cargo build --release", &["cargo", "build", "--release"]);
+        let (step_out, ok) = run_step_with_timeout(
+            "cargo build --release",
+            &["cargo", "build", "--release"],
+            BUILD_TIMEOUT,
+        );
         out.push_str(&step_out);
         if !ok {
             return out;
@@ -267,7 +272,7 @@ fn parse_args(args: &[String]) -> Result<Option<UpdateRequest>, String> {
                 request.build = true;
             }
             "protocol" | "--protocol" | "update-protocol" => request.action = Action::Protocol,
-            "latest" | "--latest" | "bleeding" | "edge" | "master" | "main" => {
+            "latest" | "--latest" | "bleeding" | "edge" | "edge/stable" | "master" | "main" => {
                 request.target = Target::Bleeding;
             }
             "stable" | "release" => request.target = Target::Stable,
@@ -347,10 +352,14 @@ fn run_git_summary(args: &[&str], label: &str) -> String {
 }
 
 fn run_step(label: &str, command: &[&str]) -> (String, bool) {
+    run_step_with_timeout(label, command, COMMAND_TIMEOUT)
+}
+
+fn run_step_with_timeout(label: &str, command: &[&str], timeout: Duration) -> (String, bool) {
     let Some((program, args)) = command.split_first() else {
         return (format!("{label:<19} [failed]\n"), false);
     };
-    match run_command(program, args, COMMAND_TIMEOUT) {
+    match run_command(program, args, timeout) {
         Ok(output) if output.status.success() => (format!("{label:<19} [ok]\n"), true),
         Ok(output) => {
             let mut out = format!("{label:<19} [failed]\n");
@@ -506,6 +515,32 @@ mod tests {
         assert!(out.contains("SHIELD off"));
         assert!(out.contains("TRUST HOST on"));
         assert!(out.contains("explicit --trust-host"));
+    }
+
+    #[test]
+    fn updater_latest_targets_edge_stable_branch() {
+        let out = plan(Target::Bleeding, true);
+        assert!(out.contains("git fetch --prune origin edge/stable"));
+        assert!(out.contains("git checkout edge/stable"));
+        assert!(out.contains("git pull --ff-only origin edge/stable"));
+        assert!(out.contains("cargo build --release"));
+        assert!(!out.contains("origin master"));
+    }
+
+    #[test]
+    fn update_now_denial_plan_points_to_edge_stable_not_master() {
+        std::env::remove_var("PHASE1_SAFE_MODE");
+        std::env::set_var("PHASE1_ALLOW_HOST_TOOLS", "1");
+        let out = run(&["now".to_string(), "--trust-host".to_string()]);
+        assert!(out.contains("edge/stable"));
+        assert!(!out.contains("origin master"));
+        std::env::remove_var("PHASE1_SAFE_MODE");
+        std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
+    }
+
+    #[test]
+    fn cargo_release_build_timeout_is_longer_than_git_timeout() {
+        assert!(super::BUILD_TIMEOUT > super::COMMAND_TIMEOUT);
     }
 
     #[test]
