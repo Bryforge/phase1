@@ -2,7 +2,7 @@
 
 > **Status:** Roadmap and design index.
 >
-> **Validation:** Links to current Base1 design docs, dry-run scripts, readiness matrix, validation runbook, validation report template, validation reports archive, preview stack runbook, preview checks, and future validation reports.
+> **Validation:** Links to current Base1 design docs, dry-run scripts, readiness matrix, validation runbook, validation report template, validation reports archive, preview stack runbook, preview checks, compatibility maps, and future validation reports.
 >
 > **Non-claims:** Base1 is not currently documented here as a released bootable daily-driver image, finished secure OS replacement, or destructive installer-ready system.
 
@@ -25,6 +25,10 @@ Base1 is the planned minimal host foundation for future Phase1-first bootable en
 
 ## Source-of-truth links
 
+- [`DOCUMENTATION_MAP.md`](DOCUMENTATION_MAP.md)
+- [`DOCUMENTATION_ORGANIZATION_PLAN.md`](DOCUMENTATION_ORGANIZATION_PLAN.md)
+- [`ROOT_COMPATIBILITY_MAP.md`](ROOT_COMPATIBILITY_MAP.md)
+- [`releases/README.md`](releases/README.md)
 - [`READINESS_MATRIX.md`](READINESS_MATRIX.md)
 - [`VALIDATION_RUNBOOK.md`](VALIDATION_RUNBOOK.md)
 - [`VALIDATION_REPORT_TEMPLATE.md`](VALIDATION_REPORT_TEMPLATE.md)
@@ -38,6 +42,10 @@ Base1 is the planned minimal host foundation for future Phase1-first bootable en
 - [`../../base1/HARDWARE_TARGETS.md`](../../base1/HARDWARE_TARGETS.md)
 - [`../../base1/ROADMAP.md`](../../base1/ROADMAP.md)
 - [`../os/ROADMAP.md`](../os/ROADMAP.md)
+
+## Compatibility rule
+
+Root-level Base1 checkpoint notes remain compatibility paths. Use [`ROOT_COMPATIBILITY_MAP.md`](ROOT_COMPATIBILITY_MAP.md) to see which root files mirror organized notes under [`releases/`](releases/).
 
 ## Base1 wording rule
 
@@ -66,3 +74,4 @@ Store future Base1 reports under [`validation/`](validation/) so evidence remain
 - [Real-device read-only validation index](real-device/README.md)
 - [Documentation map](DOCUMENTATION_MAP.md)
 - [Documentation organization plan](DOCUMENTATION_ORGANIZATION_PLAN.md)
+- [Root compatibility map](ROOT_COMPATIBILITY_MAP.md)
