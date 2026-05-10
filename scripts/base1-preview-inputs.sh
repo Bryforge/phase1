@@ -44,7 +44,7 @@ next commands:
 non-claims:
   This checker is read-only. It does not start the emulator, install Base1,
   create an image, validate hardware, complete recovery, or prove that Base1 is
-  bootable.
+  bootable. It does not claim Base1 is bootable.
 USAGE
 }
 
