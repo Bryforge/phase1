@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="250" viewBox="0 0 800 250">
+  <defs>
+    <linearGradient id="fyrGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ff5500;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ffaa00;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="800" height="250" rx="20" fill="#1a0022" stroke="#ff5500" stroke-width="10"/>
+  <!-- FYR text large -->
+  <text x="400" y="120" font-family="'Courier New', monospace" font-size="110" font-weight="700" fill="url(#fyrGradient)" text-anchor="middle" stroke="#220011" stroke-width="6">FYR</text>
+  <text x="400" y="180" font-family="'Courier New', monospace" font-size="28" fill="#aaffff" text-anchor="middle">NATIVE LANGUAGE • PHASE1</text>
+  <!-- Accent lines -->
+  <line x1="100" y1="40" x2="700" y2="40" stroke="#ffaa00" stroke-width="3" opacity="0.6"/>
+  <line x1="100" y1="210" x2="700" y2="210" stroke="#ffaa00" stroke-width="3" opacity="0.6"/>
+</svg>
