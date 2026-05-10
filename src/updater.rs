@@ -443,6 +443,9 @@ fn help() -> String {
 #[cfg(test)]
 mod tests {
     use super::{plan, run, sanitize_token, Target, CURRENT_EDGE_VERSION};
+    use std::sync::Mutex;
+
+    static ENV_LOCK: Mutex<()> = Mutex::new(());
 
     #[test]
     fn update_defaults_to_safe_plan() {
@@ -490,6 +493,7 @@ mod tests {
 
     #[test]
     fn update_execute_is_guarded() {
+        let _guard = ENV_LOCK.lock().unwrap();
         std::env::remove_var("PHASE1_SAFE_MODE");
         std::env::remove_var("PHASE1_ALLOW_HOST_TOOLS");
         let out = run(&["latest".to_string(), "--execute".to_string()]);
@@ -499,6 +503,7 @@ mod tests {
 
     #[test]
     fn update_now_trust_still_requires_safe_mode_off() {
+        let _guard = ENV_LOCK.lock().unwrap();
         std::env::remove_var("PHASE1_SAFE_MODE");
         std::env::set_var("PHASE1_ALLOW_HOST_TOOLS", "1");
         let out = run(&["now".to_string(), "--trust-host".to_string()]);
@@ -529,6 +534,7 @@ mod tests {
 
     #[test]
     fn update_now_denial_plan_points_to_edge_stable_not_master() {
+        let _guard = ENV_LOCK.lock().unwrap();
         std::env::remove_var("PHASE1_SAFE_MODE");
         std::env::set_var("PHASE1_ALLOW_HOST_TOOLS", "1");
         let out = run(&["now".to_string(), "--trust-host".to_string()]);
