@@ -46,6 +46,7 @@ check_scripts() {
 
 check_base1_docs() {
     run sh scripts/base1-doc-integrity.sh
+    run sh scripts/base1-link-check.sh
 }
 
 quick() {
