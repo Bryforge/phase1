@@ -43,7 +43,7 @@ checks:
 non-claims:
   This is a read-only bundle inspection tool. It does not launch the emulator,
   create an image, install Base1, validate hardware, complete recovery, or
-  prove that Base1 is a bootable release.
+  prove that Base1 is a bootable release. It does not claim Base1 is bootable.
 USAGE
 }
 
