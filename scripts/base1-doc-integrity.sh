@@ -2,7 +2,8 @@
 # Base1 documentation integrity gate.
 #
 # This check is read-only. It verifies the current Base1 documentation layout,
-# core references, and dry-run guardrails before file reorganization continues.
+# core references, release-note relocation, and dry-run guardrails before file
+# reorganization continues.
 
 set -eu
 
@@ -60,6 +61,20 @@ check_core_docs() {
   done
 }
 
+check_release_docs() {
+  for file in \
+    docs/base1/releases/README.md \
+    docs/base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1.md \
+    docs/base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1_1.md \
+    docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_HARDWARE_READONLY_V1.md \
+    docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md \
+    docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md \
+    docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md
+  do
+    check_file "$file"
+  done
+}
+
 check_real_device_docs() {
   for file in \
     docs/base1/real-device/README.md \
@@ -99,12 +114,15 @@ check_references() {
   check_contains docs/base1/README.md 'DOCUMENTATION_ORGANIZATION_PLAN.md'
   check_contains docs/base1/DOCUMENTATION_MAP.md '../../base1/README.md'
   check_contains docs/base1/DOCUMENTATION_MAP.md '../../base1/NETWORK_LOCKDOWN_DRY_RUN.md'
+  check_contains docs/base1/DOCUMENTATION_MAP.md 'docs/base1/releases/'
   check_contains docs/base1/DOCUMENTATION_MAP.md 'sh scripts/base1-doc-integrity.sh'
   check_contains base1/README.md 'NETWORK_LOCKDOWN_DRY_RUN.md'
   check_contains base1/README.md 'scripts/base1-network-lockdown-dry-run.sh'
   check_contains docs/os/BASE1_DRY_RUN_COMMANDS.md 'scripts/base1-network-lockdown-dry-run.sh --dry-run'
   check_contains base1/NETWORK_LOCKDOWN_DRY_RUN.md 'Read-only guarantee'
   check_contains base1/NETWORK_LOCKDOWN_DRY_RUN.md 'remote access can be lost'
+  check_contains base1/RECOVERY_USB_COMMAND_INDEX.md 'docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md'
+  check_contains base1/LIBREBOOT_MILESTONE.md 'docs/base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1.md'
   check_contains scripts/base1-network-lockdown-dry-run.sh 'refusing to run without --dry-run'
   check_contains scripts/base1-network-lockdown-dry-run.sh "info 'writes: no'"
 }
@@ -114,14 +132,16 @@ check_non_claims() {
   check_contains docs/base1/DOCUMENTATION_MAP.md 'Not hardware-validated'
   check_contains docs/base1/DOCUMENTATION_MAP.md 'No destructive disk writes'
   check_contains docs/base1/DOCUMENTATION_ORGANIZATION_PLAN.md 'Do not move existing Base1 markdown files unless the same PR updates every link, test, and index reference.'
+  check_contains docs/base1/releases/README.md 'No destructive disk writes'
   check_contains base1/README.md 'They do not yet constitute a destructive installer or complete operating system image.'
 }
 
 check_core_docs
+check_release_docs
 check_real_device_docs
 check_scripts
 check_references
 check_non_claims
 
-info 'integrity complete; Base1 docs and dry-run references are present'
+info 'integrity complete; Base1 docs, release notes, and dry-run references are present'
 info 'writes: no'
