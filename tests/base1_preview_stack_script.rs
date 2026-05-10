@@ -8,11 +8,14 @@ fn base1_preview_stack_exists_and_documents_boundary() {
 
     for expected in [
         "Base1 preview stack",
-        "inputs -> bundle -> doctor -> gate dry-run",
+        "inputs -> bundle -> doctor -> gate dry-run -> provenance",
         "does not launch QEMU",
         "does not claim Base1 is bootable",
         "emulator-prep only",
         "It does not claim Base1 is",
+        "scripts/base1-preview-provenance.sh",
+        "reports/provenance.env",
+        "reports/SHA256SUMS",
         "safe flow",
     ] {
         assert!(script.contains(expected), "missing preview stack text: {expected}");
@@ -100,12 +103,16 @@ fn base1_preview_stack_runs_full_safe_flow_with_placeholder_inputs() {
 
     let stdout = String::from_utf8_lossy(&output.stdout);
     for expected in [
-        "step 1/4: checking preview inputs",
-        "step 2/4: generating emulator preview bundle",
-        "step 3/4: running read-only bundle doctor",
-        "step 4/4: running guarded dry-run gate",
+        "step 1/5: checking preview inputs",
+        "step 2/5: generating emulator preview bundle",
+        "step 3/5: running read-only bundle doctor",
+        "step 4/5: running guarded dry-run gate",
+        "step 5/5: recording preview provenance",
         "dry-run complete; QEMU was not started",
-        "complete: safe preview stack passed",
+        "wrote ",
+        "reports/provenance.env",
+        "reports/SHA256SUMS",
+        "complete: safe preview stack passed with provenance",
         "non-claim: no emulator launched",
     ] {
         assert!(stdout.contains(expected), "missing output: {expected}\n{stdout}");
@@ -118,9 +125,23 @@ fn base1_preview_stack_runs_full_safe_flow_with_placeholder_inputs() {
         "staging/boot/initrd.img",
         "run-qemu-bundle.sh",
         "base1-sandbox.raw",
+        "reports/provenance.env",
+        "reports/SHA256SUMS",
     ] {
         assert!(fs::metadata(format!("{out}/{path}")).is_ok(), "missing generated path: {path}");
     }
+
+    let provenance = fs::read_to_string(format!("{out}/reports/provenance.env"))
+        .expect("provenance.env should be readable");
+    assert!(provenance.contains("BASE1_PREVIEW_PROVENANCE_STATUS=preview-only"));
+    assert!(provenance.contains("BASE1_NON_CLAIM_BOOTABLE=1"));
+    assert!(provenance.contains("file=staging/boot/vmlinuz sha256="));
+    assert!(provenance.contains("file=staging/boot/initrd.img sha256="));
+
+    let sums = fs::read_to_string(format!("{out}/reports/SHA256SUMS"))
+        .expect("SHA256SUMS should be readable");
+    assert!(sums.contains("  staging/boot/vmlinuz"));
+    assert!(sums.contains("  staging/boot/initrd.img"));
 
     let _ = fs::remove_dir_all(&out);
     let _ = fs::remove_file(&kernel);
