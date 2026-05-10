@@ -2804,3 +2804,5 @@ mod tests {
         std::env::remove_var("PHASE1_THEME");
     }
 }
+
+// test marker: \"help\" => print!(\"{}\", registry::help(args))

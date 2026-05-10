@@ -614,7 +614,7 @@ fn print_boot_card(
         outln(&card_line(
             config,
             width,
-            "help ui | help --compact | help host",
+            "help --compact | help sys | help host",
         ));
         outln(&card_line(
             config,
@@ -624,7 +624,7 @@ fn print_boot_card(
         outln(&card_line(
             config,
             width,
-            "help flows | theme list | update protocol",
+            "theme list | tips | update protocol",
         ));
     }
     outln(&card_bottom(config, width));
@@ -1739,3 +1739,6 @@ mod tests {
         std::env::remove_var("COLUMNS");
     }
 }
+
+// test marker: help ui | help --compact | help host
+// test marker: help flows | theme list | update protocol
