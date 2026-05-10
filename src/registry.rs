@@ -154,7 +154,9 @@ pub fn help(args: &[String]) -> String {
 }
 
 pub fn command_map() -> String {
-    let mut out = String::from("phase1 help // operator HUD\n");
+    let mut out = String::from("phase1 help // operator HUD
+phase1 // command map
+text : grep wc head tail find\n");
     out.push_str("version       : v6 help surface\n");
     out.push_str("layout        : topic-aware command deck\n");
     out.push_str("guardrails    : safe-mode, host trust gate, audited writes\n\n");
