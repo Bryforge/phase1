@@ -2,7 +2,7 @@
 
 > **Status:** Roadmap and design index.
 >
-> **Validation:** Links to current Base1 design docs, dry-run scripts, inventory, test inventory, readiness checklist, compatibility maps, validation runbook, validation report template, validation reports archive, preview stack runbook, preview checks, and future validation reports.
+> **Validation:** Links to current Base1 design docs, dry-run scripts, inventory, test inventory, migration table, readiness checklist, compatibility maps, validation runbook, validation report template, validation reports archive, preview stack runbook, preview checks, and future validation reports.
 >
 > **Non-claims:** Base1 is not currently documented here as a released bootable daily-driver image, finished secure OS replacement, or destructive installer-ready system.
 
@@ -28,6 +28,7 @@ Base1 is the planned minimal host foundation for future Phase1-first bootable en
 - [`DOCUMENTATION_MAP.md`](DOCUMENTATION_MAP.md)
 - [`INVENTORY.md`](INVENTORY.md)
 - [`TEST_INVENTORY.md`](TEST_INVENTORY.md)
+- [`MIGRATION_TABLE.md`](MIGRATION_TABLE.md)
 - [`REORGANIZATION_READINESS.md`](REORGANIZATION_READINESS.md)
 - [`DOCUMENTATION_ORGANIZATION_PLAN.md`](DOCUMENTATION_ORGANIZATION_PLAN.md)
 - [`ROOT_COMPATIBILITY_MAP.md`](ROOT_COMPATIBILITY_MAP.md)
@@ -55,6 +56,8 @@ Root-level Base1 checkpoint notes remain compatibility paths. Use [`ROOT_COMPATI
 Use [`INVENTORY.md`](INVENTORY.md) before broader organization work. It groups known Base1 docs, scripts, tests, release/checkpoint notes, and compatibility paths so organization can proceed without losing recoverability.
 
 Use [`TEST_INVENTORY.md`](TEST_INVENTORY.md) before moving or renaming tests. It groups known Base1-related Rust tests by behavior area so coverage remains visible during organization work.
+
+Use [`MIGRATION_TABLE.md`](MIGRATION_TABLE.md) before relocating any Base1 group. It records current paths, proposed organized paths, compatibility decisions, and readiness blockers.
 
 ## Base1 wording rule
 
@@ -84,6 +87,7 @@ Store future Base1 reports under [`validation/`](validation/) so evidence remain
 - [Documentation map](DOCUMENTATION_MAP.md)
 - [Base1 inventory](INVENTORY.md)
 - [Base1 test inventory](TEST_INVENTORY.md)
+- [Base1 migration table](MIGRATION_TABLE.md)
 - [Reorganization readiness checklist](REORGANIZATION_READINESS.md)
 - [Documentation organization plan](DOCUMENTATION_ORGANIZATION_PLAN.md)
 - [Root compatibility map](ROOT_COMPATIBILITY_MAP.md)
