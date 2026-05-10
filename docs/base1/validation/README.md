@@ -52,5 +52,6 @@ Roadmap -> Design -> Dry-run -> Preview -> Validated
 ## Current reports
 
 - [`2026-05-10-docs-evidence-chain.md`](2026-05-10-docs-evidence-chain.md) — documentation-only Base1 evidence-chain report.
+- [`2026-05-10-preview-stack.md`](2026-05-10-preview-stack.md) — safe Base1 preview-stack mechanics evidence report.
 
 Add reports only when there is evidence to preserve.
