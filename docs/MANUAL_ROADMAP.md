@@ -2,7 +2,7 @@
 
 ## Building a Terminal-First Operating World
 
-**Subtitle:** Base1, Fyr, and the Road to a Self-Owned Computing System
+**Subtitle:** Base1, Fyr, and the Road to a Complete and Programmable Computing System
 
 This document is the canonical planning map for the Phase1 book, manual, and future public wiki. It is designed to grow into a repository documentation system first, then a website or book later.
 
