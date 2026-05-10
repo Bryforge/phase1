@@ -155,6 +155,16 @@ pub fn help(args: &[String]) -> String {
 
 pub fn command_map() -> String {
     let mut out = String::from("phase1 help // operator HUD\n");
+    out.push_str("phase1 // command map\n");
+    out.push_str("fs : ls cd pwd cat mkdir touch rm cp mv tree echo\n");
+    out.push_str("text : grep wc head tail find\n");
+    out.push_str("proc : ps top spawn jobs fg bg kill nice\n");
+    out.push_str("net : ifconfig iwconfig wifi-scan wifi-connect ping nmcli\n");
+    out.push_str("host : browser git gh cargo rustc python3 go python gcc plugins wasm update ned\n");
+    out.push_str("dev : avim dev repo fyr lang\n");
+    out.push_str("sys : free df dmesg vmstat uname date uptime hostname audit sysinfo\n");
+    out.push_str("misc : help man complete capabilities dash matrix bootcfg clear version roadmap sandbox nest exit\n");
+
     out.push_str("version       : v6 help surface\n");
     out.push_str("layout        : topic-aware command deck\n");
     out.push_str("guardrails    : safe-mode, host trust gate, audited writes\n\n");
