@@ -3,22 +3,23 @@ use std::fs;
 #[test]
 fn real_device_readonly_report_template_exists() {
     let doc = fs::read_to_string("docs/base1/real-device/READONLY_REPORT_TEMPLATE.md")
-        .expect("real-device read-only report template exists");
+        .expect("read-only report template exists");
 
     assert!(doc.contains("Base1 Real-Device Read-Only Validation Report Template"));
     assert!(doc.contains("Status: template only"));
-    assert!(doc.contains("Scope: read-only real-device observation"));
+    assert!(doc.contains("Scope: read-only real-device evidence capture"));
 }
 
 #[test]
-fn real_device_readonly_report_template_requires_identity() {
+fn real_device_readonly_report_template_records_identity_fields() {
     let doc = fs::read_to_string("docs/base1/real-device/READONLY_REPORT_TEMPLATE.md").unwrap();
 
-    assert!(doc.contains("Required Target Identity"));
     assert!(doc.contains("Device path:"));
-    assert!(doc.contains("Model:"));
-    assert!(doc.contains("Serial or redacted identifier:"));
+    assert!(doc.contains("Device model:"));
+    assert!(doc.contains("Device serial:"));
+    assert!(doc.contains("Device size:"));
     assert!(doc.contains("Transport:"));
+    assert!(doc.contains("Host platform:"));
 }
 
 #[test]
@@ -30,7 +31,9 @@ fn real_device_readonly_report_template_preserves_guardrails() {
     assert!(doc.contains("No formatting"));
     assert!(doc.contains("No installer execution"));
     assert!(doc.contains("No firmware flashing"));
+    assert!(doc.contains("No bootloader installation"));
     assert!(doc.contains("No automatic target selection"));
+    assert!(doc.contains("No destructive repair commands"));
 }
 
 #[test]
@@ -46,6 +49,7 @@ fn real_device_readonly_report_template_preserves_non_claims() {
 
 #[test]
 fn base1_index_links_real_device_readonly_report_template() {
-    let index = fs::read_to_string("docs/base1/README.md").unwrap_or_default();
-    assert!(index.contains("READONLY_REPORT_TEMPLATE.md"));
+    let base_index = fs::read_to_string("docs/base1/README.md").unwrap_or_default();
+
+    assert!(base_index.contains("READONLY_REPORT_TEMPLATE.md"));
 }

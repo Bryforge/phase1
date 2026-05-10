@@ -1,35 +1,41 @@
 # Base1 Real-Device Read-Only Validation Report Template
 
 Status: template only
-Scope: read-only real-device observation
 Date: YYYY-MM-DD
-Operator: TBD
-Target identity: TBD
+Scope: read-only real-device evidence capture
 
-## Purpose
+## Target Identity
 
-Record real-device observations without writing to disks, firmware, boot media, partitions, or attached targets.
-
-## Required Target Identity
-
+- Operator:
 - Device path:
-- Model:
-- Serial or redacted identifier:
-- Size:
+- Device model:
+- Device serial:
+- Device size:
 - Transport:
-- Boot environment:
-- Operator notes:
+- Host platform:
+- Collection date:
 
-## Allowed Evidence
+## Evidence Source
 
-- Device identity summary
-- Read-only boot observations
-- Read-only firmware or platform observations
-- Read-only storage layout observations
+Use only read-only collection paths.
+
+Allowed examples:
+
+- `scripts/base1-real-device-readonly-preview.sh --dry-run --target /dev/<device>`
+- read-only `lsblk` identity output
+- read-only `diskutil info` identity output
+- operator-entered boot environment notes
 - QEMU evidence references
-- Operator-entered notes
 
-## Forbidden Actions
+## Read-Only Observations
+
+- Boot environment:
+- Firmware/platform notes:
+- Storage layout notes:
+- Device identity notes:
+- QEMU evidence reference:
+
+## Guardrails Confirmed
 
 - No disk writes
 - No partitioning
@@ -37,16 +43,23 @@ Record real-device observations without writing to disks, firmware, boot media, 
 - No installer execution
 - No firmware flashing
 - No bootloader installation
-- No destructive repair commands
 - No automatic target selection
+- No destructive repair commands
 
-## Validation Commands
+## Result Label
 
-- scripts/base1-real-device-readonly-preview.sh --dry-run --target /dev/...
+Choose one:
 
-## Result
+- `read-only-observed`
+- `blocked-before-device-access`
+- `operator-aborted`
+- `needs-follow-up`
 
-Result: observation-only / blocked / incomplete
+## Promotion Rule
+
+This report may only promote read-only real-device observation evidence.
+
+It does not promote Phase1 to installer-ready, hardware-validated, or daily-driver status.
 
 ## Non-Claims
 
