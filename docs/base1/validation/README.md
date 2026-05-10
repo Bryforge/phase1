@@ -55,3 +55,4 @@ Roadmap -> Design -> Dry-run -> Preview -> Validated
 - [`2026-05-10-preview-stack.md`](2026-05-10-preview-stack.md) — safe Base1 preview-stack mechanics evidence report.
 
 Add reports only when there is evidence to preserve.
+- [`2026-05-10-qemu-phase1-marker.md`](2026-05-10-qemu-phase1-marker.md)
