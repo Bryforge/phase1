@@ -12,9 +12,10 @@ This page is the developer entry point for **The Phase1 Codex**.
 
 1. Read [`../README.md`](../README.md) for the documentation status model.
 2. Read [`../MANUAL_ROADMAP.md`](../MANUAL_ROADMAP.md) for the full Codex structure.
-3. Read [`../security/DOCS_CLAIMS.md`](../security/DOCS_CLAIMS.md) before editing safety, Base1, recovery, installer, or host-tool docs.
-4. Read [`../security/TRUST_MODEL.md`](../security/TRUST_MODEL.md) before adding or documenting host-backed behavior.
-5. Use the existing repository tests as the source of truth for implemented behavior.
+3. Read [`DOCS_CONTRIBUTING.md`](DOCS_CONTRIBUTING.md) before preparing documentation PRs.
+4. Read [`../security/DOCS_CLAIMS.md`](../security/DOCS_CLAIMS.md) before editing safety, Base1, recovery, installer, or host-tool docs.
+5. Read [`../security/TRUST_MODEL.md`](../security/TRUST_MODEL.md) before adding or documenting host-backed behavior.
+6. Use the existing repository tests as the source of truth for implemented behavior.
 
 ## Required contribution habits
 
@@ -37,6 +38,8 @@ Treat these as safety-sensitive:
 - target identity verification;
 - secret handling;
 - claims that use words such as secure, safe, hardened, bootable, installer-ready, recovery-complete, or daily-driver ready.
+
+Review safety-sensitive documentation with [`../security/REVIEW_GUIDE.md`](../security/REVIEW_GUIDE.md).
 
 ## Developer rule
 
