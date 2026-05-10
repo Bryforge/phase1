@@ -112,6 +112,8 @@ Fyr is the Phase1-native language target for VFS automation, self-construction, 
 
 Start with [`PHASE1_NATIVE_LANGUAGE.md`](PHASE1_NATIVE_LANGUAGE.md), then follow the dedicated [`Fyr roadmap`](docs/fyr/ROADMAP.md).
 
+Visual mark: [`assets/fyr-flame.svg`](assets/fyr-flame.svg).
+
 First working script inside Phase1:
 
 ```text
