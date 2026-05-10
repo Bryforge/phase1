@@ -51,6 +51,6 @@ Roadmap -> Design -> Dry-run -> Preview -> Validated
 
 ## Current reports
 
-No validation reports are recorded in this folder yet.
+- [`2026-05-10-docs-evidence-chain.md`](2026-05-10-docs-evidence-chain.md) — documentation-only Base1 evidence-chain report.
 
 Add reports only when there is evidence to preserve.
