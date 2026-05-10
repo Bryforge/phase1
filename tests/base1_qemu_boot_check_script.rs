@@ -72,6 +72,7 @@ fn base1_qemu_boot_check_reports_missing_bundle() {
 #[test]
 fn base1_qemu_boot_check_dry_run_does_not_launch() {
     let bundle = make_fake_bundle("base1-qemu-boot-dry-run");
+    fs::write(std::path::Path::new(&bundle).join("base1-sandbox.raw"), b"").expect("sandbox placeholder should be writable");
 
     let output = Command::new("sh")
         .arg(SCRIPT)
@@ -112,6 +113,7 @@ fn base1_qemu_boot_check_dry_run_does_not_launch() {
 #[test]
 fn base1_qemu_boot_check_execute_requires_confirmation() {
     let bundle = make_fake_bundle("base1-qemu-boot-confirmation");
+    fs::write(std::path::Path::new(&bundle).join("base1-sandbox.raw"), b"").expect("sandbox placeholder should be writable");
 
     let output = Command::new("sh")
         .arg(SCRIPT)

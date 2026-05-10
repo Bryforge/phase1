@@ -3,7 +3,6 @@
 > **Status:** Report archive index.
 >
 > **Validation:** Use with `../VALIDATION_REPORT_TEMPLATE.md` and `../READINESS_MATRIX.md`.
->
 > **Non-claims:** This index does not claim Base1 is bootable, daily-driver ready, installer-ready, recovery-complete, or validated on real hardware.
 
 This folder is the home for future Base1 validation reports.
@@ -20,11 +19,9 @@ YYYY-MM-DD-track-target-summary.md
 
 Examples:
 
-```text
 2026-05-10-recovery-shell-docs-dry-run.md
 2026-05-10-image-provenance-checksum-preview.md
 2026-05-10-target-identity-x200-read-only.md
-```
 
 ## Required report fields
 
@@ -45,9 +42,7 @@ Every report should include:
 
 Use the weakest accurate level from [`../READINESS_MATRIX.md`](../READINESS_MATRIX.md):
 
-```text
 Roadmap -> Design -> Dry-run -> Preview -> Validated
-```
 
 ## Current reports
 
@@ -57,3 +52,4 @@ Roadmap -> Design -> Dry-run -> Preview -> Validated
 Add reports only when there is evidence to preserve.
 - [`2026-05-10-qemu-phase1-marker.md`](2026-05-10-qemu-phase1-marker.md)
 - [`2026-05-10-qemu-real-phase1-binary.md`](2026-05-10-qemu-real-phase1-binary.md)
+- [`2026-05-10-real-phase1-initrd-builder.md`](2026-05-10-real-phase1-initrd-builder.md)
