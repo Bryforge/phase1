@@ -24,6 +24,7 @@ Start with [`MANUAL_ROADMAP.md`](MANUAL_ROADMAP.md) for the full book, manual, a
 | Security reviewer | [`security/TRUST_MODEL.md`](security/TRUST_MODEL.md) | Review safety claims, trust boundaries, and host-tool behavior. |
 | Recovery/hardware operator | [`recovery/README.md`](recovery/README.md) | Follow Base1 and recovery planning without destructive assumptions. |
 | Fyr contributor | [`fyr/README.md`](fyr/README.md) | Work on the Phase1-native language and toolchain track. |
+| Documentation contributor | [`templates/README.md`](templates/README.md) | Start from reusable status blocks, page skeletons, and claim-review examples. |
 
 ## Manual sections
 
@@ -34,6 +35,7 @@ Start with [`MANUAL_ROADMAP.md`](MANUAL_ROADMAP.md) for the full book, manual, a
 - [`developers/`](developers/) — Developer contribution guide.
 - [`recovery/`](recovery/) — Recovery and hardware planning.
 - [`security/`](security/) — Trust model, claims policy, and review guide.
+- [`templates/`](templates/) — Reusable Codex status blocks, page skeletons, and claim-review examples.
 
 ## Required page status block
 
