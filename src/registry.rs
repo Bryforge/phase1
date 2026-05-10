@@ -227,7 +227,7 @@ fn command_palette() -> String {
 
     // Start on a fresh line so the prompt does not consume card width.
     // source contract: let mut out = String::from("\\n")
-    // source contract: help ui // v6 phase1 command palette
+    // source contract: keep the help-ui card title short
     let mut out = String::from("\n");
     out.push_str(&palette_top(width));
     out.push_str(&palette_row("help ui // v6", width));
