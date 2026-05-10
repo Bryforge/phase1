@@ -51,3 +51,4 @@ scripts/base1-real-device-readonly-validation-bundle.sh --dry-run --target /dev/
 - No real-device write path
 - [Read-only validation runbook](RUNBOOK.md)
 - [Read-only validation checklist](CHECKLIST.md)
+- [Read-only evidence capture report](reports/2026-05-10-readonly-evidence-capture.md)
