@@ -114,6 +114,8 @@ check_real_device_docs() {
 check_scripts() {
   for file in \
     scripts/base1-preflight.sh \
+    scripts/base1-doc-integrity.sh \
+    scripts/base1-link-check.sh \
     scripts/base1-install-dry-run.sh \
     scripts/base1-recovery-dry-run.sh \
     scripts/base1-storage-layout-dry-run.sh \
@@ -175,6 +177,9 @@ check_references() {
   check_contains docs/base1/LINK_CHECK_STRATEGY.md 'scripts/base1-link-check.sh'
   check_contains docs/base1/LINK_CHECK_STRATEGY.md 'Fail on missing local targets.'
   check_contains docs/base1/LINK_CHECK_STRATEGY.md 'Stay read-only.'
+  check_contains scripts/base1-link-check.sh 'mode: read-only'
+  check_contains scripts/base1-link-check.sh 'missing local link target'
+  check_contains scripts/base1-link-check.sh 'external-links: skipped'
   check_contains docs/base1/REORGANIZATION_READINESS.md 'Base1 is not ready for a full reorganization yet.'
   check_contains docs/base1/REORGANIZATION_READINESS.md 'complete inventory'
   check_contains docs/base1/ROOT_COMPATIBILITY_MAP.md 'RELEASE_BASE1_LIBREBOOT_READONLY_V1.md'
@@ -216,5 +221,5 @@ check_scripts
 check_references
 check_non_claims
 
-info 'integrity complete; Base1 docs, inventory, test inventory, migration table, script compatibility plan, link-check strategy, readiness checklist, root compatibility paths, release mirrors, and dry-run references are present'
+info 'integrity complete; Base1 docs, inventory, test inventory, migration table, script compatibility plan, link-check strategy, link checker, readiness checklist, root compatibility paths, release mirrors, and dry-run references are present'
 info 'writes: no'
