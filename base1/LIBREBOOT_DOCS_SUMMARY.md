@@ -61,5 +61,4 @@ The current Libreboot path does not:
 
 Libreboot-backed Base1 work should stay in read-only docs and dry-runs until recovery media, emergency shell access, rollback metadata, storage layout, and hardware-specific boot behavior are validated on the target machine.
 
-
-See also: [RELEASE_BASE1_LIBREBOOT_READONLY_V1.md](../RELEASE_BASE1_LIBREBOOT_READONLY_V1.md).
+See also: [RELEASE_BASE1_LIBREBOOT_READONLY_V1.md](../docs/base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1.md).
