@@ -53,3 +53,4 @@ Add reports only when there is evidence to preserve.
 - [`2026-05-10-qemu-phase1-marker.md`](2026-05-10-qemu-phase1-marker.md)
 - [`2026-05-10-qemu-real-phase1-binary.md`](2026-05-10-qemu-real-phase1-binary.md)
 - [`2026-05-10-real-phase1-initrd-builder.md`](2026-05-10-real-phase1-initrd-builder.md)
+- [Base1 real QEMU boot promotion](validation/2026-05-10-real-qemu-boot-promotion.md)
