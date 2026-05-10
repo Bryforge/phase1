@@ -18,24 +18,25 @@ The following safeguards are in place:
 - Base1 inventory seed: `docs/base1/INVENTORY.md`
 - Base1 test inventory seed: `docs/base1/TEST_INVENTORY.md`
 - Path-by-path migration planning table: `docs/base1/MIGRATION_TABLE.md`
+- Script compatibility plan: `docs/base1/SCRIPT_COMPATIBILITY_PLAN.md`
 - Root compatibility map: `docs/base1/ROOT_COMPATIBILITY_MAP.md`
 - Release/checkpoint mirror index: `docs/base1/releases/README.md`
 - Integrity gate: `scripts/base1-doc-integrity.sh`
 - Quality integration: `sh scripts/quality-check.sh base1-docs`
 - Root checkpoint-note compatibility files remain present.
 - Organized release/checkpoint mirrors remain present.
-- Rust tests cover the root compatibility map, quality gate, inventory docs, and migration table docs.
+- Current script paths remain the stable operator interface.
+- Rust tests cover the root compatibility map, quality gate, inventory docs, migration table docs, and script compatibility plan docs.
 
 ## Not ready yet
 
 Before a full reorganization, Base1 still needs:
 
 1. A complete repository-wide test listing, not only the current seed inventory.
-2. A compatibility shim plan for any future script path change.
-3. A markdown link checker or equivalent validation for moved docs.
-4. Tests for every major moved group before that group is moved.
-5. A final post-reorganization layout document that names the stable public paths.
-6. A final integrity pass through `sh scripts/quality-check.sh base1-docs` and `cargo test --all-targets`.
+2. A markdown link checker or equivalent validation for moved docs.
+3. Tests for every major moved group before that group is moved.
+4. A final post-reorganization layout document that names the stable public paths.
+5. A final integrity pass through `sh scripts/quality-check.sh base1-docs` and `cargo test --all-targets`.
 
 ## Full reorganization readiness criteria
 
@@ -59,8 +60,8 @@ The next safe step is not broad movement yet.
 Recommended order:
 
 1. Expand the test inventory into a repository-wide Base1 test listing.
-2. Add a compatibility shim plan for future script movement.
-3. Add or document a link-check strategy for markdown moves.
+2. Add or document a link-check strategy for markdown moves.
+3. Add the final post-reorganization layout document.
 4. Only then move one small doc group at a time, preserving compatibility paths.
 
 ## Operator command
