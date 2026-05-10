@@ -2,9 +2,10 @@
 # Base1 documentation integrity gate.
 #
 # This check is read-only. It verifies the current Base1 documentation layout,
-# inventory, test inventory, migration table, script compatibility plan,
-# readiness checklist, core references, release-note mirrors, root compatibility
-# paths, and dry-run guardrails before file reorganization continues.
+# inventory, test inventory, migration table, script compatibility plan, link
+# check strategy, readiness checklist, core references, release-note mirrors,
+# root compatibility paths, and dry-run guardrails before file reorganization
+# continues.
 
 set -eu
 
@@ -53,6 +54,7 @@ check_core_docs() {
     docs/base1/TEST_INVENTORY.md \
     docs/base1/MIGRATION_TABLE.md \
     docs/base1/SCRIPT_COMPATIBILITY_PLAN.md \
+    docs/base1/LINK_CHECK_STRATEGY.md \
     docs/base1/REORGANIZATION_READINESS.md \
     docs/base1/VALIDATION_RUNBOOK.md \
     docs/base1/VALIDATION_REPORT_TEMPLATE.md \
@@ -137,6 +139,7 @@ check_references() {
   check_contains docs/base1/README.md 'TEST_INVENTORY.md'
   check_contains docs/base1/README.md 'MIGRATION_TABLE.md'
   check_contains docs/base1/README.md 'SCRIPT_COMPATIBILITY_PLAN.md'
+  check_contains docs/base1/README.md 'LINK_CHECK_STRATEGY.md'
   check_contains docs/base1/README.md 'REORGANIZATION_READINESS.md'
   check_contains docs/base1/README.md 'releases/README.md'
   check_contains docs/base1/DOCUMENTATION_MAP.md '../../base1/README.md'
@@ -145,6 +148,7 @@ check_references() {
   check_contains docs/base1/DOCUMENTATION_MAP.md 'TEST_INVENTORY.md'
   check_contains docs/base1/DOCUMENTATION_MAP.md 'MIGRATION_TABLE.md'
   check_contains docs/base1/DOCUMENTATION_MAP.md 'SCRIPT_COMPATIBILITY_PLAN.md'
+  check_contains docs/base1/DOCUMENTATION_MAP.md 'LINK_CHECK_STRATEGY.md'
   check_contains docs/base1/DOCUMENTATION_MAP.md 'REORGANIZATION_READINESS.md'
   check_contains docs/base1/DOCUMENTATION_MAP.md 'ROOT_COMPATIBILITY_MAP.md'
   check_contains docs/base1/DOCUMENTATION_MAP.md 'docs/base1/releases/'
@@ -166,6 +170,11 @@ check_references() {
   check_contains docs/base1/SCRIPT_COMPATIBILITY_PLAN.md 'scripts/base1-*.sh'
   check_contains docs/base1/SCRIPT_COMPATIBILITY_PLAN.md 'Preserve command-line arguments exactly.'
   check_contains docs/base1/SCRIPT_COMPATIBILITY_PLAN.md 'Wrapper template'
+  check_contains docs/base1/LINK_CHECK_STRATEGY.md 'Base1 link-check strategy'
+  check_contains docs/base1/LINK_CHECK_STRATEGY.md 'Do not broadly reorganize Base1 markdown until link checking is available'
+  check_contains docs/base1/LINK_CHECK_STRATEGY.md 'scripts/base1-link-check.sh'
+  check_contains docs/base1/LINK_CHECK_STRATEGY.md 'Fail on missing local targets.'
+  check_contains docs/base1/LINK_CHECK_STRATEGY.md 'Stay read-only.'
   check_contains docs/base1/REORGANIZATION_READINESS.md 'Base1 is not ready for a full reorganization yet.'
   check_contains docs/base1/REORGANIZATION_READINESS.md 'complete inventory'
   check_contains docs/base1/ROOT_COMPATIBILITY_MAP.md 'RELEASE_BASE1_LIBREBOOT_READONLY_V1.md'
@@ -192,6 +201,7 @@ check_non_claims() {
   check_contains docs/base1/TEST_INVENTORY.md 'does not make Base1 installer-ready'
   check_contains docs/base1/MIGRATION_TABLE.md 'does not make Base1 installer-ready'
   check_contains docs/base1/SCRIPT_COMPATIBILITY_PLAN.md 'does not make Base1 installer-ready'
+  check_contains docs/base1/LINK_CHECK_STRATEGY.md 'does not make Base1 installer-ready'
   check_contains docs/base1/REORGANIZATION_READINESS.md 'does not make Base1 installer-ready'
   check_contains docs/base1/releases/README.md 'No destructive disk writes'
   check_contains docs/base1/ROOT_COMPATIBILITY_MAP.md 'Base1 installer-ready'
@@ -206,5 +216,5 @@ check_scripts
 check_references
 check_non_claims
 
-info 'integrity complete; Base1 docs, inventory, test inventory, migration table, script compatibility plan, readiness checklist, root compatibility paths, release mirrors, and dry-run references are present'
+info 'integrity complete; Base1 docs, inventory, test inventory, migration table, script compatibility plan, link-check strategy, readiness checklist, root compatibility paths, release mirrors, and dry-run references are present'
 info 'writes: no'
