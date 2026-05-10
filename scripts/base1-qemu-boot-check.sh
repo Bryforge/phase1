@@ -3,8 +3,8 @@
 #
 # This script is the first explicit QEMU execution hook for Base1 preview
 # bundles. It defaults to dry-run. Use --execute plus the confirmation phrase
-# to actually run the bundle's run-qemu-bundle.sh, capture serial output, and
-# check for a Phase1 readiness marker.
+# to actually run QEMU against the selected preview bundle, capture serial
+# output, and check for a Phase1 readiness marker.
 #
 # It only writes reports inside the selected build/ bundle. It does not install
 # Base1, write host devices, format media, mount filesystems, or validate real
@@ -17,6 +17,8 @@ MODE=dry-run
 CONFIRM=${BASE1_QEMU_BOOT_CONFIRM:-}
 TIMEOUT_SECONDS=${BASE1_QEMU_BOOT_TIMEOUT:-30}
 EXPECT=${BASE1_QEMU_EXPECT_MARKER:-phase1 6.0.0 ready}
+QEMU_BIN=${BASE1_QEMU:-qemu-system-x86_64}
+MEMORY_MB=${BASE1_QEMU_MEMORY_MB:-1024}
 
 usage() {
   cat <<'USAGE'
@@ -28,7 +30,7 @@ usage:
 options:
   --bundle <dir>       Base1 emulator preview bundle under build/
   --dry-run            inspect the bundle and print the QEMU handoff plan
-  --execute            run the bundle QEMU scaffold and capture serial output
+  --execute            run QEMU with serial capture and inspect output
   --confirm <phrase>   required with --execute; phrase: launch-qemu-base1-preview
   --timeout <seconds>  max runtime before terminating QEMU, default: 30
   --expect <text>      serial marker required for PASS, default: phase1 6.0.0 ready
@@ -44,10 +46,7 @@ result model:
   failed        marker missing or bundle invalid
 
 non-claims:
-  This is emulator-only boot evidence. It does not install Base1, validate real
-  hardware, validate recovery, validate an installer, or prove daily-driver
-  readiness. A pass only means the selected bundle emitted the expected marker
-  during this QEMU run.
+  This is emulator-only boot evidence. It does not install Base1, validate real hardware, validate recovery, validate an installer, or prove daily-driver readiness. A pass only means the selected bundle emitted the expected marker during this QEMU run.
 USAGE
 }
 
@@ -112,24 +111,36 @@ case "$TIMEOUT_SECONDS" in
 esac
 [ "$TIMEOUT_SECONDS" -gt 0 ] || fail '--timeout must be greater than zero'
 
+case "$MEMORY_MB" in
+  ''|*[!0-9]*) fail 'BASE1_QEMU_MEMORY_MB must be a positive integer' ;;
+esac
+[ "$MEMORY_MB" -gt 0 ] || fail 'BASE1_QEMU_MEMORY_MB must be greater than zero'
+
 require_build_bundle "$BUNDLE_DIR" || fail "bundle must be under build/: $BUNDLE_DIR"
 [ -d "$BUNDLE_DIR" ] || fail "bundle directory does not exist: $BUNDLE_DIR"
 [ -f "$BUNDLE_DIR/run-qemu-bundle.sh" ] || fail "missing bundle QEMU scaffold: $BUNDLE_DIR/run-qemu-bundle.sh"
 [ -f "$BUNDLE_DIR/staging/boot/vmlinuz" ] || fail "missing kernel: $BUNDLE_DIR/staging/boot/vmlinuz"
 [ -f "$BUNDLE_DIR/staging/boot/initrd.img" ] || fail "missing initrd: $BUNDLE_DIR/staging/boot/initrd.img"
+[ -f "$BUNDLE_DIR/base1-sandbox.raw" ] || fail "missing sandbox disk: $BUNDLE_DIR/base1-sandbox.raw"
 
 REPORTS_DIR="$BUNDLE_DIR/reports"
 LOG="$REPORTS_DIR/qemu-boot.log"
 SUMMARY="$REPORTS_DIR/qemu-boot-summary.env"
+KERNEL="$BUNDLE_DIR/staging/boot/vmlinuz"
+INITRD="$BUNDLE_DIR/staging/boot/initrd.img"
+SANDBOX="$BUNDLE_DIR/base1-sandbox.raw"
+APPEND="console=ttyS0,115200 earlyprintk=serial,ttyS0,115200 loglevel=8 base1.preview=1 base1.emulator=1 phase1.safe=1 phase1.host_tools=0"
 
 printf 'BASE1 QEMU BOOT CHECK\n'
 printf 'bundle : %s\n' "$BUNDLE_DIR"
 printf 'mode   : %s\n' "$MODE"
 printf 'expect : %s\n' "$EXPECT"
 printf 'timeout: %ss\n' "$TIMEOUT_SECONDS"
+printf 'qemu   : %s\n' "$QEMU_BIN"
 
 if [ "$MODE" = "dry-run" ]; then
   printf '\nplan: sh %s/run-qemu-bundle.sh\n' "$BUNDLE_DIR"
+  printf 'serial-capture-plan: %s -display none -serial file:%s\n' "$QEMU_BIN" "$LOG"
   printf 'result: dry-run\n'
   printf 'non-claims: no emulator launched; no installer run; no hardware validation performed\n'
   exit 0
@@ -145,13 +156,23 @@ else
   fail 'execute mode requires timeout or gtimeout so QEMU cannot run unbounded'
 fi
 
+command -v "$QEMU_BIN" >/dev/null 2>&1 || fail "missing QEMU executable: $QEMU_BIN"
+
 mkdir -p "$REPORTS_DIR"
 : > "$LOG"
 
-note "launching QEMU through bundle scaffold with $TIMEOUT_BIN; log: $LOG"
+note "launching QEMU with serial capture through $TIMEOUT_BIN; log: $LOG"
 
 set +e
-"$TIMEOUT_BIN" "$TIMEOUT_SECONDS" sh "$BUNDLE_DIR/run-qemu-bundle.sh" > "$LOG" 2>&1
+"$TIMEOUT_BIN" "$TIMEOUT_SECONDS" "$QEMU_BIN" \
+  -m "$MEMORY_MB" \
+  -display none \
+  -serial "file:$LOG" \
+  -no-reboot \
+  -kernel "$KERNEL" \
+  -initrd "$INITRD" \
+  -drive "file=$SANDBOX,format=raw,if=virtio" \
+  -append "$APPEND"
 rc=$?
 set -e
 
