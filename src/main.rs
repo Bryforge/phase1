@@ -486,7 +486,7 @@ fn execute_one(
                     "avim" | "emacs" | "repo" | "lang" | "fyr" | "opslog"
                 );
             match canonical {
-                "help" => ui::print_help(),
+                "help" => print!("{}", registry::help(args)),
                 "accounts" => print!("{}", accounts_report(shell)),
                 "security" => print!(
                     "{}",

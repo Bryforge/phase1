@@ -131,197 +131,131 @@ pub fn canonical_name(name: &str) -> Option<&'static str> {
 }
 
 pub fn help(args: &[String]) -> String {
-    let Some(topic) = args.first() else {
-        return command_map();
-    };
+    let topic = args.first().map(String::as_str);
 
-    if matches!(topic.as_str(), "--compact" | "-c" | "compact") {
-        return compact_command_map();
+    match topic {
+        None => command_map(),
+        Some("--compact" | "-c" | "compact") => compact_command_map(),
+        Some("ui" | "hud" | "palette" | "deck") => command_palette(),
+        Some("flows" | "flow" | "workflow" | "workflows") => operator_flows(),
+        Some(category) if CATEGORIES.contains(&category) => category_help(category),
+        Some(command) => {
+            if let Some(page) = man_page(command) {
+                format!(
+                    "phase1 help // {command}\n\n{page}\n\nroutes\n  man {command:<12} full manual\n  complete {command:<8} registry completions\n  help ui         command palette\n  help --compact  fast command map\n"
+                )
+            } else {
+                format!(
+                    "phase1 help // no match\n\nunknown topic : {command}\ntry           : help ui | help flows | help --compact | help fs | help host | help update | complete {command}\n"
+                )
+            }
+        }
     }
-
-    if CATEGORIES.contains(&topic.as_str()) {
-        return category_help(topic);
-    }
-
-    if let Some(page) = man_page(topic) {
-        return format!(
-            "phase1 help // {topic}
-
-{page}
-
-routes
-  man {topic:<12} full manual
-  complete {topic:<8} registry completions
-  help --compact   fast command map
-"
-        );
-    }
-
-    format!(
-        "phase1 help // no match
-
-unknown topic : {topic}
-try           : help --compact | help fs | help host | help update | complete {topic}
-"
-    )
 }
 
 pub fn command_map() -> String {
-    let mut out = String::from(
-        "phase1 help // operator HUD
-",
-    );
-    out.push_str(
-        "version       : v6 help surface
-",
-    );
-    out.push_str(
-        "layout        : topic-aware command deck
-",
-    );
-    out.push_str(
-        "guardrails    : safe-mode, host trust gate, audited writes
+    let mut out = String::from("phase1 help // operator HUD\n");
+    out.push_str("version       : v6 help surface\n");
+    out.push_str("layout        : topic-aware command deck\n");
+    out.push_str("guardrails    : safe-mode, host trust gate, audited writes\n\n");
 
-",
-    );
+    out.push_str("high signal\n");
+    out.push_str("  dash             operator dashboard\n");
+    out.push_str("  sysinfo          one-screen system summary\n");
+    out.push_str("  security         trust, shield, persistence, privacy\n");
+    out.push_str("  opslog           sanitized operator log controls\n");
+    out.push_str("  update protocol  release and update rules\n\n");
 
+    out.push_str("help routes\n");
+    out.push_str("  help             full operator HUD\n");
+    out.push_str("  help ui          visual command palette\n");
+    out.push_str("  help flows       workflow launch paths\n");
+    out.push_str("  help --compact   compact command map\n");
     out.push_str(
-        "high signal
-",
+        "  help <category>  category deck: fs text proc net host dev editor arch sys user misc\n",
     );
-    out.push_str(
-        "  dash             operator dashboard
-",
-    );
-    out.push_str(
-        "  sysinfo          one-screen system summary
-",
-    );
-    out.push_str(
-        "  security         trust, shield, persistence, privacy
-",
-    );
-    out.push_str(
-        "  opslog           sanitized operator log controls
-",
-    );
-    out.push_str(
-        "  update protocol  release and update rules
+    out.push_str("  help <command>   command manual card\n");
+    out.push_str("  complete <text>  registry completions\n\n");
 
-",
-    );
-
-    out.push_str(
-        "help routes
-",
-    );
-    out.push_str(
-        "  help             full operator HUD
-",
-    );
-    out.push_str(
-        "  help --compact   compact command map
-",
-    );
-    out.push_str(
-        "  help <category>  category deck: fs text proc net host dev editor arch sys user misc
-",
-    );
-    out.push_str(
-        "  help <command>   command manual card
-",
-    );
-    out.push_str(
-        "  complete <text>  registry completions
-
-",
-    );
-
-    out.push_str(
-        "command decks
-",
-    );
+    out.push_str("command decks\n");
     for category in CATEGORIES {
-        out.push_str(&format!(
-            "  {:<7} {}
-",
-            category,
-            command_names(category)
-        ));
+        out.push_str(&format!("  {:<7} {}\n", category, command_names(category)));
     }
 
-    out.push_str(
-        "
-quick routes
-",
-    );
-    out.push_str(
-        "  status features | capabilities | version --compare | roadmap
-",
-    );
-    out.push_str(
-        "  lang support | lang security | avim notes.rs | update test quick
-",
-    );
-    out.push_str(
-        "  learn status | learn import-history | learn suggest | theme list | tips
-",
-    );
-    out.push_str(
-        "  pipeline | wasm list | update protocol | sysinfo | security | opslog
-",
-    );
+    out.push_str("\nquick routes\n");
+    out.push_str("  status features | capabilities | version --compare | roadmap\n");
+    out.push_str("  lang support | lang security | avim notes.rs | update test quick\n");
+    out.push_str("  learn status | learn import-history | learn suggest | theme list | tips\n");
+    out.push_str("  pipeline | wasm list | update protocol | sysinfo | security | opslog\n");
+    out.push_str("\nvisual\n");
+    out.push_str("  help ui          launch the command palette\n");
+    out.push_str("  help flows       show operator workflows\n");
+    out
+}
+
+fn command_palette() -> String {
+    let mut out = String::new();
+    out.push_str("╭─ phase1 command palette // v6 ─────────────────────────╮\n");
+    out.push_str("│ search       complete <prefix>                         │\n");
+    out.push_str("│ inspect      help <command> | man <command>             │\n");
+    out.push_str("│ operate      dash | sysinfo | security | opslog         │\n");
+    out.push_str("│ build        dev | repo | fyr | lang | cargo            │\n");
+    out.push_str("│ recover      help host | update protocol | roadmap      │\n");
+    out.push_str("╰────────────────────────────────────────────────────────╯\n\n");
+
+    out.push_str("hot zones\n");
+    out.push_str("  CORE     dash sysinfo security opslog version roadmap\n");
+    out.push_str("  BUILD    dev repo fyr lang cargo rustc git gh\n");
+    out.push_str("  TEXT     grep find head tail wc pipeline\n");
+    out.push_str("  VFS      ls tree cat touch mkdir cp mv rm\n");
+    out.push_str("  STYLE    theme banner matrix tips clear\n");
+    out.push_str("  SAFE     capabilities sandbox audit update protocol\n\n");
+
+    out.push_str("launch examples\n");
+    out.push_str("  help host        guarded host-tool deck\n");
+    out.push_str("  help dev         development command deck\n");
+    out.push_str("  help update      update command manual card\n");
+    out.push_str("  complete th      discover theme aliases\n");
+    out.push_str("  man security     full generated manual page\n");
+    out
+}
+
+fn operator_flows() -> String {
+    let mut out = String::from("phase1 help // workflows\n\n");
+    out.push_str("daily check\n");
+    out.push_str("  sysinfo -> security -> opslog -> dash\n\n");
+    out.push_str("safe update\n");
+    out.push_str("  security -> update protocol -> update latest --trust-host --check\n\n");
+    out.push_str("development\n");
+    out.push_str("  repo status -> dev status -> cargo test -> gh pr create\n\n");
+    out.push_str("recovery planning\n");
+    out.push_str("  roadmap -> help host -> help update -> base1 docs/scripts\n\n");
+    out.push_str("discoverability\n");
+    out.push_str("  help ui -> help <category> -> help <command> -> complete <prefix>\n");
     out
 }
 
 fn compact_command_map() -> String {
-    let mut out = String::from(
-        "phase1 help // compact
-
-",
-    );
+    let mut out = String::from("phase1 help // compact\n\n");
     for category in CATEGORIES {
-        out.push_str(&format!(
-            "{:<7}: {}
-",
-            category,
-            command_names(category)
-        ));
+        out.push_str(&format!("{:<7}: {}\n", category, command_names(category)));
     }
-    out.push_str(
-        "
-try: help host | help update | help security | help --compact | complete th
-",
-    );
+    out.push_str("\ntry: help ui | help flows | help host | help update | help security | help --compact | complete th\n");
     out
 }
 
 fn category_help(category: &str) -> String {
-    let mut out = format!(
-        "phase1 help // {category}
-
-"
-    );
-    out.push_str(
-        "command        usage                              summary
-",
-    );
+    let mut out = format!("phase1 help // {category}\n\n");
+    out.push_str("command        usage                              summary\n");
     for cmd in COMMANDS.iter().filter(|cmd| cmd.category == category) {
         out.push_str(&format!(
-            "{:<14} {:<34} {}
-",
+            "{:<14} {:<34} {}\n",
             cmd.name, cmd.usage, cmd.description
         ));
     }
-    out.push_str(
-        "
-routes
-",
-    );
+    out.push_str("\nroutes\n");
     out.push_str(&format!(
-        "  help --compact   compact command map
-  complete {category}      completions
-"
+        "  help ui         command palette\n  help --compact  compact command map\n  complete {category}     completions\n"
     ));
     out
 }
@@ -524,6 +458,19 @@ mod tests {
         assert!(update.contains("phase1 help // update"));
         assert!(update.contains("validation suites"));
         assert!(update.contains("host.exec"));
+
+        let ui = help(&[String::from("ui")]);
+        assert!(ui.contains("phase1 command palette"));
+        assert!(ui.contains("hot zones"));
+        assert!(ui.contains("launch examples"));
+        assert!(ui.contains("CORE"));
+        assert!(ui.contains("BUILD"));
+
+        let flows = help(&[String::from("flows")]);
+        assert!(flows.contains("phase1 help // workflows"));
+        assert!(flows.contains("daily check"));
+        assert!(flows.contains("safe update"));
+        assert!(flows.contains("recovery planning"));
     }
 
     #[test]

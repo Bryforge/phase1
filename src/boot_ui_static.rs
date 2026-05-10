@@ -1,4 +1,3 @@
-use crate::registry;
 use std::fs;
 use std::io::{self, Write};
 use std::process::{Command, Stdio};
@@ -138,7 +137,7 @@ impl ThemePalette {
             Self::Ice => "cool blue/cyan frost terminal",
             Self::Synth => "purple synthwave operator glow",
             Self::Crimson => "red alert / intrusion-response console",
-            Self::BleedingEdge => "edge-only blue/magenta update channel console",
+            Self::BleedingEdge => "legacy edge-only blue/magenta update channel console",
         }
     }
 
@@ -220,7 +219,7 @@ impl BootConfig {
             std::env::set_var("PHASE1_NO_COLOR", "1");
         }
         if self.bleeding_edge && std::env::var("PHASE1_THEME").is_err() {
-            std::env::set_var("PHASE1_THEME", ThemePalette::BleedingEdge.name());
+            std::env::set_var("PHASE1_THEME", ThemePalette::Crimson.name());
         }
     }
 
@@ -399,10 +398,6 @@ pub fn print_quick_boot(version: &str, config: BootConfig) {
         ),
     ));
     outln("");
-}
-
-pub fn print_help() {
-    print!("{}", registry::command_map());
 }
 
 pub fn print_prompt(user: &str, path: &str) {
@@ -619,7 +614,7 @@ fn print_boot_card(
         outln(&card_line(
             config,
             width,
-            "help --compact | help sys | help host",
+            "help ui | help --compact | help host",
         ));
         outln(&card_line(
             config,
@@ -629,7 +624,7 @@ fn print_boot_card(
         outln(&card_line(
             config,
             width,
-            "theme list | tips | update protocol",
+            "help flows | theme list | update protocol",
         ));
     }
     outln(&card_bottom(config, width));
@@ -1316,7 +1311,7 @@ fn active_theme() -> ThemePalette {
         .filter(|theme| *theme != ThemePalette::BleedingEdge || bleeding_edge_env_enabled())
         .unwrap_or_else(|| {
             if bleeding_edge_env_enabled() {
-                ThemePalette::BleedingEdge
+                ThemePalette::Crimson
             } else {
                 ThemePalette::NeoTokyo
             }
@@ -1330,7 +1325,7 @@ fn active_theme_for_config(config: BootConfig) -> ThemePalette {
         .filter(|theme| *theme != ThemePalette::BleedingEdge || config.bleeding_edge)
         .unwrap_or_else(|| {
             if config.bleeding_edge {
-                ThemePalette::BleedingEdge
+                ThemePalette::Crimson
             } else {
                 ThemePalette::NeoTokyo
             }
