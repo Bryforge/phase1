@@ -2,7 +2,7 @@
 
 > **Status:** Roadmap and design index.
 >
-> **Validation:** Links to current Base1 design docs, dry-run scripts, and future validation reports.
+> **Validation:** Links to current Base1 design docs, dry-run scripts, readiness matrix, and future validation reports.
 >
 > **Non-claims:** Base1 is not currently documented here as a released bootable daily-driver image, finished secure OS replacement, or destructive installer-ready system.
 
@@ -25,6 +25,7 @@ Base1 is the planned minimal host foundation for future Phase1-first bootable en
 
 ## Source-of-truth links
 
+- [`READINESS_MATRIX.md`](READINESS_MATRIX.md)
 - [`../MANUAL_ROADMAP.md`](../MANUAL_ROADMAP.md)
 - [`../security/TRUST_MODEL.md`](../security/TRUST_MODEL.md)
 - [`../../base1/README.md`](../../base1/README.md)
@@ -36,3 +37,7 @@ Base1 is the planned minimal host foundation for future Phase1-first bootable en
 ## Base1 wording rule
 
 Use `planned`, `design`, `dry-run`, `preview`, or `validated` according to evidence. Do not call Base1 bootable, daily-driver ready, recovery-complete, or installer-ready without release artifacts and validation reports.
+
+## Promotion rule
+
+Use [`READINESS_MATRIX.md`](READINESS_MATRIX.md) before strengthening Base1 wording. A page may only move from roadmap to design, dry-run, preview, or validated when the linked evidence supports that level.
