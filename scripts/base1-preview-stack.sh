@@ -2,7 +2,7 @@
 # Base1 preview stack.
 #
 # Runs the safe emulator-prep flow:
-#   inputs -> bundle -> doctor -> gate dry-run -> provenance
+#   inputs -> bundle -> doctor -> gate dry-run -> provenance -> verify
 #
 # This script does not launch QEMU, install Base1, write real disks,
 # format filesystems, mount devices, or claim Base1 is bootable.
@@ -36,6 +36,7 @@ safe flow:
   3. scripts/base1-emulator-doctor.sh
   4. scripts/base1-preview-gate.sh --dry-run
   5. scripts/base1-preview-provenance.sh
+  6. scripts/base1-preview-verify.sh
 
 outputs:
   <bundle>/reports/provenance.env
@@ -108,26 +109,29 @@ if [ "$CHECK_QEMU" = "0" ]; then
   DOCTOR_ARGS="$DOCTOR_ARGS --no-qemu-check"
 fi
 
-note 'step 1/5: checking preview inputs'
+note 'step 1/6: checking preview inputs'
 # shellcheck disable=SC2086
 sh scripts/base1-preview-inputs.sh $INPUTS_ARGS
 
-note 'step 2/5: generating emulator preview bundle'
+note 'step 2/6: generating emulator preview bundle'
 sh scripts/base1-emulator-preview.sh \
   --out "$BUNDLE_DIR" \
   --kernel "$KERNEL" \
   --initrd "$INITRD" \
   --image-mb "$IMAGE_MB"
 
-note 'step 3/5: running read-only bundle doctor'
+note 'step 3/6: running read-only bundle doctor'
 # shellcheck disable=SC2086
 sh scripts/base1-emulator-doctor.sh $DOCTOR_ARGS
 
-note 'step 4/5: running guarded dry-run gate'
+note 'step 4/6: running guarded dry-run gate'
 sh scripts/base1-preview-gate.sh --bundle "$BUNDLE_DIR" --dry-run
 
-note 'step 5/5: recording preview provenance'
+note 'step 5/6: recording preview provenance'
 sh scripts/base1-preview-provenance.sh --bundle "$BUNDLE_DIR"
 
-note 'complete: safe preview stack passed with provenance'
+note 'step 6/6: verifying preview provenance checksums'
+sh scripts/base1-preview-verify.sh --bundle "$BUNDLE_DIR"
+
+note 'complete: safe preview stack passed with provenance verification'
 note 'non-claim: no emulator launched, no installer run, no hardware validation performed'
