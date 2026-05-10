@@ -20,6 +20,7 @@ This document is advisory and read-only. It does not write USB media, partition 
 - `base1/RECOVERY_USB_EMERGENCY_SHELL_SUMMARY.md` — Recovery USB emergency shell summary.
 - `scripts/base1-recovery-usb-emergency-shell-report.sh` — Recovery USB emergency shell report command.
 - `scripts/base1-recovery-usb-emergency-shell-validate.sh` — Recovery USB emergency shell validation bundle.
+- `scripts/base1-recovery-usb-emergency-shell-summary.sh` — Recovery USB emergency shell summary command.
 - `scripts/base1-recovery-usb-image-report.sh` — Recovery USB image provenance report command.
 - `scripts/base1-recovery-usb-image-validate.sh` — Recovery USB image provenance validation bundle.
 - `scripts/base1-recovery-usb-image-summary.sh` — Recovery USB image provenance summary command.

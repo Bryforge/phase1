@@ -30,6 +30,7 @@ This document is advisory and read-only. It does not write USB media, partition 
 
 Run the read-only commands first:
 
+    sh scripts/base1-recovery-usb-emergency-shell-summary.sh
     sh scripts/base1-recovery-usb-emergency-shell-validate.sh
     sh scripts/base1-recovery-usb-emergency-shell-report.sh
     sh scripts/base1-recovery-usb-image-summary.sh
