@@ -2,7 +2,7 @@
 
 > **Status:** Roadmap and design index.
 >
-> **Validation:** Links to current Base1 design docs, dry-run scripts, readiness matrix, validation report template, and future validation reports.
+> **Validation:** Links to current Base1 design docs, dry-run scripts, readiness matrix, validation report template, validation reports archive, and future validation reports.
 >
 > **Non-claims:** Base1 is not currently documented here as a released bootable daily-driver image, finished secure OS replacement, or destructive installer-ready system.
 
@@ -27,6 +27,7 @@ Base1 is the planned minimal host foundation for future Phase1-first bootable en
 
 - [`READINESS_MATRIX.md`](READINESS_MATRIX.md)
 - [`VALIDATION_REPORT_TEMPLATE.md`](VALIDATION_REPORT_TEMPLATE.md)
+- [`validation/README.md`](validation/README.md)
 - [`../MANUAL_ROADMAP.md`](../MANUAL_ROADMAP.md)
 - [`../security/TRUST_MODEL.md`](../security/TRUST_MODEL.md)
 - [`../../base1/README.md`](../../base1/README.md)
@@ -46,3 +47,5 @@ Use [`READINESS_MATRIX.md`](READINESS_MATRIX.md) before strengthening Base1 word
 ## Report rule
 
 Use [`VALIDATION_REPORT_TEMPLATE.md`](VALIDATION_REPORT_TEMPLATE.md) when recording Base1 evidence so reports name the scope, target, commands, result, observations, evidence links, boundaries, and promotion recommendation.
+
+Store future Base1 reports under [`validation/`](validation/) so evidence remains discoverable and reviewable.
