@@ -58,8 +58,10 @@ This repository now contains the first Base1 foundation files:
 - `SECURITY_MODEL.md` - threat model and security architecture.
 - `HARDWARE_TARGETS.md` - Raspberry Pi and X200 target requirements.
 - `PHASE1_COMPATIBILITY.md` - compatibility contract between Base1 and Phase1.
+- `NETWORK_LOCKDOWN_DRY_RUN.md` - network lockdown dry-run contract and promotion guardrails.
 - `config/base1-secure-profile.toml` - machine-readable secure profile draft.
 - `scripts/base1-preflight.sh` - non-destructive host readiness checker.
+- `scripts/base1-network-lockdown-dry-run.sh` - non-destructive network lockdown preview.
 - `scripts/base1-phase1-run.sh` - hardened Phase1 launcher wrapper.
 - `systemd/phase1-base1.service` - hardened systemd unit template.
 
@@ -90,9 +92,28 @@ Base1 should prefer:
 - Tight service sandboxing.
 - Measured and documented boot chain where hardware supports it.
 
+## Network lockdown preview
+
+The current network work is deliberately read-only. Run:
+
+```bash
+sh scripts/base1-network-lockdown-dry-run.sh --dry-run
+```
+
+Useful profile previews:
+
+```bash
+sh scripts/base1-network-lockdown-dry-run.sh --dry-run --profile secure-default
+sh scripts/base1-network-lockdown-dry-run.sh --dry-run --profile offline
+sh scripts/base1-network-lockdown-dry-run.sh --dry-run --profile appliance --target raspberry-pi
+sh scripts/base1-network-lockdown-dry-run.sh --dry-run --profile dev --target x200
+```
+
+The command reports `writes: no`, inspects available firewall tooling, previews inbound/outbound policy, and keeps Phase1 host-backed tools denied by default. It does not change firewall rules or service state.
+
 ## Current status
 
-Base1 is at foundation stage. The current files establish the secure architecture, hardware constraints, and first operator tooling. They do not yet constitute a destructive installer or complete operating system image.
+Base1 is at foundation stage. The current files establish the secure architecture, hardware constraints, first operator tooling, and read-only network lockdown preview. They do not yet constitute a destructive installer or complete operating system image.
 
 ## Next milestones
 
@@ -101,6 +122,7 @@ Base1 is at foundation stage. The current files establish the secure architectur
 - Add X200 installer profile.
 - Add immutable/rollback storage layout documentation.
 - Add signed Phase1 release installation flow.
-- Add network lockdown and offline-mode profiles.
+- Promote network lockdown from dry-run only after recovery, rollback, hardware, and operator-confirmation tests exist.
+- Add offline-mode profile validation.
 - Add recovery media and reset workflow.
 - Add Base1 integration tests in CI.
