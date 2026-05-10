@@ -82,6 +82,10 @@ test -f docs/base1/real-device/READONLY_REPORT_TEMPLATE.md
 echo "- READONLY_REPORT_TEMPLATE.md: present"
 echo
 
+echo "running read-only doctor:"
+scripts/base1-real-device-readonly-doctor.sh --dry-run | sed -n '1,80p'
+echo
+
 echo "running read-only preview:"
 scripts/base1-real-device-readonly-preview.sh --dry-run --target "$target" | sed -n '1,40p'
 echo
