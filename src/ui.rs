@@ -163,7 +163,11 @@ impl BootConfig {
         } else {
             std::env::set_var("PHASE1_NO_COLOR", "1");
         }
-        if self.bleeding_edge && std::env::var("PHASE1_THEME").is_err() {
+        if self.bleeding_edge
+            && std::env::var("PHASE1_THEME")
+                .map(|theme| theme.trim().is_empty())
+                .unwrap_or(true)
+        {
             std::env::set_var("PHASE1_THEME", ThemePalette::Crimson.name());
         }
     }

@@ -29,7 +29,7 @@ fn boot_live_ops_points_to_new_help_routes() {
     let boot = std::fs::read_to_string("src/boot_ui_static.rs").expect("boot ui");
 
     assert!(
-        boot.contains("help --compact | help sys | help host"),
+        boot.contains("help ui | help --compact | help host"),
         "{boot}"
     );
     assert!(
@@ -37,7 +37,7 @@ fn boot_live_ops_points_to_new_help_routes() {
         "{boot}"
     );
     assert!(
-        boot.contains("theme list | tips | update protocol"),
+        boot.contains("help flows | theme list | update protocol"),
         "{boot}"
     );
 }
