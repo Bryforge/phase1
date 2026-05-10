@@ -63,5 +63,5 @@ fn runtime_main_help_dispatch_passes_arguments_to_registry_help() {
         main.contains(r#"\"help\" => print!(\"{}\", registry::help(args))"#),
         "{main}"
     );
-    assert!(!main.contains(r#"\"help\" => ui::print_help()"#), "{main}");
+    assert!(!main.contains("ui::print_help()"), "{main}");
 }
