@@ -65,3 +65,4 @@ Store future Base1 reports under [`validation/`](validation/) so evidence remain
 - [Real-device read-only validation bundle report](real-device/READONLY_VALIDATION_BUNDLE_REPORT.md)
 - [Real-device read-only validation index](real-device/README.md)
 - [Documentation map](DOCUMENTATION_MAP.md)
+- [Documentation organization plan](DOCUMENTATION_ORGANIZATION_PLAN.md)
