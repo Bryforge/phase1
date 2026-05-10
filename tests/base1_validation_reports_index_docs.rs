@@ -10,8 +10,8 @@ fn base1_validation_reports_index_exists() {
 
 #[test]
 fn base1_index_links_validation_reports_archive() {
-    let index = fs::read_to_string("docs/base1/README.md")
-        .expect("Base1 docs index should be readable");
+    let index =
+        fs::read_to_string("docs/base1/README.md").expect("Base1 docs index should be readable");
 
     assert!(index.contains("validation/README.md"));
     assert!(index.contains("Store future Base1 reports"));

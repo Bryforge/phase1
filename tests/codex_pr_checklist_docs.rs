@@ -20,7 +20,10 @@ fn codex_pr_checklist_contains_required_sections() {
         "status block",
         "docs tests",
     ] {
-        assert!(checklist.contains(expected), "missing checklist content: {expected}");
+        assert!(
+            checklist.contains(expected),
+            "missing checklist content: {expected}"
+        );
     }
 }
 

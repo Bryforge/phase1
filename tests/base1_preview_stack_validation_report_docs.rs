@@ -5,7 +5,10 @@ const INDEX: &str = "docs/base1/validation/README.md";
 
 #[test]
 fn base1_preview_stack_validation_report_exists() {
-    assert!(fs::metadata(REPORT).is_ok(), "missing Base1 preview stack validation report");
+    assert!(
+        fs::metadata(REPORT).is_ok(),
+        "missing Base1 preview stack validation report"
+    );
 }
 
 #[test]
@@ -42,7 +45,10 @@ fn preview_stack_report_records_scope_and_evidence() {
         "reports/provenance.env",
         "reports/SHA256SUMS",
     ] {
-        assert!(report.contains(expected), "report missing expected evidence: {expected}");
+        assert!(
+            report.contains(expected),
+            "report missing expected evidence: {expected}"
+        );
     }
 }
 
@@ -66,7 +72,10 @@ fn preview_stack_report_preserves_non_claims() {
         "GRUB runtime behavior",
         "Do not use this report to mark Base1 as bootable",
     ] {
-        assert!(report.contains(expected), "report missing non-claim: {expected}");
+        assert!(
+            report.contains(expected),
+            "report missing non-claim: {expected}"
+        );
     }
 }
 
@@ -85,6 +94,9 @@ fn preview_stack_report_preserves_promotion_boundary() {
         "rollback/recovery notes",
         "explicit non-claims",
     ] {
-        assert!(report.contains(expected), "report missing promotion boundary: {expected}");
+        assert!(
+            report.contains(expected),
+            "report missing promotion boundary: {expected}"
+        );
     }
 }

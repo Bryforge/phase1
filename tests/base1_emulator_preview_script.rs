@@ -4,7 +4,8 @@ const SCRIPT: &str = "scripts/base1-emulator-preview.sh";
 
 #[test]
 fn base1_emulator_preview_script_exists_and_documents_boundary() {
-    let script = fs::read_to_string(SCRIPT).expect("Base1 emulator preview script should be readable");
+    let script =
+        fs::read_to_string(SCRIPT).expect("Base1 emulator preview script should be readable");
 
     for expected in [
         "Base1 emulator preview bundle",
@@ -20,13 +21,17 @@ fn base1_emulator_preview_script_exists_and_documents_boundary() {
         "not hardware validated",
         "not daily-driver ready",
     ] {
-        assert!(script.contains(expected), "missing boundary text: {expected}");
+        assert!(
+            script.contains(expected),
+            "missing boundary text: {expected}"
+        );
     }
 }
 
 #[test]
 fn base1_emulator_preview_script_avoids_real_device_tools() {
-    let script = fs::read_to_string(SCRIPT).expect("Base1 emulator preview script should be readable");
+    let script =
+        fs::read_to_string(SCRIPT).expect("Base1 emulator preview script should be readable");
 
     for forbidden in [
         "dd if=",
@@ -64,7 +69,10 @@ fn base1_emulator_preview_refuses_output_outside_build() {
         .output()
         .expect("base1 emulator preview script should execute");
 
-    assert!(!output.status.success(), "output outside build/ should be rejected");
+    assert!(
+        !output.status.success(),
+        "output outside build/ should be rejected"
+    );
 
     let stderr = String::from_utf8_lossy(&output.stderr);
     assert!(
@@ -110,7 +118,10 @@ fn base1_emulator_preview_generates_bundle_under_build() {
         "base1-sandbox.raw",
         "run-qemu-bundle.sh",
     ] {
-        assert!(fs::metadata(format!("{out}/{path}")).is_ok(), "missing generated path: {path}");
+        assert!(
+            fs::metadata(format!("{out}/{path}")).is_ok(),
+            "missing generated path: {path}"
+        );
     }
 
     assert!(
@@ -119,7 +130,8 @@ fn base1_emulator_preview_generates_bundle_under_build() {
         "missing rootfs archive or archive-missing marker"
     );
 
-    let manifest = fs::read_to_string(format!("{out}/manifest.env")).expect("manifest should be readable");
+    let manifest =
+        fs::read_to_string(format!("{out}/manifest.env")).expect("manifest should be readable");
     for expected in [
         "BASE1_EMULATOR_PREVIEW_STATUS=staging-only",
         "BASE1_PROFILE=test-safe",
@@ -134,7 +146,8 @@ fn base1_emulator_preview_generates_bundle_under_build() {
         assert!(manifest.contains(expected), "manifest missing: {expected}");
     }
 
-    let readme = fs::read_to_string(format!("{out}/README.txt")).expect("bundle README should be readable");
+    let readme =
+        fs::read_to_string(format!("{out}/README.txt")).expect("bundle README should be readable");
     for expected in [
         "emulator-only staging artifacts",
         "not a released Base1 image",
@@ -145,7 +158,8 @@ fn base1_emulator_preview_generates_bundle_under_build() {
         assert!(readme.contains(expected), "README missing: {expected}");
     }
 
-    let qemu = fs::read_to_string(format!("{out}/run-qemu-bundle.sh")).expect("qemu script should be readable");
+    let qemu = fs::read_to_string(format!("{out}/run-qemu-bundle.sh"))
+        .expect("qemu script should be readable");
     assert!(qemu.contains("missing staging/boot/vmlinuz or staging/boot/initrd.img"));
     assert!(qemu.contains("base1.preview=1"));
     assert!(qemu.contains("base1.emulator=1"));

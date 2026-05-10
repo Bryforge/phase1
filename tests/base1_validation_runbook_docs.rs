@@ -10,8 +10,8 @@ fn base1_validation_runbook_exists() {
 
 #[test]
 fn base1_index_links_validation_runbook() {
-    let index = fs::read_to_string("docs/base1/README.md")
-        .expect("Base1 docs index should be readable");
+    let index =
+        fs::read_to_string("docs/base1/README.md").expect("Base1 docs index should be readable");
 
     assert!(index.contains("VALIDATION_RUNBOOK.md"));
     assert!(index.contains("Runbook rule"));
@@ -51,6 +51,9 @@ fn base1_validation_runbook_preserves_documentation_only_scope() {
         "persistence behavior",
         "daily-driver readiness",
     ] {
-        assert!(runbook.contains(expected), "missing runbook boundary: {expected}");
+        assert!(
+            runbook.contains(expected),
+            "missing runbook boundary: {expected}"
+        );
     }
 }

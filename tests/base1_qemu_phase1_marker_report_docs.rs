@@ -5,7 +5,10 @@ const INDEX: &str = "docs/base1/validation/README.md";
 
 #[test]
 fn qemu_phase1_marker_report_exists() {
-    assert!(fs::metadata(REPORT).is_ok(), "missing QEMU Phase1 marker report");
+    assert!(
+        fs::metadata(REPORT).is_ok(),
+        "missing QEMU Phase1 marker report"
+    );
 }
 
 #[test]
@@ -61,6 +64,9 @@ fn qemu_phase1_marker_report_preserves_promotion_rule() {
         "launched by the boot path",
         "serial evidence captured by the guarded QEMU checker",
     ] {
-        assert!(report.contains(expected), "missing promotion rule: {expected}");
+        assert!(
+            report.contains(expected),
+            "missing promotion rule: {expected}"
+        );
     }
 }

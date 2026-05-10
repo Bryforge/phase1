@@ -21,8 +21,8 @@ fn validation_index_links_docs_evidence_chain_report() {
 
 #[test]
 fn base1_docs_evidence_chain_report_preserves_documentation_only_scope() {
-    let report = fs::read_to_string(REPORT)
-        .expect("Base1 docs evidence-chain report should be readable");
+    let report =
+        fs::read_to_string(REPORT).expect("Base1 docs evidence-chain report should be readable");
 
     for expected in [
         "Documentation-only validation report",
@@ -31,14 +31,17 @@ fn base1_docs_evidence_chain_report_preserves_documentation_only_scope() {
         "This report records documentation structure only",
         "Stay at current level",
     ] {
-        assert!(report.contains(expected), "missing documentation-only marker: {expected}");
+        assert!(
+            report.contains(expected),
+            "missing documentation-only marker: {expected}"
+        );
     }
 }
 
 #[test]
 fn base1_docs_evidence_chain_report_preserves_non_claims() {
-    let report = fs::read_to_string(REPORT)
-        .expect("Base1 docs evidence-chain report should be readable");
+    let report =
+        fs::read_to_string(REPORT).expect("Base1 docs evidence-chain report should be readable");
 
     for expected in [
         "does not claim a bootable Base1 image",
@@ -61,8 +64,8 @@ fn base1_docs_evidence_chain_report_preserves_non_claims() {
 
 #[test]
 fn base1_docs_evidence_chain_report_links_expected_surfaces() {
-    let report = fs::read_to_string(REPORT)
-        .expect("Base1 docs evidence-chain report should be readable");
+    let report =
+        fs::read_to_string(REPORT).expect("Base1 docs evidence-chain report should be readable");
 
     for expected in [
         "docs/base1/READINESS_MATRIX.md",
@@ -72,6 +75,9 @@ fn base1_docs_evidence_chain_report_links_expected_surfaces() {
         "tests/base1_validation_report_template_docs.rs",
         "tests/base1_validation_reports_index_docs.rs",
     ] {
-        assert!(report.contains(expected), "missing evidence link: {expected}");
+        assert!(
+            report.contains(expected),
+            "missing evidence link: {expected}"
+        );
     }
 }

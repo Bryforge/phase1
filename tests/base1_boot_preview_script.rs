@@ -17,7 +17,10 @@ fn base1_boot_preview_script_exists_and_documents_boundary() {
         "not an installer",
         "not hardware validated",
     ] {
-        assert!(script.contains(expected), "missing preview boundary text: {expected}");
+        assert!(
+            script.contains(expected),
+            "missing preview boundary text: {expected}"
+        );
     }
 }
 
@@ -57,7 +60,10 @@ fn base1_boot_preview_script_refuses_unsafe_output_roots() {
     let script = fs::read_to_string(SCRIPT).expect("Base1 boot preview script should be readable");
 
     for expected in ["safe_out_dir", "/dev", "/proc", "/sys", "/run"] {
-        assert!(script.contains(expected), "missing unsafe output guard: {expected}");
+        assert!(
+            script.contains(expected),
+            "missing unsafe output guard: {expected}"
+        );
     }
 
     let output = Command::new("sh")
@@ -67,7 +73,10 @@ fn base1_boot_preview_script_refuses_unsafe_output_roots() {
         .output()
         .expect("base1 boot preview script should execute");
 
-    assert!(!output.status.success(), "unsafe output directory should be rejected");
+    assert!(
+        !output.status.success(),
+        "unsafe output directory should be rejected"
+    );
 
     let stderr = String::from_utf8_lossy(&output.stderr);
     assert!(
@@ -115,10 +124,14 @@ fn base1_boot_preview_generates_staging_tree() {
         "run-qemu-preview.sh",
         "reports/README.txt",
     ] {
-        assert!(out.join(path).exists(), "missing generated preview path: {path}");
+        assert!(
+            out.join(path).exists(),
+            "missing generated preview path: {path}"
+        );
     }
 
-    let manifest = fs::read_to_string(out.join("manifest.env")).expect("manifest should be readable");
+    let manifest =
+        fs::read_to_string(out.join("manifest.env")).expect("manifest should be readable");
     for expected in [
         "BASE1_PREVIEW_STATUS=staging-only",
         "BASE1_PROFILE=test-safe",
@@ -130,7 +143,8 @@ fn base1_boot_preview_generates_staging_tree() {
         assert!(manifest.contains(expected), "manifest missing: {expected}");
     }
 
-    let qemu = fs::read_to_string(out.join("run-qemu-preview.sh")).expect("qemu script should be readable");
+    let qemu = fs::read_to_string(out.join("run-qemu-preview.sh"))
+        .expect("qemu script should be readable");
     assert!(qemu.contains("missing boot/vmlinuz or boot/initrd.img"));
     assert!(qemu.contains("base1.preview=1"));
     assert!(qemu.contains("phase1.safe=1"));

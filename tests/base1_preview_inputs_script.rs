@@ -4,7 +4,8 @@ const SCRIPT: &str = "scripts/base1-preview-inputs.sh";
 
 #[test]
 fn base1_preview_inputs_script_exists_and_documents_boundary() {
-    let script = fs::read_to_string(SCRIPT).expect("Base1 preview inputs script should be readable");
+    let script =
+        fs::read_to_string(SCRIPT).expect("Base1 preview inputs script should be readable");
 
     for expected in [
         "Base1 preview inputs checker",
@@ -16,13 +17,17 @@ fn base1_preview_inputs_script_exists_and_documents_boundary() {
         "does not claim Base1 is",
         "bootable",
     ] {
-        assert!(script.contains(expected), "missing preview input text: {expected}");
+        assert!(
+            script.contains(expected),
+            "missing preview input text: {expected}"
+        );
     }
 }
 
 #[test]
 fn base1_preview_inputs_avoids_mutating_tools() {
-    let script = fs::read_to_string(SCRIPT).expect("Base1 preview inputs script should be readable");
+    let script =
+        fs::read_to_string(SCRIPT).expect("Base1 preview inputs script should be readable");
 
     for forbidden in [
         "dd if=",
@@ -61,7 +66,10 @@ fn base1_preview_inputs_reports_missing_required_paths() {
         .output()
         .expect("Base1 preview inputs script should execute");
 
-    assert!(!output.status.success(), "missing kernel/initrd should fail");
+    assert!(
+        !output.status.success(),
+        "missing kernel/initrd should fail"
+    );
     let stdout = String::from_utf8_lossy(&output.stdout);
 
     for expected in [
@@ -73,7 +81,10 @@ fn base1_preview_inputs_reports_missing_required_paths() {
         "result: failed",
         "no emulator started",
     ] {
-        assert!(stdout.contains(expected), "missing output: {expected}\n{stdout}");
+        assert!(
+            stdout.contains(expected),
+            "missing output: {expected}\n{stdout}"
+        );
     }
 }
 
@@ -118,7 +129,10 @@ fn base1_preview_inputs_passes_with_placeholder_files() {
         "no emulator started",
         "no image created",
     ] {
-        assert!(stdout.contains(expected), "missing output: {expected}\n{stdout}");
+        assert!(
+            stdout.contains(expected),
+            "missing output: {expected}\n{stdout}"
+        );
     }
 
     let _ = fs::remove_file(&kernel);
@@ -127,8 +141,14 @@ fn base1_preview_inputs_passes_with_placeholder_files() {
 
 #[test]
 fn base1_preview_inputs_warns_when_bundle_outside_build() {
-    let kernel = format!("build/base1-preview-inputs-kernel-outside-{}", std::process::id());
-    let initrd = format!("build/base1-preview-inputs-initrd-outside-{}", std::process::id());
+    let kernel = format!(
+        "build/base1-preview-inputs-kernel-outside-{}",
+        std::process::id()
+    );
+    let initrd = format!(
+        "build/base1-preview-inputs-initrd-outside-{}",
+        std::process::id()
+    );
     fs::create_dir_all("build").expect("build directory should be creatable");
     fs::write(&kernel, "kernel placeholder").expect("kernel placeholder should be writable");
     fs::write(&initrd, "initrd placeholder").expect("initrd placeholder should be writable");
@@ -145,10 +165,19 @@ fn base1_preview_inputs_warns_when_bundle_outside_build() {
         .output()
         .expect("Base1 preview inputs script should execute");
 
-    assert!(output.status.success(), "outside-build warning should not fail valid inputs");
+    assert!(
+        output.status.success(),
+        "outside-build warning should not fail valid inputs"
+    );
     let stdout = String::from_utf8_lossy(&output.stdout);
-    assert!(stdout.contains("WARN  bundle path is outside build/"), "missing outside-build warning: {stdout}");
-    assert!(stdout.contains("result: pass-with-notes"), "missing pass-with-notes result: {stdout}");
+    assert!(
+        stdout.contains("WARN  bundle path is outside build/"),
+        "missing outside-build warning: {stdout}"
+    );
+    assert!(
+        stdout.contains("result: pass-with-notes"),
+        "missing pass-with-notes result: {stdout}"
+    );
 
     let _ = fs::remove_file(&kernel);
     let _ = fs::remove_file(&initrd);

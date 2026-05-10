@@ -499,3 +499,11 @@ The v6 edge console defaults to the `crimson` palette when no `PHASE1_THEME` ove
 - [The Phase1 Codex](docs/MANUAL_ROADMAP.md)
 - [Documentation index](docs/README.md)
 
+## Fyr native language
+
+Fyr is the Phase1 native language track.
+
+- Visual mark: [`assets/fyr-flame.svg`](assets/fyr-flame.svg)
+- Language spec: [`PHASE1_NATIVE_LANGUAGE.md`](PHASE1_NATIVE_LANGUAGE.md)
+- Roadmap: [`docs/fyr/ROADMAP.md`](docs/fyr/ROADMAP.md)
+- Quick run: `fyr run hello_hacker.fyr`

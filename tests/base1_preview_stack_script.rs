@@ -19,7 +19,10 @@ fn base1_preview_stack_exists_and_documents_boundary() {
         "reports/SHA256SUMS",
         "safe flow",
     ] {
-        assert!(script.contains(expected), "missing preview stack text: {expected}");
+        assert!(
+            script.contains(expected),
+            "missing preview stack text: {expected}"
+        );
     }
 }
 
@@ -62,9 +65,15 @@ fn base1_preview_stack_requires_kernel_and_initrd() {
         .output()
         .expect("Base1 preview stack should execute");
 
-    assert!(!output.status.success(), "missing kernel/initrd should fail");
+    assert!(
+        !output.status.success(),
+        "missing kernel/initrd should fail"
+    );
     let stderr = String::from_utf8_lossy(&output.stderr);
-    assert!(stderr.contains("--kernel is required"), "unexpected stderr: {stderr}");
+    assert!(
+        stderr.contains("--kernel is required"),
+        "unexpected stderr: {stderr}"
+    );
 }
 
 #[test]
@@ -117,7 +126,10 @@ fn base1_preview_stack_runs_full_safe_flow_with_placeholder_inputs() {
         "complete: safe preview stack passed with provenance verification",
         "non-claim: no emulator launched",
     ] {
-        assert!(stdout.contains(expected), "missing output: {expected}\n{stdout}");
+        assert!(
+            stdout.contains(expected),
+            "missing output: {expected}\n{stdout}"
+        );
     }
 
     for path in [
@@ -130,7 +142,10 @@ fn base1_preview_stack_runs_full_safe_flow_with_placeholder_inputs() {
         "reports/provenance.env",
         "reports/SHA256SUMS",
     ] {
-        assert!(fs::metadata(format!("{out}/{path}")).is_ok(), "missing generated path: {path}");
+        assert!(
+            fs::metadata(format!("{out}/{path}")).is_ok(),
+            "missing generated path: {path}"
+        );
     }
 
     let provenance = fs::read_to_string(format!("{out}/reports/provenance.env"))

@@ -17,7 +17,10 @@ fn base1_preview_gate_exists_and_documents_boundary() {
         "hardware validation",
         "daily-driver readiness proof",
     ] {
-        assert!(script.contains(expected), "missing preview gate text: {expected}");
+        assert!(
+            script.contains(expected),
+            "missing preview gate text: {expected}"
+        );
     }
 }
 
@@ -63,12 +66,18 @@ fn base1_preview_gate_reports_missing_bundle() {
 
     assert!(!output.status.success(), "missing bundle should fail");
     let stderr = String::from_utf8_lossy(&output.stderr);
-    assert!(stderr.contains("bundle directory does not exist"), "unexpected stderr: {stderr}");
+    assert!(
+        stderr.contains("bundle directory does not exist"),
+        "unexpected stderr: {stderr}"
+    );
 }
 
 #[test]
 fn base1_preview_gate_dry_run_refuses_missing_boot_inputs() {
-    let out = format!("build/base1-preview-gate-missing-boot-{}", std::process::id());
+    let out = format!(
+        "build/base1-preview-gate-missing-boot-{}",
+        std::process::id()
+    );
     let _ = fs::remove_dir_all(&out);
 
     let build = Command::new("sh")
@@ -95,9 +104,15 @@ fn base1_preview_gate_dry_run_refuses_missing_boot_inputs() {
         .output()
         .expect("Base1 preview gate should execute");
 
-    assert!(!gate.status.success(), "missing kernel/initrd should fail gate");
+    assert!(
+        !gate.status.success(),
+        "missing kernel/initrd should fail gate"
+    );
     let stderr = String::from_utf8_lossy(&gate.stderr);
-    assert!(stderr.contains("kernel missing"), "unexpected stderr: {stderr}");
+    assert!(
+        stderr.contains("kernel missing"),
+        "unexpected stderr: {stderr}"
+    );
 
     let _ = fs::remove_dir_all(&out);
 }
@@ -156,7 +171,10 @@ fn base1_preview_gate_dry_run_passes_when_boot_inputs_exist() {
         "dry-run complete; QEMU was not started",
         "non-claim: emulator preview was not executed",
     ] {
-        assert!(stdout.contains(expected), "gate output missing: {expected}\n{stdout}");
+        assert!(
+            stdout.contains(expected),
+            "gate output missing: {expected}\n{stdout}"
+        );
     }
 
     let _ = fs::remove_dir_all(&out);
@@ -167,8 +185,14 @@ fn base1_preview_gate_dry_run_passes_when_boot_inputs_exist() {
 #[test]
 fn base1_preview_gate_execute_requires_confirmation() {
     let out = format!("build/base1-preview-gate-confirm-{}", std::process::id());
-    let kernel = format!("build/base1-preview-gate-confirm-kernel-{}", std::process::id());
-    let initrd = format!("build/base1-preview-gate-confirm-initrd-{}", std::process::id());
+    let kernel = format!(
+        "build/base1-preview-gate-confirm-kernel-{}",
+        std::process::id()
+    );
+    let initrd = format!(
+        "build/base1-preview-gate-confirm-initrd-{}",
+        std::process::id()
+    );
     let _ = fs::remove_dir_all(&out);
     fs::create_dir_all("build").expect("build directory should be creatable");
     fs::write(&kernel, "kernel placeholder").expect("kernel placeholder should be writable");
@@ -197,9 +221,15 @@ fn base1_preview_gate_execute_requires_confirmation() {
         .output()
         .expect("Base1 preview gate should execute");
 
-    assert!(!gate.status.success(), "execute without confirmation should fail");
+    assert!(
+        !gate.status.success(),
+        "execute without confirmation should fail"
+    );
     let stderr = String::from_utf8_lossy(&gate.stderr);
-    assert!(stderr.contains("--execute requires --confirm"), "unexpected stderr: {stderr}");
+    assert!(
+        stderr.contains("--execute requires --confirm"),
+        "unexpected stderr: {stderr}"
+    );
 
     let _ = fs::remove_dir_all(&out);
     let _ = fs::remove_file(&kernel);

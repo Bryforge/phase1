@@ -10,8 +10,8 @@ fn base1_readiness_matrix_exists() {
 
 #[test]
 fn base1_index_links_readiness_matrix() {
-    let index = fs::read_to_string("docs/base1/README.md")
-        .expect("Base1 docs index should be readable");
+    let index =
+        fs::read_to_string("docs/base1/README.md").expect("Base1 docs index should be readable");
 
     assert!(index.contains("READINESS_MATRIX.md"));
     assert!(index.contains("Promotion rule"));
@@ -23,7 +23,10 @@ fn base1_readiness_matrix_preserves_evidence_levels() {
         .expect("Base1 readiness matrix should be readable");
 
     for expected in ["Roadmap", "Design", "Dry-run", "Preview", "Validated"] {
-        assert!(matrix.contains(expected), "missing evidence level: {expected}");
+        assert!(
+            matrix.contains(expected),
+            "missing evidence level: {expected}"
+        );
     }
 }
 
