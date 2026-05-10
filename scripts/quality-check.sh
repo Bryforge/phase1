@@ -44,9 +44,14 @@ check_scripts() {
     done
 }
 
+check_base1_docs() {
+    run sh scripts/base1-doc-integrity.sh
+}
+
 quick() {
     check_required_files
     check_scripts
+    check_base1_docs
     run sh scripts/quality-score.sh
     run cargo fmt --all -- --check
     run cargo check --all-targets
@@ -84,6 +89,9 @@ case "$mode" in
     files)
         check_required_files
         ;;
+    base1-docs)
+        check_base1_docs
+        ;;
     help|-h|--help)
         cat <<'EOF'
 Phase1 quality check
@@ -94,6 +102,7 @@ Usage:
   sh scripts/quality-check.sh score
   sh scripts/quality-check.sh scripts
   sh scripts/quality-check.sh files
+  sh scripts/quality-check.sh base1-docs
 EOF
         ;;
     *)
