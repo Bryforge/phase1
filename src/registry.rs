@@ -219,7 +219,7 @@ fn command_palette() -> String {
 ",
     );
     out.push_str(&palette_top(width));
-    out.push_str(&palette_row("help ui // v6", width));
+    out.push_str(&palette_row("phase1 command palette", width));
     out.push_str(&palette_rule(width));
 
     for (label, value) in rows {
