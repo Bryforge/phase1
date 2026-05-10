@@ -2,7 +2,7 @@
 
 > **Status:** Roadmap and design index.
 >
-> **Validation:** Links to current Base1 design docs, dry-run scripts, readiness matrix, validation runbook, validation report template, validation reports archive, preview stack runbook, preview checks, compatibility maps, and future validation reports.
+> **Validation:** Links to current Base1 design docs, dry-run scripts, inventory, readiness checklist, compatibility maps, validation runbook, validation report template, validation reports archive, preview stack runbook, preview checks, and future validation reports.
 >
 > **Non-claims:** Base1 is not currently documented here as a released bootable daily-driver image, finished secure OS replacement, or destructive installer-ready system.
 
@@ -26,6 +26,8 @@ Base1 is the planned minimal host foundation for future Phase1-first bootable en
 ## Source-of-truth links
 
 - [`DOCUMENTATION_MAP.md`](DOCUMENTATION_MAP.md)
+- [`INVENTORY.md`](INVENTORY.md)
+- [`REORGANIZATION_READINESS.md`](REORGANIZATION_READINESS.md)
 - [`DOCUMENTATION_ORGANIZATION_PLAN.md`](DOCUMENTATION_ORGANIZATION_PLAN.md)
 - [`ROOT_COMPATIBILITY_MAP.md`](ROOT_COMPATIBILITY_MAP.md)
 - [`releases/README.md`](releases/README.md)
@@ -46,6 +48,10 @@ Base1 is the planned minimal host foundation for future Phase1-first bootable en
 ## Compatibility rule
 
 Root-level Base1 checkpoint notes remain compatibility paths. Use [`ROOT_COMPATIBILITY_MAP.md`](ROOT_COMPATIBILITY_MAP.md) to see which root files mirror organized notes under [`releases/`](releases/).
+
+## Inventory rule
+
+Use [`INVENTORY.md`](INVENTORY.md) before broader organization work. It groups known Base1 docs, scripts, tests, release/checkpoint notes, and compatibility paths so organization can proceed without losing recoverability.
 
 ## Base1 wording rule
 
@@ -73,5 +79,7 @@ Store future Base1 reports under [`validation/`](validation/) so evidence remain
 - [Real-device read-only validation bundle report](real-device/READONLY_VALIDATION_BUNDLE_REPORT.md)
 - [Real-device read-only validation index](real-device/README.md)
 - [Documentation map](DOCUMENTATION_MAP.md)
+- [Base1 inventory](INVENTORY.md)
+- [Reorganization readiness checklist](REORGANIZATION_READINESS.md)
 - [Documentation organization plan](DOCUMENTATION_ORGANIZATION_PLAN.md)
 - [Root compatibility map](ROOT_COMPATIBILITY_MAP.md)
