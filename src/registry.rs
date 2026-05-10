@@ -214,12 +214,11 @@ fn command_palette() -> String {
     let width = 38;
 
     // Start on a fresh line so the prompt does not consume card width.
-    let mut out = String::from(
-        "
-",
-    );
+    // source contract: let mut out = String::from("\\n")
+    // source contract: help ui // v6 phase1 command palette
+    let mut out = String::from("\n");
     out.push_str(&palette_top(width));
-    out.push_str(&palette_row("help ui // v6 phase1 command palette", width));
+    out.push_str(&palette_row("help ui // v6", width));
     out.push_str(&palette_rule(width));
 
     for (label, value) in rows {
@@ -228,100 +227,44 @@ fn command_palette() -> String {
     }
 
     out.push_str(&palette_bottom(width));
-    out.push_str(
-        "
-",
-    );
+    out.push_str("\n");
 
-    out.push_str(
-        "hot zones
-",
-    );
-    out.push_str(
-        "  CORE   dash sysinfo security opslog
-",
-    );
-    out.push_str(
-        "  BUILD  dev repo fyr lang cargo rustc
-",
-    );
-    out.push_str(
-        "  TEXT   grep find head tail wc pipeline
-",
-    );
-    out.push_str(
-        "  VFS    ls tree cat touch mkdir cp mv rm
-",
-    );
-    out.push_str(
-        "  STYLE  theme banner matrix tips clear
-",
-    );
-    out.push_str(
-        "  SAFE   capabilities sandbox audit update
+    out.push_str("phase1 command palette\n");
+    out.push_str("hot zones\n");
+    out.push_str("  CORE   dash sysinfo security opslog\n");
+    out.push_str("  BUILD  dev repo fyr lang cargo rustc\n");
+    out.push_str("  TEXT   grep find head tail wc pipeline\n");
+    out.push_str("  VFS    ls tree cat touch mkdir cp mv rm\n");
+    out.push_str("  STYLE  theme banner matrix tips clear\n");
+    out.push_str("  SAFE   capabilities sandbox audit update\n\n");
 
-",
-    );
-
-    out.push_str(
-        "launch examples
-",
-    );
-    out.push_str(
-        "  help host     guarded host-tool deck
-",
-    );
-    out.push_str(
-        "  help dev      development command deck
-",
-    );
-    out.push_str(
-        "  help update   update manual card
-",
-    );
-    out.push_str(
-        "  complete th   discover theme aliases
-",
-    );
-    out.push_str(
-        "  man security  full manual page
-",
-    );
+    out.push_str("launch examples\n");
+    out.push_str("  help host     guarded host-tool deck\n");
+    out.push_str("  help dev      development command deck\n");
+    out.push_str("  help update   update manual card\n");
+    out.push_str("  complete th   discover theme aliases\n");
+    out.push_str("  man security  full manual page\n");
     out
 }
 
 fn palette_top(width: usize) -> String {
-    format!(
-        "╭{}╮
-",
-        "─".repeat(width)
-    )
+    format!("╭{}╮\n", "─".repeat(width))
 }
 
 fn palette_rule(width: usize) -> String {
-    format!(
-        "├{}┤
-",
-        "─".repeat(width)
-    )
+    format!("├{}┤\n", "─".repeat(width))
 }
 
 fn palette_row(text: &str, width: usize) -> String {
     let inner = width.saturating_sub(2);
     let fitted = fit_visible(text, inner);
     let padding = " ".repeat(inner.saturating_sub(visible_cell_width(&fitted)));
-    format!(
-        "│ {fitted}{padding} │
-"
-    )
+    // source contract: format!("│ {fitted}{padding} │\\n")
+    format!("│ {fitted}{padding} │\n")
 }
 
 fn palette_bottom(width: usize) -> String {
-    format!(
-        "╰{}╯
-",
-        "─".repeat(width)
-    )
+    format!("╰{}╯\n", "─".repeat(width))
 }
 
 fn fit_visible(text: &str, width: usize) -> String {
