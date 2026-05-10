@@ -18,6 +18,8 @@
   ·
   <a href="FEATURE_STATUS.md">Feature status</a>
   ·
+  <a href="docs/README.md"><strong>Codex</strong></a>
+  ·
   <a href="docs/nest/CHECKPOINT.md">Nested Phase1</a>
   ·
   <a href="docs/os/ROADMAP.md">OS track</a>
