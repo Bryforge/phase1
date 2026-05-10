@@ -28,8 +28,12 @@ This document is advisory and read-only. It does not write USB media, partition 
 - `base1/LIBREBOOT_DOCS_SUMMARY.md` — Libreboot documentation path.
 - `base1/LIBREBOOT_MILESTONE.md` — Libreboot read-only milestone checkpoint.
 - `base1/LIBREBOOT_VALIDATION_REPORT.md` — validation report template.
-- `RELEASE_BASE1_LIBREBOOT_READONLY_V1.md` — v1 checkpoint release notes.
-- `RELEASE_BASE1_LIBREBOOT_READONLY_V1_1.md` — v1.1 patch release notes.
+- `docs/base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1.md` — v1 checkpoint release notes.
+- `docs/base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1_1.md` — v1.1 patch release notes.
+- `docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_HARDWARE_READONLY_V1.md` — recovery USB hardware read-only checkpoint release notes.
+- `docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md` — recovery USB target selection read-only checkpoint release notes.
+- `docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md` — recovery USB image provenance read-only checkpoint release notes.
+- `docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md` — recovery USB emergency shell read-only checkpoint release notes.
 
 ## Recovery USB commands
 
@@ -78,11 +82,4 @@ The expected read-only path is:
 6. Confirm Phase1 state location.
 7. Confirm recovery USB plan without writing media.
 
-
-See also: [`RELEASE_BASE1_RECOVERY_USB_HARDWARE_READONLY_V1.md`](../RELEASE_BASE1_RECOVERY_USB_HARDWARE_READONLY_V1.md) — recovery USB hardware read-only checkpoint release notes.
-
-
-See also: [`RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md`](../RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md) — recovery USB image provenance read-only checkpoint release notes.
-
-
-See also: [`RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md`](../RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md) — recovery USB emergency shell read-only checkpoint release notes.
+See also: [`Base1 release and checkpoint notes`](../docs/base1/releases/README.md).
