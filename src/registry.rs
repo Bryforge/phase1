@@ -194,32 +194,187 @@ pub fn command_map() -> String {
 }
 
 fn command_palette() -> String {
-    let mut out = String::new();
-    out.push_str("╭─ phase1 command palette // v6 ─────────────────────────╮\n");
-    out.push_str("│ search       complete <prefix>                         │\n");
-    out.push_str("│ inspect      help <command> | man <command>             │\n");
-    out.push_str("│ operate      dash | sysinfo | security | opslog         │\n");
-    out.push_str("│ build        dev | repo | fyr | lang | cargo            │\n");
-    out.push_str("│ recover      help host | update protocol | roadmap      │\n");
-    out.push_str("╰────────────────────────────────────────────────────────╯\n\n");
+    let rows = [
+        ("search", "complete <prefix>"),
+        ("inspect", "help <cmd> | man <cmd>"),
+        ("operate", "dash | sysinfo | security"),
+        ("logs", "opslog | audit"),
+        ("build", "dev | repo | fyr | lang"),
+        ("host", "cargo | rustc | git | gh"),
+        ("recover", "help host | update protocol"),
+        ("map", "roadmap | capabilities"),
+    ];
 
-    out.push_str("hot zones\n");
-    out.push_str("  CORE     dash sysinfo security opslog version roadmap\n");
-    out.push_str("  BUILD    dev repo fyr lang cargo rustc git gh\n");
-    out.push_str("  TEXT     grep find head tail wc pipeline\n");
-    out.push_str("  VFS      ls tree cat touch mkdir cp mv rm\n");
-    out.push_str("  STYLE    theme banner matrix tips clear\n");
-    out.push_str("  SAFE     capabilities sandbox audit update protocol\n\n");
+    let label_width = rows
+        .iter()
+        .map(|(label, _)| visible_cell_width(label))
+        .max()
+        .unwrap_or(0);
 
-    out.push_str("launch examples\n");
-    out.push_str("  help host        guarded host-tool deck\n");
-    out.push_str("  help dev         development command deck\n");
-    out.push_str("  help update      update command manual card\n");
-    out.push_str("  complete th      discover theme aliases\n");
-    out.push_str("  man security     full generated manual page\n");
+    let width = 38;
+
+    // Start on a fresh line so the prompt does not consume card width.
+    let mut out = String::from(
+        "
+",
+    );
+    out.push_str(&palette_top(width));
+    out.push_str(&palette_row("help ui // v6", width));
+    out.push_str(&palette_rule(width));
+
+    for (label, value) in rows {
+        let row = format!("{label:<label_width$}  {value}");
+        out.push_str(&palette_row(&row, width));
+    }
+
+    out.push_str(&palette_bottom(width));
+    out.push_str(
+        "
+",
+    );
+
+    out.push_str(
+        "hot zones
+",
+    );
+    out.push_str(
+        "  CORE   dash sysinfo security opslog
+",
+    );
+    out.push_str(
+        "  BUILD  dev repo fyr lang cargo rustc
+",
+    );
+    out.push_str(
+        "  TEXT   grep find head tail wc pipeline
+",
+    );
+    out.push_str(
+        "  VFS    ls tree cat touch mkdir cp mv rm
+",
+    );
+    out.push_str(
+        "  STYLE  theme banner matrix tips clear
+",
+    );
+    out.push_str(
+        "  SAFE   capabilities sandbox audit update
+
+",
+    );
+
+    out.push_str(
+        "launch examples
+",
+    );
+    out.push_str(
+        "  help host     guarded host-tool deck
+",
+    );
+    out.push_str(
+        "  help dev      development command deck
+",
+    );
+    out.push_str(
+        "  help update   update manual card
+",
+    );
+    out.push_str(
+        "  complete th   discover theme aliases
+",
+    );
+    out.push_str(
+        "  man security  full manual page
+",
+    );
     out
 }
 
+fn palette_top(width: usize) -> String {
+    format!(
+        "╭{}╮
+",
+        "─".repeat(width)
+    )
+}
+
+fn palette_rule(width: usize) -> String {
+    format!(
+        "├{}┤
+",
+        "─".repeat(width)
+    )
+}
+
+fn palette_row(text: &str, width: usize) -> String {
+    let inner = width.saturating_sub(2);
+    let fitted = fit_visible(text, inner);
+    let padding = " ".repeat(inner.saturating_sub(visible_cell_width(&fitted)));
+    format!(
+        "│ {fitted}{padding} │
+"
+    )
+}
+
+fn palette_bottom(width: usize) -> String {
+    format!(
+        "╰{}╯
+",
+        "─".repeat(width)
+    )
+}
+
+fn fit_visible(text: &str, width: usize) -> String {
+    if visible_cell_width(text) <= width {
+        return text.to_string();
+    }
+
+    let ellipsis = "…";
+    let limit = width.saturating_sub(visible_cell_width(ellipsis));
+    let mut out = String::new();
+    let mut cells = 0;
+
+    for ch in text.chars() {
+        let ch_width = char_cell_width(ch);
+        if cells + ch_width > limit {
+            break;
+        }
+        out.push(ch);
+        cells += ch_width;
+    }
+
+    out.push_str(ellipsis);
+    out
+}
+
+fn visible_cell_width(text: &str) -> usize {
+    text.chars().map(char_cell_width).sum()
+}
+
+fn char_cell_width(ch: char) -> usize {
+    if ch.is_control() {
+        0
+    } else if is_wide_cell(ch as u32) {
+        2
+    } else {
+        1
+    }
+}
+
+fn is_wide_cell(code: u32) -> bool {
+    matches!(
+        code,
+        0x1100..=0x115F
+            | 0x2329..=0x232A
+            | 0x2E80..=0xA4CF
+            | 0xAC00..=0xD7A3
+            | 0xF900..=0xFAFF
+            | 0xFE10..=0xFE19
+            | 0xFE30..=0xFE6F
+            | 0xFF00..=0xFF60
+            | 0xFFE0..=0xFFE6
+    )
+}
 fn operator_flows() -> String {
     let mut out = String::from("phase1 help // workflows\n\n");
     out.push_str("daily check\n");

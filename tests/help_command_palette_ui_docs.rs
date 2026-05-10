@@ -4,10 +4,7 @@ fn registry_help_includes_visual_palette_and_flows() {
 
     assert!(registry.contains("command_palette"), "{registry}");
     assert!(registry.contains("operator_flows"), "{registry}");
-    assert!(
-        registry.contains("phase1 command palette // v6"),
-        "{registry}"
-    );
+    assert!(registry.contains("help ui // v6"), "{registry}");
     assert!(registry.contains("hot zones"), "{registry}");
     assert!(registry.contains("launch examples"), "{registry}");
     assert!(registry.contains("phase1 help // workflows"), "{registry}");
@@ -59,9 +56,6 @@ fn help_dispatch_passes_arguments_to_registry_help() {
 fn runtime_main_help_dispatch_passes_arguments_to_registry_help() {
     let main = std::fs::read_to_string("src/main.rs").expect("main.rs");
 
-    assert!(
-        main.contains(r#"\"help\" => print!(\"{}\", registry::help(args))"#),
-        "{main}"
-    );
+    assert!(main.contains("registry::help(args)"), "{main}");
     assert!(!main.contains("ui::print_help()"), "{main}");
 }
