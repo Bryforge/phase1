@@ -50,3 +50,4 @@ scripts/base1-real-device-readonly-validation-bundle.sh --dry-run --target /dev/
 - No destructive disk writes
 - No real-device write path
 - [Read-only validation runbook](RUNBOOK.md)
+- [Read-only validation checklist](CHECKLIST.md)
