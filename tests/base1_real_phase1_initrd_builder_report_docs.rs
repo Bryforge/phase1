@@ -30,7 +30,10 @@ fn real_phase1_initrd_builder_report_records_repeatable_flow() {
         "scripts/base1-qemu-boot-check.sh",
         "phase1.workspace",
     ] {
-        assert!(report.contains(expected), "missing repeatable-flow evidence: {expected}");
+        assert!(
+            report.contains(expected),
+            "missing repeatable-flow evidence: {expected}"
+        );
     }
 }
 
@@ -46,7 +49,10 @@ fn real_phase1_initrd_builder_report_records_serial_evidence() {
         "phase1.workspace",
         "phase1.conf",
     ] {
-        assert!(report.contains(expected), "missing serial evidence: {expected}");
+        assert!(
+            report.contains(expected),
+            "missing serial evidence: {expected}"
+        );
     }
 }
 

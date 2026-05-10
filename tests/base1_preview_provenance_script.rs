@@ -5,7 +5,8 @@ const BUNDLE: &str = "scripts/base1-emulator-preview.sh";
 
 #[test]
 fn base1_preview_provenance_exists_and_documents_boundary() {
-    let script = fs::read_to_string(SCRIPT).expect("Base1 preview provenance script should be readable");
+    let script =
+        fs::read_to_string(SCRIPT).expect("Base1 preview provenance script should be readable");
 
     for expected in [
         "Base1 preview provenance",
@@ -17,13 +18,17 @@ fn base1_preview_provenance_exists_and_documents_boundary() {
         "preview-bundle provenance only",
         "BASE1_NON_CLAIM_BOOTABLE=1",
     ] {
-        assert!(script.contains(expected), "missing provenance script text: {expected}");
+        assert!(
+            script.contains(expected),
+            "missing provenance script text: {expected}"
+        );
     }
 }
 
 #[test]
 fn base1_preview_provenance_avoids_real_device_tools() {
-    let script = fs::read_to_string(SCRIPT).expect("Base1 preview provenance script should be readable");
+    let script =
+        fs::read_to_string(SCRIPT).expect("Base1 preview provenance script should be readable");
 
     for forbidden in [
         "dd if=",
@@ -61,9 +66,15 @@ fn base1_preview_provenance_refuses_bundle_outside_build() {
         .output()
         .expect("Base1 preview provenance script should execute");
 
-    assert!(!output.status.success(), "outside-build bundle should be rejected");
+    assert!(
+        !output.status.success(),
+        "outside-build bundle should be rejected"
+    );
     let stderr = String::from_utf8_lossy(&output.stderr);
-    assert!(stderr.contains("bundle must be under build/"), "unexpected stderr: {stderr}");
+    assert!(
+        stderr.contains("bundle must be under build/"),
+        "unexpected stderr: {stderr}"
+    );
 }
 
 #[test]
@@ -77,7 +88,10 @@ fn base1_preview_provenance_reports_missing_bundle() {
 
     assert!(!output.status.success(), "missing bundle should fail");
     let stderr = String::from_utf8_lossy(&output.stderr);
-    assert!(stderr.contains("bundle directory does not exist"), "unexpected stderr: {stderr}");
+    assert!(
+        stderr.contains("bundle directory does not exist"),
+        "unexpected stderr: {stderr}"
+    );
 }
 
 #[test]
@@ -137,7 +151,10 @@ fn base1_preview_provenance_records_hashes_for_generated_bundle() {
         "result: pass",
         "non-claim: provenance was recorded for a preview bundle only",
     ] {
-        assert!(stdout.contains(expected), "missing stdout: {expected}\n{stdout}");
+        assert!(
+            stdout.contains(expected),
+            "missing stdout: {expected}\n{stdout}"
+        );
     }
 
     let prov_path = format!("{out}/reports/provenance.env");
@@ -158,7 +175,10 @@ fn base1_preview_provenance_records_hashes_for_generated_bundle() {
         "result=pass",
         "no bootable Base1 release claim",
     ] {
-        assert!(prov.contains(expected), "missing provenance field: {expected}\n{prov}");
+        assert!(
+            prov.contains(expected),
+            "missing provenance field: {expected}\n{prov}"
+        );
     }
 
     let sums = fs::read_to_string(&sums_path).expect("SHA256SUMS should be readable");
@@ -171,7 +191,10 @@ fn base1_preview_provenance_records_hashes_for_generated_bundle() {
         "  staging/boot/vmlinuz",
         "  staging/boot/initrd.img",
     ] {
-        assert!(sums.contains(expected), "missing checksum entry: {expected}\n{sums}");
+        assert!(
+            sums.contains(expected),
+            "missing checksum entry: {expected}\n{sums}"
+        );
     }
 
     let _ = fs::remove_dir_all(&out);

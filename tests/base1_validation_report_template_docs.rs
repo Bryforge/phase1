@@ -10,8 +10,8 @@ fn base1_validation_report_template_exists() {
 
 #[test]
 fn base1_index_links_validation_report_template() {
-    let index = fs::read_to_string("docs/base1/README.md")
-        .expect("Base1 docs index should be readable");
+    let index =
+        fs::read_to_string("docs/base1/README.md").expect("Base1 docs index should be readable");
 
     assert!(index.contains("VALIDATION_REPORT_TEMPLATE.md"));
     assert!(index.contains("Report rule"));
@@ -34,7 +34,10 @@ fn base1_validation_report_template_records_required_fields() {
         "Promotion recommendation",
         "Follow-up work",
     ] {
-        assert!(template.contains(expected), "missing template field: {expected}");
+        assert!(
+            template.contains(expected),
+            "missing template field: {expected}"
+        );
     }
 }
 
@@ -44,7 +47,10 @@ fn base1_validation_report_template_preserves_result_labels() {
         .expect("Base1 validation report template should be readable");
 
     for expected in ["pass", "pass-with-notes", "blocked", "failed", "not-run"] {
-        assert!(template.contains(expected), "missing result label: {expected}");
+        assert!(
+            template.contains(expected),
+            "missing result label: {expected}"
+        );
     }
 }
 
@@ -60,6 +66,9 @@ fn base1_validation_report_template_preserves_promotion_ladder() {
         "dry-run to preview",
         "preview to validated",
     ] {
-        assert!(template.contains(expected), "missing promotion option: {expected}");
+        assert!(
+            template.contains(expected),
+            "missing promotion option: {expected}"
+        );
     }
 }

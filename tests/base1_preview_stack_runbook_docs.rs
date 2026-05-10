@@ -5,7 +5,10 @@ const INDEX: &str = "docs/base1/README.md";
 
 #[test]
 fn base1_preview_stack_runbook_exists() {
-    assert!(fs::metadata(RUNBOOK).is_ok(), "missing Base1 preview stack runbook");
+    assert!(
+        fs::metadata(RUNBOOK).is_ok(),
+        "missing Base1 preview stack runbook"
+    );
 }
 
 #[test]
@@ -24,7 +27,8 @@ fn base1_index_links_preview_stack_runbook() {
 
 #[test]
 fn base1_preview_stack_runbook_lists_safe_stack_order() {
-    let runbook = fs::read_to_string(RUNBOOK).expect("Base1 preview stack runbook should be readable");
+    let runbook =
+        fs::read_to_string(RUNBOOK).expect("Base1 preview stack runbook should be readable");
 
     for expected in [
         "scripts/base1-preview-inputs.sh",
@@ -37,13 +41,17 @@ fn base1_preview_stack_runbook_lists_safe_stack_order() {
         "reports/provenance.env",
         "reports/SHA256SUMS",
     ] {
-        assert!(runbook.contains(expected), "runbook missing stack item: {expected}");
+        assert!(
+            runbook.contains(expected),
+            "runbook missing stack item: {expected}"
+        );
     }
 }
 
 #[test]
 fn base1_preview_stack_runbook_preserves_non_claims() {
-    let runbook = fs::read_to_string(RUNBOOK).expect("Base1 preview stack runbook should be readable");
+    let runbook =
+        fs::read_to_string(RUNBOOK).expect("Base1 preview stack runbook should be readable");
 
     for expected in [
         "does not claim that Base1 is bootable",
@@ -57,13 +65,17 @@ fn base1_preview_stack_runbook_preserves_non_claims() {
         "Real hardware has been validated",
         "emulator was launched",
     ] {
-        assert!(runbook.contains(expected), "runbook missing non-claim: {expected}");
+        assert!(
+            runbook.contains(expected),
+            "runbook missing non-claim: {expected}"
+        );
     }
 }
 
 #[test]
 fn base1_preview_stack_runbook_preserves_promotion_rule() {
-    let runbook = fs::read_to_string(RUNBOOK).expect("Base1 preview stack runbook should be readable");
+    let runbook =
+        fs::read_to_string(RUNBOOK).expect("Base1 preview stack runbook should be readable");
 
     for expected in [
         "Exact source commit",
@@ -74,6 +86,9 @@ fn base1_preview_stack_runbook_preserves_promotion_rule() {
         "validation report under `docs/base1/validation/`",
         "what was not validated",
     ] {
-        assert!(runbook.contains(expected), "runbook missing promotion rule: {expected}");
+        assert!(
+            runbook.contains(expected),
+            "runbook missing promotion rule: {expected}"
+        );
     }
 }

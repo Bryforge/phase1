@@ -68,6 +68,9 @@ fn qemu_real_phase1_binary_report_preserves_promotion_rule() {
         "repeatable build instructions",
         "non-preview release boundary",
     ] {
-        assert!(report.contains(expected), "missing promotion rule: {expected}");
+        assert!(
+            report.contains(expected),
+            "missing promotion rule: {expected}"
+        );
     }
 }

@@ -5,7 +5,10 @@ const INDEX: &str = "docs/base1/README.md";
 
 #[test]
 fn base1_preview_checks_doc_exists() {
-    assert!(fs::metadata(CHECKS).is_ok(), "missing Base1 preview checks doc");
+    assert!(
+        fs::metadata(CHECKS).is_ok(),
+        "missing Base1 preview checks doc"
+    );
 }
 
 #[test]
@@ -50,7 +53,10 @@ fn base1_preview_checks_records_safe_manual_smoke() {
         "reports/provenance.env",
         "reports/SHA256SUMS",
     ] {
-        assert!(checks.contains(expected), "missing smoke detail: {expected}");
+        assert!(
+            checks.contains(expected),
+            "missing smoke detail: {expected}"
+        );
     }
 }
 

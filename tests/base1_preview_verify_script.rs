@@ -16,7 +16,10 @@ fn base1_preview_verify_exists_and_documents_boundary() {
         "no bootable Base1 release claim",
         "result: %s",
     ] {
-        assert!(script.contains(expected), "missing verifier text: {expected}");
+        assert!(
+            script.contains(expected),
+            "missing verifier text: {expected}"
+        );
     }
 }
 
@@ -60,9 +63,15 @@ fn base1_preview_verify_refuses_bundle_outside_build() {
         .output()
         .expect("Base1 preview verifier should execute");
 
-    assert!(!output.status.success(), "outside-build bundle should be rejected");
+    assert!(
+        !output.status.success(),
+        "outside-build bundle should be rejected"
+    );
     let stderr = String::from_utf8_lossy(&output.stderr);
-    assert!(stderr.contains("bundle must be under build/"), "unexpected stderr: {stderr}");
+    assert!(
+        stderr.contains("bundle must be under build/"),
+        "unexpected stderr: {stderr}"
+    );
 }
 
 #[test]
@@ -76,7 +85,10 @@ fn base1_preview_verify_reports_missing_bundle() {
 
     assert!(!output.status.success(), "missing bundle should fail");
     let stderr = String::from_utf8_lossy(&output.stderr);
-    assert!(stderr.contains("bundle directory does not exist"), "unexpected stderr: {stderr}");
+    assert!(
+        stderr.contains("bundle directory does not exist"),
+        "unexpected stderr: {stderr}"
+    );
 }
 
 #[test]
@@ -138,7 +150,10 @@ fn base1_preview_verify_passes_generated_stack_bundle() {
         "result: pass",
         "no bootable Base1 release claim",
     ] {
-        assert!(stdout.contains(expected), "missing verifier output: {expected}\n{stdout}");
+        assert!(
+            stdout.contains(expected),
+            "missing verifier output: {expected}\n{stdout}"
+        );
     }
 
     let _ = fs::remove_dir_all(&out);
@@ -172,7 +187,10 @@ fn base1_preview_verify_fails_after_bundle_drift() {
         .output()
         .expect("Base1 preview stack should execute");
 
-    assert!(stack.status.success(), "stack should pass before drift test");
+    assert!(
+        stack.status.success(),
+        "stack should pass before drift test"
+    );
 
     fs::write(format!("{out}/README.txt"), "tampered preview bundle\n")
         .expect("README tamper should be writable in test bundle");
@@ -184,10 +202,19 @@ fn base1_preview_verify_fails_after_bundle_drift() {
         .output()
         .expect("Base1 preview verifier should execute");
 
-    assert!(!verify.status.success(), "tampered bundle should fail verification");
+    assert!(
+        !verify.status.success(),
+        "tampered bundle should fail verification"
+    );
     let stdout = String::from_utf8_lossy(&verify.stdout);
-    assert!(stdout.contains("FAIL  checksum mismatch: README.txt"), "missing mismatch output: {stdout}");
-    assert!(stdout.contains("result: failed"), "missing failed result: {stdout}");
+    assert!(
+        stdout.contains("FAIL  checksum mismatch: README.txt"),
+        "missing mismatch output: {stdout}"
+    );
+    assert!(
+        stdout.contains("result: failed"),
+        "missing failed result: {stdout}"
+    );
 
     let _ = fs::remove_dir_all(&out);
     let _ = fs::remove_file(&kernel);

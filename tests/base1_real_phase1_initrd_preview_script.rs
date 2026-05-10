@@ -20,7 +20,10 @@ fn real_phase1_initrd_preview_documents_boundary() {
         "release image",
         "refusing output outside build/",
     ] {
-        assert!(script.contains(expected), "missing boundary text: {expected}");
+        assert!(
+            script.contains(expected),
+            "missing boundary text: {expected}"
+        );
     }
 }
 

@@ -18,7 +18,10 @@ fn base1_emulator_doctor_exists_and_documents_boundary() {
         "no disk image created",
         "no installer or hardware validation performed",
     ] {
-        assert!(script.contains(expected), "missing doctor boundary text: {expected}");
+        assert!(
+            script.contains(expected),
+            "missing doctor boundary text: {expected}"
+        );
     }
 }
 
@@ -63,7 +66,10 @@ fn base1_emulator_doctor_reports_missing_bundle() {
         .output()
         .expect("Base1 emulator doctor should execute");
 
-    assert!(!output.status.success(), "missing bundle should fail doctor");
+    assert!(
+        !output.status.success(),
+        "missing bundle should fail doctor"
+    );
 
     let stdout = String::from_utf8_lossy(&output.stdout);
     assert!(stdout.contains("BASE1 EMULATOR DOCTOR"));
