@@ -63,3 +63,6 @@ Every emergency-shell document or command must preserve these rules:
 ## Promotion rule
 
 A future recovery USB environment can only promote emergency shell behavior after shell entry, exit, state access, rollback metadata, log collection, storage layout, and actual Libreboot/X200-class boot behavior are verified.
+
+
+See also: [`RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md`](../RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md) — recovery USB emergency shell read-only checkpoint release notes.
