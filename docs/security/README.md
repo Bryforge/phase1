@@ -2,7 +2,7 @@
 
 > **Status:** Documentation index and review entry point.
 >
-> **Validation:** Links to the trust model, claims policy, and manual roadmap added in this repository.
+> **Validation:** Links to the trust model, claims policy, review guide, and manual roadmap added in this repository.
 >
 > **Non-claims:** Phase1 is not currently a finished secure OS replacement, Base1 is not currently a released bootable daily-driver image, and this documentation index does not prove a security property by itself.
 
@@ -12,7 +12,8 @@ This folder is the security and trust entry point for **The Phase1 Codex**.
 
 1. [`TRUST_MODEL.md`](TRUST_MODEL.md) — trust boundaries, safe defaults, guarded host tools, Base1 claim levels, and review checklist.
 2. [`DOCS_CLAIMS.md`](DOCS_CLAIMS.md) — allowed wording, disallowed wording, status labels, and required evidence.
-3. [`../MANUAL_ROADMAP.md`](../MANUAL_ROADMAP.md) — full Codex architecture, safety model, glossary, and launch plan.
+3. [`REVIEW_GUIDE.md`](REVIEW_GUIDE.md) — practical reviewer checklist for safety-sensitive documentation.
+4. [`../MANUAL_ROADMAP.md`](../MANUAL_ROADMAP.md) — full Codex architecture, safety model, glossary, and launch plan.
 
 ## Review order for safety-sensitive docs
 
@@ -25,6 +26,7 @@ Use this order when reviewing pages about host tools, Base1, recovery, rollback,
 5. Confirm destructive workflows are not presented as default paths.
 6. Confirm dry-run or read-only validation is shown first when applicable.
 7. Confirm no page claims secure OS replacement, bootable Base1 release, installer readiness, daily-driver readiness, or recovery completion without linked evidence.
+8. Use [`REVIEW_GUIDE.md`](REVIEW_GUIDE.md) before approving safety-sensitive documentation.
 
 ## Security documentation rule
 
