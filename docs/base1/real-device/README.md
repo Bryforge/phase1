@@ -53,3 +53,4 @@ scripts/base1-real-device-readonly-validation-bundle.sh --dry-run --target /dev/
 - [Read-only validation checklist](CHECKLIST.md)
 - [Read-only evidence capture report](reports/2026-05-10-readonly-evidence-capture.md)
 - [Read-only validation status summary](STATUS_SUMMARY.md)
+- [Read-only doctor script](../../../scripts/base1-real-device-readonly-doctor.sh)
