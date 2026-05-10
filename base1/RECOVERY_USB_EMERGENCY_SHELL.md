@@ -80,3 +80,6 @@ Run first:
 ## Promotion rule
 
 A future recovery USB environment can only promote emergency shell behavior after shell entry, exit, state access, rollback metadata, log collection, storage layout, and actual Libreboot/X200-class boot behavior are verified.
+
+
+See also: [Recovery USB emergency shell summary](RECOVERY_USB_EMERGENCY_SHELL_SUMMARY.md).

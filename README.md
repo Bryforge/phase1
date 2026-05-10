@@ -348,6 +348,7 @@ Start here:
 - [`base1/RECOVERY_USB_IMAGE_SUMMARY.md`](base1/RECOVERY_USB_IMAGE_SUMMARY.md) — Recovery USB image provenance summary
 - [`base1/RECOVERY_USB_IMAGE_COMMAND_INDEX.md`](base1/RECOVERY_USB_IMAGE_COMMAND_INDEX.md) — Recovery USB image provenance command index
 - [`base1/RECOVERY_USB_EMERGENCY_SHELL.md`](base1/RECOVERY_USB_EMERGENCY_SHELL.md) — Recovery USB emergency shell behavior design
+- [`base1/RECOVERY_USB_EMERGENCY_SHELL_SUMMARY.md`](base1/RECOVERY_USB_EMERGENCY_SHELL_SUMMARY.md) — Recovery USB emergency shell summary
 - [`RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md`](RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md) — Recovery USB image provenance read-only checkpoint release notes
 - [`RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md`](RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md) — Recovery USB target selection read-only checkpoint release notes
 - [`RELEASE_BASE1_RECOVERY_USB_HARDWARE_READONLY_V1.md`](RELEASE_BASE1_RECOVERY_USB_HARDWARE_READONLY_V1.md) — Recovery USB hardware read-only checkpoint release notes
