@@ -2,8 +2,8 @@
 # Base1 documentation integrity gate.
 #
 # This check is read-only. It verifies the current Base1 documentation layout,
-# core references, release-note relocation, and dry-run guardrails before file
-# reorganization continues.
+# core references, release-note mirrors, root compatibility paths, and dry-run
+# guardrails before file reorganization continues.
 
 set -eu
 
@@ -47,6 +47,7 @@ check_core_docs() {
     docs/base1/README.md \
     docs/base1/DOCUMENTATION_MAP.md \
     docs/base1/DOCUMENTATION_ORGANIZATION_PLAN.md \
+    docs/base1/ROOT_COMPATIBILITY_MAP.md \
     docs/base1/VALIDATION_RUNBOOK.md \
     docs/base1/VALIDATION_REPORT_TEMPLATE.md \
     docs/base1/VALIDATION_REPORTS.md \
@@ -56,6 +57,19 @@ check_core_docs() {
     docs/os/BASE1_RECOVERY_COMMAND.md \
     docs/os/BASE1_STORAGE_LAYOUT_CHECKER.md \
     docs/os/BASE1_ROLLBACK_METADATA.md
+  do
+    check_file "$file"
+  done
+}
+
+check_root_compatibility_docs() {
+  for file in \
+    RELEASE_BASE1_LIBREBOOT_READONLY_V1.md \
+    RELEASE_BASE1_LIBREBOOT_READONLY_V1_1.md \
+    RELEASE_BASE1_RECOVERY_USB_HARDWARE_READONLY_V1.md \
+    RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md \
+    RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md \
+    RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md
   do
     check_file "$file"
   done
@@ -112,10 +126,17 @@ check_scripts() {
 check_references() {
   check_contains docs/base1/README.md 'DOCUMENTATION_MAP.md'
   check_contains docs/base1/README.md 'DOCUMENTATION_ORGANIZATION_PLAN.md'
+  check_contains docs/base1/README.md 'ROOT_COMPATIBILITY_MAP.md'
+  check_contains docs/base1/README.md 'releases/README.md'
   check_contains docs/base1/DOCUMENTATION_MAP.md '../../base1/README.md'
   check_contains docs/base1/DOCUMENTATION_MAP.md '../../base1/NETWORK_LOCKDOWN_DRY_RUN.md'
+  check_contains docs/base1/DOCUMENTATION_MAP.md 'ROOT_COMPATIBILITY_MAP.md'
   check_contains docs/base1/DOCUMENTATION_MAP.md 'docs/base1/releases/'
   check_contains docs/base1/DOCUMENTATION_MAP.md 'sh scripts/base1-doc-integrity.sh'
+  check_contains docs/base1/ROOT_COMPATIBILITY_MAP.md 'RELEASE_BASE1_LIBREBOOT_READONLY_V1.md'
+  check_contains docs/base1/ROOT_COMPATIBILITY_MAP.md 'docs/base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1.md'
+  check_contains docs/base1/ROOT_COMPATIBILITY_MAP.md 'RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md'
+  check_contains docs/base1/ROOT_COMPATIBILITY_MAP.md 'docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md'
   check_contains base1/README.md 'NETWORK_LOCKDOWN_DRY_RUN.md'
   check_contains base1/README.md 'scripts/base1-network-lockdown-dry-run.sh'
   check_contains docs/os/BASE1_DRY_RUN_COMMANDS.md 'scripts/base1-network-lockdown-dry-run.sh --dry-run'
@@ -131,17 +152,19 @@ check_non_claims() {
   check_contains docs/base1/DOCUMENTATION_MAP.md 'Not installer-ready'
   check_contains docs/base1/DOCUMENTATION_MAP.md 'Not hardware-validated'
   check_contains docs/base1/DOCUMENTATION_MAP.md 'No destructive disk writes'
-  check_contains docs/base1/DOCUMENTATION_ORGANIZATION_PLAN.md 'Do not move existing Base1 markdown files unless the same PR updates every link, test, and index reference.'
+  check_contains docs/base1/DOCUMENTATION_ORGANIZATION_PLAN.md 'Keep existing Base1 markdown files available'
   check_contains docs/base1/releases/README.md 'No destructive disk writes'
+  check_contains docs/base1/ROOT_COMPATIBILITY_MAP.md 'Base1 installer-ready'
   check_contains base1/README.md 'They do not yet constitute a destructive installer or complete operating system image.'
 }
 
 check_core_docs
+check_root_compatibility_docs
 check_release_docs
 check_real_device_docs
 check_scripts
 check_references
 check_non_claims
 
-info 'integrity complete; Base1 docs, release notes, and dry-run references are present'
+info 'integrity complete; Base1 docs, root compatibility paths, release mirrors, and dry-run references are present'
 info 'writes: no'
