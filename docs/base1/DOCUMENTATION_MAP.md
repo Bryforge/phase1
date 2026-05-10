@@ -1,7 +1,7 @@
 # Base1 Documentation Map
 
 Status: active documentation index
-Scope: Base1 docs, scripts, validation reports, read-only evidence paths, release/checkpoint notes, compatibility paths, inventory, test inventory, migration planning, and integrity gates
+Scope: Base1 docs, scripts, validation reports, read-only evidence paths, release/checkpoint notes, compatibility paths, inventory, test inventory, migration planning, script compatibility, and integrity gates
 
 ## Purpose
 
@@ -16,11 +16,11 @@ Base1 currently uses four documentation zones:
 | Zone | Purpose |
 | --- | --- |
 | `base1/` | Canonical Base1 security, hardware, compatibility, recovery, Libreboot, and operator design docs. |
-| `docs/base1/` | Organization maps, inventory, test inventory, migration planning, validation runbooks, real-device read-only bundles, compatibility maps, and evidence reports. |
+| `docs/base1/` | Organization maps, inventory, test inventory, migration planning, script compatibility planning, validation runbooks, real-device read-only bundles, compatibility maps, and evidence reports. |
 | `docs/base1/releases/` | Base1 release and checkpoint notes mirrored out of the repository root for cleaner navigation. |
 | `docs/os/` | Phase1 operating-system-track docs and Base1 dry-run command design slices. |
 
-Scripts remain under `scripts/` until a later tools reorganization is backed by tests and link updates.
+Scripts remain under `scripts/` until a later tools reorganization is backed by tests, wrappers, and link updates.
 
 ## Core Base1 entry points
 
@@ -37,6 +37,7 @@ Scripts remain under `scripts/` until a later tools reorganization is backed by 
 - [Base1 inventory](INVENTORY.md)
 - [Base1 test inventory](TEST_INVENTORY.md)
 - [Base1 migration table](MIGRATION_TABLE.md)
+- [Base1 script compatibility plan](SCRIPT_COMPATIBILITY_PLAN.md)
 - [Reorganization readiness checklist](REORGANIZATION_READINESS.md)
 - [Documentation organization plan](DOCUMENTATION_ORGANIZATION_PLAN.md)
 - [Root compatibility map](ROOT_COMPATIBILITY_MAP.md)
