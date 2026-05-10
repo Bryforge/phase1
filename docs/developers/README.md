@@ -13,9 +13,10 @@ This page is the developer entry point for **The Phase1 Codex**.
 1. Read [`../README.md`](../README.md) for the documentation status model.
 2. Read [`../MANUAL_ROADMAP.md`](../MANUAL_ROADMAP.md) for the full Codex structure.
 3. Read [`DOCS_CONTRIBUTING.md`](DOCS_CONTRIBUTING.md) before preparing documentation PRs.
-4. Read [`../security/DOCS_CLAIMS.md`](../security/DOCS_CLAIMS.md) before editing safety, Base1, recovery, installer, or host-tool docs.
-5. Read [`../security/TRUST_MODEL.md`](../security/TRUST_MODEL.md) before adding or documenting host-backed behavior.
-6. Use the existing repository tests as the source of truth for implemented behavior.
+4. Read [`PR_CHECKLIST.md`](PR_CHECKLIST.md) before opening documentation PRs.
+5. Read [`../security/DOCS_CLAIMS.md`](../security/DOCS_CLAIMS.md) before editing safety, Base1, recovery, installer, or host-tool docs.
+6. Read [`../security/TRUST_MODEL.md`](../security/TRUST_MODEL.md) before adding or documenting host-backed behavior.
+7. Use the existing repository tests as the source of truth for implemented behavior.
 
 ## Required contribution habits
 
@@ -25,7 +26,8 @@ When adding or changing Phase1 features, also update:
 - capability or trust-gate documentation for host-backed commands;
 - operator-visible examples;
 - tests for implemented behavior;
-- documentation status blocks when behavior changes.
+- documentation status blocks when behavior changes;
+- the PR checklist when review expectations change.
 
 ## Safety-sensitive changes
 
