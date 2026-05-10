@@ -137,19 +137,22 @@ fi
 
 [ "$CONFIRM" = "launch-qemu-base1-preview" ] || fail "--execute requires --confirm launch-qemu-base1-preview"
 
+if command -v timeout >/dev/null 2>&1; then
+  TIMEOUT_BIN=timeout
+elif command -v gtimeout >/dev/null 2>&1; then
+  TIMEOUT_BIN=gtimeout
+else
+  fail 'execute mode requires timeout or gtimeout so QEMU cannot run unbounded'
+fi
+
 mkdir -p "$REPORTS_DIR"
 : > "$LOG"
 
-note "launching QEMU through bundle scaffold; log: $LOG"
+note "launching QEMU through bundle scaffold with $TIMEOUT_BIN; log: $LOG"
 
 set +e
-if command -v timeout >/dev/null 2>&1; then
-  timeout "$TIMEOUT_SECONDS" sh "$BUNDLE_DIR/run-qemu-bundle.sh" > "$LOG" 2>&1
-  rc=$?
-else
-  sh "$BUNDLE_DIR/run-qemu-bundle.sh" > "$LOG" 2>&1
-  rc=$?
-fi
+"$TIMEOUT_BIN" "$TIMEOUT_SECONDS" sh "$BUNDLE_DIR/run-qemu-bundle.sh" > "$LOG" 2>&1
+rc=$?
 set -e
 
 if grep -F "$EXPECT" "$LOG" >/dev/null 2>&1; then
