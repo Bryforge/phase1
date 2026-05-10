@@ -53,6 +53,7 @@ This design does not launch a shell, grant privileges, edit boot settings, or ch
 
 Run first:
 
+    sh scripts/base1-recovery-usb-emergency-shell-report.sh
     sh scripts/base1-recovery-usb-image-summary.sh
     sh scripts/base1-recovery-usb-image-validate.sh
     sh scripts/base1-recovery-usb-target-summary.sh

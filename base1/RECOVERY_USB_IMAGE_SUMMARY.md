@@ -29,6 +29,7 @@ This document is advisory and read-only. It does not download images, write USB 
 
 Run the read-only commands first:
 
+    sh scripts/base1-recovery-usb-emergency-shell-report.sh
     sh scripts/base1-recovery-usb-image-summary.sh
     sh scripts/base1-recovery-usb-image-validate.sh
     sh scripts/base1-recovery-usb-image-report.sh
