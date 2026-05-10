@@ -60,3 +60,4 @@ Use [`PREVIEW_CHECKS.md`](PREVIEW_CHECKS.md) after syncing `edge/stable` to run 
 Use [`VALIDATION_REPORT_TEMPLATE.md`](VALIDATION_REPORT_TEMPLATE.md) when recording Base1 evidence so reports name the scope, target, commands, result, observations, evidence links, boundaries, and promotion recommendation.
 
 Store future Base1 reports under [`validation/`](validation/) so evidence remains discoverable and reviewable.
+- [Base1 real-device read-only validation plan](real-device/READONLY_VALIDATION_PLAN.md)
