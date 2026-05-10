@@ -160,7 +160,9 @@ pub fn command_map() -> String {
     out.push_str("text : grep wc head tail find\n");
     out.push_str("proc : ps top spawn jobs fg bg kill nice\n");
     out.push_str("net : ifconfig iwconfig wifi-scan wifi-connect ping nmcli\n");
-    out.push_str("host : browser git gh cargo rustc python3 go python gcc plugins wasm update ned\n");
+    out.push_str(
+        "host : browser git gh cargo rustc python3 go python gcc plugins wasm update ned\n",
+    );
     out.push_str("dev : avim dev repo fyr lang\n");
     out.push_str("sys : free df dmesg vmstat uname date uptime hostname audit sysinfo\n");
     out.push_str("misc : help man complete capabilities dash matrix bootcfg clear version roadmap sandbox nest exit\n");
