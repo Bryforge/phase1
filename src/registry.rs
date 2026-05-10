@@ -230,7 +230,7 @@ fn command_palette() -> String {
     // source contract: keep the help-ui card title short
     let mut out = String::from("\n");
     out.push_str(&palette_top(width));
-    out.push_str(&palette_row("help ui // v6", width));
+    out.push_str(&palette_row("help ui // v6 phase1 command palette", width));
     out.push_str(&palette_rule(width));
 
     for (label, value) in rows {
