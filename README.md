@@ -493,3 +493,9 @@ Use `help ui` for a launch-pad view and `help flows` for daily check, safe updat
 ### v6 visual default
 
 The v6 edge console defaults to the `crimson` palette when no `PHASE1_THEME` override is set. The legacy bleeding-edge palette remains available manually with `theme edge`.
+
+## Documentation
+
+- [The Phase1 Codex](docs/MANUAL_ROADMAP.md)
+- [Documentation index](docs/README.md)
+
