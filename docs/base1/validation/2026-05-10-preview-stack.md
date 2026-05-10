@@ -154,7 +154,7 @@ This report also does not validate or claim:
 
 ## Promotion boundary
 
-This report supports the `preview` evidence level for the safe preview stack mechanics only.
+This report supports the preview evidence level (`preview`) for the safe preview stack mechanics only.
 
 Do not use this report to mark Base1 as bootable, validated on hardware, installer-ready, recovery-complete, secure OS replacement, or daily-driver ready.
 
