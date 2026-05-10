@@ -63,3 +63,17 @@ cargo deny check
 5. Add a capability checker that uses the registry capability field.
 6. Add structured command output so pipelines can later support `where`, `sort`, `get`, and `table`.
 7. Replace Python plugins with a sandboxed WASM/WASI runtime.
+
+## Modern help
+
+Phase1 v6 exposes a topic-aware help deck:
+
+    help
+    help --compact
+    help host
+    help sys
+    help update
+    help <command>
+    complete <prefix>
+
+The boot LIVE OPS panel now points operators toward the compact help map, category help, dashboard, security status, ops log, theme list, tips, and update protocol.

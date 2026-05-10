@@ -317,7 +317,7 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
     }
 
     match command {
-        "help" => print!("{}", registry::command_map()),
+        "help" => print!("{}", registry::help(args)),
         "complete" => print_completions(args.first().map(String::as_str)),
         "capabilities" => print!("{}", registry::capabilities_report()),
         "dash" => print!("{}", dashboard(shell, args)),

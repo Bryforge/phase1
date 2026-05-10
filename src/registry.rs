@@ -22,7 +22,7 @@ macro_rules! cmd {
 }
 
 pub const CATEGORIES: &[&str] = &[
-    "fs", "text", "proc", "net", "host", "dev", "arch", "sys", "user", "misc",
+    "fs", "text", "proc", "net", "host", "dev", "editor", "arch", "sys", "user", "misc",
 ];
 
 pub const COMMANDS: &[CommandSpec] = &[
@@ -130,19 +130,209 @@ pub fn canonical_name(name: &str) -> Option<&'static str> {
     lookup(name).map(|cmd| cmd.name)
 }
 
-pub fn command_map() -> String {
-    let mut out = String::from("phase1 // command map\n\n");
-    for category in CATEGORIES {
-        let names = COMMANDS
-            .iter()
-            .filter(|cmd| cmd.category == *category)
-            .map(|cmd| cmd.name)
-            .collect::<Vec<_>>()
-            .join(" ");
-        out.push_str(&format!("{:<5}: {}\n", category, names));
+pub fn help(args: &[String]) -> String {
+    let Some(topic) = args.first() else {
+        return command_map();
+    };
+
+    if matches!(topic.as_str(), "--compact" | "-c" | "compact") {
+        return compact_command_map();
     }
-    out.push_str("\nquick : status features | capabilities | version --compare | roadmap | lang support | lang security | avim notes.rs | update test quick | update test full | learn status | learn import-history | learn suggest | theme list | theme matrix | pipeline | wasm list | update protocol | sysinfo\n");
+
+    if CATEGORIES.contains(&topic.as_str()) {
+        return category_help(topic);
+    }
+
+    if let Some(page) = man_page(topic) {
+        return format!(
+            "phase1 help // {topic}
+
+{page}
+
+routes
+  man {topic:<12} full manual
+  complete {topic:<8} registry completions
+  help --compact   fast command map
+"
+        );
+    }
+
+    format!(
+        "phase1 help // no match
+
+unknown topic : {topic}
+try           : help --compact | help fs | help host | help update | complete {topic}
+"
+    )
+}
+
+pub fn command_map() -> String {
+    let mut out = String::from(
+        "phase1 help // operator HUD
+",
+    );
+    out.push_str(
+        "version       : v6 help surface
+",
+    );
+    out.push_str(
+        "layout        : topic-aware command deck
+",
+    );
+    out.push_str(
+        "guardrails    : safe-mode, host trust gate, audited writes
+
+",
+    );
+
+    out.push_str(
+        "high signal
+",
+    );
+    out.push_str(
+        "  dash             operator dashboard
+",
+    );
+    out.push_str(
+        "  sysinfo          one-screen system summary
+",
+    );
+    out.push_str(
+        "  security         trust, shield, persistence, privacy
+",
+    );
+    out.push_str(
+        "  opslog           sanitized operator log controls
+",
+    );
+    out.push_str(
+        "  update protocol  release and update rules
+
+",
+    );
+
+    out.push_str(
+        "help routes
+",
+    );
+    out.push_str(
+        "  help             full operator HUD
+",
+    );
+    out.push_str(
+        "  help --compact   compact command map
+",
+    );
+    out.push_str(
+        "  help <category>  category deck: fs text proc net host dev editor arch sys user misc
+",
+    );
+    out.push_str(
+        "  help <command>   command manual card
+",
+    );
+    out.push_str(
+        "  complete <text>  registry completions
+
+",
+    );
+
+    out.push_str(
+        "command decks
+",
+    );
+    for category in CATEGORIES {
+        out.push_str(&format!(
+            "  {:<7} {}
+",
+            category,
+            command_names(category)
+        ));
+    }
+
+    out.push_str(
+        "
+quick routes
+",
+    );
+    out.push_str(
+        "  status features | capabilities | version --compare | roadmap
+",
+    );
+    out.push_str(
+        "  lang support | lang security | avim notes.rs | update test quick
+",
+    );
+    out.push_str(
+        "  learn status | learn import-history | learn suggest | theme list | tips
+",
+    );
+    out.push_str(
+        "  pipeline | wasm list | update protocol | sysinfo | security | opslog
+",
+    );
     out
+}
+
+fn compact_command_map() -> String {
+    let mut out = String::from(
+        "phase1 help // compact
+
+",
+    );
+    for category in CATEGORIES {
+        out.push_str(&format!(
+            "{:<7}: {}
+",
+            category,
+            command_names(category)
+        ));
+    }
+    out.push_str(
+        "
+try: help host | help update | help security | help --compact | complete th
+",
+    );
+    out
+}
+
+fn category_help(category: &str) -> String {
+    let mut out = format!(
+        "phase1 help // {category}
+
+"
+    );
+    out.push_str(
+        "command        usage                              summary
+",
+    );
+    for cmd in COMMANDS.iter().filter(|cmd| cmd.category == category) {
+        out.push_str(&format!(
+            "{:<14} {:<34} {}
+",
+            cmd.name, cmd.usage, cmd.description
+        ));
+    }
+    out.push_str(
+        "
+routes
+",
+    );
+    out.push_str(&format!(
+        "  help --compact   compact command map
+  complete {category}      completions
+"
+    ));
+    out
+}
+
+fn command_names(category: &str) -> String {
+    COMMANDS
+        .iter()
+        .filter(|cmd| cmd.category == category)
+        .map(|cmd| cmd.name)
+        .collect::<Vec<_>>()
+        .join(" ")
 }
 
 pub fn man_page(name: &str) -> Option<String> {
@@ -212,7 +402,9 @@ fn guard_status(capability: &str) -> &'static str {
 
 #[cfg(test)]
 mod tests {
-    use super::{canonical_name, capabilities_report, command_map, completions, lookup, man_page};
+    use super::{
+        canonical_name, capabilities_report, command_map, completions, help, lookup, man_page,
+    };
 
     #[test]
     fn lookup_supports_aliases() {
@@ -303,6 +495,35 @@ mod tests {
         assert!(map.contains("dev"));
         assert!(map.contains("repo"));
         assert!(map.contains("fyr"));
+    }
+
+    #[test]
+    fn modern_help_supports_topics_categories_and_compact_mode() {
+        let empty: Vec<String> = Vec::new();
+        let map = help(&empty);
+
+        assert!(map.contains("phase1 help // operator HUD"));
+        assert!(map.contains("help --compact"));
+        assert!(map.contains("help <category>"));
+        assert!(map.contains("guardrails"));
+        assert!(map.contains("quick routes"));
+        assert!(map.contains("theme list"));
+        assert!(map.contains("update protocol"));
+
+        let compact = help(&[String::from("--compact")]);
+        assert!(compact.contains("phase1 help // compact"));
+        assert!(compact.contains("host"));
+        assert!(compact.contains("dev"));
+
+        let host = help(&[String::from("host")]);
+        assert!(host.contains("phase1 help // host"));
+        assert!(host.contains("git"));
+        assert!(host.contains("cargo"));
+
+        let update = help(&[String::from("update")]);
+        assert!(update.contains("phase1 help // update"));
+        assert!(update.contains("validation suites"));
+        assert!(update.contains("host.exec"));
     }
 
     #[test]

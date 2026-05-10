@@ -619,14 +619,18 @@ fn print_boot_card(
         outln(&card_line(
             config,
             width,
-            "help dash sysinfo security opslog",
+            "help --compact | help sys | help host",
         ));
         outln(&card_line(
             config,
             width,
-            "theme linux preview matrix audit ps",
+            "dash | sysinfo | security | opslog",
         ));
-        outln(&card_line(config, width, "ls /  storage via d"));
+        outln(&card_line(
+            config,
+            width,
+            "theme list | tips | update protocol",
+        ));
     }
     outln(&card_bottom(config, width));
     outln("");
