@@ -1,22 +1,23 @@
 # Base1 Documentation Map
 
 Status: active documentation index
-Scope: Base1 docs, scripts, validation reports, read-only evidence paths, and integrity gates
+Scope: Base1 docs, scripts, validation reports, read-only evidence paths, release/checkpoint notes, and integrity gates
 
 ## Purpose
 
-This map organizes the Base1 documentation surface without moving files.
+This map organizes the Base1 documentation surface without moving files blindly.
 
 It is a navigation aid only. It does not change runtime behavior, validation status, installer readiness, or hardware claims.
 
 ## Canonical layout
 
-Base1 currently uses three documentation zones:
+Base1 currently uses four documentation zones:
 
 | Zone | Purpose |
 | --- | --- |
 | `base1/` | Canonical Base1 security, hardware, compatibility, recovery, Libreboot, and operator design docs. |
 | `docs/base1/` | Organization maps, validation runbooks, real-device read-only bundles, and evidence reports. |
+| `docs/base1/releases/` | Base1 release and checkpoint notes moved out of the repository root. |
 | `docs/os/` | Phase1 operating-system-track docs and Base1 dry-run command design slices. |
 
 Scripts remain under `scripts/` until a later tools reorganization is backed by tests and link updates.
@@ -38,6 +39,18 @@ Scripts remain under `scripts/` until a later tools reorganization is backed by 
 - [Base1 validation report template](VALIDATION_REPORT_TEMPLATE.md)
 - [Base1 validation reports index](VALIDATION_REPORTS.md)
 - Integrity gate: `sh scripts/base1-doc-integrity.sh`
+
+## Release and checkpoint notes
+
+- [Release/checkpoint notes index](releases/README.md)
+- [Libreboot read-only checkpoint v1](releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1.md)
+- [Libreboot read-only checkpoint v1.1](releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1_1.md)
+- [Recovery USB hardware read-only checkpoint v1](releases/RELEASE_BASE1_RECOVERY_USB_HARDWARE_READONLY_V1.md)
+- [Recovery USB target selection read-only checkpoint v1](releases/RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md)
+- [Recovery USB image provenance read-only checkpoint v1](releases/RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md)
+- [Recovery USB emergency shell read-only checkpoint v1](releases/RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md)
+
+Canonical release/checkpoint location: `docs/base1/releases/`.
 
 ## OS-track dry-run design slices
 
