@@ -75,5 +75,4 @@ This milestone does not claim:
 
 The next milestone should stay read-only unless recovery USB behavior, emergency shell access, rollback metadata, storage layout, and GRUB boot behavior have been validated on the target Libreboot system.
 
-
-See also: [RELEASE_BASE1_LIBREBOOT_READONLY_V1.md](../RELEASE_BASE1_LIBREBOOT_READONLY_V1.md).
+See also: [RELEASE_BASE1_LIBREBOOT_READONLY_V1.md](../docs/base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1.md).
