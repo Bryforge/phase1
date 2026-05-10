@@ -2,7 +2,7 @@
 
 > **Status:** Roadmap and design index.
 >
-> **Validation:** Links to current Base1 design docs, dry-run scripts, readiness matrix, validation runbook, validation report template, validation reports archive, and future validation reports.
+> **Validation:** Links to current Base1 design docs, dry-run scripts, readiness matrix, validation runbook, validation report template, validation reports archive, preview stack runbook, and future validation reports.
 >
 > **Non-claims:** Base1 is not currently documented here as a released bootable daily-driver image, finished secure OS replacement, or destructive installer-ready system.
 
@@ -28,6 +28,7 @@ Base1 is the planned minimal host foundation for future Phase1-first bootable en
 - [`READINESS_MATRIX.md`](READINESS_MATRIX.md)
 - [`VALIDATION_RUNBOOK.md`](VALIDATION_RUNBOOK.md)
 - [`VALIDATION_REPORT_TEMPLATE.md`](VALIDATION_REPORT_TEMPLATE.md)
+- [`PREVIEW_STACK_RUNBOOK.md`](PREVIEW_STACK_RUNBOOK.md)
 - [`validation/README.md`](validation/README.md)
 - [`../MANUAL_ROADMAP.md`](../MANUAL_ROADMAP.md)
 - [`../security/TRUST_MODEL.md`](../security/TRUST_MODEL.md)
@@ -48,6 +49,8 @@ Use [`READINESS_MATRIX.md`](READINESS_MATRIX.md) before strengthening Base1 word
 ## Runbook rule
 
 Use [`VALIDATION_RUNBOOK.md`](VALIDATION_RUNBOOK.md) for documentation-only Base1 checks. The runbook verifies docs structure and guardrails only; it does not validate boot, hardware, recovery, rollback, image, installer, persistence, or daily-driver behavior.
+
+Use [`PREVIEW_STACK_RUNBOOK.md`](PREVIEW_STACK_RUNBOOK.md) for the current safe emulator-preview stack. The preview stack runbook covers input checks, bundle generation, doctor checks, dry-run gating, provenance, and checksum verification; it does not validate boot, hardware, recovery, installer behavior, or daily-driver readiness.
 
 ## Report rule
 
