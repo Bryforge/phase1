@@ -20,6 +20,8 @@ The following safeguards are in place:
 - Base1 test inventory reporter: `scripts/base1-test-inventory.sh`
 - Base1 test inventory verifier: `scripts/base1-test-inventory-verify.sh`
 - Base1 reorganization verifier: `scripts/base1-reorganization-verify.sh`
+- Base1 reorganization quality mode: `sh scripts/quality-check.sh base1-reorg`
+- Base1 reorganization quality alias: `sh scripts/quality-check.sh base1-reorganization`
 - Path-by-path migration planning table: `docs/base1/MIGRATION_TABLE.md`
 - Script compatibility plan: `docs/base1/SCRIPT_COMPATIBILITY_PLAN.md`
 - Link-check strategy: `docs/base1/LINK_CHECK_STRATEGY.md`
@@ -41,7 +43,7 @@ The following safeguards are in place:
 Before a full reorganization, Base1 still needs:
 
 1. A successful verified comparison of reporter output against `docs/base1/TEST_INVENTORY.md`.
-2. A successful final run of `sh scripts/base1-reorganization-verify.sh` on a Rust-capable host.
+2. A successful final run of `sh scripts/quality-check.sh base1-reorg` on a Rust-capable host.
 3. No deletion of compatibility paths unless explicitly approved in a future change.
 
 ## First candidate group status
@@ -73,7 +75,7 @@ Base1 can be considered ready for a full reorganization only when all of these a
 - Markdown path movement is protected by a local, read-only link checker or equivalent validation.
 - The post-reorganization layout names the stable public paths.
 - The pre-move checklist is satisfied for the first group to move.
-- The reorganization verifier passes on a Rust-capable host.
+- The reorganization quality mode passes on a Rust-capable host.
 
 ## Recommended next work
 
@@ -82,7 +84,7 @@ The next safe step is not broad movement yet.
 Recommended order:
 
 1. Run `sh scripts/base1-test-inventory-verify.sh` and update `docs/base1/TEST_INVENTORY.md` if any reported tests are missing.
-2. Run `sh scripts/base1-reorganization-verify.sh` on a Rust-capable host.
+2. Run `sh scripts/quality-check.sh base1-reorg` on a Rust-capable host.
 3. Move or mirror only one small doc group at a time, preserving compatibility paths.
 4. Keep the first candidate group limited to release/checkpoint note organization; do not remove root checkpoint files.
 
@@ -97,7 +99,13 @@ sh scripts/quality-check.sh base1-docs
 Run this before claiming broad readiness:
 
 ```bash
-sh scripts/base1-reorganization-verify.sh
+sh scripts/quality-check.sh base1-reorg
+```
+
+Alias:
+
+```bash
+sh scripts/quality-check.sh base1-reorganization
 ```
 
 ## Non-claims
