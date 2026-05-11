@@ -22,6 +22,7 @@ The following safeguards are in place:
 - Base1 reorganization verifier: `scripts/base1-reorganization-verify.sh`
 - Base1 reorganization quality mode: `sh scripts/quality-check.sh base1-reorg`
 - Base1 reorganization quality alias: `sh scripts/quality-check.sh base1-reorganization`
+- Base1 reorganization verification report template: `docs/base1/REORGANIZATION_VERIFICATION_REPORT_TEMPLATE.md`
 - Path-by-path migration planning table: `docs/base1/MIGRATION_TABLE.md`
 - Script compatibility plan: `docs/base1/SCRIPT_COMPATIBILITY_PLAN.md`
 - Link-check strategy: `docs/base1/LINK_CHECK_STRATEGY.md`
@@ -36,7 +37,7 @@ The following safeguards are in place:
 - Root checkpoint-note compatibility files remain present.
 - Organized release/checkpoint mirrors remain present.
 - Current script paths remain the stable operator interface.
-- Rust tests cover the root compatibility map, quality gate, inventory docs, manual verification rule, migration table docs, script compatibility plan docs, link-check strategy docs, link-check script behavior, test inventory reporter and verifier, reorganization verifier, post-reorganization layout docs, pre-move checklist docs, release/checkpoint pre-move checks, and readiness docs.
+- Rust tests cover the root compatibility map, quality gate, inventory docs, manual verification rule, migration table docs, script compatibility plan docs, link-check strategy docs, link-check script behavior, test inventory reporter and verifier, reorganization verifier, reorganization verification report template, post-reorganization layout docs, pre-move checklist docs, release/checkpoint pre-move checks, and readiness docs.
 
 ## Not ready yet
 
@@ -44,7 +45,8 @@ Before a full reorganization, Base1 still needs:
 
 1. A successful verified comparison of reporter output against `docs/base1/TEST_INVENTORY.md`.
 2. A successful final run of `sh scripts/quality-check.sh base1-reorg` on a Rust-capable host.
-3. No deletion of compatibility paths unless explicitly approved in a future change.
+3. A completed `docs/base1/REORGANIZATION_VERIFICATION_REPORT_TEMPLATE.md` report for the final verification run.
+4. No deletion of compatibility paths unless explicitly approved in a future change.
 
 ## First candidate group status
 
@@ -76,6 +78,7 @@ Base1 can be considered ready for a full reorganization only when all of these a
 - The post-reorganization layout names the stable public paths.
 - The pre-move checklist is satisfied for the first group to move.
 - The reorganization quality mode passes on a Rust-capable host.
+- A verification report records the run results, compatibility review, and readiness decision.
 
 ## Recommended next work
 
@@ -85,8 +88,9 @@ Recommended order:
 
 1. Run `sh scripts/base1-test-inventory-verify.sh` and update `docs/base1/TEST_INVENTORY.md` if any reported tests are missing.
 2. Run `sh scripts/quality-check.sh base1-reorg` on a Rust-capable host.
-3. Move or mirror only one small doc group at a time, preserving compatibility paths.
-4. Keep the first candidate group limited to release/checkpoint note organization; do not remove root checkpoint files.
+3. Record the result with `docs/base1/REORGANIZATION_VERIFICATION_REPORT_TEMPLATE.md`.
+4. Move or mirror only one small doc group at a time, preserving compatibility paths.
+5. Keep the first candidate group limited to release/checkpoint note organization; do not remove root checkpoint files.
 
 ## Operator command
 
