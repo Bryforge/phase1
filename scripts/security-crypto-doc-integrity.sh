@@ -2,8 +2,9 @@
 # Phase1 security crypto documentation integrity gate.
 #
 # This check is read-only. It verifies the cryptographic policy roadmap,
-# registry, algorithm template, profile index, profile drafts, and security
-# documentation links before crypto policy implementation work continues.
+# registry, algorithm template, operator command plan, profile index, profile
+# drafts, and security documentation links before crypto policy implementation
+# work continues.
 
 set -eu
 
@@ -39,6 +40,7 @@ check_files() {
     docs/security/CRYPTO_POLICY_ROADMAP.md \
     docs/security/CRYPTO_REGISTRY.md \
     docs/security/CRYPTO_ALGORITHM_TEMPLATE.md \
+    docs/security/CRYPTO_OPERATOR_COMMANDS.md \
     docs/security/crypto-profiles/README.md \
     docs/security/crypto-profiles/SAFE_DEFAULT.md \
     docs/security/crypto-profiles/HIGH_SECURITY.md \
@@ -59,10 +61,12 @@ check_links_and_goals() {
   check_contains docs/security/TRUST_MODEL.md 'Security and usability principle'
   check_contains docs/security/README.md 'CRYPTO_POLICY_ROADMAP.md'
   check_contains docs/security/README.md 'CRYPTO_REGISTRY.md'
+  check_contains docs/security/README.md 'CRYPTO_OPERATOR_COMMANDS.md'
   check_contains docs/security/README.md 'crypto-profiles/README.md'
   check_contains docs/security/README.md 'CRYPTO_ALGORITHM_TEMPLATE.md'
   check_contains docs/security/CRYPTO_POLICY_ROADMAP.md 'CRYPTO_REGISTRY.md'
   check_contains docs/security/CRYPTO_POLICY_ROADMAP.md 'CRYPTO_ALGORITHM_TEMPLATE.md'
+  check_contains docs/security/CRYPTO_POLICY_ROADMAP.md 'CRYPTO_OPERATOR_COMMANDS.md'
   check_contains docs/security/CRYPTO_POLICY_ROADMAP.md 'crypto-profiles/README.md'
   check_contains docs/security/CRYPTO_REGISTRY.md 'CRYPTO_ALGORITHM_TEMPLATE.md'
   check_contains docs/security/crypto-profiles/README.md 'SAFE_DEFAULT.md'
@@ -87,6 +91,19 @@ check_profiles() {
   done
 }
 
+check_operator_commands() {
+  check_contains docs/security/CRYPTO_OPERATOR_COMMANDS.md 'crypto status'
+  check_contains docs/security/CRYPTO_OPERATOR_COMMANDS.md 'crypto profiles'
+  check_contains docs/security/CRYPTO_OPERATOR_COMMANDS.md 'crypto explain <profile-or-algorithm>'
+  check_contains docs/security/CRYPTO_OPERATOR_COMMANDS.md 'crypto select <profile> --scope <control-point> --confirm'
+  check_contains docs/security/CRYPTO_OPERATOR_COMMANDS.md 'crypto policy export'
+  check_contains docs/security/CRYPTO_OPERATOR_COMMANDS.md 'crypto policy verify'
+  check_contains docs/security/CRYPTO_OPERATOR_COMMANDS.md 'Unknown scopes should fail closed.'
+  check_contains docs/security/CRYPTO_OPERATOR_COMMANDS.md 'Unknown profiles should fail closed.'
+  check_contains docs/security/CRYPTO_OPERATOR_COMMANDS.md 'Lab-only selections must fail outside `lab`, `docs`, or `tests` scopes.'
+  check_contains docs/security/CRYPTO_OPERATOR_COMMANDS.md 'deprecated, rejected, or lab-only entries are not used in production scopes'
+}
+
 check_guardrails() {
   check_contains docs/security/CRYPTO_POLICY_ROADMAP.md 'Phase1 should not invent new cryptographic primitives for security-critical use.'
   check_contains docs/security/CRYPTO_REGISTRY.md 'No algorithm is currently approved by this registry for new production security claims.'
@@ -103,6 +120,7 @@ check_non_claims() {
     docs/security/CRYPTO_POLICY_ROADMAP.md \
     docs/security/CRYPTO_REGISTRY.md \
     docs/security/CRYPTO_ALGORITHM_TEMPLATE.md \
+    docs/security/CRYPTO_OPERATOR_COMMANDS.md \
     docs/security/crypto-profiles/README.md \
     docs/security/crypto-profiles/SAFE_DEFAULT.md \
     docs/security/crypto-profiles/HIGH_SECURITY.md \
@@ -120,8 +138,9 @@ check_non_claims() {
 check_files
 check_links_and_goals
 check_profiles
+check_operator_commands
 check_guardrails
 check_non_claims
 
-info 'integrity complete; crypto policy roadmap, registry, algorithm template, profile drafts, links, guardrails, and non-claims are present'
+info 'integrity complete; crypto policy roadmap, registry, algorithm template, operator command plan, profile drafts, links, guardrails, and non-claims are present'
 info 'writes: no'
