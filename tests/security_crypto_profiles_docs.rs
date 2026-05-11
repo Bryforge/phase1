@@ -21,6 +21,28 @@ fn crypto_profiles_index_defines_profile_classes() {
 }
 
 #[test]
+fn crypto_profiles_index_links_current_profile_drafts() {
+    let profiles = std::fs::read_to_string("docs/security/crypto-profiles/README.md")
+        .expect("crypto profiles index");
+
+    for draft in [
+        "SAFE_DEFAULT.md",
+        "HIGH_SECURITY.md",
+    ] {
+        assert!(profiles.contains(draft), "missing profile draft {draft}: {profiles}");
+    }
+
+    assert!(
+        profiles.contains("planned normal-operator default profile"),
+        "{profiles}"
+    );
+    assert!(
+        profiles.contains("planned advanced-operator and Base1-stricter profile"),
+        "{profiles}"
+    );
+}
+
+#[test]
 fn crypto_profiles_index_requires_profile_documentation_fields() {
     let profiles = std::fs::read_to_string("docs/security/crypto-profiles/README.md")
         .expect("crypto profiles index");
