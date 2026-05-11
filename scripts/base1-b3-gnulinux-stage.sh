@@ -14,7 +14,7 @@ INITRD=${BASE1_PREVIEW_INITRD:-}
 OUT_DIR=${BASE1_B3_GNULINUX_STAGE_OUT:-build/base1-b3-gnulinux-stage}
 MODE=prepare
 TIMEOUT_SECONDS=${BASE1_B3_TIMEOUT:-30}
-EXPECT=${BASE1_B3_MARKER:-phase1 6.0.0 ready}
+EXPECT=${BASE1_B3_GNULINUX_MARKER:-Linux version}
 BOOT_PROFILE=${BASE1_QEMU_BOOT_PROFILE:-hardened}
 EXTRA_APPEND=${BASE1_QEMU_EXTRA_APPEND:-}
 
@@ -35,7 +35,7 @@ options:
   --dry-run            stage bundle and print guarded QEMU handoff plan
   --check              stage bundle and run guarded QEMU serial-marker check
   --timeout <seconds>  check timeout, default: 30
-  --expect <text>      expected serial marker, default: phase1 6.0.0 ready
+  --expect <text>      expected serial marker, default: Linux version
   --boot-profile <p>   QEMU boot profile, default: hardened; allowed: standard, hardened
   --append <text>      extra kernel command-line text for the checker
   -h, --help           show this help
@@ -45,12 +45,15 @@ stage model:
   download, install, or trust a GNU/Linux distribution by itself. It only stages
   local kernel/initrd files into the B3 handoff pipeline.
 
+marker model:
+  The default GNU/Linux stage marker is "Linux version" because stock Linux
+  kernels print that string very early during boot. A later Phase1-specific
+  initrd can override this with --expect "phase1 6.0.0 ready".
+
 hardened profile:
-  The GNU/Linux stage defaults to the hardened QEMU boot profile. That profile
-  requests Linux hardening-oriented kernel parameters such as module signature
-  enforcement, lockdown, allocator initialization, KASLR-supporting entropy
-  behavior, PTI, vsyscall disablement, and debugfs disablement. This is a
-  requested boot profile, not proof that the resulting system is hardened.
+  The GNU/Linux stage defaults to the hardened QEMU boot profile. This requests
+  hardening-oriented kernel settings through the shared QEMU checker, but it is
+  request-only and does not prove that the resulting system is hardened.
 
 non-claims:
   This is emulator-only staging evidence. It does not make Base1 a GNU/Linux
