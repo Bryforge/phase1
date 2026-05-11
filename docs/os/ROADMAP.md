@@ -22,6 +22,40 @@ The Phase1 operating-system track means:
 - No silent privilege change.
 - No unsupported hardware promises.
 
+## Boot readiness race
+
+[`BOOT_READINESS_RACE_PLAN.md`](BOOT_READINESS_RACE_PLAN.md) defines the fastest safe path toward Base1 boot readiness.
+
+The boot readiness ladder is:
+
+| Level | Name | Claim boundary |
+| --- | --- | --- |
+| B0 | Documentation ready | Planning only. |
+| B1 | Read-only detection ready | Detection preview. |
+| B2 | Dry-run assembly ready | Dry-run only. |
+| B3 | VM boot validated | VM validated only. |
+| B4 | Recovery validated | Recovery validation for named profile only. |
+| B5 | Physical target validated | Hardware-specific boot support only. |
+| B6 | Release candidate | Release-candidate for named target only. |
+
+Do not skip levels when strengthening boot, hardware, recovery, installer, daily-driver, or hardened-status claims.
+
+## x86_64 boot support
+
+[`X86_64_BOOT_SUPPORT_ROADMAP.md`](X86_64_BOOT_SUPPORT_ROADMAP.md) defines the automatic x86_64 support plan.
+
+The plan covers:
+
+- generic UEFI x86_64 systems;
+- legacy BIOS x86_64 systems where supported;
+- ThinkPad X200-class Libreboot/GRUB systems;
+- VM validation profiles;
+- recovery USB boot paths;
+- boot profile names;
+- boot parameter inventory;
+- read-only detection before mutation;
+- future hardening work with evidence-bound claims.
+
 ## Stage 0: Documentation pivot
 
 Status: active.
@@ -32,6 +66,7 @@ Goals:
 - Keep current limitations clear.
 - Link the track from README and Base1 documentation.
 - Add tests that prevent overclaiming.
+- Maintain boot readiness, x86_64, and hardening plans without overclaiming current status.
 
 ## Stage 1: Base1 bootable foundation
 
@@ -46,6 +81,7 @@ Required pieces:
 - First-boot setup flow.
 - Hardware preflight checks.
 - Reproducible image build notes.
+- Boot readiness ladder alignment.
 
 First design slice: [`Base1 image-builder design`](BASE1_IMAGE_BUILDER.md).
 
@@ -61,6 +97,7 @@ Required pieces:
 - Snapshot and rollback path.
 - Signed or verifiable update metadata.
 - Clear uninstall / restore path.
+- Recovery validation before installer claims are strengthened.
 
 ## Stage 3: Daily-driver basics
 
@@ -107,6 +144,25 @@ Each target needs:
 - Display/input validation.
 - Recovery validation.
 - Known limitations.
+- Target-specific boot readiness level.
+
+## Stage 6: Hardening track
+
+Goal: move toward a hardened-by-design Base1 posture where evidence supports the claim.
+
+Planned hardening areas:
+
+- read-only base image;
+- writable user/data layer separation;
+- signed or verifiable boot metadata;
+- recovery-first rollback paths;
+- secret redaction in reports;
+- explicit trust gates for host mutation;
+- minimal boot services;
+- service supervision and audit logging;
+- secure defaults with documented usability tradeoffs.
+
+Hardening is a valid roadmap goal. Current hardened-status claims require implementation, tests, validation reports, recovery evidence, and review evidence.
 
 ## Guardrails
 
@@ -116,15 +172,20 @@ Each target needs:
 - Keep recovery available.
 - Keep security claims conservative until validated.
 - Keep Base1 as the boundary between Phase1 and hardware.
+- Keep boot readiness claims tied to the named readiness ladder.
+- Keep hardening claims evidence-bound.
 
 ## First engineering slices
 
 1. Add this roadmap and README positioning.
-2. Add the [`Base1 image-builder design`](BASE1_IMAGE_BUILDER.md).
-3. Add the [`Base1 installer and recovery design`](INSTALLER_RECOVERY.md).
-4. Add the [`Base1 installer dry-run design`](BASE1_INSTALLER_DRY_RUN.md).
-5. Add system-surface command stubs behind safe defaults.
-6. Add hardware-target checklists.
+2. Add the [`Base1 boot readiness race plan`](BOOT_READINESS_RACE_PLAN.md).
+3. Add the [`Base1 x86_64 boot support roadmap`](X86_64_BOOT_SUPPORT_ROADMAP.md).
+4. Add the [`Base1 image-builder design`](BASE1_IMAGE_BUILDER.md).
+5. Add the [`Base1 installer and recovery design`](INSTALLER_RECOVERY.md).
+6. Add the [`Base1 installer dry-run design`](BASE1_INSTALLER_DRY_RUN.md).
+7. Add system-surface command stubs behind safe defaults.
+8. Add hardware-target checklists.
+9. Add read-only boot readiness status reporting.
 
 
 ## Stage 1 recovery command design
@@ -170,3 +231,9 @@ Each target needs:
 ## Stage 2 recovery USB design
 
 - [`Base1 recovery USB design`](../../base1/RECOVERY_USB_DESIGN.md) defines the first read-only recovery-media plan for Libreboot/X200-class systems without writing USB media or changing boot settings.
+
+## Non-claims
+
+This roadmap does not make Phase1 or Base1 a finished OS, hardened system, installer-ready system, hardware-validated system, recovery-complete system, or daily-driver replacement.
+
+It defines the staged path and claim boundaries for future boot readiness work.
