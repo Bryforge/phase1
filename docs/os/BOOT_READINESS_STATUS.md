@@ -520,6 +520,14 @@ Expected behavior:
 | B3 GNU/Linux stage tests | Present | `tests/base1_b3_gnulinux_stage_script.rs` |
 | B3 OpenBSD stage script | Present | `scripts/base1-b3-openbsd-stage.sh` |
 | B3 OpenBSD stage tests | Present | `tests/base1_b3_openbsd_stage_script.rs` |
+| Base1 dual-path delivery doc | Present | [`BASE1_DUAL_PATH_DELIVERY.md`](BASE1_DUAL_PATH_DELIVERY.md) |
+| Base1 supervisor profiles doc | Present | [`BASE1_SUPERVISOR_PROFILES.md`](BASE1_SUPERVISOR_PROFILES.md) |
+| Base1 supervisor orchestration doc | Present | [`BASE1_SUPERVISOR_ORCHESTRATION.md`](BASE1_SUPERVISOR_ORCHESTRATION.md) |
+| Base1 supervisor control-plane contract | Present | [`BASE1_SUPERVISOR_CONTROL_PLANE.md`](BASE1_SUPERVISOR_CONTROL_PLANE.md) |
+| Base1 supervisor policy bus contract | Present | [`BASE1_SUPERVISOR_POLICY_BUS.md`](BASE1_SUPERVISOR_POLICY_BUS.md) |
+| Base1 supervisor orchestration planner | Present | `scripts/base1-supervisor-orchestration-plan.sh` |
+| Base1 supervisor control-plane dispatcher | Present | `scripts/base1-supervisor-control-plane.sh` |
+| Base1 supervisor policy bus dispatcher | Present | `scripts/base1-supervisor-policy-bus.sh` |
 | B3 VM validation script | Present | `scripts/base1-b3-vm-validate.sh` |
 | B3 VM validation tests | Present | `tests/base1_b3_vm_validate_script.rs` |
 | VM validation report | Present scaffold | [`B3_VM_VALIDATION_REPORT.md`](B3_VM_VALIDATION_REPORT.md) |
