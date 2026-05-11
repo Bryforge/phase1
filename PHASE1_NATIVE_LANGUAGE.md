@@ -1,14 +1,15 @@
 # Phase1 Native Language
 
 <p align="center">
-  <img src="assets/fyr-flame.svg" alt="Fyr flame mark with fyr written inside the flame" width="520">
+  <img src="assets/fyr_word.png" alt="Fyr word mark with current Fyr symbol" width="520">
 </p>
 
 Name: Fyr
 Extension: .fyr
 Command: fyr
 Roadmap: [`docs/fyr/ROADMAP.md`](docs/fyr/ROADMAP.md)
-Visual mark: [`assets/fyr-flame.svg`](assets/fyr-flame.svg)
+Visual symbol: [`assets/fyr_symbol.png`](assets/fyr_symbol.png)
+Word mark: [`assets/fyr_word.png`](assets/fyr_word.png)
 
 Fyr is the planned Phase1-native language target. It is reserved for stable Phase1 automation, virtual file system workflows, future self-build scripts, and operator-owned tooling that should not stop working because an outside language changes direction.
 
@@ -26,8 +27,17 @@ Fyr is modeled after three familiar ideas:
 - `fyr status`
 - `fyr spec`
 - seed `fyr run <file.fyr>` support for print literals
-- README/post flame mark
+- current Fyr symbol and word-mark assets
 - dedicated language roadmap
+
+## Current visual assets
+
+The current Fyr visual mark uses uploaded PNG assets:
+
+- [`assets/fyr_symbol.png`](assets/fyr_symbol.png) — standalone Fyr symbol.
+- [`assets/fyr_word.png`](assets/fyr_word.png) — Fyr word mark.
+
+Older references to `assets/fyr-flame.svg` are outdated.
 
 ## First working example
 
