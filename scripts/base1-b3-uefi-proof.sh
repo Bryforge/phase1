@@ -28,8 +28,8 @@ Marker:
 Display behavior:
   Visible QEMU runs show the splash plus readable GRUB proof text. The build
   prefers GRUB's unicode.pf2 font, then falls back to a generated monospaced
-  font. Visible runs also send the serial console to null so QEMU does not draw
-  a duplicate serial text console over the graphical boot screen.
+  font. GRUB searches for the font on the FAT image before loading it, then
+  enables gfxterm so menu/text glyphs render correctly.
 
 Non-claims:
   This is QEMU/OVMF proof-of-life only. It does not make Base1 installer-ready,
@@ -197,10 +197,15 @@ serial --unit=0 --speed=115200 --word=8 --parity=no --stop=1
 set gfxmode=1024x768,auto
 set gfxpayload=keep
 
-# Load a known-good GRUB font before enabling gfxterm. Missing or mismatched
-# fonts make ASCII/menu text render as repeated box/glitch glyphs on macOS QEMU.
+# Find the FAT image before loading external files from /boot/grub. Without this
+# root search, loadfont can fail and GRUB falls back to broken box glyphs.
+search --file /boot/grub/fonts/phase1.pf2 --set=root
+
+# Load a known-good GRUB font before enabling gfxterm/menu rendering.
 if loadfont /boot/grub/fonts/phase1.pf2; then
   true
+else
+  echo "phase1: warning: could not load GRUB font"
 fi
 
 terminal_input console serial
@@ -255,7 +260,7 @@ build_image() {
   printf 'base1_b3_uefi_proof: built %s\n' "$IMG"
   printf 'marker: %s\n' "$MARKER"
   printf 'splash: assets/phase1_word.png fitted to %sx%s max edge %s\n' "$SPLASH_WIDTH" "$SPLASH_HEIGHT" "$SPLASH_MAX_EDGE"
-  printf 'display: readable GRUB overlay with unicode font; visible serial disabled\n'
+  printf 'display: root searched before font load; visible serial disabled\n'
   printf 'boot_readiness_claim: no\n'
 }
 
