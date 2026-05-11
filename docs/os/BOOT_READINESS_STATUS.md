@@ -9,7 +9,7 @@ This tracker shows what must be finished before Phase1/Base1 moves from planning
 
 The finish-first planning layer is complete for B1. The first B1 read-only detection script, guard tests, limitations note, limitations tests, validation report, and validation report tests now exist while preserving the B1 boundary.
 
-B2 planning has started with a dry-run assembly plan, plan tests, initial dry-run assembly script, and script tests.
+B2 planning has started with a dry-run assembly plan, plan tests, initial dry-run assembly script, script tests, and limitations note.
 
 ## Current readiness level
 
@@ -25,7 +25,7 @@ Do not claim Base1 boot readiness, installer readiness, hardware validation, har
 | --- | --- | --- | --- |
 | B0 | Documentation ready | Complete for B1 start | Roadmaps, status tracker, checklist, links, tests. |
 | B1 | Read-only detection ready | Initial script present | Dry-run detection script, no writes, architecture/firmware/boot hints, limitations note, validation report. |
-| B2 | Dry-run assembly ready | Initial script present | Dry-run assembly plan, image/install/recovery previews with explicit no-write behavior. |
+| B2 | Dry-run assembly ready | Initial script present | Dry-run assembly plan, image/install/recovery previews with explicit no-write behavior, limitations note. |
 | B3 | VM boot validated | Not started | VM boot report, logs, known limitations. |
 | B4 | Recovery validated | Not started | Emergency shell, recovery media, rollback report. |
 | B5 | Physical target validated | Not started | Named hardware validation report. |
@@ -119,7 +119,9 @@ B2 script tests are present:
 cargo test -p phase1 --test base1_b2_assembly_dry_run_script
 ```
 
-B2 remains dry-run-only until limitations, validation report, review, and status updates are complete.
+B2 limitations are documented in [`B2_DRY_RUN_ASSEMBLY_LIMITATIONS.md`](B2_DRY_RUN_ASSEMBLY_LIMITATIONS.md).
+
+B2 remains dry-run-only until limitations tests, validation report, review, and status updates are complete.
 
 ## B2 completion checklist
 
@@ -129,7 +131,8 @@ Before B2 is considered complete, confirm:
 - [x] B2 plan tests exist.
 - [x] B2 dry-run assembly script exists.
 - [x] B2 script tests exist.
-- [ ] B2 known limitations are documented.
+- [x] B2 known limitations are documented.
+- [ ] B2 limitations tests exist.
 - [ ] B2 validation report exists.
 - [ ] B2 status is linked from README, OS roadmap, race plan, and x86_64 roadmap.
 - [ ] B2 output is reviewed for secret redaction.
@@ -185,6 +188,7 @@ Expected behavior:
 | B1 detection script | Present | `scripts/base1-x86_64-detect.sh` |
 | B1 detection tests | Present | `tests/base1_x86_64_detect_script.rs` |
 | B2 dry-run assembly plan | Present | [`B2_DRY_RUN_ASSEMBLY_PLAN.md`](B2_DRY_RUN_ASSEMBLY_PLAN.md) |
+| B2 dry-run assembly limitations note | Present | [`B2_DRY_RUN_ASSEMBLY_LIMITATIONS.md`](B2_DRY_RUN_ASSEMBLY_LIMITATIONS.md) |
 | B2 dry-run assembly plan tests | Present | `tests/b2_dry_run_assembly_plan_docs.rs` |
 | B2 dry-run assembly script | Present | `scripts/base1-b2-assembly-dry-run.sh` |
 | B2 dry-run assembly tests | Present | `tests/base1_b2_assembly_dry_run_script.rs` |
