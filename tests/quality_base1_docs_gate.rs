@@ -21,6 +21,23 @@ fn quality_check_runs_full_base1_docs_gate_in_quick_gate() {
 }
 
 #[test]
+fn quality_check_exposes_base1_reorganization_gate() {
+    let script = std::fs::read_to_string("scripts/quality-check.sh")
+        .expect("quality-check script");
+
+    assert!(
+        script.contains("check_base1_reorganization()"),
+        "{script}"
+    );
+    assert!(
+        script.contains("run sh scripts/base1-reorganization-verify.sh"),
+        "{script}"
+    );
+    assert!(script.contains("base1-reorg"), "{script}");
+    assert!(script.contains("base1-reorganization"), "{script}");
+}
+
+#[test]
 fn quality_docs_describe_current_base1_docs_gate() {
     let quality = std::fs::read_to_string("QUALITY.md").expect("QUALITY.md");
 
@@ -63,6 +80,28 @@ fn quality_docs_describe_current_base1_docs_gate() {
 }
 
 #[test]
+fn quality_docs_describe_base1_reorganization_gate() {
+    let quality = std::fs::read_to_string("QUALITY.md").expect("QUALITY.md");
+
+    assert!(
+        quality.contains("sh scripts/quality-check.sh base1-reorg"),
+        "{quality}"
+    );
+    assert!(
+        quality.contains("sh scripts/quality-check.sh base1-reorganization"),
+        "{quality}"
+    );
+    assert!(
+        quality.contains("sh scripts/base1-reorganization-verify.sh"),
+        "{quality}"
+    );
+    assert!(
+        quality.contains("Cargo tests must still run on a Rust-capable host"),
+        "{quality}"
+    );
+}
+
+#[test]
 fn quality_required_scripts_include_base1_docs_gate_tools() {
     let quality = std::fs::read_to_string("QUALITY.md").expect("QUALITY.md");
 
@@ -71,9 +110,11 @@ fn quality_required_scripts_include_base1_docs_gate_tools() {
         "scripts/base1-link-check.sh",
         "scripts/base1-test-inventory.sh",
         "scripts/base1-test-inventory-verify.sh",
+        "scripts/base1-reorganization-verify.sh",
     ] {
         assert!(quality.contains(script), "missing quality script {script}: {quality}");
     }
 
     assert!(quality.contains("Base1 integrity"), "{quality}");
+    assert!(quality.contains("Base1 reorganization"), "{quality}");
 }
