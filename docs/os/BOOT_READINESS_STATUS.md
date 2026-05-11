@@ -7,11 +7,11 @@ Scope: Base1 boot readiness levels, open prerequisites, validation evidence, and
 
 This tracker shows what must be finished before Phase1/Base1 moves from planning back into implementation work for boot readiness.
 
-The goal is to complete the planning, status, checklist, and validation map first, then resume coding with a clear B1 read-only detection target.
+The finish-first planning layer is complete for B1. Coding may begin with the first read-only detection slice while preserving the B1 boundary.
 
 ## Current readiness level
 
-Current level: **B0 — Documentation ready, nearly complete**
+Current level: **B0 — Documentation ready, complete for B1 start**
 
 Target next level: **B1 — Read-only detection ready**
 
@@ -21,8 +21,8 @@ Do not claim Base1 boot readiness, installer readiness, hardware validation, har
 
 | Level | Name | Status | Required before claim strengthens |
 | --- | --- | --- | --- |
-| B0 | Documentation ready | Nearly complete | Roadmaps, status tracker, checklist, links, tests. |
-| B1 | Read-only detection ready | Planned | Dry-run detection script, no writes, architecture/firmware/boot hints. |
+| B0 | Documentation ready | Complete for B1 start | Roadmaps, status tracker, checklist, links, tests. |
+| B1 | Read-only detection ready | Ready to implement | Dry-run detection script, no writes, architecture/firmware/boot hints. |
 | B2 | Dry-run assembly ready | Not started | Image/install/recovery previews with explicit no-write behavior. |
 | B3 | VM boot validated | Not started | VM boot report, logs, known limitations. |
 | B4 | Recovery validated | Not started | Emergency shell, recovery media, rollback report. |
@@ -44,12 +44,14 @@ Before coding the next boot-readiness implementation slice, finish:
 - [x] OS roadmap link to this status tracker.
 - [x] README link to this status tracker.
 - [x] B1 implementation issue/plan for read-only x86_64 detection.
-- [ ] B1 plan tests.
-- [ ] B1 plan link from OS roadmap, x86_64 roadmap, and race plan.
+- [x] B1 plan tests.
+- [x] B1 plan link from OS roadmap, x86_64 roadmap, and race plan.
+
+Finish-first status: **complete for B1 implementation start**.
 
 ## B1 coding-start gate
 
-Coding for B1 can begin when this tracker has:
+Coding for B1 can begin because this tracker has:
 
 - link from [`ROADMAP.md`](ROADMAP.md);
 - link from [`BOOT_READINESS_RACE_PLAN.md`](BOOT_READINESS_RACE_PLAN.md);
@@ -57,6 +59,8 @@ Coding for B1 can begin when this tracker has:
 - README visibility;
 - B1 implementation plan: [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md);
 - tests that preserve the status ladder, B1 plan, and non-claims.
+
+B1 coding must stay inside the read-only, dry-run, non-mutating scope defined by [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md).
 
 ## Planned first coding slice
 
@@ -92,6 +96,7 @@ Expected behavior:
 | x86_64 boot support roadmap | Present | [`X86_64_BOOT_SUPPORT_ROADMAP.md`](X86_64_BOOT_SUPPORT_ROADMAP.md) |
 | Boot readiness status tracker | Present | [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md) |
 | B1 read-only detection plan | Present | [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md) |
+| B1 plan tests | Present | `tests/b1_read_only_detection_plan_docs.rs` |
 | B1 detection script | Not started | `scripts/base1-x86_64-detect.sh` |
 | B1 detection tests | Not started | planned |
 | VM validation report | Not started | planned |
@@ -110,4 +115,4 @@ Do not describe the current Base1 boot path as hardened until implementation, te
 
 This status tracker does not make Base1 bootable, installer-ready, recovery-complete, hardened, hardware-validated, release-candidate ready, or daily-driver ready.
 
-It tracks what remains before implementation resumes for the B1 read-only boot detection slice.
+It only records that the planning and documentation gate is complete enough to begin the B1 read-only boot detection implementation slice.
