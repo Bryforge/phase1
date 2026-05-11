@@ -42,8 +42,8 @@ fn base1_b3_uefi_proof_help_documents_usage_marker_display_and_boundaries() {
         "Builds a local B3 UEFI proof image under build/",
         "displays the fitted Phase1 word-mark splash",
         "emits a serial proof marker",
-        "Visible QEMU runs keep the screen splash-only",
-        "Proof text is routed to serial",
+        "Visible QEMU runs show the splash plus a readable proof-status overlay",
+        "loads the generated font before switching to gfxterm",
         "--build",
         "--run",
         "--check",
@@ -117,29 +117,42 @@ fn base1_b3_uefi_proof_uses_expected_artifacts_and_splash_fitting() {
 }
 
 #[test]
-fn base1_b3_uefi_proof_routes_marker_to_serial_without_dirtying_gfxterm() {
+fn base1_b3_uefi_proof_preloads_font_before_gfxterm_and_keeps_readable_overlay() {
     let script = std::fs::read_to_string(SCRIPT).expect("B3 UEFI proof source");
 
     for text in [
         "MARKER=${BASE1_B3_MARKER:-phase1 6.0.0 ready}",
         "serial --unit=0 --speed=115200",
-        "terminal_output gfxterm",
-        "terminal_output serial",
+        "if loadfont /boot/grub/fonts/phase1.pf2; then",
+        "set gfxterm_font=phase1",
+        "terminal_output gfxterm serial",
+        "echo \"base1 b3 uefi proof start\"",
         "echo \"$MARKER\"",
-        "terminal_output gfxterm",
-        "display: splash-only; proof text routed to serial",
+        "echo \"emulator-only evidence; no installer; no hardware-validation claim\"",
+        "display: readable gfxterm overlay with font preloaded",
         "b3-serial.log",
         "b3-summary.env",
         "grep -F \"$MARKER\" \"$SERIAL_LOG\"",
         "BASE1_B3_UEFI_PROOF_RESULT=$result",
         "BASE1_B3_UEFI_PROOF_SERIAL_LOG=reports/b3-serial.log",
     ] {
-        assert!(script.contains(text), "missing serial proof text {text}: {script}");
+        assert!(script.contains(text), "missing readable overlay proof text {text}: {script}");
     }
 
+    let loadfont_pos = script
+        .find("if loadfont /boot/grub/fonts/phase1.pf2; then")
+        .expect("loadfont must exist");
+    let terminal_output_pos = script
+        .find("terminal_output gfxterm serial")
+        .expect("terminal_output gfxterm serial must exist");
     assert!(
-        !script.contains("terminal_output gfxterm serial"),
-        "visible output must not mirror proof text onto gfxterm and serial: {script}"
+        loadfont_pos < terminal_output_pos,
+        "font must be loaded before enabling gfxterm output to avoid box/glitch glyphs: {script}"
+    );
+
+    assert!(
+        !script.contains("display: splash-only; proof text routed to serial"),
+        "script should keep the readable overlay instead of hiding proof text: {script}"
     );
 }
 
