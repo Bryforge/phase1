@@ -9,7 +9,7 @@ This plan organizes the fastest safe path toward boot readiness for the Phase1/B
 
 The goal is speed without unsafe claims: move quickly through documentation, read-only checks, dry-run tooling, VM validation, recovery validation, and hardware validation before claiming boot readiness.
 
-Track current readiness in [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md). The first B1 coding slice is planned in [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md).
+Track current readiness in [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md). The first B1 coding slice is planned in [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md), implemented by `scripts/base1-x86_64-detect.sh`, and guarded by `tests/base1_x86_64_detect_script.rs`.
 
 ## Boot readiness goal
 
@@ -52,9 +52,19 @@ Do not skip levels when strengthening claims.
 
 Before implementation resumes, keep the finish-first checklist current in [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md).
 
-B1 coding begins only after the status tracker is linked from the OS roadmap, this race plan, the x86_64 roadmap, and the README, with tests preserving the ladder and non-claims.
+B1 coding began only after the status tracker was linked from the OS roadmap, this race plan, the x86_64 roadmap, and the README, with tests preserving the ladder and non-claims.
 
-The first B1 implementation plan is [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md). It must be linked, tested, and status-tracked before writing the script.
+The first B1 implementation plan is [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md). It is implemented initially by:
+
+```bash
+sh scripts/base1-x86_64-detect.sh --dry-run
+```
+
+Initial B1 script tests:
+
+```bash
+cargo test -p phase1 --test base1_x86_64_detect_script
+```
 
 ## Fastest safe sequence
 
@@ -70,6 +80,8 @@ The first B1 implementation plan is [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_O
 ### Sprint 2: read-only detection
 
 - Implement only the B1 detector planned in [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md).
+- Initial script: `scripts/base1-x86_64-detect.sh`.
+- Initial tests: `tests/base1_x86_64_detect_script.rs`.
 - Add or plan read-only architecture detection.
 - Add or plan firmware-mode detection.
 - Add or plan boot-loader detection.
@@ -128,6 +140,8 @@ The first B1 implementation plan is [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_O
 | OS roadmap | [`ROADMAP.md`](ROADMAP.md) |
 | Boot readiness status tracker | [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md) |
 | B1 read-only detection plan | [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md) |
+| B1 read-only detector | `scripts/base1-x86_64-detect.sh` |
+| B1 detector tests | `tests/base1_x86_64_detect_script.rs` |
 | x86_64 boot support roadmap | [`X86_64_BOOT_SUPPORT_ROADMAP.md`](X86_64_BOOT_SUPPORT_ROADMAP.md) |
 | Base1 image-builder design | [`BASE1_IMAGE_BUILDER.md`](BASE1_IMAGE_BUILDER.md) |
 | Installer/recovery design | [`INSTALLER_RECOVERY.md`](INSTALLER_RECOVERY.md) |
@@ -185,6 +199,12 @@ Broad Base1 reorganization/readiness validation:
 
 ```bash
 sh scripts/quality-check.sh base1-reorg
+```
+
+B1 detector validation:
+
+```bash
+cargo test -p phase1 --test base1_x86_64_detect_script
 ```
 
 ## Non-claims
