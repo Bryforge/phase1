@@ -26,7 +26,7 @@ The Phase1 operating-system track means:
 
 [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md) tracks the current readiness level, finish-before-coding checklist, B1 coding-start gate, evidence map, and hardening status.
 
-Current status: B1 read-only detection has an initial script and tests. B2 dry-run assembly has an initial script and tests, but remains dry-run preview only until limitations, validation report, review, and status links are complete.
+Current status: B1 read-only detection has an initial script and tests. B2 dry-run assembly has an initial script, tests, limitations, validation report, output review, and focused test-suite command bundle, but remains dry-run preview only until the focused B2 test suite passes locally or in CI.
 
 The B1 implementation plan is [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md). It defines the first coding slice and keeps the initial detector read-only, dry-run-only, and non-mutating.
 
@@ -42,9 +42,13 @@ Initial B1 test:
 cargo test -p phase1 --test base1_x86_64_detect_script
 ```
 
-B2 plan:
+B2 plan and review set:
 
 - [`B2_DRY_RUN_ASSEMBLY_PLAN.md`](B2_DRY_RUN_ASSEMBLY_PLAN.md)
+- [`B2_DRY_RUN_ASSEMBLY_LIMITATIONS.md`](B2_DRY_RUN_ASSEMBLY_LIMITATIONS.md)
+- [`B2_DRY_RUN_ASSEMBLY_VALIDATION.md`](B2_DRY_RUN_ASSEMBLY_VALIDATION.md)
+- [`B2_DRY_RUN_ASSEMBLY_OUTPUT_REVIEW.md`](B2_DRY_RUN_ASSEMBLY_OUTPUT_REVIEW.md)
+- [`B2_DRY_RUN_ASSEMBLY_TEST_SUITE.md`](B2_DRY_RUN_ASSEMBLY_TEST_SUITE.md)
 
 Initial B2 script:
 
@@ -52,11 +56,15 @@ Initial B2 script:
 sh scripts/base1-b2-assembly-dry-run.sh --dry-run --profile x86_64-vm-validation
 ```
 
-Initial B2 tests:
+Focused B2 tests:
 
 ```bash
 cargo test -p phase1 --test b2_dry_run_assembly_plan_docs
 cargo test -p phase1 --test base1_b2_assembly_dry_run_script
+cargo test -p phase1 --test b2_dry_run_assembly_limitations_docs
+cargo test -p phase1 --test b2_dry_run_assembly_validation_docs
+cargo test -p phase1 --test b2_dry_run_assembly_output_review_docs
+cargo test -p phase1 --test b2_dry_run_assembly_test_suite_docs
 ```
 
 ## Boot readiness race
@@ -225,13 +233,14 @@ Hardening is a valid roadmap goal. Current hardened-status claims require implem
 7. Add the [`Base1 B2 dry-run assembly plan`](B2_DRY_RUN_ASSEMBLY_PLAN.md).
 8. Add the B2 dry-run assembly script: `scripts/base1-b2-assembly-dry-run.sh`.
 9. Add B2 dry-run assembly tests: `tests/base1_b2_assembly_dry_run_script.rs`.
-10. Add the [`Base1 x86_64 boot support roadmap`](X86_64_BOOT_SUPPORT_ROADMAP.md).
-11. Add the [`Base1 image-builder design`](BASE1_IMAGE_BUILDER.md).
-12. Add the [`Base1 installer and recovery design`](INSTALLER_RECOVERY.md).
-13. Add the [`Base1 installer dry-run design`](BASE1_INSTALLER_DRY_RUN.md).
-14. Add system-surface command stubs behind safe defaults.
-15. Add hardware-target checklists.
-16. Add read-only boot readiness status reporting.
+10. Add B2 limitations, validation, output review, and test-suite docs.
+11. Add the [`Base1 x86_64 boot support roadmap`](X86_64_BOOT_SUPPORT_ROADMAP.md).
+12. Add the [`Base1 image-builder design`](BASE1_IMAGE_BUILDER.md).
+13. Add the [`Base1 installer and recovery design`](INSTALLER_RECOVERY.md).
+14. Add the [`Base1 installer dry-run design`](BASE1_INSTALLER_DRY_RUN.md).
+15. Add system-surface command stubs behind safe defaults.
+16. Add hardware-target checklists.
+17. Add read-only boot readiness status reporting.
 
 
 ## Stage 1 recovery command design
