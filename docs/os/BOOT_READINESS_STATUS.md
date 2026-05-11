@@ -9,13 +9,13 @@ This tracker shows what must be finished before Phase1/Base1 moves from planning
 
 The finish-first planning layer is complete for B1. The first B1 read-only detection script, guard tests, limitations note, limitations tests, validation report, and validation report tests now exist while preserving the B1 boundary.
 
-B2 planning has started with a dry-run assembly plan and plan tests.
+B2 planning has started with a dry-run assembly plan, plan tests, initial dry-run assembly script, and script tests.
 
 ## Current readiness level
 
-Current level: **B1 — Read-only detection ready, initial script present**
+Current level: **B2 — Dry-run assembly ready, initial script present**
 
-Target next level: **B2 — Dry-run assembly ready**
+Target next level: **B3 — VM boot validated**
 
 Do not claim Base1 boot readiness, installer readiness, hardware validation, hardened status, recovery completion, or daily-driver readiness from this tracker alone.
 
@@ -25,7 +25,7 @@ Do not claim Base1 boot readiness, installer readiness, hardware validation, har
 | --- | --- | --- | --- |
 | B0 | Documentation ready | Complete for B1 start | Roadmaps, status tracker, checklist, links, tests. |
 | B1 | Read-only detection ready | Initial script present | Dry-run detection script, no writes, architecture/firmware/boot hints, limitations note, validation report. |
-| B2 | Dry-run assembly ready | Planning and plan tests present | Dry-run assembly plan, image/install/recovery previews with explicit no-write behavior. |
+| B2 | Dry-run assembly ready | Initial script present | Dry-run assembly plan, image/install/recovery previews with explicit no-write behavior. |
 | B3 | VM boot validated | Not started | VM boot report, logs, known limitations. |
 | B4 | Recovery validated | Not started | Emergency shell, recovery media, rollback report. |
 | B5 | Physical target validated | Not started | Named hardware validation report. |
@@ -99,11 +99,13 @@ Before B1 is considered complete, confirm:
 - [ ] B1 output is reviewed for secret redaction.
 - [ ] B1 does not contain mutating boot, disk, package, or network commands.
 
-## B2 planning status
+## B2 implementation status
 
-B2 dry-run assembly planning is now present:
+B2 dry-run assembly initial implementation is now present:
 
-- [`B2_DRY_RUN_ASSEMBLY_PLAN.md`](B2_DRY_RUN_ASSEMBLY_PLAN.md)
+```bash
+sh scripts/base1-b2-assembly-dry-run.sh --dry-run --profile x86_64-vm-validation
+```
 
 B2 plan tests are present:
 
@@ -111,13 +113,13 @@ B2 plan tests are present:
 cargo test -p phase1 --test b2_dry_run_assembly_plan_docs
 ```
 
-Planned B2 command:
+B2 script tests are present:
 
 ```bash
-sh scripts/base1-b2-assembly-dry-run.sh --dry-run --profile x86_64-vm-validation
+cargo test -p phase1 --test base1_b2_assembly_dry_run_script
 ```
 
-B2 remains planning-only until the dry-run assembly script, tests, limitations note, validation report, and status updates exist.
+B2 remains dry-run-only until limitations, validation report, review, and status updates are complete.
 
 ## B2 completion checklist
 
@@ -125,8 +127,8 @@ Before B2 is considered complete, confirm:
 
 - [x] B2 dry-run assembly plan exists.
 - [x] B2 plan tests exist.
-- [ ] B2 dry-run assembly script exists.
-- [ ] B2 script tests exist.
+- [x] B2 dry-run assembly script exists.
+- [x] B2 script tests exist.
 - [ ] B2 known limitations are documented.
 - [ ] B2 validation report exists.
 - [ ] B2 status is linked from README, OS roadmap, race plan, and x86_64 roadmap.
@@ -184,8 +186,8 @@ Expected behavior:
 | B1 detection tests | Present | `tests/base1_x86_64_detect_script.rs` |
 | B2 dry-run assembly plan | Present | [`B2_DRY_RUN_ASSEMBLY_PLAN.md`](B2_DRY_RUN_ASSEMBLY_PLAN.md) |
 | B2 dry-run assembly plan tests | Present | `tests/b2_dry_run_assembly_plan_docs.rs` |
-| B2 dry-run assembly script | Not started | `scripts/base1-b2-assembly-dry-run.sh` |
-| B2 dry-run assembly tests | Not started | planned |
+| B2 dry-run assembly script | Present | `scripts/base1-b2-assembly-dry-run.sh` |
+| B2 dry-run assembly tests | Present | `tests/base1_b2_assembly_dry_run_script.rs` |
 | VM validation report | Not started | planned |
 | Recovery validation report | Not started | planned |
 | Hardware validation report | Not started | planned |
@@ -202,4 +204,4 @@ Do not describe the current Base1 boot path as hardened until implementation, te
 
 This status tracker does not make Base1 bootable, installer-ready, recovery-complete, hardened, hardware-validated, release-candidate ready, or daily-driver ready.
 
-It records that the first B1 read-only detection script exists and remains bounded to detection-preview behavior only. B2 remains dry-run assembly planning only.
+It records that the first B1 read-only detection script exists and remains bounded to detection-preview behavior only. B2 has an initial dry-run assembly script but remains dry-run preview only.
