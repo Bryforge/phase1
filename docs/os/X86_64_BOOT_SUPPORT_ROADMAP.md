@@ -11,6 +11,8 @@ The goal is to make x86_64 boot support boring and predictable: detect the syste
 
 Current boot readiness is tracked in [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md). Do not start B1 implementation until that tracker says the finish-first gate is complete.
 
+The first B1 implementation slice is planned in [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md).
+
 ## Security and hardening goal
 
 Base1 and Phase1 should become as hardened as practical over time while maintaining usability.
@@ -125,6 +127,10 @@ The first B1 implementation slice should be only:
 sh scripts/base1-x86_64-detect.sh --dry-run
 ```
 
+Implementation plan:
+
+- [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md)
+
 Expected B1 output categories:
 
 - architecture hints;
@@ -180,11 +186,12 @@ Each hardening item must be labeled by status and validation level before being 
 - Define required boot parameter categories.
 - Link from the OS roadmap and Base1 docs.
 - Link from [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md).
+- Link from [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md).
 - Add docs tests that preserve non-claims.
 
 ### Phase 2: read-only detection
 
-- Add dry-run architecture and firmware detection.
+- Add dry-run architecture and firmware detection according to [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md).
 - Report x86_64, UEFI/BIOS/Libreboot hints, storage layout, boot loader hints, and recovery availability.
 - Write no disk state.
 - Keep current status visible in [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md).
@@ -228,6 +235,7 @@ Each hardening item must be labeled by status and validation level before being 
 - [`ROADMAP.md`](ROADMAP.md)
 - [`BOOT_READINESS_RACE_PLAN.md`](BOOT_READINESS_RACE_PLAN.md)
 - [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md)
+- [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md)
 - [`BASE1_IMAGE_BUILDER.md`](BASE1_IMAGE_BUILDER.md)
 - [`INSTALLER_RECOVERY.md`](INSTALLER_RECOVERY.md)
 - [`BASE1_DRY_RUN_COMMANDS.md`](BASE1_DRY_RUN_COMMANDS.md)
