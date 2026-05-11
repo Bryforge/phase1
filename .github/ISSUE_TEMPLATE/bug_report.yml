@@ -1,0 +1,103 @@
+name: Bug report
+description: Report a reproducible Phase1, Base1, Fyr, documentation, or website defect.
+title: "bug: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. Do not include secrets, tokens, private keys, recovery codes, private logs, or unrevised screenshots.
+
+        Security vulnerabilities should not be reported through a public issue. Follow `SECURITY.md` instead.
+
+  - type: dropdown
+    id: project_area
+    attributes:
+      label: Project area
+      options:
+        - Phase1
+        - Base1
+        - Fyr
+        - Security
+        - Crypto policy
+        - Website / branding
+        - Community / support
+        - Documentation
+        - Tests / quality gates
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version, branch, or commit
+      description: Include the release, branch, or commit where you saw the issue.
+      placeholder: "v6.0.0, edge/stable, or commit SHA"
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, terminal, device, or relevant runtime details.
+      placeholder: "macOS, Linux, iOS terminal, Rust version, etc."
+    validations:
+      required: true
+
+  - type: textarea
+    id: command
+    attributes:
+      label: Command or workflow
+      description: What command, page, script, or workflow triggered the issue?
+      placeholder: "sh phase1 doctor"
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What actually happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Minimal reproduction steps
+      description: Provide the smallest set of steps that reproduces the issue.
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Redacted logs or screenshots
+      description: Paste only redacted logs or reviewed screenshots. Remove secrets and private paths when possible.
+      render: text
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety check
+      options:
+        - label: I removed secrets, tokens, private keys, recovery codes, private logs, and unrevised screenshots.
+          required: true
+        - label: This is not a private vulnerability report. If it is, I will follow SECURITY.md instead.
+          required: true
