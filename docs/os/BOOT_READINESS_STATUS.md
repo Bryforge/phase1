@@ -11,7 +11,7 @@ The finish-first planning layer is complete for B1. The first B1 read-only detec
 
 B2 planning has started with a dry-run assembly plan, plan tests, initial dry-run assembly script, script tests, limitations note, limitations tests, validation report, validation report tests, output review, output review tests, focused test-suite command bundle, test-suite bundle tests, and OS roadmap boot-readiness tests.
 
-B3 planning has started with a VM boot validation plan, plan tests, limitations note, and limitations tests.
+B3 planning has started with a VM boot validation plan, plan tests, limitations note, limitations tests, and VM boot log capture notes.
 
 ## Current readiness level
 
@@ -204,13 +204,15 @@ B3 limitations tests are present:
 cargo test -p phase1 --test b3_vm_boot_validation_limitations_docs
 ```
 
+B3 VM boot log capture notes are documented in [`B3_VM_BOOT_LOGS.md`](B3_VM_BOOT_LOGS.md).
+
 Planned B3 dry-run command shape:
 
 ```bash
 sh scripts/base1-b3-vm-validate.sh --dry-run --profile x86_64-vm-validation
 ```
 
-B3 remains planning-only until B2 validation has passed locally or in CI and B3 script, tests, logs, and validation report exist.
+B3 remains planning-only until B2 validation has passed locally or in CI and B3 script, tests, log tests, and validation report exist.
 
 ## B3 completion checklist
 
@@ -220,10 +222,11 @@ Before B3 is considered complete, confirm:
 - [x] B3 plan tests exist.
 - [x] B3 limitations note exists.
 - [x] B3 limitations tests exist.
+- [x] B3 log capture notes exist.
+- [ ] B3 log capture notes tests exist.
 - [ ] B2 test suite has passed locally or in CI.
 - [ ] B3 VM validation script exists.
 - [ ] B3 script tests exist.
-- [ ] B3 log capture notes exist.
 - [ ] B3 validation report exists.
 - [ ] VM profile is explicit.
 - [ ] VM runtime is explicit.
@@ -296,6 +299,7 @@ Expected behavior:
 | B2 dry-run assembly tests | Present | `tests/base1_b2_assembly_dry_run_script.rs` |
 | B3 VM boot validation plan | Present | [`B3_VM_BOOT_VALIDATION_PLAN.md`](B3_VM_BOOT_VALIDATION_PLAN.md) |
 | B3 VM boot validation limitations note | Present | [`B3_VM_BOOT_VALIDATION_LIMITATIONS.md`](B3_VM_BOOT_VALIDATION_LIMITATIONS.md) |
+| B3 VM boot log capture notes | Present | [`B3_VM_BOOT_LOGS.md`](B3_VM_BOOT_LOGS.md) |
 | B3 VM boot validation plan tests | Present | `tests/b3_vm_boot_validation_plan_docs.rs` |
 | B3 VM boot validation limitations tests | Present | `tests/b3_vm_boot_validation_limitations_docs.rs` |
 | B3 VM validation script | Not started | `scripts/base1-b3-vm-validate.sh` |
