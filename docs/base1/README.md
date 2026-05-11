@@ -2,7 +2,7 @@
 
 > **Status:** Roadmap and design index.
 >
-> **Validation:** Links to current Base1 design docs, dry-run scripts, inventory, test inventory, migration table, script compatibility plan, link-check strategy, post-reorganization layout, pre-move checklist, readiness checklist, compatibility maps, validation runbook, validation report template, validation reports archive, preview stack runbook, preview checks, and future validation reports.
+> **Validation:** Links to current Base1 design docs, dry-run scripts, inventory, test inventory, migration table, script compatibility plan, link-check strategy, post-reorganization layout, pre-move checklist, readiness checklist, reorganization verification report template, compatibility maps, validation runbook, validation report template, validation reports archive, preview stack runbook, preview checks, and future validation reports.
 >
 > **Non-claims:** Base1 is not currently documented here as a released bootable daily-driver image, finished secure OS replacement, or destructive installer-ready system.
 
@@ -34,6 +34,7 @@ Base1 is the planned minimal host foundation for future Phase1-first bootable en
 - [`POST_REORGANIZATION_LAYOUT.md`](POST_REORGANIZATION_LAYOUT.md)
 - [`PRE_MOVE_CHECKLIST.md`](PRE_MOVE_CHECKLIST.md)
 - [`REORGANIZATION_READINESS.md`](REORGANIZATION_READINESS.md)
+- [`REORGANIZATION_VERIFICATION_REPORT_TEMPLATE.md`](REORGANIZATION_VERIFICATION_REPORT_TEMPLATE.md)
 - [`DOCUMENTATION_ORGANIZATION_PLAN.md`](DOCUMENTATION_ORGANIZATION_PLAN.md)
 - [`ROOT_COMPATIBILITY_MAP.md`](ROOT_COMPATIBILITY_MAP.md)
 - [`releases/README.md`](releases/README.md)
@@ -87,6 +88,8 @@ sh scripts/base1-reorganization-verify.sh
 
 The verification bundle is read-only. It runs the Base1 integrity gate, local link checker, test-inventory verifier, and `cargo test --all-targets` when Cargo is available.
 
+Use [`REORGANIZATION_VERIFICATION_REPORT_TEMPLATE.md`](REORGANIZATION_VERIFICATION_REPORT_TEMPLATE.md) to record the evidence from a real verification run before promoting any organization readiness decision.
+
 ## Base1 wording rule
 
 Use `planned`, `design`, `dry-run`, `preview`, or `validated` according to evidence. Do not call Base1 bootable, daily-driver ready, recovery-complete, or installer-ready without release artifacts and validation reports.
@@ -107,6 +110,8 @@ Use [`PREVIEW_CHECKS.md`](PREVIEW_CHECKS.md) after syncing `edge/stable` to run 
 
 Use [`VALIDATION_REPORT_TEMPLATE.md`](VALIDATION_REPORT_TEMPLATE.md) when recording Base1 evidence so reports name the scope, target, commands, result, observations, evidence links, boundaries, and promotion recommendation.
 
+Use [`REORGANIZATION_VERIFICATION_REPORT_TEMPLATE.md`](REORGANIZATION_VERIFICATION_REPORT_TEMPLATE.md) when recording Base1 organization-readiness evidence so verification results, compatibility review, and readiness decision are reviewable.
+
 Store future Base1 reports under [`validation/`](validation/) so evidence remains discoverable and reviewable.
 - [Base1 real-device read-only validation plan](real-device/READONLY_VALIDATION_PLAN.md)
 - [Real-device read-only report template](real-device/READONLY_REPORT_TEMPLATE.md)
@@ -120,6 +125,7 @@ Store future Base1 reports under [`validation/`](validation/) so evidence remain
 - [Base1 link-check strategy](LINK_CHECK_STRATEGY.md)
 - [Base1 post-reorganization layout](POST_REORGANIZATION_LAYOUT.md)
 - [Base1 pre-move checklist](PRE_MOVE_CHECKLIST.md)
+- [Base1 reorganization verification report template](REORGANIZATION_VERIFICATION_REPORT_TEMPLATE.md)
 - [Reorganization readiness checklist](REORGANIZATION_READINESS.md)
 - [Documentation organization plan](DOCUMENTATION_ORGANIZATION_PLAN.md)
 - [Root compatibility map](ROOT_COMPATIBILITY_MAP.md)
