@@ -21,6 +21,8 @@ Phase1 values useful engineering over hype. Good contributions improve clarity, 
 
 - Keep safety and usability together.
 - Do not overclaim security, OS readiness, hardware validation, cryptographic completeness, or audit status.
+- Hardened security is allowed and encouraged as a roadmap goal when it is clearly labeled as planned, design, preview, or validation-dependent.
+- Only describe something as currently hardened when implementation, tests, validation reports, recovery evidence, and review evidence support that claim.
 - Prefer tests over claims.
 - Preserve compatibility paths unless a future change explicitly approves removal.
 - Keep destructive behavior out of default paths.
@@ -49,6 +51,13 @@ For crypto policy work, also read:
 - [`docs/security/CRYPTO_PROVIDER_REGISTRY.md`](docs/security/CRYPTO_PROVIDER_REGISTRY.md)
 - [`docs/security/CRYPTO_OPERATOR_COMMANDS.md`](docs/security/CRYPTO_OPERATOR_COMMANDS.md)
 - [`docs/security/CRYPTO_CONFIG_SCHEMA.md`](docs/security/CRYPTO_CONFIG_SCHEMA.md)
+
+For Base1 x86_64 and boot-support work, also read:
+
+- [`docs/os/X86_64_BOOT_SUPPORT_ROADMAP.md`](docs/os/X86_64_BOOT_SUPPORT_ROADMAP.md)
+- [`docs/os/ROADMAP.md`](docs/os/ROADMAP.md)
+- [`base1/HARDWARE_TARGETS.md`](base1/HARDWARE_TARGETS.md)
+- [`base1/LIBREBOOT_PROFILE.md`](base1/LIBREBOOT_PROFILE.md)
 
 ## Branch and PR model
 
@@ -146,7 +155,7 @@ Use narrow, testable wording. Prefer:
 - `design`;
 - `not claimed`.
 
-Avoid broad claims such as:
+Avoid broad current-state claims such as:
 
 - secure;
 - hardened;
@@ -159,7 +168,7 @@ Avoid broad claims such as:
 - quantum-safe;
 - hardware-validated.
 
-Only use stronger claims when the repository contains implementation, tests, release notes, validation reports, and review evidence.
+These words may be used for goals, plans, roadmaps, designs, or future target states when the status is explicit. Only use them as current claims when the repository contains implementation, tests, release notes, validation reports, and review evidence.
 
 ## Security contribution rules
 
@@ -172,7 +181,24 @@ Security-sensitive work must preserve:
 - no credential requests in docs or examples;
 - conservative claims until evidence exists.
 
+Hardening work is welcome when it is designed, staged, testable, and honest about current status.
+
 Do not report private vulnerabilities in a public PR or issue. Follow [`SECURITY.md`](SECURITY.md).
+
+## Base1 x86_64 and boot support contribution rules
+
+x86_64 and boot-support work must be automatic only after read-only detection, boot-parameter reporting, recovery planning, and validation exist.
+
+Rules:
+
+- detect architecture, firmware mode, boot loader, storage layout, and recovery availability before mutation;
+- document required boot parameters before using them;
+- keep unknown boot states fail-closed;
+- preserve emergency shell and recovery paths;
+- prefer VM validation before physical hardware claims;
+- require hardware validation before support claims;
+- do not silently modify boot loaders, partitions, or kernel command lines;
+- do not claim hardened boot, secure boot, measured boot, TPM support, or lockdown support without evidence.
 
 ## Crypto policy contribution rules
 
@@ -205,7 +231,7 @@ Rules:
 - keep organized mirrors linked;
 - run `base1-docs` before and after organization work;
 - do not remove checkpoint/release files without explicit future approval;
-- do not claim installer readiness, boot readiness, hardware validation, or daily-driver readiness without evidence;
+- do not claim installer readiness, boot readiness, hardware validation, hardened status, or daily-driver readiness without evidence;
 - keep scripts read-only or dry-run unless a future validated path explicitly allows mutation.
 
 Focused gates:
