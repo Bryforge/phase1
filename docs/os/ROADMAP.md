@@ -26,9 +26,21 @@ The Phase1 operating-system track means:
 
 [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md) tracks the current readiness level, finish-before-coding checklist, B1 coding-start gate, evidence map, and hardening status.
 
-Current target: finish B0 documentation/status coverage, then begin B1 read-only x86_64 detection.
+Current status: B1 read-only detection has an initial script and tests. The next target is completing B1 validation before moving to B2 dry-run assembly.
 
 The B1 implementation plan is [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md). It defines the first coding slice and keeps the initial detector read-only, dry-run-only, and non-mutating.
+
+Initial B1 script:
+
+```bash
+sh scripts/base1-x86_64-detect.sh --dry-run
+```
+
+Initial B1 test:
+
+```bash
+cargo test -p phase1 --test base1_x86_64_detect_script
+```
 
 ## Boot readiness race
 
@@ -191,13 +203,15 @@ Hardening is a valid roadmap goal. Current hardened-status claims require implem
 2. Add the [`Base1 boot readiness race plan`](BOOT_READINESS_RACE_PLAN.md).
 3. Add the [`Base1 boot readiness status tracker`](BOOT_READINESS_STATUS.md).
 4. Add the [`Base1 B1 read-only detection plan`](B1_READ_ONLY_DETECTION_PLAN.md).
-5. Add the [`Base1 x86_64 boot support roadmap`](X86_64_BOOT_SUPPORT_ROADMAP.md).
-6. Add the [`Base1 image-builder design`](BASE1_IMAGE_BUILDER.md).
-7. Add the [`Base1 installer and recovery design`](INSTALLER_RECOVERY.md).
-8. Add the [`Base1 installer dry-run design`](BASE1_INSTALLER_DRY_RUN.md).
-9. Add system-surface command stubs behind safe defaults.
-10. Add hardware-target checklists.
-11. Add read-only boot readiness status reporting.
+5. Add the B1 read-only detector: `scripts/base1-x86_64-detect.sh`.
+6. Add B1 detector tests: `tests/base1_x86_64_detect_script.rs`.
+7. Add the [`Base1 x86_64 boot support roadmap`](X86_64_BOOT_SUPPORT_ROADMAP.md).
+8. Add the [`Base1 image-builder design`](BASE1_IMAGE_BUILDER.md).
+9. Add the [`Base1 installer and recovery design`](INSTALLER_RECOVERY.md).
+10. Add the [`Base1 installer dry-run design`](BASE1_INSTALLER_DRY_RUN.md).
+11. Add system-surface command stubs behind safe defaults.
+12. Add hardware-target checklists.
+13. Add read-only boot readiness status reporting.
 
 
 ## Stage 1 recovery command design
