@@ -28,7 +28,7 @@ fn boot_readiness_status_preserves_ladder() {
         "B3",
         "VM boot validated",
         "Planning and plan tests present",
-        "proof-of-life and handoff scaffolds present",
+        "proof-of-life, handoff, and GNU/Linux staging scaffolds present",
         "B4",
         "Recovery validated",
         "B5",
@@ -166,7 +166,7 @@ fn boot_readiness_status_preserves_b2_completion_checklist() {
 }
 
 #[test]
-fn boot_readiness_status_defines_b3_planning_proof_and_handoff_status() {
+fn boot_readiness_status_defines_b3_planning_proof_handoff_and_gnulinux_status() {
     let status = std::fs::read_to_string("docs/os/BOOT_READINESS_STATUS.md")
         .expect("boot readiness status tracker");
 
@@ -187,9 +187,15 @@ fn boot_readiness_status_defines_b3_planning_proof_and_handoff_status() {
         "B3 kernel/initrd handoff documentation is present:",
         "B3_KERNEL_INITRD_HANDOFF.md",
         "cargo test -p phase1 --test b3_kernel_initrd_handoff_docs",
-        "B3 remains planning plus proof-of-life and handoff scaffolding until B2 validation has passed locally or in CI and B3 validation logs and report exist.",
+        "B3 GNU/Linux stage script is present:",
+        "sh scripts/base1-b3-gnulinux-stage.sh --boot /path/to/boot --check",
+        "cargo test -p phase1 --test base1_b3_gnulinux_stage_script",
+        "B3 GNU/Linux stage documentation is present:",
+        "B3_GNULINUX_STAGE.md",
+        "cargo test -p phase1 --test b3_gnulinux_stage_docs",
+        "B3 remains planning plus proof-of-life, handoff, and GNU/Linux staging scaffolding until B2 validation has passed locally or in CI and B3 validation logs and report exist.",
     ] {
-        assert!(status.contains(text), "missing B3 planning/proof/handoff status text {text}: {status}");
+        assert!(status.contains(text), "missing B3 planning/proof/handoff/GNU-Linux status text {text}: {status}");
     }
 }
 
@@ -211,7 +217,12 @@ fn boot_readiness_status_preserves_b3_completion_checklist() {
         "B3 kernel/initrd handoff script tests exist.",
         "B3 kernel/initrd handoff documentation exists.",
         "B3 kernel/initrd handoff documentation tests exist.",
+        "B3 GNU/Linux stage script exists.",
+        "B3 GNU/Linux stage script tests exist.",
+        "B3 GNU/Linux stage documentation exists.",
+        "B3 GNU/Linux stage documentation tests exist.",
         "known-good local kernel/initrd pair has been staged and checked.",
+        "known-good local GNU/Linux kernel/initrd pair has been staged and checked.",
         "B3 VM validation script exists.",
         "B3 script tests exist.",
         "B3 log capture notes exist.",
@@ -285,13 +296,17 @@ fn boot_readiness_status_preserves_evidence_map() {
         "B3_VM_BOOT_VALIDATION_PLAN.md",
         "B3_VM_BOOT_VALIDATION_LIMITATIONS.md",
         "B3_KERNEL_INITRD_HANDOFF.md",
+        "B3_GNULINUX_STAGE.md",
         "tests/b3_vm_boot_validation_plan_docs.rs",
         "tests/b3_vm_boot_validation_limitations_docs.rs",
         "tests/b3_kernel_initrd_handoff_docs.rs",
+        "tests/b3_gnulinux_stage_docs.rs",
         "scripts/base1-b3-uefi-proof.sh",
         "tests/base1_b3_uefi_proof_script.rs",
         "scripts/base1-b3-kernel-handoff.sh",
         "tests/base1_b3_kernel_handoff_script.rs",
+        "scripts/base1-b3-gnulinux-stage.sh",
+        "tests/base1_b3_gnulinux_stage_script.rs",
         "scripts/base1-b3-vm-validate.sh",
         "VM validation report",
         "Recovery validation report",
@@ -334,7 +349,7 @@ fn boot_readiness_status_preserves_hardening_and_non_claims() {
         "first B1 read-only detection script exists",
         "detection-preview behavior only",
         "B2 has an initial dry-run assembly script but remains dry-run preview only",
-        "B3 is planning plus proof-of-life and handoff scaffolding until VM validation evidence exists",
+        "B3 is planning plus proof-of-life, handoff, and GNU/Linux staging scaffolding until VM validation evidence exists",
     ] {
         assert!(status.contains(text), "missing non-claim {text}: {status}");
     }
