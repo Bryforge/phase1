@@ -64,6 +64,7 @@ fn crypto_policy_roadmap_documents_registry_and_algorithm_requirements() {
 
     for text in [
         "Cryptographic capability registry",
+        "CRYPTO_ALGORITHM_TEMPLATE.md",
         "algorithm or design name",
         "implementation provider",
         "allowed use cases",
@@ -80,6 +81,48 @@ fn crypto_policy_roadmap_documents_registry_and_algorithm_requirements() {
 }
 
 #[test]
+fn crypto_algorithm_template_defines_required_sections() {
+    let template = std::fs::read_to_string("docs/security/CRYPTO_ALGORITHM_TEMPLATE.md")
+        .expect("crypto algorithm template");
+
+    for text in [
+        "Cryptographic algorithm documentation template",
+        "Algorithm summary",
+        "Implementation source",
+        "Allowed use cases",
+        "Disallowed use cases",
+        "Parameters and limits",
+        "Security notes",
+        "Usability notes",
+        "Test vectors",
+        "Profile behavior",
+        "Migration and rotation",
+        "Review checklist",
+        "Non-claims",
+    ] {
+        assert!(template.contains(text), "missing template section {text}: {template}");
+    }
+}
+
+#[test]
+fn crypto_algorithm_template_preserves_safety_requirements() {
+    let template = std::fs::read_to_string("docs/security/CRYPTO_ALGORITHM_TEMPLATE.md")
+        .expect("crypto algorithm template");
+
+    for text in [
+        "Uses a reviewed open-source implementation where possible.",
+        "Does not invent a custom security-critical primitive.",
+        "Status is clearly labeled.",
+        "Test vectors are identified.",
+        "Operator usability impact is documented.",
+        "Migration/rotation guidance is documented.",
+        "Non-claims are preserved.",
+    ] {
+        assert!(template.contains(text), "missing template safety requirement {text}: {template}");
+    }
+}
+
+#[test]
 fn crypto_policy_roadmap_preserves_non_claims() {
     let roadmap = std::fs::read_to_string("docs/security/CRYPTO_POLICY_ROADMAP.md")
         .expect("crypto policy roadmap");
@@ -92,17 +135,22 @@ fn crypto_policy_roadmap_preserves_non_claims() {
 }
 
 #[test]
-fn security_index_links_crypto_policy_roadmap() {
+fn security_index_links_crypto_policy_roadmap_and_template() {
     let index = std::fs::read_to_string("docs/security/README.md")
         .expect("security docs index");
 
     assert!(index.contains("CRYPTO_POLICY_ROADMAP.md"), "{index}");
+    assert!(index.contains("CRYPTO_ALGORITHM_TEMPLATE.md"), "{index}");
     assert!(
         index.contains("cryptographic policy docs"),
         "{index}"
     );
     assert!(
         index.contains("cryptographic completeness"),
+        "{index}"
+    );
+    assert!(
+        index.contains("algorithm pages use [`CRYPTO_ALGORITHM_TEMPLATE.md`](CRYPTO_ALGORITHM_TEMPLATE.md)"),
         "{index}"
     );
 }
