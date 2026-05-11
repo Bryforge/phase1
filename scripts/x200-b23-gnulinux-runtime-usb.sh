@@ -80,24 +80,35 @@ mkdir -p \
   "$OVERLAY_DIR/etc" \
   "$OVERLAY_DIR/proc" \
   "$OVERLAY_DIR/sys" \
+  "$OVERLAY_DIR/run" \
   "$OVERLAY_DIR/tmp" \
   "$OVERLAY_DIR/phase1" \
   "$OVERLAY_DIR/phase1/evidence" \
-  "$OVERLAY_DIR/phase1/workspace"
+  "$OVERLAY_DIR/phase1/state" \
+  "$OVERLAY_DIR/phase1/workspace" \
+  "$OVERLAY_DIR/phase1/help"
 
 cat > "$OVERLAY_DIR/init" <<'EOF'
 #!/bin/sh
 # Phase1 B23 initramfs entrypoint.
-# This is a GNU/Linux-backed Phase1 runtime shell. It does not install to disk.
+# GNU/Linux-backed Phase1 runtime shell. External USB only.
 
 PATH=/bin:/sbin:/usr/bin:/usr/sbin
 export PATH
 
 mount -t proc proc /proc 2>/dev/null || true
-mount -t sysfs sys /sys 2>/dev/null || true
-mount -t devtmpfs dev /dev 2>/dev/null || mount -t tmpfs dev /dev 2>/dev/null || true
+mount -t sysfs sysfs /sys 2>/dev/null || mount -t sysfs sys /sys 2>/dev/null || true
+mount -t devtmpfs devtmpfs /dev 2>/dev/null || mount -t tmpfs dev /dev 2>/dev/null || true
+[ -c /dev/console ] || mknod /dev/console c 5 1 2>/dev/null || true
+[ -c /dev/null ] || mknod /dev/null c 1 3 2>/dev/null || true
+[ -c /dev/tty0 ] || mknod /dev/tty0 c 4 0 2>/dev/null || true
+mount -t tmpfs tmpfs /run 2>/dev/null || true
 mount -t tmpfs tmpfs /tmp 2>/dev/null || true
-mkdir -p /phase1/evidence /phase1/workspace
+mkdir -p /phase1/evidence /phase1/state /phase1/workspace /phase1/help
+
+# Make the controlling console explicit when possible.
+exec </dev/console >/dev/console 2>&1
+stty sane 2>/dev/null || true
 
 cat > /phase1/evidence/b23-runtime.env <<'ENV'
 BASE1_B23_GNULINUX_RUNTIME_MODE=initramfs
@@ -110,8 +121,24 @@ BASE1_B23_NON_CLAIM_HARDENED=1
 BASE1_B23_NON_CLAIM_DAILY_DRIVER=1
 ENV
 
-clear 2>/dev/null || true
-cat <<'BANNER'
+cat > /phase1/help/export-help.txt <<'EOF_HELP'
+Evidence export notes
+
+This early runtime keeps evidence in /phase1/evidence.
+It does not auto-network and does not write the internal disk.
+
+After rebooting into Trisquel, record the observed result from the repo:
+  cd ~/phase1
+  git pull --ff-only origin edge/stable
+  sh scripts/x200-record-and-share-result-safe.sh phase1_gnulinux_shell_seen
+
+Serve only ~/phase1-share if transferring a patch to the Mac.
+Use placeholders like <X200_IP>; do not commit local IP addresses.
+EOF_HELP
+
+phase1_banner() {
+  clear 2>/dev/null || true
+  cat <<'BANNER'
 phase1 6.0.0 ready
 Base1 B23 GNU/Linux runtime
 result: phase1_gnulinux_shell_seen
@@ -122,30 +149,83 @@ Disk : internal disk not touched
 Install: no
 Daily-driver claim: no
 
-Type: help, status, evidence, shell, reboot, poweroff
+Type: help, status, workspace, evidence, shell, reboot, poweroff
 BANNER
+}
 
 phase1_status() {
   echo ""
   echo "Phase1 status"
-  echo "Runtime : GNU/Linux initramfs"
+  echo "Runtime  : GNU/Linux initramfs"
+  echo "Kernel   : $(uname -r 2>/dev/null || echo unknown)"
+  echo "Machine  : $(uname -m 2>/dev/null || echo unknown)"
   echo "Workspace: /phase1/workspace"
   echo "Evidence : /phase1/evidence/b23-runtime.env"
-  echo "Claims   : not installer, not daily-driver"
+  echo "State    : /phase1/state"
+  echo "Disk     : internal disk not touched by Phase1"
   echo ""
 }
 
 phase1_help() {
+  cat <<'HELP'
+
+Commands:
+  help          show this help
+  status        show runtime status
+  evidence      print evidence file
+  workspace     enter /phase1/workspace
+  files         list Phase1 paths
+  devices       list /dev entries
+  dmesg-tail    show recent kernel messages
+  uname         show kernel identity
+  export-help   show evidence export notes
+  clear         redraw banner
+  shell         open /bin/sh
+  reboot        reboot machine
+  poweroff      power off machine
+
+HELP
+}
+
+phase1_files() {
   echo ""
-  echo "Commands:"
-  echo "  help      show this help"
-  echo "  status    show runtime status"
-  echo "  evidence  print evidence file"
-  echo "  shell     open /bin/sh"
-  echo "  reboot    reboot machine"
-  echo "  poweroff  power off machine"
+  echo "/phase1"
+  ls -la /phase1 2>/dev/null || true
+  echo ""
+  echo "/phase1/evidence"
+  ls -la /phase1/evidence 2>/dev/null || true
+  echo ""
+  echo "/phase1/workspace"
+  ls -la /phase1/workspace 2>/dev/null || true
   echo ""
 }
+
+phase1_devices() {
+  echo ""
+  echo "Device snapshot"
+  ls /dev 2>/dev/null | head -n 80 || true
+  echo ""
+}
+
+phase1_dmesg_tail() {
+  echo ""
+  if command -v dmesg >/dev/null 2>&1; then
+    dmesg | tail -n 40
+  else
+    echo "dmesg command not available in this initramfs"
+  fi
+  echo ""
+}
+
+phase1_workspace() {
+  cd /phase1/workspace 2>/dev/null || return
+  echo "workspace: /phase1/workspace"
+  echo "type 'exit' to return to phase1>"
+  /bin/sh
+  cd / 2>/dev/null || true
+}
+
+phase1_banner
 
 while true; do
   printf 'phase1> '
@@ -154,6 +234,13 @@ while true; do
     help|h) phase1_help ;;
     status|s) phase1_status ;;
     evidence|e) cat /phase1/evidence/b23-runtime.env ;;
+    workspace|work|w) phase1_workspace ;;
+    files|ls) phase1_files ;;
+    devices|dev) phase1_devices ;;
+    dmesg-tail|dmesg) phase1_dmesg_tail ;;
+    uname) uname -a 2>/dev/null || true ;;
+    export-help|export) cat /phase1/help/export-help.txt ;;
+    clear|banner) phase1_banner ;;
     shell|sh) /bin/sh ;;
     reboot) echo b > /proc/sysrq-trigger 2>/dev/null || reboot -f ;;
     poweroff|halt) poweroff -f 2>/dev/null || halt -f ;;
@@ -255,7 +342,7 @@ menuentry "Start Phase1 GNU/Linux" {
     echo "Loading GNU/Linux-backed Phase1 runtime..."
     echo "Result target: phase1_gnulinux_shell_seen"
     echo "Internal disk will not be mounted by Phase1."
-    linux /boot/phase1/vmlinuz console=tty0 nomodeset quiet loglevel=3
+    linux /boot/phase1/vmlinuz console=tty0 rdinit=/init init=/init nomodeset quiet loglevel=3 panic=30
     initrd /boot/phase1/initrd.img /boot/phase1/phase1-overlay.cpio.gz
     boot
 }
@@ -263,7 +350,7 @@ menuentry "Start Phase1 GNU/Linux" {
 menuentry "Start Phase1 GNU/Linux - verbose" {
     clear
     echo "Loading verbose GNU/Linux-backed Phase1 runtime..."
-    linux /boot/phase1/vmlinuz console=tty0 nomodeset loglevel=7
+    linux /boot/phase1/vmlinuz console=tty0 rdinit=/init init=/init nomodeset loglevel=7 panic=30
     initrd /boot/phase1/initrd.img /boot/phase1/phase1-overlay.cpio.gz
     boot
 }
