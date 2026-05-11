@@ -5,8 +5,9 @@
 # inventory, test inventory, test inventory reporter and verifier, migration
 # table, script compatibility plan, link check strategy, post-reorganization
 # layout, pre-move checklist, release pre-move checks, reorganization verifier,
-# readiness checklist, core references, release-note mirrors, root compatibility
-# paths, and dry-run guardrails before file reorganization continues.
+# verification report template, readiness checklist, core references,
+# release-note mirrors, root compatibility paths, and dry-run guardrails before
+# file reorganization continues.
 
 set -eu
 
@@ -59,6 +60,7 @@ check_core_docs() {
     docs/base1/POST_REORGANIZATION_LAYOUT.md \
     docs/base1/PRE_MOVE_CHECKLIST.md \
     docs/base1/REORGANIZATION_READINESS.md \
+    docs/base1/REORGANIZATION_VERIFICATION_REPORT_TEMPLATE.md \
     docs/base1/VALIDATION_RUNBOOK.md \
     docs/base1/VALIDATION_REPORT_TEMPLATE.md \
     docs/base1/VALIDATION_REPORTS.md \
@@ -152,6 +154,7 @@ check_references() {
   check_contains docs/base1/README.md 'POST_REORGANIZATION_LAYOUT.md'
   check_contains docs/base1/README.md 'PRE_MOVE_CHECKLIST.md'
   check_contains docs/base1/README.md 'REORGANIZATION_READINESS.md'
+  check_contains docs/base1/README.md 'REORGANIZATION_VERIFICATION_REPORT_TEMPLATE.md'
   check_contains docs/base1/README.md 'releases/README.md'
   check_contains docs/base1/DOCUMENTATION_MAP.md '../../base1/README.md'
   check_contains docs/base1/DOCUMENTATION_MAP.md '../../base1/NETWORK_LOCKDOWN_DRY_RUN.md'
@@ -163,6 +166,7 @@ check_references() {
   check_contains docs/base1/DOCUMENTATION_MAP.md 'POST_REORGANIZATION_LAYOUT.md'
   check_contains docs/base1/DOCUMENTATION_MAP.md 'PRE_MOVE_CHECKLIST.md'
   check_contains docs/base1/DOCUMENTATION_MAP.md 'REORGANIZATION_READINESS.md'
+  check_contains docs/base1/DOCUMENTATION_MAP.md 'REORGANIZATION_VERIFICATION_REPORT_TEMPLATE.md'
   check_contains docs/base1/DOCUMENTATION_MAP.md 'ROOT_COMPATIBILITY_MAP.md'
   check_contains docs/base1/DOCUMENTATION_MAP.md 'docs/base1/releases/'
   check_contains docs/base1/DOCUMENTATION_MAP.md 'sh scripts/base1-doc-integrity.sh'
@@ -200,6 +204,11 @@ check_references() {
   check_contains docs/base1/PRE_MOVE_CHECKLIST.md 'Pre-move test requirement'
   check_contains docs/base1/PRE_MOVE_CHECKLIST.md 'First safe candidate group'
   check_contains docs/base1/PRE_MOVE_CHECKLIST.md 'sh scripts/quality-check.sh base1-docs'
+  check_contains docs/base1/REORGANIZATION_VERIFICATION_REPORT_TEMPLATE.md 'Base1 reorganization verification report template'
+  check_contains docs/base1/REORGANIZATION_VERIFICATION_REPORT_TEMPLATE.md 'sh scripts/base1-test-inventory-verify.sh'
+  check_contains docs/base1/REORGANIZATION_VERIFICATION_REPORT_TEMPLATE.md 'sh scripts/quality-check.sh base1-reorg'
+  check_contains docs/base1/REORGANIZATION_VERIFICATION_REPORT_TEMPLATE.md 'cargo test --all-targets'
+  check_contains docs/base1/REORGANIZATION_VERIFICATION_REPORT_TEMPLATE.md 'Compatibility review'
   check_contains docs/base1/releases/README.md 'PRE_MOVE_CHECKS.md'
   check_contains docs/base1/releases/README.md 'Root checkpoint-note files remain compatibility paths'
   check_contains docs/base1/releases/PRE_MOVE_CHECKS.md 'Base1 release/checkpoint pre-move checks'
@@ -253,6 +262,7 @@ check_non_claims() {
   check_contains docs/base1/LINK_CHECK_STRATEGY.md 'does not make Base1 installer-ready'
   check_contains docs/base1/POST_REORGANIZATION_LAYOUT.md 'does not make Base1 installer-ready'
   check_contains docs/base1/PRE_MOVE_CHECKLIST.md 'does not make Base1 installer-ready'
+  check_contains docs/base1/REORGANIZATION_VERIFICATION_REPORT_TEMPLATE.md 'does not make Base1 installer-ready'
   check_contains docs/base1/releases/PRE_MOVE_CHECKS.md 'does not make Base1 installer-ready'
   check_contains docs/base1/REORGANIZATION_READINESS.md 'does not make Base1 installer-ready'
   check_contains docs/base1/releases/README.md 'No destructive disk writes'
@@ -268,5 +278,5 @@ check_scripts
 check_references
 check_non_claims
 
-info 'integrity complete; Base1 docs, inventory, test inventory, test inventory reporter and verifier, migration table, script compatibility plan, link-check strategy, post-reorganization layout, pre-move checklist, release pre-move checks, reorganization verifier, link checker, readiness checklist, root compatibility paths, release mirrors, and dry-run references are present'
+info 'integrity complete; Base1 docs, inventory, test inventory, test inventory reporter and verifier, migration table, script compatibility plan, link-check strategy, post-reorganization layout, pre-move checklist, release pre-move checks, reorganization verifier, verification report template, link checker, readiness checklist, root compatibility paths, release mirrors, and dry-run references are present'
 info 'writes: no'
