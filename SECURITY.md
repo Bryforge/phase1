@@ -17,6 +17,25 @@ When security and usability are in tension, Phase1 should prefer:
 - practical workflows that stay testable, documented, and reversible;
 - conservative claims until stronger isolation, validation, or audit evidence exists.
 
+## Cryptographic policy goal
+
+Phase1 should grow toward documented, operator-visible cryptographic policy rather than hidden cryptographic assumptions.
+
+The cryptographic policy roadmap is tracked in [`docs/security/CRYPTO_POLICY_ROADMAP.md`](docs/security/CRYPTO_POLICY_ROADMAP.md).
+
+The long-term goal is to let advanced operators inspect and intentionally select approved cryptographic profiles by control point, such as storage, transport, identity, Base1 image verification, plugins, logs/evidence, and Fyr/package integrity.
+
+Crypto work must preserve these rules:
+
+- use reviewed open-source libraries and established algorithms where possible;
+- keep safe defaults for normal users;
+- document algorithms, modes, parameters, limits, and tradeoffs;
+- keep deprecated or lab-only choices out of default profiles;
+- reject custom security-critical primitives;
+- require tests, vectors, review, and evidence before strengthening cryptographic claims.
+
+This roadmap does not make Phase1 cryptographically complete, audited, certified, quantum-safe, or production-hardened.
+
 ## Secure default and trust gate
 
 phase1 defaults to safe mode with the host trust gate off. In the default launch, host-backed execution and host-network inspection are blocked.
