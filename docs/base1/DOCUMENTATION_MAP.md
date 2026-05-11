@@ -16,7 +16,7 @@ Base1 currently uses four documentation zones:
 | Zone | Purpose |
 | --- | --- |
 | `base1/` | Canonical Base1 security, hardware, compatibility, recovery, Libreboot, and operator design docs. |
-| `docs/base1/` | Organization maps, inventory, test inventory, migration planning, script compatibility planning, link-check planning, post-reorganization layout planning, pre-move checklist, validation runbooks, real-device read-only bundles, compatibility maps, and evidence reports. |
+| `docs/base1/` | Organization maps, inventory, test inventory, migration planning, script compatibility planning, link-check planning, post-reorganization layout planning, pre-move checklist, verification reporting, validation runbooks, real-device read-only bundles, compatibility maps, and evidence reports. |
 | `docs/base1/releases/` | Base1 release and checkpoint notes mirrored out of the repository root for cleaner navigation. |
 | `docs/os/` | Phase1 operating-system-track docs and Base1 dry-run command design slices. |
 
@@ -42,6 +42,7 @@ Scripts remain under `scripts/` until a later tools reorganization is backed by 
 - [Base1 post-reorganization layout](POST_REORGANIZATION_LAYOUT.md)
 - [Base1 pre-move checklist](PRE_MOVE_CHECKLIST.md)
 - [Reorganization readiness checklist](REORGANIZATION_READINESS.md)
+- [Reorganization verification report template](REORGANIZATION_VERIFICATION_REPORT_TEMPLATE.md)
 - [Documentation organization plan](DOCUMENTATION_ORGANIZATION_PLAN.md)
 - [Root compatibility map](ROOT_COMPATIBILITY_MAP.md)
 - [Base1 validation runbook](VALIDATION_RUNBOOK.md)
