@@ -11,7 +11,7 @@ The finish-first planning layer is complete for B1. The first B1 read-only detec
 
 B2 planning has started with a dry-run assembly plan, plan tests, initial dry-run assembly script, script tests, limitations note, limitations tests, validation report, validation report tests, output review, output review tests, focused test-suite command bundle, test-suite bundle tests, and OS roadmap boot-readiness tests.
 
-B3 planning has started with a VM boot validation plan.
+B3 planning has started with a VM boot validation plan and plan tests.
 
 ## Current readiness level
 
@@ -28,7 +28,7 @@ Do not claim Base1 boot readiness, installer readiness, hardware validation, har
 | B0 | Documentation ready | Complete for B1 start | Roadmaps, status tracker, checklist, links, tests. |
 | B1 | Read-only detection ready | Initial script present | Dry-run detection script, no writes, architecture/firmware/boot hints, limitations note, validation report. |
 | B2 | Dry-run assembly ready | Initial script present | Dry-run assembly plan, image/install/recovery previews with explicit no-write behavior, limitations note, validation report, output review, test-suite bundle. |
-| B3 | VM boot validated | Planning started | VM boot validation plan, VM boot report, logs, known limitations. |
+| B3 | VM boot validated | Planning and plan tests present | VM boot validation plan, VM boot report, logs, known limitations. |
 | B4 | Recovery validated | Not started | Emergency shell, recovery media, rollback report. |
 | B5 | Physical target validated | Not started | Named hardware validation report. |
 | B6 | Release candidate | Not started | Repeatable build, validation bundle, docs, rollback evidence. |
@@ -190,6 +190,12 @@ B3 VM boot validation planning is now present:
 
 - [`B3_VM_BOOT_VALIDATION_PLAN.md`](B3_VM_BOOT_VALIDATION_PLAN.md)
 
+B3 plan tests are present:
+
+```bash
+cargo test -p phase1 --test b3_vm_boot_validation_plan_docs
+```
+
 Planned B3 dry-run command shape:
 
 ```bash
@@ -203,7 +209,7 @@ B3 remains planning-only until B2 validation has passed locally or in CI and B3 
 Before B3 is considered complete, confirm:
 
 - [x] B3 VM boot validation plan exists.
-- [ ] B3 plan tests exist.
+- [x] B3 plan tests exist.
 - [ ] B2 test suite has passed locally or in CI.
 - [ ] B3 VM validation script exists.
 - [ ] B3 script tests exist.
@@ -280,6 +286,7 @@ Expected behavior:
 | B2 dry-run assembly script | Present | `scripts/base1-b2-assembly-dry-run.sh` |
 | B2 dry-run assembly tests | Present | `tests/base1_b2_assembly_dry_run_script.rs` |
 | B3 VM boot validation plan | Present | [`B3_VM_BOOT_VALIDATION_PLAN.md`](B3_VM_BOOT_VALIDATION_PLAN.md) |
+| B3 VM boot validation plan tests | Present | `tests/b3_vm_boot_validation_plan_docs.rs` |
 | B3 VM validation script | Not started | `scripts/base1-b3-vm-validate.sh` |
 | B3 VM validation tests | Not started | planned |
 | VM validation report | Not started | planned |
