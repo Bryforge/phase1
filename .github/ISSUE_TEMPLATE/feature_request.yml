@@ -1,0 +1,96 @@
+name: Feature request
+description: Propose an improvement for Phase1, Base1, Fyr, documentation, website, or community support.
+title: "feature: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting an improvement. Please keep the request focused and avoid unsupported claims.
+
+        Do not include secrets, tokens, private keys, recovery codes, private logs, or unrevised screenshots.
+
+  - type: dropdown
+    id: project_area
+    attributes:
+      label: Project area
+      options:
+        - Phase1
+        - Base1
+        - Fyr
+        - Security
+        - Crypto policy
+        - Website / branding
+        - Community / support
+        - Documentation
+        - Tests / quality gates
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or opportunity
+      description: What problem does this solve, or what workflow does it improve?
+      placeholder: "Describe the user/operator need."
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What should be added or changed?
+      placeholder: "Describe the feature or improvement."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What other approaches did you consider?
+    validations:
+      required: false
+
+  - type: dropdown
+    id: risk_level
+    attributes:
+      label: Risk level
+      description: Pick the highest relevant risk category.
+      options:
+        - Low - docs, examples, UI polish, or safe read-only behavior
+        - Medium - command behavior, workflow, compatibility, or validation changes
+        - High - host-backed behavior, Base1, recovery, crypto policy, storage, identity, or mutation
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety and claim checks
+      options:
+        - label: This request preserves safe defaults or explains why a change is needed.
+          required: true
+        - label: This request does not claim production readiness, hardware validation, audit status, certification, or quantum safety without evidence.
+          required: true
+        - label: This request does not include secrets, private logs, tokens, private keys, recovery codes, or unrevised screenshots.
+          required: true
+
+  - type: textarea
+    id: validation
+    attributes:
+      label: Suggested validation
+      description: What test, doc update, quality gate, or manual check should prove this feature works?
+      placeholder: "Example: cargo test --all-targets, sh scripts/quality-check.sh quick, docs update, smoke test, etc."
+    validations:
+      required: false
+
+  - type: textarea
+    id: related
+    attributes:
+      label: Related docs, issues, or context
+      description: Link any relevant docs, roadmap items, issues, PRs, or examples.
+    validations:
+      required: false
