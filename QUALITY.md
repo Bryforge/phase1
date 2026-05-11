@@ -27,6 +27,7 @@ Phase1 should be:
 | Scripts | Shell tooling stays valid | `sh -n` checks and script-specific tests |
 | Docs | User-facing claims stay discoverable | required docs, links, maps, and compatibility paths exist |
 | Base1 integrity | Base1 organization preserves root compatibility, release mirrors, local links, and test inventory coverage | `sh scripts/quality-check.sh base1-docs` |
+| Base1 reorganization | Base1 broad organization readiness stays gated by full read-only verification | `sh scripts/quality-check.sh base1-reorg` |
 | Release | Version and release metadata stay aligned | release metadata checks |
 | Safety | Risky behavior remains explicit and guarded | safety docs and policy checks |
 | Dependency | Dependency risk is reviewed | `cargo audit`, `cargo deny check` when tools are available |
@@ -56,6 +57,26 @@ sh scripts/base1-test-inventory-verify.sh
 ```
 
 It verifies the current Base1 documentation map, inventory, test inventory, migration table, script compatibility plan, link-check strategy, post-reorganization layout, root compatibility paths, organized release mirrors, real-device read-only docs, script syntax, local links, non-claims, and dry-run guardrails.
+
+### Base1 reorganization readiness
+
+```bash
+sh scripts/quality-check.sh base1-reorg
+```
+
+Alias:
+
+```bash
+sh scripts/quality-check.sh base1-reorganization
+```
+
+This focused gate runs the read-only Base1 reorganization verification bundle:
+
+```bash
+sh scripts/base1-reorganization-verify.sh
+```
+
+The bundle runs the Base1 integrity gate, local link checker, test-inventory verifier, and `cargo test --all-targets` when Cargo is available. If Cargo is unavailable, the bundle reports that Cargo tests must still run on a Rust-capable host before broad reorganization readiness is claimed.
 
 ### Required before release
 
@@ -112,6 +133,7 @@ scripts/base1-doc-integrity.sh
 scripts/base1-link-check.sh
 scripts/base1-test-inventory.sh
 scripts/base1-test-inventory-verify.sh
+scripts/base1-reorganization-verify.sh
 scripts/test-release-metadata.sh
 scripts/test-website.sh
 ```
@@ -140,6 +162,14 @@ The Base1 docs quality gate verifies:
 - dry-run guardrails remain visible
 - non-claims are preserved
 
+Before broad Base1 organization readiness is claimed, run:
+
+```bash
+sh scripts/quality-check.sh base1-reorg
+```
+
+The Base1 reorganization gate verifies the docs gate and also runs the full Cargo test suite when Cargo is available.
+
 ## PR review checklist
 
 Every PR should answer:
@@ -164,7 +194,7 @@ Every PR should answer:
 | Base1 | `base1/`, `docs/base1/`, `docs/os/BASE1_*`, `scripts/base1-*` |
 | Website/wiki | `index.html`, `docs/wiki/`, `WIKI_ROADMAP.md` |
 | Release/update | `UPDATE_PROTOCOL.md`, `CHANGELOG.md`, `Cargo.toml` |
-| Quality system | `QUALITY.md`, `QUALITY_SCORECARD.md`, `scripts/quality-*`, `scripts/base1-doc-integrity.sh`, `scripts/base1-link-check.sh`, `scripts/base1-test-inventory*.sh`, `.github/workflows/quality.yml` |
+| Quality system | `QUALITY.md`, `QUALITY_SCORECARD.md`, `scripts/quality-*`, `scripts/base1-doc-integrity.sh`, `scripts/base1-link-check.sh`, `scripts/base1-test-inventory*.sh`, `scripts/base1-reorganization-verify.sh`, `.github/workflows/quality.yml` |
 
 ## Safety baseline
 
@@ -185,6 +215,12 @@ Quality work must preserve these defaults:
 sh scripts/quality-score.sh
 sh scripts/quality-check.sh base1-docs
 sh scripts/quality-check.sh quick
+```
+
+Before broad Base1 organization readiness:
+
+```bash
+sh scripts/quality-check.sh base1-reorg
 ```
 
 Before release:
