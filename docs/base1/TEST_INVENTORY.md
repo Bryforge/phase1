@@ -54,6 +54,7 @@ The verifier compares reporter output against this document and fails if a repor
 | `tests/base1_test_inventory_verify_script.rs` | Test inventory verifier behavior. |
 | `tests/base1_post_reorganization_layout_docs.rs` | Post-reorganization layout docs. |
 | `tests/base1_pre_move_checklist_docs.rs` | Pre-move checklist docs. |
+| `tests/base1_release_pre_move_checks_docs.rs` | Release/checkpoint pre-move checks docs. |
 | `tests/base1_reorganization_readiness_docs.rs` | Reorganization readiness checklist docs. |
 | `tests/quality_base1_docs_gate.rs` | Quality gate integration for `base1-docs`, integrity, link checks, and test inventory verification. |
 
