@@ -15,6 +15,8 @@ OUT_DIR=${BASE1_B3_GNULINUX_STAGE_OUT:-build/base1-b3-gnulinux-stage}
 MODE=prepare
 TIMEOUT_SECONDS=${BASE1_B3_TIMEOUT:-30}
 EXPECT=${BASE1_B3_MARKER:-phase1 6.0.0 ready}
+BOOT_PROFILE=${BASE1_QEMU_BOOT_PROFILE:-hardened}
+EXTRA_APPEND=${BASE1_QEMU_EXTRA_APPEND:-}
 
 usage() {
   cat <<'USAGE'
@@ -24,22 +26,31 @@ usage:
   sh scripts/base1-b3-gnulinux-stage.sh [--root <dir>|--boot <dir>|--kernel <path> --initrd <path>] [--prepare|--dry-run|--check]
 
 options:
-  --root <dir>        local GNU/Linux root directory; uses <root>/boot
-  --boot <dir>        local GNU/Linux boot directory containing vmlinuz/initrd
-  --kernel <path>     explicit local GNU/Linux kernel image
-  --initrd <path>     explicit local GNU/Linux initrd/initramfs image
-  --out <build/dir>   output bundle directory, default: build/base1-b3-gnulinux-stage
-  --prepare           stage bundle only, default
-  --dry-run           stage bundle and print guarded QEMU handoff plan
-  --check             stage bundle and run guarded QEMU serial-marker check
-  --timeout <seconds> check timeout, default: 30
-  --expect <text>     expected serial marker, default: phase1 6.0.0 ready
-  -h, --help          show this help
+  --root <dir>         local GNU/Linux root directory; uses <root>/boot
+  --boot <dir>         local GNU/Linux boot directory containing vmlinuz/initrd
+  --kernel <path>      explicit local GNU/Linux kernel image
+  --initrd <path>      explicit local GNU/Linux initrd/initramfs image
+  --out <build/dir>    output bundle directory, default: build/base1-b3-gnulinux-stage
+  --prepare            stage bundle only, default
+  --dry-run            stage bundle and print guarded QEMU handoff plan
+  --check              stage bundle and run guarded QEMU serial-marker check
+  --timeout <seconds>  check timeout, default: 30
+  --expect <text>      expected serial marker, default: phase1 6.0.0 ready
+  --boot-profile <p>   QEMU boot profile, default: hardened; allowed: standard, hardened
+  --append <text>      extra kernel command-line text for the checker
+  -h, --help           show this help
 
 stage model:
   This uses GNU/Linux as a known boot payload staging point. It does not build,
   download, install, or trust a GNU/Linux distribution by itself. It only stages
   local kernel/initrd files into the B3 handoff pipeline.
+
+hardened profile:
+  The GNU/Linux stage defaults to the hardened QEMU boot profile. That profile
+  requests Linux hardening-oriented kernel parameters such as module signature
+  enforcement, lockdown, allocator initialization, KASLR-supporting entropy
+  behavior, PTI, vsyscall disablement, and debugfs disablement. This is a
+  requested boot profile, not proof that the resulting system is hardened.
 
 non-claims:
   This is emulator-only staging evidence. It does not make Base1 a GNU/Linux
@@ -56,6 +67,13 @@ fail() {
 require_build_out_dir() {
   case "$1" in
     build/*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+valid_boot_profile() {
+  case "$1" in
+    standard|hardened) return 0 ;;
     *) return 1 ;;
   esac
 }
@@ -140,6 +158,16 @@ while [ "$#" -gt 0 ]; do
       EXPECT=$2
       shift 2
       ;;
+    --boot-profile)
+      [ "$#" -ge 2 ] || fail '--boot-profile requires a value'
+      BOOT_PROFILE=$2
+      shift 2
+      ;;
+    --append)
+      [ "$#" -ge 2 ] || fail '--append requires a value'
+      EXTRA_APPEND=$2
+      shift 2
+      ;;
     -h|--help)
       usage
       exit 0
@@ -156,6 +184,7 @@ case "$TIMEOUT_SECONDS" in
 esac
 [ "$TIMEOUT_SECONDS" -gt 0 ] || fail '--timeout must be greater than zero'
 
+valid_boot_profile "$BOOT_PROFILE" || fail "unsupported boot profile: $BOOT_PROFILE"
 require_build_out_dir "$OUT_DIR" || fail "output directory must be under build/: $OUT_DIR"
 
 if [ -z "$BOOT_DIR" ] && [ -n "$ROOT_DIR" ]; then
@@ -180,13 +209,14 @@ fi
 [ -f scripts/base1-b3-kernel-handoff.sh ] || fail 'missing scripts/base1-b3-kernel-handoff.sh'
 
 printf 'BASE1 B3 GNU/LINUX STAGE\n'
-printf 'mode   : %s\n' "$MODE"
-printf 'out    : %s\n' "$OUT_DIR"
-printf 'boot   : %s\n' "${BOOT_DIR:-explicit}"
-printf 'kernel : %s\n' "$KERNEL"
-printf 'initrd : %s\n' "$INITRD"
-printf 'expect : %s\n' "$EXPECT"
-printf 'stage  : GNU/Linux local kernel/initrd handoff\n'
+printf 'mode        : %s\n' "$MODE"
+printf 'out         : %s\n' "$OUT_DIR"
+printf 'boot        : %s\n' "${BOOT_DIR:-explicit}"
+printf 'kernel      : %s\n' "$KERNEL"
+printf 'initrd      : %s\n' "$INITRD"
+printf 'expect      : %s\n' "$EXPECT"
+printf 'boot_profile: %s\n' "$BOOT_PROFILE"
+printf 'stage       : GNU/Linux local kernel/initrd handoff\n'
 printf '\n'
 
 case "$MODE" in
@@ -197,7 +227,9 @@ case "$MODE" in
       --initrd "$INITRD" \
       --prepare \
       --timeout "$TIMEOUT_SECONDS" \
-      --expect "$EXPECT"
+      --expect "$EXPECT" \
+      --boot-profile "$BOOT_PROFILE" \
+      --append "$EXTRA_APPEND"
     ;;
   dry-run)
     sh scripts/base1-b3-kernel-handoff.sh \
@@ -206,7 +238,9 @@ case "$MODE" in
       --initrd "$INITRD" \
       --dry-run \
       --timeout "$TIMEOUT_SECONDS" \
-      --expect "$EXPECT"
+      --expect "$EXPECT" \
+      --boot-profile "$BOOT_PROFILE" \
+      --append "$EXTRA_APPEND"
     ;;
   check)
     sh scripts/base1-b3-kernel-handoff.sh \
@@ -215,7 +249,9 @@ case "$MODE" in
       --initrd "$INITRD" \
       --check \
       --timeout "$TIMEOUT_SECONDS" \
-      --expect "$EXPECT"
+      --expect "$EXPECT" \
+      --boot-profile "$BOOT_PROFILE" \
+      --append "$EXTRA_APPEND"
     ;;
   *)
     fail "internal unsupported mode: $MODE"
@@ -223,4 +259,5 @@ case "$MODE" in
 esac
 
 printf 'stage_result: %s\n' "$MODE"
-printf 'non_claims: emulator-only GNU/Linux stage; no installer; no hardware validation; no daily-driver claim\n'
+printf 'boot_profile: %s\n' "$BOOT_PROFILE"
+printf 'non_claims: emulator-only GNU/Linux stage; hardened profile is request-only; no installer; no hardware validation; no hardening proof; no daily-driver claim\n'
