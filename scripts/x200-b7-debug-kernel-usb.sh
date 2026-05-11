@@ -2,6 +2,10 @@
 # Phase1 / Base1 X200 B7 debug USB kernel+initrd writer.
 # This creates multiple GRUB entries for old Libreboot/X200 hardware.
 # It erases only the selected USB disk and refuses to run without YES_WRITE_USB.
+#
+# Important X200/libreboot note:
+# Do not force `terminal_output console`; some libreboot GRUB builds report
+# `error: terminal 'console' isn't found` and pause before kernel handoff.
 
 set -eu
 
@@ -58,32 +62,35 @@ sudo cp "$INITRD" "$MNT/boot/phase1/initrd.img"
 sudo tee "$MNT/boot/grub/grub.cfg" >/dev/null <<'EOF'
 set timeout=15
 set default=0
-terminal_output console
-set gfxpayload=text
+set pager=1
 
-menuentry "Phase1 B7 debug kernel/initrd - text nomodeset" {
-    terminal_output console
+menuentry "Phase1 B7 debug kernel/initrd - plain text nomodeset" {
     set gfxpayload=text
-    echo "Phase1 B7 debug: text mode + nomodeset"
+    echo "Phase1 B7 debug: plain text + nomodeset"
     echo "If kernel lines appear after this, record: boot_started"
-    linux /boot/phase1/vmlinuz console=tty0 nomodeset vga=normal loglevel=7 earlyprintk=vga keep_bootcon
+    linux /boot/phase1/vmlinuz console=tty0 nomodeset vga=normal loglevel=7 debug earlyprintk=vga keep_bootcon
     initrd /boot/phase1/initrd.img
 }
 
 menuentry "Phase1 B7 debug kernel/initrd - noapic acpi off" {
-    terminal_output console
     set gfxpayload=text
     echo "Phase1 B7 debug: noapic nolapic acpi=off"
-    linux /boot/phase1/vmlinuz console=tty0 nomodeset vga=normal noapic nolapic acpi=off loglevel=7 earlyprintk=vga keep_bootcon
+    echo "If kernel lines appear after this, record: boot_started"
+    linux /boot/phase1/vmlinuz console=tty0 nomodeset vga=normal noapic nolapic acpi=off loglevel=7 debug earlyprintk=vga keep_bootcon
     initrd /boot/phase1/initrd.img
 }
 
 menuentry "Phase1 B7 debug kernel only - expected panic is useful" {
-    terminal_output console
     set gfxpayload=text
     echo "Phase1 B7 debug: kernel only, no initrd"
     echo "If kernel panic appears, kernel execution is proven."
-    linux /boot/phase1/vmlinuz console=tty0 nomodeset vga=normal loglevel=7 earlyprintk=vga keep_bootcon
+    linux /boot/phase1/vmlinuz console=tty0 nomodeset vga=normal loglevel=7 debug earlyprintk=vga keep_bootcon
+}
+
+menuentry "Phase1 B7 debug kernel/initrd - minimal args" {
+    echo "Phase1 B7 debug: minimal kernel args"
+    linux /boot/phase1/vmlinuz
+    initrd /boot/phase1/initrd.img
 }
 
 menuentry "Phase1 B6 marker fallback" {
@@ -99,7 +106,7 @@ sudo tee "$MNT/PHASE1-B7-DEBUG.txt" >/dev/null <<'EOF'
 Phase1 B7 debug USB for X200 Libreboot/Coreboot path.
 Evidence states:
 - boot_started: kernel output or kernel panic appears
-- blocked: GRUB loads initrd but never transfers visibly to kernel
+- blocked: GRUB loads initrd/kernel but never transfers visibly to kernel
 - phase1_marker_seen: marker fallback appears
 No installer claim. No internal disk claim. No daily-driver claim.
 EOF
@@ -122,4 +129,4 @@ BASE1_B7_DEBUG_USB_CLAIM=not_claimed
 EOF
 
 printf '\nDONE: B7 debug USB prepared on %s\n' "$USB"
-printf 'Try entries in order. If stuck after initrd again, try entry 2, then entry 3.\n'
+printf 'Try entries in order. This version avoids terminal_output console.\n'
