@@ -150,7 +150,8 @@ fn base1_b3_log_bundle_review_preserves_boundaries_and_expected_markers() {
         "BASE1_B3_NON_CLAIM_HARDWARE=1",
         "BASE1_B3_NON_CLAIM_RELEASE_CANDIDATE=1",
         "BASE1_B3_NON_CLAIM_DAILY_DRIVER=1",
-        "result: pass",
+        "result=pass",
+        "printf '\\nresult: %s\\n' \"$result\"",
         "BASE1_B3_LOG_REVIEW_RESULT=$result",
     ] {
         assert!(contents.contains(text), "missing boundary/marker text {text}: {contents}");
