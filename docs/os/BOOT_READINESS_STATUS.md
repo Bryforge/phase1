@@ -9,7 +9,7 @@ This tracker shows what must be finished before Phase1/Base1 moves from planning
 
 The finish-first planning layer is complete for B1. The first B1 read-only detection script, guard tests, limitations note, limitations tests, validation report, and validation report tests now exist while preserving the B1 boundary.
 
-B2 planning has started with a dry-run assembly plan, plan tests, initial dry-run assembly script, script tests, limitations note, limitations tests, validation report, validation report tests, output review, output review tests, focused test-suite command bundle, and test-suite bundle tests.
+B2 planning has started with a dry-run assembly plan, plan tests, initial dry-run assembly script, script tests, limitations note, limitations tests, validation report, validation report tests, output review, output review tests, focused test-suite command bundle, test-suite bundle tests, and OS roadmap boot-readiness tests.
 
 ## Current readiness level
 
@@ -151,6 +151,12 @@ B2 test-suite bundle tests are present:
 cargo test -p phase1 --test b2_dry_run_assembly_test_suite_docs
 ```
 
+OS roadmap boot-readiness tests are present:
+
+```bash
+cargo test -p phase1 --test os_roadmap_boot_readiness_docs
+```
+
 B2 status and boundaries are linked from README, OS roadmap, race plan, and x86_64 roadmap.
 
 B2 remains dry-run-only until validation has passed locally or in CI.
@@ -173,6 +179,7 @@ Before B2 is considered complete, confirm:
 - [x] B2 output review tests exist.
 - [x] B2 focused test-suite command bundle exists.
 - [x] B2 test-suite bundle tests exist.
+- [x] OS roadmap boot-readiness tests exist.
 - [ ] B2 test suite passes in CI or local validation.
 
 ## Planned first coding slice
@@ -213,6 +220,7 @@ Expected behavior:
 | Evidence | Status | Path |
 | --- | --- | --- |
 | OS roadmap | Present | [`ROADMAP.md`](ROADMAP.md) |
+| OS roadmap boot-readiness tests | Present | `tests/os_roadmap_boot_readiness_docs.rs` |
 | Boot readiness race plan | Present | [`BOOT_READINESS_RACE_PLAN.md`](BOOT_READINESS_RACE_PLAN.md) |
 | x86_64 boot support roadmap | Present | [`X86_64_BOOT_SUPPORT_ROADMAP.md`](X86_64_BOOT_SUPPORT_ROADMAP.md) |
 | Boot readiness status tracker | Present | [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md) |
