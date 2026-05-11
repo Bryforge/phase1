@@ -71,6 +71,22 @@ Use [`POST_REORGANIZATION_LAYOUT.md`](POST_REORGANIZATION_LAYOUT.md) as the prop
 
 Use [`PRE_MOVE_CHECKLIST.md`](PRE_MOVE_CHECKLIST.md) before moving or mirroring any Base1 group. It defines required inventory, tests, compatibility, link-check, and quality-gate checks.
 
+## Verification rule
+
+Use the Base1 docs quality gate before and after organization work:
+
+```bash
+sh scripts/quality-check.sh base1-docs
+```
+
+Use the full reorganization verification bundle before claiming broad organization readiness:
+
+```bash
+sh scripts/base1-reorganization-verify.sh
+```
+
+The verification bundle is read-only. It runs the Base1 integrity gate, local link checker, test-inventory verifier, and `cargo test --all-targets` when Cargo is available.
+
 ## Base1 wording rule
 
 Use `planned`, `design`, `dry-run`, `preview`, or `validated` according to evidence. Do not call Base1 bootable, daily-driver ready, recovery-complete, or installer-ready without release artifacts and validation reports.
