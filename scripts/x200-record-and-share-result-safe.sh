@@ -6,9 +6,9 @@
 # local HTTP server.
 #
 # Usage:
+#   sh scripts/x200-record-and-share-result-safe.sh phase1_persistent_workspace_seen
+#   sh scripts/x200-record-and-share-result-safe.sh phase1_runtime_workspace_seen
 #   sh scripts/x200-record-and-share-result-safe.sh phase1_gnulinux_shell_seen
-#   sh scripts/x200-record-and-share-result-safe.sh phase1_polished_system_seen
-#   sh scripts/x200-record-and-share-result-safe.sh phase1_system_console_v2_seen
 #
 # This does not push to GitHub. The X200 creates a patch in ~/phase1-share.
 # The Mac applies and pushes it.
@@ -28,7 +28,7 @@ fail() { printf 'x200-record-and-share-result-safe: %s\n' "$1" >&2; exit 1; }
 [ -f "$RECORDER" ] || fail "missing $RECORDER; run: git pull --ff-only origin edge/stable"
 
 case "$RESULT" in
-  phase1_gnulinux_shell_seen|phase1_gnulinux_initramfs_seen|blocked_after_gnulinux_load|phase1_polished_system_seen|phase1_splash_mode_seen|phase1_system_console_v2_seen|phase1_system_console_seen|phase1_seabios_grub_seen|phase1_seabios_multiboot_seen|phase1_mbr_bootsector_seen|phase1_bootsector_seen|phase1_kernel_framebuffer_seen|phase1_kernel_keyboard_console_seen|phase1_grub_console_seen|blocked_after_seabios_multiboot_load|blocked_after_seabios_payload|blocked_after_chainload|blocked_after_multiboot_load|seabios_usb_not_booting|failed) : ;;
+  phase1_persistent_workspace_seen|phase1_runtime_workspace_seen|phase1_gnulinux_shell_seen|phase1_gnulinux_initramfs_seen|blocked_after_gnulinux_load|phase1_polished_system_seen|phase1_splash_mode_seen|phase1_system_console_v2_seen|phase1_system_console_seen|phase1_seabios_grub_seen|phase1_seabios_multiboot_seen|phase1_mbr_bootsector_seen|phase1_bootsector_seen|phase1_kernel_framebuffer_seen|phase1_kernel_keyboard_console_seen|phase1_grub_console_seen|blocked_after_seabios_multiboot_load|blocked_after_seabios_payload|blocked_after_chainload|blocked_after_multiboot_load|seabios_usb_not_booting|failed) : ;;
   *) fail "unsupported or too-small result for this helper: $RESULT" ;;
 esac
 
