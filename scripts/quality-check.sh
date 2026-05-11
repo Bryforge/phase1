@@ -50,6 +50,10 @@ check_base1_docs() {
     run sh scripts/base1-test-inventory-verify.sh
 }
 
+check_base1_reorganization() {
+    run sh scripts/base1-reorganization-verify.sh
+}
+
 quick() {
     check_required_files
     check_scripts
@@ -94,6 +98,9 @@ case "$mode" in
     base1-docs)
         check_base1_docs
         ;;
+    base1-reorg|base1-reorganization)
+        check_base1_reorganization
+        ;;
     help|-h|--help)
         cat <<'EOF'
 Phase1 quality check
@@ -105,6 +112,7 @@ Usage:
   sh scripts/quality-check.sh scripts
   sh scripts/quality-check.sh files
   sh scripts/quality-check.sh base1-docs
+  sh scripts/quality-check.sh base1-reorg
 EOF
         ;;
     *)
