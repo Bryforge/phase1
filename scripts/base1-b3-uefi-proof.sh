@@ -25,6 +25,10 @@ Options:
 Marker:
   phase1 6.0.0 ready
 
+Display behavior:
+  Visible QEMU runs keep the screen splash-only. Proof text is routed to serial
+  for --check so the GRUB graphics view does not show character noise.
+
 Non-claims:
   This is QEMU/OVMF proof-of-life only. It does not make Base1 installer-ready,
   hardware-validated, recovery-complete, hardened, release-candidate ready, or
@@ -116,9 +120,9 @@ timeout_bin() {
 generate_splash() {
   have sips || fail 'missing sips; macOS sips is used to fit the splash'
   [ -f "$SPLASH_SOURCE" ] || fail "missing splash asset: $SPLASH_SOURCE"
-  sips -Z "$SPLASH_MAX_EDGE" "$SPLASH_SOURCE" --out "$SPLASH_FIT" >/dev/null
+  sips -Z "$SPLASH_MAX_EDGE" "$SPLASH_SOURCE" --out "$SPLASH_FIT" >/dev/null 2>&1
   sips --padToHeightWidth "$SPLASH_HEIGHT" "$SPLASH_WIDTH" --padColor 000000 \
-    "$SPLASH_FIT" --out "$SPLASH" >/dev/null
+    "$SPLASH_FIT" --out "$SPLASH" >/dev/null 2>&1
 }
 
 generate_font() {
@@ -151,7 +155,7 @@ insmod terminal
 
 serial --unit=0 --speed=115200 --word=8 --parity=no --stop=1
 terminal_input console serial
-terminal_output gfxterm serial
+terminal_output gfxterm
 
 if loadfont /boot/grub/fonts/phase1.pf2; then
   true
@@ -159,18 +163,22 @@ fi
 
 set gfxmode=1024x768,auto
 set gfxpayload=keep
-set color_normal=white/black
-set color_highlight=black/light-cyan
+set color_normal=black/black
+set color_highlight=black/black
 
 search --file /boot/grub/phase1-qemu-splash.png --set=root
 background_image /boot/grub/phase1-qemu-splash.png
 
-menuentry "Phase1 / Base1 B3 UEFI proof" {
+menuentry " " {
     clear
     background_image /boot/grub/phase1-qemu-splash.png
+    terminal_output serial
     echo "base1 b3 uefi proof start"
     echo "$MARKER"
     echo "emulator-only evidence; no installer; no hardware-validation claim"
+    terminal_output gfxterm
+    clear
+    background_image /boot/grub/phase1-qemu-splash.png
     sleep --interruptible 9999
 }
 EOF
@@ -208,6 +216,7 @@ build_image() {
   printf 'base1_b3_uefi_proof: built %s\n' "$IMG"
   printf 'marker: %s\n' "$MARKER"
   printf 'splash: assets/phase1_word.png fitted to %sx%s max edge %s\n' "$SPLASH_WIDTH" "$SPLASH_HEIGHT" "$SPLASH_MAX_EDGE"
+  printf 'display: splash-only; proof text routed to serial\n'
   printf 'boot_readiness_claim: no\n'
 }
 
