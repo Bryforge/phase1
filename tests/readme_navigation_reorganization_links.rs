@@ -13,6 +13,25 @@ fn readme_links_core_navigation_and_reorganization_docs() {
 }
 
 #[test]
+fn readme_links_current_public_asset_components() {
+    let readme = std::fs::read_to_string("README.md").expect("README.md");
+
+    for asset in [
+        "assets/phase1_base_fyr_banner1.png",
+        "assets/phase1-splash.png",
+        "assets/fyr_symbol.png",
+        "assets/fyr_word.png",
+    ] {
+        assert!(readme.contains(asset), "README missing current asset component {asset}: {readme}");
+    }
+
+    assert!(
+        !readme.contains("assets/phase1-splash.svg"),
+        "README should not reference the outdated Phase1 splash SVG: {readme}"
+    );
+}
+
+#[test]
 fn readme_links_x86_64_and_hardening_roadmap() {
     let readme = std::fs::read_to_string("README.md").expect("README.md");
 
