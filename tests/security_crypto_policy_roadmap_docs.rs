@@ -82,6 +82,28 @@ fn crypto_policy_roadmap_documents_registry_and_algorithm_requirements() {
 }
 
 #[test]
+fn crypto_policy_roadmap_documents_provider_registry() {
+    let roadmap = std::fs::read_to_string("docs/security/CRYPTO_POLICY_ROADMAP.md")
+        .expect("crypto policy roadmap");
+
+    for text in [
+        "Provider registry",
+        "CRYPTO_PROVIDER_REGISTRY.md",
+        "provider source, license, version/source pinning",
+        "supported algorithms",
+        "supported platforms",
+        "feature flags",
+        "failure behavior",
+        "No provider should be connected to runtime behavior until it is documented, reviewed, and compatible with the selected profile and control point.",
+        "Every provider entry should follow [`CRYPTO_PROVIDER_REGISTRY.md`](CRYPTO_PROVIDER_REGISTRY.md)",
+        "Create provider registry: [`CRYPTO_PROVIDER_REGISTRY.md`](CRYPTO_PROVIDER_REGISTRY.md).",
+        "Provider inventory reports.",
+    ] {
+        assert!(roadmap.contains(text), "missing provider roadmap text {text}: {roadmap}");
+    }
+}
+
+#[test]
 fn crypto_policy_roadmap_links_operator_commands_and_config_schema() {
     let roadmap = std::fs::read_to_string("docs/security/CRYPTO_POLICY_ROADMAP.md")
         .expect("crypto policy roadmap");
@@ -174,12 +196,14 @@ fn security_index_links_crypto_policy_surface() {
     for text in [
         "CRYPTO_POLICY_ROADMAP.md",
         "CRYPTO_REGISTRY.md",
+        "CRYPTO_PROVIDER_REGISTRY.md",
         "CRYPTO_OPERATOR_COMMANDS.md",
         "CRYPTO_CONFIG_SCHEMA.md",
         "CRYPTO_ALGORITHM_TEMPLATE.md",
         "crypto-profiles/README.md",
         "cryptographic completeness",
         "algorithm pages use [`CRYPTO_ALGORITHM_TEMPLATE.md`](CRYPTO_ALGORITHM_TEMPLATE.md)",
+        "provider entries are listed or planned through [`CRYPTO_PROVIDER_REGISTRY.md`](CRYPTO_PROVIDER_REGISTRY.md)",
         "crypto configuration follows [`CRYPTO_CONFIG_SCHEMA.md`](CRYPTO_CONFIG_SCHEMA.md)",
     ] {
         assert!(index.contains(text), "missing security index text {text}: {index}");
