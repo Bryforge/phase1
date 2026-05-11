@@ -23,6 +23,7 @@ The current evidence demonstrates that the B3 emulator scaffolds can produce loc
 | B3 UEFI proof | Present locally | `build/base1-b3-uefi-proof/reports/b3-summary.env` | Emulator-only UEFI proof-of-life. |
 | B3 GNU/Linux stage | Present locally | `build/base1-b3-gnulinux-stage/reports/qemu-boot-summary.env` | Hardened-profile request and Linux kernel-start evidence only. |
 | B3 OpenBSD stage | Present locally | `build/base1-b3-openbsd-stage/reports/openbsd-qemu-summary.env` | Launch-check evidence only until serial marker routing is tuned. |
+| B3 OpenBSD serial marker limitation | Documented | [`B3_OPENBSD_SERIAL_LIMITATION.md`](B3_OPENBSD_SERIAL_LIMITATION.md) | Marker-check is a known limitation until serial routing is tuned. |
 | B3 kernel/initrd handoff | Not yet present locally | `build/base1-b3-kernel-handoff/reports/qemu-boot-summary.env` | Requires a known-good local kernel/initrd check. |
 
 ## Commands represented by this report
@@ -89,13 +90,14 @@ launch
 
 `launch` mode records bounded QEMU launch evidence when OpenBSD console output is not yet routed to serial. A launch-check pass does not prove OpenBSD booted to installer or userland. It proves the OpenBSD artifact was accepted by the bounded QEMU stage and the run stayed inside the local evidence boundary.
 
+The OpenBSD serial marker limitation is documented in [`B3_OPENBSD_SERIAL_LIMITATION.md`](B3_OPENBSD_SERIAL_LIMITATION.md).
+
 ## Required before strengthening B3 claims
 
 Before B3 can become “VM boot validated,” the project still needs:
 
 - B2 focused test suite pass record;
 - known-good local kernel/initrd handoff check;
-- OpenBSD serial marker routing or a documented limitation;
 - reviewed B3 log bundle;
 - explicit VM profile;
 - explicit VM runtime;
@@ -107,4 +109,4 @@ Before B3 can become “VM boot validated,” the project still needs:
 
 This report does not make Base1 bootable on physical hardware, installer-ready, recovery-complete, hardened, hardware-validated, release-candidate ready, or daily-driver ready.
 
-It records local emulator evidence and preserves the current B3 boundary: proof-of-life, GNU/Linux kernel-start stage evidence, OpenBSD launch-check stage evidence, and validation scaffolding only.
+It records local emulator evidence and preserves the current B3 boundary: proof-of-life, GNU/Linux kernel-start stage evidence, OpenBSD launch-check stage evidence, documented OpenBSD serial-marker limitation, and validation scaffolding only.
