@@ -17,6 +17,8 @@ INITRD=${BASE1_PREVIEW_INITRD:-}
 MODE=prepare
 TIMEOUT_SECONDS=${BASE1_B3_TIMEOUT:-30}
 EXPECT=${BASE1_B3_MARKER:-phase1 6.0.0 ready}
+BOOT_PROFILE=${BASE1_QEMU_BOOT_PROFILE:-standard}
+EXTRA_APPEND=${BASE1_QEMU_EXTRA_APPEND:-}
 
 usage() {
   cat <<'USAGE'
@@ -26,18 +28,20 @@ usage:
   sh scripts/base1-b3-kernel-handoff.sh --kernel <path> --initrd <path> [--prepare|--dry-run|--check]
 
 options:
-  --kernel <path>     local kernel image to stage as staging/boot/vmlinuz
-  --initrd <path>     local initrd image to stage as staging/boot/initrd.img
-  --out <build/dir>   output bundle directory, default: build/base1-b3-kernel-handoff
-  --profile <name>    profile label, default: x86_64-vm-validation
-  --target <name>     target label, default: emulator-x86_64
-  --image-mb <n>      sandbox raw size, default: 128
-  --prepare           create the bundle only, default
-  --dry-run           create bundle and print the QEMU handoff plan
-  --check             create bundle and run guarded QEMU serial-marker check
-  --timeout <seconds> check timeout, default: 30
-  --expect <text>     expected serial marker, default: phase1 6.0.0 ready
-  -h, --help          show this help
+  --kernel <path>       local kernel image to stage as staging/boot/vmlinuz
+  --initrd <path>       local initrd image to stage as staging/boot/initrd.img
+  --out <build/dir>     output bundle directory, default: build/base1-b3-kernel-handoff
+  --profile <name>      profile label, default: x86_64-vm-validation
+  --target <name>       target label, default: emulator-x86_64
+  --image-mb <n>        sandbox raw size, default: 128
+  --prepare             create the bundle only, default
+  --dry-run             create bundle and print the QEMU handoff plan
+  --check               create bundle and run guarded QEMU serial-marker check
+  --timeout <seconds>   check timeout, default: 30
+  --expect <text>       expected serial marker, default: phase1 6.0.0 ready
+  --boot-profile <p>    QEMU boot profile passed to checker: standard or hardened
+  --append <text>       extra kernel command-line text for the checker
+  -h, --help            show this help
 
 required local inputs:
   A kernel and initrd that are already safe to run in QEMU. This script only
@@ -52,7 +56,7 @@ outputs:
   <out>/reports/qemu-boot.log when --check is used
 
 non-claims:
-  This is emulator-only B3 handoff evidence. It does not install Base1, validate physical hardware, validate recovery, validate an installer, prove hardening, or prove daily-driver readiness.
+  The hardened boot profile requests Linux hardening-oriented kernel parameters but does not prove hardening. This is emulator-only B3 handoff evidence. It does not install Base1, validate physical hardware, validate recovery, validate an installer, prove hardening, or prove daily-driver readiness.
 USAGE
 }
 
@@ -64,6 +68,13 @@ fail() {
 require_build_out_dir() {
   case "$1" in
     build/*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+valid_boot_profile() {
+  case "$1" in
+    standard|hardened) return 0 ;;
     *) return 1 ;;
   esac
 }
@@ -122,6 +133,16 @@ while [ "$#" -gt 0 ]; do
       EXPECT=$2
       shift 2
       ;;
+    --boot-profile)
+      [ "$#" -ge 2 ] || fail '--boot-profile requires a value'
+      BOOT_PROFILE=$2
+      shift 2
+      ;;
+    --append)
+      [ "$#" -ge 2 ] || fail '--append requires a value'
+      EXTRA_APPEND=$2
+      shift 2
+      ;;
     -h|--help)
       usage
       exit 0
@@ -143,6 +164,7 @@ case "$TIMEOUT_SECONDS" in
 esac
 [ "$TIMEOUT_SECONDS" -gt 0 ] || fail '--timeout must be greater than zero'
 
+valid_boot_profile "$BOOT_PROFILE" || fail "unsupported boot profile: $BOOT_PROFILE"
 require_build_out_dir "$OUT_DIR" || fail "output directory must be under build/: $OUT_DIR"
 [ -n "$KERNEL" ] || fail '--kernel is required for B3 kernel handoff'
 [ -n "$INITRD" ] || fail '--initrd is required for B3 kernel handoff'
@@ -152,13 +174,14 @@ require_build_out_dir "$OUT_DIR" || fail "output directory must be under build/:
 [ -f scripts/base1-qemu-boot-check.sh ] || fail 'missing scripts/base1-qemu-boot-check.sh'
 
 printf 'BASE1 B3 KERNEL HANDOFF\n'
-printf 'mode   : %s\n' "$MODE"
-printf 'out    : %s\n' "$OUT_DIR"
-printf 'profile: %s\n' "$PROFILE"
-printf 'target : %s\n' "$TARGET"
-printf 'kernel : %s\n' "$KERNEL"
-printf 'initrd : %s\n' "$INITRD"
-printf 'expect : %s\n' "$EXPECT"
+printf 'mode        : %s\n' "$MODE"
+printf 'out         : %s\n' "$OUT_DIR"
+printf 'profile     : %s\n' "$PROFILE"
+printf 'target      : %s\n' "$TARGET"
+printf 'kernel      : %s\n' "$KERNEL"
+printf 'initrd      : %s\n' "$INITRD"
+printf 'expect      : %s\n' "$EXPECT"
+printf 'boot_profile: %s\n' "$BOOT_PROFILE"
 printf '\n'
 
 sh scripts/base1-emulator-preview.sh \
@@ -171,7 +194,8 @@ sh scripts/base1-emulator-preview.sh \
 
 printf '\nbundle: %s\n' "$OUT_DIR"
 printf 'handoff: staging/boot/vmlinuz + staging/boot/initrd.img\n'
-printf 'non_claims: emulator-only; no installer; no hardware validation; no daily-driver claim\n'
+printf 'boot_profile: %s\n' "$BOOT_PROFILE"
+printf 'non_claims: emulator-only; no installer; no hardware validation; no hardening proof; no daily-driver claim\n'
 
 case "$MODE" in
   prepare)
@@ -182,7 +206,9 @@ case "$MODE" in
       --bundle "$OUT_DIR" \
       --dry-run \
       --timeout "$TIMEOUT_SECONDS" \
-      --expect "$EXPECT"
+      --expect "$EXPECT" \
+      --boot-profile "$BOOT_PROFILE" \
+      --append "$EXTRA_APPEND"
     ;;
   check)
     sh scripts/base1-qemu-boot-check.sh \
@@ -190,7 +216,9 @@ case "$MODE" in
       --execute \
       --confirm launch-qemu-base1-preview \
       --timeout "$TIMEOUT_SECONDS" \
-      --expect "$EXPECT"
+      --expect "$EXPECT" \
+      --boot-profile "$BOOT_PROFILE" \
+      --append "$EXTRA_APPEND"
     ;;
   *)
     fail "internal unsupported mode: $MODE"
