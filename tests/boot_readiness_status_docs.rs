@@ -165,7 +165,7 @@ fn boot_readiness_status_preserves_b2_completion_checklist() {
 }
 
 #[test]
-fn boot_readiness_status_defines_b3_planning_status() {
+fn boot_readiness_status_defines_b3_planning_and_proof_status() {
     let status = std::fs::read_to_string("docs/os/BOOT_READINESS_STATUS.md")
         .expect("boot readiness status tracker");
 
@@ -177,9 +177,12 @@ fn boot_readiness_status_defines_b3_planning_status() {
         "B3 limitations are documented in [`B3_VM_BOOT_VALIDATION_LIMITATIONS.md`](B3_VM_BOOT_VALIDATION_LIMITATIONS.md).",
         "cargo test -p phase1 --test b3_vm_boot_validation_limitations_docs",
         "sh scripts/base1-b3-vm-validate.sh --dry-run --profile x86_64-vm-validation",
-        "B3 remains planning-only until B2 validation has passed locally or in CI and B3 script, tests, logs, and validation report exist.",
+        "B3 UEFI proof-of-life script is present:",
+        "sh scripts/base1-b3-uefi-proof.sh --build --check",
+        "cargo test -p phase1 --test base1_b3_uefi_proof_script",
+        "B3 remains planning plus proof-of-life until B2 validation has passed locally or in CI and B3 validation logs and report exist.",
     ] {
-        assert!(status.contains(text), "missing B3 planning status text {text}: {status}");
+        assert!(status.contains(text), "missing B3 planning/proof status text {text}: {status}");
     }
 }
 
@@ -195,6 +198,8 @@ fn boot_readiness_status_preserves_b3_completion_checklist() {
         "B3 limitations note exists.",
         "B3 limitations tests exist.",
         "B2 test suite has passed locally or in CI.",
+        "B3 UEFI proof script exists.",
+        "B3 UEFI proof script tests exist.",
         "B3 VM validation script exists.",
         "B3 script tests exist.",
         "B3 log capture notes exist.",
@@ -269,6 +274,8 @@ fn boot_readiness_status_preserves_evidence_map() {
         "B3_VM_BOOT_VALIDATION_LIMITATIONS.md",
         "tests/b3_vm_boot_validation_plan_docs.rs",
         "tests/b3_vm_boot_validation_limitations_docs.rs",
+        "scripts/base1-b3-uefi-proof.sh",
+        "tests/base1_b3_uefi_proof_script.rs",
         "scripts/base1-b3-vm-validate.sh",
         "VM validation report",
         "Recovery validation report",
@@ -311,7 +318,7 @@ fn boot_readiness_status_preserves_hardening_and_non_claims() {
         "first B1 read-only detection script exists",
         "detection-preview behavior only",
         "B2 has an initial dry-run assembly script but remains dry-run preview only",
-        "B3 is planning-only until VM validation evidence exists",
+        "B3 is planning plus proof-of-life until VM validation evidence exists",
     ] {
         assert!(status.contains(text), "missing non-claim {text}: {status}");
     }
