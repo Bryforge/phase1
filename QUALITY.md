@@ -28,6 +28,7 @@ Phase1 should be:
 | Docs | User-facing claims stay discoverable | required docs, links, maps, and compatibility paths exist |
 | Base1 integrity | Base1 organization preserves root compatibility, release mirrors, local links, and test inventory coverage | `sh scripts/quality-check.sh base1-docs` |
 | Base1 reorganization | Base1 broad organization readiness stays gated by full read-only verification | `sh scripts/quality-check.sh base1-reorg` |
+| Security crypto docs | Cryptographic policy docs preserve profile links, registry rules, guardrails, and non-claims | `sh scripts/quality-check.sh security-crypto-docs` |
 | Release | Version and release metadata stay aligned | release metadata checks |
 | Safety | Risky behavior remains explicit and guarded | safety docs and policy checks |
 | Dependency | Dependency risk is reviewed | `cargo audit`, `cargo deny check` when tools are available |
@@ -40,7 +41,7 @@ Phase1 should be:
 sh scripts/quality-check.sh quick
 ```
 
-The quick gate validates formatting, compilation, Clippy, tests, script syntax, required docs, Base1 documentation integrity, Base1 local link checks, Base1 test-inventory verification, and quality score generation.
+The quick gate validates formatting, compilation, Clippy, tests, script syntax, required docs, Base1 documentation integrity, Base1 local link checks, Base1 test-inventory verification, security crypto documentation integrity, and quality score generation.
 
 ### Base1 documentation integrity only
 
@@ -77,6 +78,26 @@ sh scripts/base1-reorganization-verify.sh
 ```
 
 The bundle runs the Base1 integrity gate, local link checker, test-inventory verifier, and `cargo test --all-targets` when Cargo is available. If Cargo is unavailable, the bundle reports that Cargo tests must still run on a Rust-capable host before broad reorganization readiness is claimed.
+
+### Security crypto documentation integrity
+
+```bash
+sh scripts/quality-check.sh security-crypto-docs
+```
+
+Alias:
+
+```bash
+sh scripts/quality-check.sh crypto-docs
+```
+
+This focused gate runs the read-only security crypto documentation integrity checker:
+
+```bash
+sh scripts/security-crypto-doc-integrity.sh
+```
+
+It verifies the cryptographic policy roadmap, registry, algorithm template, profile index, profile drafts, security documentation links, guardrails against custom security-critical primitives, profile safety rules, and crypto non-claims.
 
 ### Required before release
 
@@ -134,9 +155,34 @@ scripts/base1-link-check.sh
 scripts/base1-test-inventory.sh
 scripts/base1-test-inventory-verify.sh
 scripts/base1-reorganization-verify.sh
+scripts/security-crypto-doc-integrity.sh
 scripts/test-release-metadata.sh
 scripts/test-website.sh
 ```
+
+## Security crypto documentation integrity
+
+Cryptographic policy work is documentation-first until implementation, tests, review, and validation exist.
+
+Before and after crypto policy documentation work, run:
+
+```bash
+sh scripts/quality-check.sh security-crypto-docs
+```
+
+The security crypto docs quality gate verifies:
+
+- security goal and crypto policy goal are documented
+- `docs/security/CRYPTO_POLICY_ROADMAP.md` is present
+- `docs/security/CRYPTO_REGISTRY.md` is present
+- `docs/security/CRYPTO_ALGORITHM_TEMPLATE.md` is present
+- `docs/security/crypto-profiles/README.md` is present
+- all current profile drafts are present
+- profile drafts link the registry and algorithm template
+- custom security-critical primitives are rejected
+- lab-only behavior is not presented as real security protection
+- unsupported quantum-safety claims are blocked
+- crypto non-claims are preserved
 
 ## Base1 organization integrity
 
@@ -192,9 +238,10 @@ Every PR should answer:
 | Text and editors | `src/text.rs`, `src/ned.rs`, `src/avim.rs` |
 | Host-facing helpers | `src/bin/phase1-storage.rs`, `scripts/` |
 | Base1 | `base1/`, `docs/base1/`, `docs/os/BASE1_*`, `scripts/base1-*` |
+| Security crypto docs | `docs/security/CRYPTO_*`, `docs/security/crypto-profiles/`, `scripts/security-crypto-doc-integrity.sh` |
 | Website/wiki | `index.html`, `docs/wiki/`, `WIKI_ROADMAP.md` |
 | Release/update | `UPDATE_PROTOCOL.md`, `CHANGELOG.md`, `Cargo.toml` |
-| Quality system | `QUALITY.md`, `QUALITY_SCORECARD.md`, `scripts/quality-*`, `scripts/base1-doc-integrity.sh`, `scripts/base1-link-check.sh`, `scripts/base1-test-inventory*.sh`, `scripts/base1-reorganization-verify.sh`, `.github/workflows/quality.yml` |
+| Quality system | `QUALITY.md`, `QUALITY_SCORECARD.md`, `scripts/quality-*`, `scripts/base1-doc-integrity.sh`, `scripts/base1-link-check.sh`, `scripts/base1-test-inventory*.sh`, `scripts/base1-reorganization-verify.sh`, `scripts/security-crypto-doc-integrity.sh`, `.github/workflows/quality.yml` |
 
 ## Safety baseline
 
@@ -208,12 +255,15 @@ Quality work must preserve these defaults:
 - tests are preferred over claims
 - Base1 organization keeps compatibility paths recoverable
 - Base1 script paths remain stable unless wrappers are planned and tested
+- cryptographic policy work remains documentation-first until implementation, tests, review, and validation exist
+- custom security-critical primitives are not accepted as production protection
 
 ## Local workflow
 
 ```bash
 sh scripts/quality-score.sh
 sh scripts/quality-check.sh base1-docs
+sh scripts/quality-check.sh security-crypto-docs
 sh scripts/quality-check.sh quick
 ```
 
