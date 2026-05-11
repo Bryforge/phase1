@@ -36,6 +36,10 @@ Phase1 now covers several connected workstreams:
 | Review Base1 | [`base1/README.md`](base1/README.md) |
 | Review Fyr | [`fyr/README.md`](fyr/README.md) |
 | Review community plans | [`community/README.md`](community/README.md) |
+| Review release docs organization | [`releases/README.md`](releases/README.md) |
+| Review website docs organization | [`website/README.md`](website/README.md) |
+| Review examples organization | [`../examples/README.md`](../examples/README.md) |
+| Review internal tools organization | [`../tools/README.md`](../tools/README.md) |
 
 ## Repository map
 
@@ -55,10 +59,14 @@ Phase1 now covers several connected workstreams:
 | `docs/` | Repository-first manual, navigation, developer docs, security docs, community docs. |
 | `docs/REPOSITORY_NAVIGATION.md` | Fast-path map for users, contributors, support, and validation. |
 | `docs/REORGANIZATION_PLAN.md` | Minimalist target structure, destination map, move policy, and rollback rules. |
+| `docs/releases/` | Organized release docs, checkpoint notes, release mirrors, and release indexes. |
+| `docs/website/` | Public website docs, branding notes, content maps, and accessibility planning. |
 | `docs/security/` | Trust model, crypto policy, registry, providers, config, implementation plan, review guidance. |
 | `docs/community/` | Support forum roadmap and automated support AI roadmap. |
 | `docs/base1/` | Organized Base1 manual and release mirrors. |
 | `docs/fyr/` | Fyr language manual and roadmap. |
+| `examples/` | Safe examples, walkthrough inputs, Fyr scripts, and dry-run demo material. |
+| `tools/` | Internal maintainer utilities, local helpers, future automation, and repo-maintenance tools. |
 | `scripts/` | Quality gates, Base1 validation, runtime helpers, wiki/docs helpers. |
 | `tests/` | Rust tests and docs guard tests. |
 | `assets/` | Project imagery, logos, and public-facing visual assets. |
@@ -86,6 +94,27 @@ Phase1 now covers several connected workstreams:
 3. Keep compatibility paths unless a tested wrapper, mirror, or index exists.
 4. Add or update tests for required navigation links.
 5. Run the relevant quality gate before and after reorganization work.
+
+### Release/documentation organizer
+
+1. Read [`releases/README.md`](releases/README.md).
+2. Keep root-level release notes and checkpoint files as compatibility paths unless a move map approves a change.
+3. Prefer organized mirrors or indexes before moving release files.
+4. Run `sh scripts/quality-check.sh quick` and Base1 gates when Base1 release docs are involved.
+
+### Website/asset organizer
+
+1. Read [`website/README.md`](website/README.md).
+2. Keep website claims aligned with repository evidence.
+3. Keep branding assets under `assets/` unless a future asset map says otherwise.
+4. Run website and quality checks before changing public-facing structure.
+
+### Examples/tools organizer
+
+1. Read [`../examples/README.md`](../examples/README.md) for safe example placement.
+2. Read [`../tools/README.md`](../tools/README.md) before adding internal helper tooling.
+3. Keep user-facing scripts in `scripts/` unless a move map and compatibility wrapper exist.
+4. Prefer read-only or dry-run examples.
 
 ### Security reviewer
 
