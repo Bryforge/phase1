@@ -3,7 +3,8 @@
 #
 # This ties the existing emulator preview bundle generator to the guarded QEMU
 # boot checker. It does not create a kernel, install Base1, write host boot
-# settings, partition disks, or claim hardware/installer readiness.
+# settings, partition disks, validate physical hardware, or claim
+# hardware/installer readiness.
 
 set -eu
 
@@ -51,9 +52,7 @@ outputs:
   <out>/reports/qemu-boot.log when --check is used
 
 non-claims:
-  This is emulator-only B3 handoff evidence. It does not install Base1, validate
-  physical hardware, validate recovery, validate an installer, prove hardening,
-  or prove daily-driver readiness.
+  This is emulator-only B3 handoff evidence. It does not install Base1, validate physical hardware, validate recovery, validate an installer, prove hardening, or prove daily-driver readiness.
 USAGE
 }
 
