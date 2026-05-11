@@ -23,7 +23,7 @@ Crypto profiles should provide safe defaults for normal users and explicit, revi
 | [`high-security`](HIGH_SECURITY.md) | planned | Stricter choices for advanced operators. |
 | [`compatibility`](COMPATIBILITY.md) | planned | Interoperability with warnings and explicit consent. |
 | [`post-quantum-preview`](POST_QUANTUM_PREVIEW.md) | planned | PQC-oriented options with maturity warnings. |
-| `lab-only` | planned | Educational or experimental entries barred from production use. |
+| [`lab-only`](LAB_ONLY.md) | planned | Educational or experimental entries barred from production use. |
 
 ## Required profile documentation
 
@@ -55,6 +55,7 @@ Every profile document should define:
 - [`HIGH_SECURITY.md`](HIGH_SECURITY.md) — planned advanced-operator and Base1-stricter profile.
 - [`COMPATIBILITY.md`](COMPATIBILITY.md) — planned interoperability profile with warnings and explicit consent.
 - [`POST_QUANTUM_PREVIEW.md`](POST_QUANTUM_PREVIEW.md) — planned post-quantum migration preview profile with maturity warnings.
+- [`LAB_ONLY.md`](LAB_ONLY.md) — planned educational and experimental profile barred from production protection.
 
 ## Related docs
 
