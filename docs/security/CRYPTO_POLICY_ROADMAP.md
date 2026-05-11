@@ -77,6 +77,35 @@ crypto policy export
 crypto policy verify
 ```
 
+## Configuration model
+
+The future crypto policy configuration schema is planned in [`CRYPTO_CONFIG_SCHEMA.md`](CRYPTO_CONFIG_SCHEMA.md).
+
+Future configuration should use explicit scopes:
+
+```toml
+[crypto]
+default_profile = "safe-default"
+policy_version = 1
+
+[crypto.scope.storage]
+profile = "safe-default"
+
+[crypto.scope.transport]
+profile = "safe-default"
+
+[crypto.scope.base1]
+profile = "high-security"
+```
+
+The active policy should be visible from inside Phase1:
+
+```text
+crypto status
+```
+
+Unknown profiles and scopes should fail closed.
+
 ## Points of control
 
 Operators should be able to choose policy by control point.
@@ -124,29 +153,7 @@ Every supported algorithm page should use [`CRYPTO_ALGORITHM_TEMPLATE.md`](CRYPT
 
 Every profile should follow the structure in [`crypto-profiles/README.md`](crypto-profiles/README.md) before it is connected to runtime behavior.
 
-## Configuration model
-
-Future configuration should use explicit scopes.
-
-```toml
-[crypto]
-default_profile = "safe-default"
-
-[crypto.scope.storage]
-profile = "high-security"
-
-[crypto.scope.transport]
-profile = "safe-default"
-
-[crypto.scope.base1]
-profile = "high-security"
-```
-
-The active policy should be visible from inside Phase1:
-
-```text
-crypto status
-```
+Every config schema change should follow [`CRYPTO_CONFIG_SCHEMA.md`](CRYPTO_CONFIG_SCHEMA.md) before it is connected to runtime behavior.
 
 ## Safety gates
 
@@ -168,6 +175,7 @@ Crypto profile changes should:
 - Create algorithm documentation template: [`CRYPTO_ALGORITHM_TEMPLATE.md`](CRYPTO_ALGORITHM_TEMPLATE.md).
 - Create profile planning index: [`crypto-profiles/README.md`](crypto-profiles/README.md).
 - Create operator command plan: [`CRYPTO_OPERATOR_COMMANDS.md`](CRYPTO_OPERATOR_COMMANDS.md).
+- Create config schema plan: [`CRYPTO_CONFIG_SCHEMA.md`](CRYPTO_CONFIG_SCHEMA.md).
 - Draft safe-default, high-security, compatibility, post-quantum-preview, and lab-only profiles.
 - Add tests that preserve non-claims.
 
