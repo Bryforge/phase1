@@ -1,0 +1,94 @@
+name: Documentation issue
+description: Report missing, confusing, outdated, or unsafe documentation.
+title: "docs: "
+labels:
+  - documentation
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve the docs. Please do not include secrets, tokens, private keys, recovery codes, private logs, or unrevised screenshots.
+
+        If the documentation issue involves a private vulnerability, safety bypass, or sensitive data exposure, do not file a public issue. Follow `SECURITY.md` instead.
+
+  - type: dropdown
+    id: project_area
+    attributes:
+      label: Project area
+      options:
+        - Phase1
+        - Base1
+        - Fyr
+        - Security / trust docs
+        - Crypto policy docs
+        - Website / branding
+        - Community / support
+        - Operators docs
+        - Developers docs
+        - Recovery / hardware docs
+        - Unsure
+    validations:
+      required: true
+
+  - type: input
+    id: doc_path
+    attributes:
+      label: Documentation path or page
+      description: Link or name the file/page if known.
+      placeholder: "docs/security/README.md, README.md, base1/README.md, etc."
+    validations:
+      required: false
+
+  - type: dropdown
+    id: issue_type
+    attributes:
+      label: Documentation issue type
+      options:
+        - Missing information
+        - Confusing wording
+        - Outdated information
+        - Broken or missing link
+        - Unsupported claim or overclaim
+        - Missing status / validation / non-claims block
+        - Missing example
+        - Unsafe instruction or secret-sharing risk
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong or missing?
+      description: Describe the documentation problem clearly.
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggested_change
+    attributes:
+      label: Suggested change
+      description: Suggest wording, a section, a link, a status block, or an example if you have one.
+    validations:
+      required: false
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: User impact
+      description: Who is affected and what confusion or risk does this cause?
+      placeholder: "Example: new users may think Base1 is already a bootable daily-driver image."
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: claim_safety
+    attributes:
+      label: Claim and safety check
+      options:
+        - label: This issue does not include secrets, tokens, private keys, recovery codes, private logs, or unrevised screenshots.
+          required: true
+        - label: If this is about security-sensitive private details, I will follow SECURITY.md instead of posting details publicly.
+          required: true
+        - label: If this reports an unsupported claim, I have identified the claim or page where it appears.
+          required: false
