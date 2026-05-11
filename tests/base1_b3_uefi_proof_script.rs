@@ -22,7 +22,7 @@ fn base1_b3_uefi_proof_script_exists_and_has_valid_shell_syntax() {
 }
 
 #[test]
-fn base1_b3_uefi_proof_help_documents_usage_marker_and_boundaries() {
+fn base1_b3_uefi_proof_help_documents_usage_marker_display_and_boundaries() {
     let output = Command::new("sh")
         .arg(SCRIPT)
         .arg("--help")
@@ -42,6 +42,8 @@ fn base1_b3_uefi_proof_help_documents_usage_marker_and_boundaries() {
         "Builds a local B3 UEFI proof image under build/",
         "displays the fitted Phase1 word-mark splash",
         "emits a serial proof marker",
+        "Visible QEMU runs keep the screen splash-only",
+        "Proof text is routed to serial",
         "--build",
         "--run",
         "--check",
@@ -102,6 +104,7 @@ fn base1_b3_uefi_proof_uses_expected_artifacts_and_splash_fitting() {
         "sips -Z \"$SPLASH_MAX_EDGE\"",
         "--padToHeightWidth \"$SPLASH_HEIGHT\" \"$SPLASH_WIDTH\"",
         "--padColor 000000",
+        ">/dev/null 2>&1",
         "EFI/BOOT/BOOTX64.EFI",
         "x86_64-elf-grub-mkstandalone",
         "mformat",
@@ -114,14 +117,17 @@ fn base1_b3_uefi_proof_uses_expected_artifacts_and_splash_fitting() {
 }
 
 #[test]
-fn base1_b3_uefi_proof_emits_and_checks_serial_marker() {
+fn base1_b3_uefi_proof_routes_marker_to_serial_without_dirtying_gfxterm() {
     let script = std::fs::read_to_string(SCRIPT).expect("B3 UEFI proof source");
 
     for text in [
         "MARKER=${BASE1_B3_MARKER:-phase1 6.0.0 ready}",
         "serial --unit=0 --speed=115200",
-        "terminal_output gfxterm serial",
+        "terminal_output gfxterm",
+        "terminal_output serial",
         "echo \"$MARKER\"",
+        "terminal_output gfxterm",
+        "display: splash-only; proof text routed to serial",
         "b3-serial.log",
         "b3-summary.env",
         "grep -F \"$MARKER\" \"$SERIAL_LOG\"",
@@ -130,6 +136,11 @@ fn base1_b3_uefi_proof_emits_and_checks_serial_marker() {
     ] {
         assert!(script.contains(text), "missing serial proof text {text}: {script}");
     }
+
+    assert!(
+        !script.contains("terminal_output gfxterm serial"),
+        "visible output must not mirror proof text onto gfxterm and serial: {script}"
+    );
 }
 
 #[test]
