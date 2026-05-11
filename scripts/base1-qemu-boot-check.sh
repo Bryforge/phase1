@@ -4,7 +4,7 @@
 # This script is the first explicit QEMU execution hook for Base1 preview
 # bundles. It defaults to dry-run. Use --execute plus the confirmation phrase
 # to actually run QEMU against the selected preview bundle, capture serial
-# output, and check for a Phase1 readiness marker.
+# output, and check for a readiness marker.
 #
 # It only writes reports inside the selected build/ bundle. It does not install
 # Base1, write host devices, format media, mount filesystems, or validate real
@@ -42,7 +42,8 @@ options:
 
 profiles:
   standard   serial console, safe preview flags, host tools disabled
-  hardened   standard profile plus hardening-oriented Linux kernel parameters
+  hardened   standard profile plus hardening-oriented Linux kernel parameters;
+             serial verbosity is preserved for evidence capture
 
 outputs:
   <bundle>/reports/qemu-boot.log
@@ -81,10 +82,10 @@ require_build_bundle() {
 append_for_profile() {
   case "$1" in
     standard)
-      printf '%s\n' 'console=ttyS0,115200 earlyprintk=serial,ttyS0,115200 loglevel=8 base1.preview=1 base1.emulator=1 phase1.safe=1 phase1.host_tools=0'
+      printf '%s\n' 'console=ttyS0,115200 earlyprintk=serial,ttyS0,115200 loglevel=8 ignore_loglevel base1.preview=1 base1.emulator=1 phase1.safe=1 phase1.host_tools=0'
       ;;
     hardened)
-      printf '%s\n' 'console=ttyS0,115200 earlyprintk=serial,ttyS0,115200 loglevel=8 base1.preview=1 base1.emulator=1 phase1.safe=1 phase1.host_tools=0 module.sig_enforce=1 lockdown=confidentiality lsm=landlock,lockdown,yama,integrity,apparmor,bpf random.trust_cpu=off slab_nomerge init_on_alloc=1 init_on_free=1 page_alloc.shuffle=1 pti=on vsyscall=none debugfs=off oops=panic panic=10 quiet'
+      printf '%s\n' 'console=ttyS0,115200 earlyprintk=serial,ttyS0,115200 loglevel=8 ignore_loglevel base1.preview=1 base1.emulator=1 phase1.safe=1 phase1.host_tools=0 module.sig_enforce=1 lockdown=confidentiality lsm=landlock,lockdown,yama,integrity,apparmor,bpf random.trust_cpu=off slab_nomerge init_on_alloc=1 init_on_free=1 page_alloc.shuffle=1 pti=on vsyscall=none debugfs=off oops=panic panic=10'
       ;;
     *)
       return 1
