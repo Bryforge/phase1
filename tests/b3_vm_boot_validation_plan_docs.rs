@@ -13,6 +13,10 @@ fn b3_vm_boot_validation_plan_defines_scope_and_entry_gate() {
         "{plan}"
     );
     assert!(plan.contains("B2_DRY_RUN_ASSEMBLY_TEST_SUITE.md"), "{plan}");
+    assert!(
+        plan.contains("UEFI proof-of-life and kernel/initrd handoff paths may be used as development scaffolding"),
+        "{plan}"
+    );
 }
 
 #[test]
@@ -27,6 +31,34 @@ fn b3_vm_boot_validation_plan_defines_initial_profile_and_command_shape() {
         "Any real VM run should come later with a separate validation report and captured logs.",
     ] {
         assert!(plan.contains(text), "missing B3 command/profile text {text}: {plan}");
+    }
+}
+
+#[test]
+fn b3_vm_boot_validation_plan_documents_current_scaffold_commands() {
+    let plan = std::fs::read_to_string("docs/os/B3_VM_BOOT_VALIDATION_PLAN.md")
+        .expect("B3 VM boot validation plan");
+
+    for text in [
+        "Current UEFI proof-of-life command shape",
+        "sh scripts/base1-b3-uefi-proof.sh --build",
+        "sh scripts/base1-b3-uefi-proof.sh --build --run",
+        "sh scripts/base1-b3-uefi-proof.sh --build --check",
+        "build/base1-b3-uefi-proof.img",
+        "build/base1-b3-uefi-proof/reports/b3-serial.log",
+        "Current kernel/initrd handoff command shape",
+        "sh scripts/base1-b3-kernel-handoff.sh",
+        "--kernel /path/to/vmlinuz",
+        "--initrd /path/to/initrd.img",
+        "--prepare",
+        "--dry-run",
+        "--check",
+        "build/base1-b3-kernel-handoff/staging/boot/vmlinuz",
+        "build/base1-b3-kernel-handoff/staging/boot/initrd.img",
+        "build/base1-b3-kernel-handoff/reports/qemu-boot.log",
+        "B3_KERNEL_INITRD_HANDOFF.md",
+    ] {
+        assert!(plan.contains(text), "missing B3 scaffold command/output text {text}: {plan}");
     }
 }
 
@@ -53,7 +85,7 @@ fn b3_vm_boot_validation_plan_lists_required_evidence() {
 }
 
 #[test]
-fn b3_vm_boot_validation_plan_preserves_checklist() {
+fn b3_vm_boot_validation_plan_preserves_checklists() {
     let plan = std::fs::read_to_string("docs/os/B3_VM_BOOT_VALIDATION_PLAN.md")
         .expect("B3 VM boot validation plan");
 
@@ -69,6 +101,13 @@ fn b3_vm_boot_validation_plan_preserves_checklist() {
         "Known limitations are documented.",
         "VM result is not generalized to physical hardware.",
         "Non-claims are preserved.",
+        "B3 UEFI proof script exists.",
+        "B3 UEFI proof script tests exist.",
+        "B3 kernel/initrd handoff script exists.",
+        "B3 kernel/initrd handoff script tests exist.",
+        "B3 kernel/initrd handoff documentation exists.",
+        "A known-good local kernel/initrd pair has been staged and checked.",
+        "Passing handoff evidence has been copied into a validation report.",
     ] {
         assert!(plan.contains(text), "missing B3 checklist text {text}: {plan}");
     }
@@ -86,6 +125,8 @@ fn b3_vm_boot_validation_plan_links_related_docs() {
         "X86_64_BOOT_SUPPORT_ROADMAP.md",
         "B2_DRY_RUN_ASSEMBLY_PLAN.md",
         "B2_DRY_RUN_ASSEMBLY_TEST_SUITE.md",
+        "QEMU_VISUAL_BOOT_PREVIEW.md",
+        "B3_KERNEL_INITRD_HANDOFF.md",
     ] {
         assert!(plan.contains(link), "missing B3 related doc link {link}: {plan}");
     }
@@ -98,8 +139,9 @@ fn b3_vm_boot_validation_plan_is_linked_from_status_tracker() {
 
     assert!(status.contains("B3_VM_BOOT_VALIDATION_PLAN.md"), "{status}");
     assert!(status.contains("B3 VM boot validation planning is now present"), "{status}");
+    assert!(status.contains("B3 UEFI proof-of-life script is present"), "{status}");
     assert!(
-        status.contains("B3 is planning-only until VM validation evidence exists"),
+        status.contains("B3 remains planning plus proof-of-life until B2 validation has passed locally or in CI and B3 validation logs and report exist."),
         "{status}"
     );
 }
@@ -117,6 +159,7 @@ fn b3_vm_boot_validation_plan_preserves_non_claims() {
         "hardware-validated",
         "release-candidate ready",
         "daily-driver ready",
+        "local QEMU scaffolds until a validation report with captured logs exists",
     ] {
         assert!(plan.contains(text), "missing B3 non-claim {text}: {plan}");
     }
