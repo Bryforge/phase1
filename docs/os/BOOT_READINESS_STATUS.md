@@ -11,7 +11,7 @@ The finish-first planning layer is complete for B1. The first B1 read-only detec
 
 B2 planning has started with a dry-run assembly plan, plan tests, initial dry-run assembly script, script tests, limitations note, limitations tests, validation report, validation report tests, output review, output review tests, focused test-suite command bundle, test-suite bundle tests, OS roadmap boot-readiness tests, QEMU visual boot preview script, visual boot preview script tests, QEMU visual boot preview docs, and QEMU visual boot preview doc tests.
 
-B3 planning has started with a VM boot validation plan, plan tests, limitations note, limitations tests, VM boot log capture notes, VM boot log capture notes tests, an initial B3 UEFI proof-of-life script, B3 UEFI proof script tests, B3 kernel/initrd handoff script, B3 kernel/initrd handoff tests, B3 kernel/initrd handoff docs, B3 kernel/initrd handoff doc tests, B3 GNU/Linux stage script, B3 GNU/Linux stage tests, B3 GNU/Linux stage docs, B3 GNU/Linux stage doc tests, B3 OpenBSD stage script, B3 OpenBSD stage tests, B3 OpenBSD stage docs, B3 OpenBSD stage doc tests, B3 VM validation script, B3 VM validation script tests, an initial B3 VM validation report scaffold, and B3 VM validation report tests.
+B3 planning has started with a VM boot validation plan, plan tests, limitations note, limitations tests, VM boot log capture notes, VM boot log capture notes tests, an initial B3 UEFI proof-of-life script, B3 UEFI proof script tests, B3 kernel/initrd handoff script, B3 kernel/initrd handoff tests, B3 kernel/initrd handoff docs, B3 kernel/initrd handoff doc tests, B3 GNU/Linux stage script, B3 GNU/Linux stage tests, B3 GNU/Linux stage docs, B3 GNU/Linux stage doc tests, B3 OpenBSD stage script, B3 OpenBSD stage tests, B3 OpenBSD stage docs, B3 OpenBSD stage doc tests, B3 OpenBSD serial limitation docs, B3 OpenBSD serial limitation tests, B3 VM validation script, B3 VM validation script tests, an initial B3 VM validation report scaffold, and B3 VM validation report tests.
 
 ## Current readiness level
 
@@ -330,6 +330,16 @@ B3 OpenBSD stage documentation tests are present:
 cargo test -p phase1 --test b3_openbsd_stage_docs
 ```
 
+B3 OpenBSD serial marker limitation is documented:
+
+- [`B3_OPENBSD_SERIAL_LIMITATION.md`](B3_OPENBSD_SERIAL_LIMITATION.md)
+
+B3 OpenBSD serial marker limitation tests are present:
+
+```bash
+cargo test -p phase1 --test b3_openbsd_serial_limitation_docs
+```
+
 B3 VM validation script is present:
 
 ```bash
@@ -379,14 +389,16 @@ Before B3 is considered complete, confirm:
 - [x] B3 OpenBSD stage script tests exist.
 - [x] B3 OpenBSD stage documentation exists.
 - [x] B3 OpenBSD stage documentation tests exist.
+- [x] B3 OpenBSD serial marker limitation is documented.
+- [x] B3 OpenBSD serial marker limitation tests exist.
 - [x] B3 VM validation script exists.
 - [x] B3 VM validation script tests exist.
 - [x] B3 validation report scaffold exists.
 - [x] B3 validation report scaffold tests exist.
-- [ ] known-good local kernel/initrd pair has been staged and checked.
+- [x] known-good local kernel/initrd pair has been staged and checked.
 - [x] known-good local GNU/Linux kernel/initrd pair has been staged and checked.
 - [x] OpenBSD launch-check evidence has been staged and checked.
-- [ ] OpenBSD serial marker evidence is captured or documented as a limitation.
+- [x] OpenBSD serial marker evidence is captured or documented as a limitation.
 - [ ] B3 validation report has been reviewed against captured logs.
 - [ ] VM profile is explicit.
 - [ ] VM runtime is explicit.
@@ -468,12 +480,14 @@ Expected behavior:
 | B3 kernel/initrd handoff doc | Present | [`B3_KERNEL_INITRD_HANDOFF.md`](B3_KERNEL_INITRD_HANDOFF.md) |
 | B3 GNU/Linux stage doc | Present | [`B3_GNULINUX_STAGE.md`](B3_GNULINUX_STAGE.md) |
 | B3 OpenBSD stage doc | Present | [`B3_OPENBSD_STAGE.md`](B3_OPENBSD_STAGE.md) |
+| B3 OpenBSD serial limitation doc | Present | [`B3_OPENBSD_SERIAL_LIMITATION.md`](B3_OPENBSD_SERIAL_LIMITATION.md) |
 | B3 VM validation report scaffold | Present | [`B3_VM_VALIDATION_REPORT.md`](B3_VM_VALIDATION_REPORT.md) |
 | B3 VM boot validation plan tests | Present | `tests/b3_vm_boot_validation_plan_docs.rs` |
 | B3 VM boot validation limitations tests | Present | `tests/b3_vm_boot_validation_limitations_docs.rs` |
 | B3 kernel/initrd handoff doc tests | Present | `tests/b3_kernel_initrd_handoff_docs.rs` |
 | B3 GNU/Linux stage doc tests | Present | `tests/b3_gnulinux_stage_docs.rs` |
 | B3 OpenBSD stage doc tests | Present | `tests/b3_openbsd_stage_docs.rs` |
+| B3 OpenBSD serial limitation tests | Present | `tests/b3_openbsd_serial_limitation_docs.rs` |
 | B3 VM validation report tests | Present | `tests/b3_vm_validation_report_docs.rs` |
 | B3 UEFI proof script | Present | `scripts/base1-b3-uefi-proof.sh` |
 | B3 UEFI proof tests | Present | `tests/base1_b3_uefi_proof_script.rs` |
