@@ -54,19 +54,44 @@ fn readme_links_boot_readiness_b1_docs_and_detector() {
         "docs/os/BOOT_READINESS_RACE_PLAN.md",
         "docs/os/B1_READ_ONLY_DETECTION_PLAN.md",
         "docs/os/B1_READ_ONLY_DETECTION_LIMITATIONS.md",
+        "docs/os/B1_READ_ONLY_DETECTION_VALIDATION.md",
         "scripts/base1-x86_64-detect.sh --dry-run",
     ] {
         assert!(readme.contains(link), "README missing B1 boot-readiness link/text {link}: {readme}");
     }
 
     for text in [
-        "B1 initial script present",
-        "B1 detection preview",
-        "next target is completing B1 validation before B2 dry-run assembly",
+        "B1 detector",
         "cargo test -p phase1 --test base1_x86_64_detect_script",
         "cargo test -p phase1 --test b1_read_only_detection_limitations_docs",
+        "cargo test -p phase1 --test b1_read_only_detection_validation_docs",
     ] {
         assert!(readme.contains(text), "README missing B1 status text {text}: {readme}");
+    }
+}
+
+#[test]
+fn readme_links_boot_readiness_b2_docs_and_assembly_preview() {
+    let readme = std::fs::read_to_string("README.md").expect("README.md");
+
+    for link in [
+        "docs/os/B2_DRY_RUN_ASSEMBLY_PLAN.md",
+        "docs/os/B2_DRY_RUN_ASSEMBLY_LIMITATIONS.md",
+        "docs/os/B2_DRY_RUN_ASSEMBLY_VALIDATION.md",
+        "scripts/base1-b2-assembly-dry-run.sh --dry-run --profile x86_64-vm-validation",
+    ] {
+        assert!(readme.contains(link), "README missing B2 boot-readiness link/text {link}: {readme}");
+    }
+
+    for text in [
+        "B2 initial script present",
+        "B2 dry-run assembly preview",
+        "cargo test -p phase1 --test b2_dry_run_assembly_plan_docs",
+        "cargo test -p phase1 --test base1_b2_assembly_dry_run_script",
+        "cargo test -p phase1 --test b2_dry_run_assembly_limitations_docs",
+        "cargo test -p phase1 --test b2_dry_run_assembly_validation_docs",
+    ] {
+        assert!(readme.contains(text), "README missing B2 status text {text}: {readme}");
     }
 }
 
