@@ -27,8 +27,8 @@ fn boot_readiness_status_preserves_ladder() {
         "Initial script present",
         "B3",
         "VM boot validated",
-        "Planning and plan tests present",
-        "proof-of-life, handoff, and GNU/Linux staging scaffolds present",
+        "Planning, proof-of-life, handoff, GNU/Linux, OpenBSD, and validation-report scaffolds present",
+        "reviewed VM boot report",
         "B4",
         "Recovery validated",
         "B5",
@@ -166,7 +166,7 @@ fn boot_readiness_status_preserves_b2_completion_checklist() {
 }
 
 #[test]
-fn boot_readiness_status_defines_b3_planning_proof_handoff_and_gnulinux_status() {
+fn boot_readiness_status_defines_b3_planning_proof_handoff_and_stage_status() {
     let status = std::fs::read_to_string("docs/os/BOOT_READINESS_STATUS.md")
         .expect("boot readiness status tracker");
 
@@ -177,25 +177,27 @@ fn boot_readiness_status_defines_b3_planning_proof_handoff_and_gnulinux_status()
         "cargo test -p phase1 --test b3_vm_boot_validation_plan_docs",
         "B3 limitations are documented in [`B3_VM_BOOT_VALIDATION_LIMITATIONS.md`](B3_VM_BOOT_VALIDATION_LIMITATIONS.md).",
         "cargo test -p phase1 --test b3_vm_boot_validation_limitations_docs",
-        "sh scripts/base1-b3-vm-validate.sh --dry-run --profile x86_64-vm-validation",
         "B3 UEFI proof-of-life script is present:",
         "sh scripts/base1-b3-uefi-proof.sh --build --check",
         "cargo test -p phase1 --test base1_b3_uefi_proof_script",
         "B3 kernel/initrd handoff script is present:",
         "sh scripts/base1-b3-kernel-handoff.sh --kernel /path/to/vmlinuz --initrd /path/to/initrd.img --check",
         "cargo test -p phase1 --test base1_b3_kernel_handoff_script",
-        "B3 kernel/initrd handoff documentation is present:",
-        "B3_KERNEL_INITRD_HANDOFF.md",
-        "cargo test -p phase1 --test b3_kernel_initrd_handoff_docs",
         "B3 GNU/Linux stage script is present:",
         "sh scripts/base1-b3-gnulinux-stage.sh --boot /path/to/boot --check",
         "cargo test -p phase1 --test base1_b3_gnulinux_stage_script",
-        "B3 GNU/Linux stage documentation is present:",
-        "B3_GNULINUX_STAGE.md",
-        "cargo test -p phase1 --test b3_gnulinux_stage_docs",
-        "B3 remains planning plus proof-of-life, handoff, and GNU/Linux staging scaffolding until B2 validation has passed locally or in CI and B3 validation logs and report exist.",
+        "B3 OpenBSD stage script is present:",
+        "sh scripts/base1-b3-openbsd-stage.sh --img /path/to/miniroot.img --check --check-mode launch",
+        "cargo test -p phase1 --test base1_b3_openbsd_stage_script",
+        "B3 VM validation script is present:",
+        "sh scripts/base1-b3-vm-validate.sh --dry-run --profile x86_64-vm-validation",
+        "cargo test -p phase1 --test base1_b3_vm_validate_script",
+        "B3 VM validation report scaffold is present:",
+        "B3_VM_VALIDATION_REPORT.md",
+        "cargo test -p phase1 --test b3_vm_validation_report_docs",
+        "B3 remains planning plus proof-of-life, handoff, GNU/Linux staging, OpenBSD staging, and validation-report scaffolding until B2 validation has passed locally or in CI and a reviewed B3 log bundle/report exists.",
     ] {
-        assert!(status.contains(text), "missing B3 planning/proof/handoff/GNU-Linux status text {text}: {status}");
+        assert!(status.contains(text), "missing B3 planning/proof/handoff/stage status text {text}: {status}");
     }
 }
 
@@ -215,18 +217,19 @@ fn boot_readiness_status_preserves_b3_completion_checklist() {
         "B3 UEFI proof script tests exist.",
         "B3 kernel/initrd handoff script exists.",
         "B3 kernel/initrd handoff script tests exist.",
-        "B3 kernel/initrd handoff documentation exists.",
-        "B3 kernel/initrd handoff documentation tests exist.",
         "B3 GNU/Linux stage script exists.",
         "B3 GNU/Linux stage script tests exist.",
-        "B3 GNU/Linux stage documentation exists.",
-        "B3 GNU/Linux stage documentation tests exist.",
+        "B3 OpenBSD stage script exists.",
+        "B3 OpenBSD stage script tests exist.",
+        "B3 VM validation script exists.",
+        "B3 VM validation script tests exist.",
+        "B3 validation report scaffold exists.",
+        "B3 validation report scaffold tests exist.",
         "known-good local kernel/initrd pair has been staged and checked.",
         "known-good local GNU/Linux kernel/initrd pair has been staged and checked.",
-        "B3 VM validation script exists.",
-        "B3 script tests exist.",
-        "B3 log capture notes exist.",
-        "B3 validation report exists.",
+        "OpenBSD launch-check evidence has been staged and checked.",
+        "OpenBSD serial marker evidence is captured or documented as a limitation.",
+        "B3 validation report has been reviewed against captured logs.",
         "VM profile is explicit.",
         "VM runtime is explicit.",
         "boot artifact is explicit.",
@@ -297,18 +300,25 @@ fn boot_readiness_status_preserves_evidence_map() {
         "B3_VM_BOOT_VALIDATION_LIMITATIONS.md",
         "B3_KERNEL_INITRD_HANDOFF.md",
         "B3_GNULINUX_STAGE.md",
+        "B3_OPENBSD_STAGE.md",
+        "B3_VM_VALIDATION_REPORT.md",
         "tests/b3_vm_boot_validation_plan_docs.rs",
         "tests/b3_vm_boot_validation_limitations_docs.rs",
         "tests/b3_kernel_initrd_handoff_docs.rs",
         "tests/b3_gnulinux_stage_docs.rs",
+        "tests/b3_openbsd_stage_docs.rs",
+        "tests/b3_vm_validation_report_docs.rs",
         "scripts/base1-b3-uefi-proof.sh",
         "tests/base1_b3_uefi_proof_script.rs",
         "scripts/base1-b3-kernel-handoff.sh",
         "tests/base1_b3_kernel_handoff_script.rs",
         "scripts/base1-b3-gnulinux-stage.sh",
         "tests/base1_b3_gnulinux_stage_script.rs",
+        "scripts/base1-b3-openbsd-stage.sh",
+        "tests/base1_b3_openbsd_stage_script.rs",
         "scripts/base1-b3-vm-validate.sh",
-        "VM validation report",
+        "tests/base1_b3_vm_validate_script.rs",
+        "Present scaffold",
         "Recovery validation report",
         "Hardware validation report",
     ] {
@@ -349,7 +359,7 @@ fn boot_readiness_status_preserves_hardening_and_non_claims() {
         "first B1 read-only detection script exists",
         "detection-preview behavior only",
         "B2 has an initial dry-run assembly script but remains dry-run preview only",
-        "B3 is planning plus proof-of-life, handoff, and GNU/Linux staging scaffolding until VM validation evidence exists",
+        "B3 is planning plus proof-of-life, handoff, GNU/Linux staging, OpenBSD staging, and validation-report scaffolding until reviewed VM validation evidence exists",
     ] {
         assert!(status.contains(text), "missing non-claim {text}: {status}");
     }
