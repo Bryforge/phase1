@@ -1,24 +1,15 @@
 #!/usr/bin/env sh
 # Phase1 X200 major-result recorder and patch-share helper.
 #
-# Purpose:
-#   Reduce repeated typing during physical X200 testing. This records a single
-#   major result, commits it locally, creates a patch in ~/phase1-share, and
-#   prints the Mac commands needed to apply it.
+# Privacy-safe legacy wrapper. Prefer:
+#   sh scripts/x200-record-and-share-result-safe.sh <result>
 #
-# Usage:
-#   sh scripts/x200-record-and-share-result.sh phase1_system_console_v2_seen
-#   sh scripts/x200-record-and-share-result.sh phase1_system_console_seen
-#   sh scripts/x200-record-and-share-result.sh phase1_seabios_grub_seen
-#
-# This does not push to GitHub. The X200 can share the patch over local HTTP;
-# the Mac applies and pushes it.
+# This wrapper no longer hard-codes private LAN IP addresses.
 
 set -eu
 
 RESULT="${1:-}"
 SHARE_DIR="${PHASE1_SHARE_DIR:-$HOME/phase1-share}"
-X200_IP="${X200_IP:-192.168.4.73}"
 PATCH_NAME="x200-${RESULT}.patch"
 PATCH_PATH="$SHARE_DIR/$PATCH_NAME"
 RECORDER="scripts/x200-b7-record-result.sh"
@@ -30,7 +21,7 @@ fail() { printf 'x200-record-and-share-result: %s\n' "$1" >&2; exit 1; }
 [ -f "$RECORDER" ] || fail "missing $RECORDER; run: git pull --ff-only origin edge/stable"
 
 case "$RESULT" in
-  phase1_system_console_v2_seen|phase1_system_console_seen|phase1_seabios_grub_seen|phase1_seabios_multiboot_seen|phase1_mbr_bootsector_seen|phase1_bootsector_seen|phase1_kernel_framebuffer_seen|phase1_kernel_keyboard_console_seen|phase1_grub_console_seen|blocked_after_seabios_multiboot_load|blocked_after_seabios_payload|blocked_after_chainload|blocked_after_multiboot_load|seabios_usb_not_booting|failed) : ;;
+  phase1_integrated_runtime_seen|phase1_crypto_evidence_seen|phase1_evidence_hash_manifest_seen|phase1_supervisor_plan_seen|phase1_persistent_workspace_seen|phase1_runtime_workspace_seen|phase1_gnulinux_shell_seen|phase1_gnulinux_initramfs_seen|blocked_after_gnulinux_load|phase1_polished_system_seen|phase1_splash_mode_seen|phase1_system_console_v2_seen|phase1_system_console_seen|phase1_seabios_grub_seen|phase1_seabios_multiboot_seen|phase1_mbr_bootsector_seen|phase1_bootsector_seen|phase1_kernel_framebuffer_seen|phase1_kernel_keyboard_console_seen|phase1_grub_console_seen|blocked_after_seabios_multiboot_load|blocked_after_seabios_payload|blocked_after_chainload|blocked_after_multiboot_load|seabios_usb_not_booting|failed) : ;;
   *) fail "unsupported or too-small result for this helper: $RESULT" ;;
 esac
 
@@ -47,8 +38,21 @@ fi
 mkdir -p "$SHARE_DIR"
 git format-patch -1 HEAD --stdout > "$PATCH_PATH"
 
-printf '\nPrepared patch: %s\n' "$PATCH_PATH"
-printf '\nTo serve from X200, run:\n'
-printf '  cd %s && python3 -m http.server 8000\n' "$SHARE_DIR"
-printf '\nOn the Mac, run one line:\n'
-printf '  cd ~/phase1_library/phase1 && git am --abort 2>/dev/null || true; curl -fL -o /tmp/%s http://%s:8000/%s && git am --3way /tmp/%s && git pull --rebase origin edge/stable && git push origin edge/stable\n' "$PATCH_NAME" "$X200_IP" "$PATCH_NAME" "$PATCH_NAME"
+cat <<EOF
+
+Prepared patch:
+  $PATCH_PATH
+
+Serve from X200:
+  cd $SHARE_DIR && python3 -m http.server 8000
+
+On the Mac, replace <X200_IP> with the X200 address, then run:
+  cd ~/phase1_library/phase1
+  git am --abort 2>/dev/null || true
+  curl -fL -o /tmp/$PATCH_NAME http://<X200_IP>:8000/$PATCH_NAME
+  git am --3way /tmp/$PATCH_NAME
+  git pull --rebase origin edge/stable
+  git push origin edge/stable
+
+Stop the X200 server afterward with Ctrl+C.
+EOF
