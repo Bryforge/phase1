@@ -28,6 +28,7 @@ fn repository_navigation_guide_lists_fast_paths() {
     for link in [
         "../README.md",
         "../FEATURE_STATUS.md",
+        "REORGANIZATION_PLAN.md",
         "../CONTRIBUTING.md",
         "../.github/pull_request_template.md",
         "../.github/ISSUE_TEMPLATE/bug_report.yml",
@@ -40,6 +41,10 @@ fn repository_navigation_guide_lists_fast_paths() {
         "base1/README.md",
         "fyr/README.md",
         "community/README.md",
+        "releases/README.md",
+        "website/README.md",
+        "../examples/README.md",
+        "../tools/README.md",
     ] {
         assert!(nav.contains(link), "missing fast-path link {link}: {nav}");
     }
@@ -63,10 +68,16 @@ fn repository_navigation_guide_maps_repository_paths() {
         "phase1-core/",
         "base1/",
         "docs/",
+        "docs/REPOSITORY_NAVIGATION.md",
+        "docs/REORGANIZATION_PLAN.md",
+        "docs/releases/",
+        "docs/website/",
         "docs/security/",
         "docs/community/",
         "docs/base1/",
         "docs/fyr/",
+        "examples/",
+        "tools/",
         "scripts/",
         "tests/",
         "assets/",
@@ -83,6 +94,10 @@ fn repository_navigation_guide_defines_reader_paths() {
     for reader in [
         "First-time user",
         "Contributor",
+        "Repository organizer",
+        "Release/documentation organizer",
+        "Website/asset organizer",
+        "Examples/tools organizer",
         "Security reviewer",
         "Crypto contributor",
         "Base1 contributor",
@@ -90,6 +105,23 @@ fn repository_navigation_guide_defines_reader_paths() {
         "Community/support contributor",
     ] {
         assert!(nav.contains(reader), "missing reader path {reader}: {nav}");
+    }
+}
+
+#[test]
+fn repository_navigation_guide_defines_destination_organizer_rules() {
+    let nav = std::fs::read_to_string("docs/REPOSITORY_NAVIGATION.md")
+        .expect("repository navigation guide");
+
+    for text in [
+        "Keep root-level release notes and checkpoint files as compatibility paths unless a move map approves a change.",
+        "Prefer organized mirrors or indexes before moving release files.",
+        "Keep website claims aligned with repository evidence.",
+        "Keep branding assets under `assets/` unless a future asset map says otherwise.",
+        "Keep user-facing scripts in `scripts/` unless a move map and compatibility wrapper exist.",
+        "Prefer read-only or dry-run examples.",
+    ] {
+        assert!(nav.contains(text), "missing destination organizer rule {text}: {nav}");
     }
 }
 
@@ -141,6 +173,7 @@ fn repository_navigation_guide_preserves_reorganization_rules_and_non_claims() {
     for rule in [
         "Repository reorganization should be preservation-first.",
         "Keep existing public/root compatibility paths unless a future plan explicitly replaces them.",
+        "Use [`REORGANIZATION_PLAN.md`](REORGANIZATION_PLAN.md) before broad restructuring.",
         "Prefer adding indexes and mirrors before moving files.",
         "Add navigation docs before broad restructuring.",
         "Add tests for new navigation and required links.",
