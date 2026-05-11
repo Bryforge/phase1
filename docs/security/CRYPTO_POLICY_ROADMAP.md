@@ -30,7 +30,9 @@ Educational examples may exist only when clearly labeled as lab-only and separat
 
 ## Cryptographic capability registry
 
-Phase1 should maintain a registry of supported cryptographic capabilities. Each registry entry should include:
+Phase1 should maintain a registry of supported cryptographic capabilities. The initial registry index is [`CRYPTO_REGISTRY.md`](CRYPTO_REGISTRY.md).
+
+Each registry entry should include:
 
 - algorithm or design name;
 - implementation provider;
@@ -156,7 +158,7 @@ Crypto profile changes should:
 
 ### Phase 1: registry and docs
 
-- Create registry format.
+- Create registry format: [`CRYPTO_REGISTRY.md`](CRYPTO_REGISTRY.md).
 - Create algorithm documentation template: [`CRYPTO_ALGORITHM_TEMPLATE.md`](CRYPTO_ALGORITHM_TEMPLATE.md).
 - Draft safe-default, high-security, compatibility, and lab-only profiles.
 - Add tests that preserve non-claims.
