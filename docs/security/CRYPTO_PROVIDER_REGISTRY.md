@@ -24,6 +24,8 @@ For providers, this means:
 
 ## Provider entry requirements
 
+Every provider entry must use [`CRYPTO_PROVIDER_TEMPLATE.md`](CRYPTO_PROVIDER_TEMPLATE.md) before it can be considered for a Phase1 crypto profile or runtime provider path.
+
 Every provider entry must document:
 
 - provider name;
@@ -92,6 +94,7 @@ This example is not an approval of any provider.
 Before a provider can be used by any profile, reviewers must confirm:
 
 - provider metadata is complete;
+- provider entry uses `CRYPTO_PROVIDER_TEMPLATE.md`;
 - license is compatible;
 - version/source pinning is defined;
 - maintenance status is acceptable;
@@ -116,6 +119,7 @@ The first implementation work should create documentation-only provider entries 
 - [`CRYPTO_CONFIG_SCHEMA.md`](CRYPTO_CONFIG_SCHEMA.md)
 - [`CRYPTO_OPERATOR_COMMANDS.md`](CRYPTO_OPERATOR_COMMANDS.md)
 - [`CRYPTO_ALGORITHM_TEMPLATE.md`](CRYPTO_ALGORITHM_TEMPLATE.md)
+- [`CRYPTO_PROVIDER_TEMPLATE.md`](CRYPTO_PROVIDER_TEMPLATE.md)
 - [`crypto-profiles/README.md`](crypto-profiles/README.md)
 
 ## Non-claims
