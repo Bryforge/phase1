@@ -23,14 +23,15 @@ fn b3_vm_validation_report_records_evidence_items() {
     for text in [
         "B3 UEFI proof",
         "build/base1-b3-uefi-proof/reports/b3-summary.env",
+        "B3 kernel/initrd handoff",
+        "build/base1-b3-kernel-handoff/reports/qemu-boot-summary.env",
+        "Known-good local kernel/initrd handoff evidence; Linux kernel-start marker only.",
         "B3 GNU/Linux stage",
         "build/base1-b3-gnulinux-stage/reports/qemu-boot-summary.env",
         "B3 OpenBSD stage",
         "build/base1-b3-openbsd-stage/reports/openbsd-qemu-summary.env",
         "B3 OpenBSD serial marker limitation",
         "B3_OPENBSD_SERIAL_LIMITATION.md",
-        "B3 kernel/initrd handoff",
-        "build/base1-b3-kernel-handoff/reports/qemu-boot-summary.env",
         "Hardened-profile request and Linux kernel-start evidence only.",
         "Launch-check evidence only until serial marker routing is tuned.",
         "Marker-check is a known limitation until serial routing is tuned.",
@@ -46,6 +47,9 @@ fn b3_vm_validation_report_lists_commands() {
 
     for text in [
         "sh scripts/base1-b3-uefi-proof.sh --build --check",
+        "sh scripts/base1-b3-kernel-handoff.sh",
+        "--boot-profile hardened",
+        "--expect \"Linux version\"",
         "sh scripts/base1-b3-gnulinux-stage.sh",
         "--kernel build/linux/alpine-netboot/vmlinuz",
         "--initrd build/linux/alpine-netboot/initrd.img",
@@ -66,6 +70,9 @@ fn b3_vm_validation_report_preserves_interpretation_boundaries() {
         .expect("B3 VM validation report");
 
     for text in [
+        "Kernel/initrd handoff interpretation",
+        "stage a caller-provided local kernel/initrd pair",
+        "does not prove a complete userspace boot",
         "Linux version",
         "Linux kernel started",
         "does not prove a complete GNU/Linux userspace boot",
@@ -88,7 +95,6 @@ fn b3_vm_validation_report_lists_remaining_requirements_and_non_claims() {
 
     for text in [
         "B2 focused test suite pass record",
-        "known-good local kernel/initrd handoff check",
         "reviewed B3 log bundle",
         "explicit VM profile",
         "explicit VM runtime",
