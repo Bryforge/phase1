@@ -25,6 +25,7 @@ The following safeguards are in place:
 - Local Markdown link checker: `scripts/base1-link-check.sh`
 - Proposed post-reorganization layout: `docs/base1/POST_REORGANIZATION_LAYOUT.md`
 - Pre-move checklist: `docs/base1/PRE_MOVE_CHECKLIST.md`
+- Release/checkpoint pre-move checks: `docs/base1/releases/PRE_MOVE_CHECKS.md`
 - Root compatibility map: `docs/base1/ROOT_COMPATIBILITY_MAP.md`
 - Release/checkpoint mirror index: `docs/base1/releases/README.md`
 - Integrity gate: `scripts/base1-doc-integrity.sh`
@@ -32,15 +33,26 @@ The following safeguards are in place:
 - Root checkpoint-note compatibility files remain present.
 - Organized release/checkpoint mirrors remain present.
 - Current script paths remain the stable operator interface.
-- Rust tests cover the root compatibility map, quality gate, inventory docs, migration table docs, script compatibility plan docs, link-check strategy docs, link-check script behavior, test inventory reporter and verifier, post-reorganization layout docs, pre-move checklist docs, and readiness docs.
+- Rust tests cover the root compatibility map, quality gate, inventory docs, migration table docs, script compatibility plan docs, link-check strategy docs, link-check script behavior, test inventory reporter and verifier, post-reorganization layout docs, pre-move checklist docs, release/checkpoint pre-move checks, and readiness docs.
 
 ## Not ready yet
 
 Before a full reorganization, Base1 still needs:
 
 1. A successful verified comparison of reporter output against `docs/base1/TEST_INVENTORY.md`.
-2. Group-specific pre-move tests for whichever doc group is moved first.
-3. A final integrity pass through `sh scripts/quality-check.sh base1-docs` and `cargo test --all-targets`.
+2. A final integrity pass through `sh scripts/quality-check.sh base1-docs` and `cargo test --all-targets`.
+
+## First candidate group status
+
+The release/checkpoint note group is the first safe candidate group for small, preservation-first organization work.
+
+Current status:
+
+- Organized mirrors exist under `docs/base1/releases/`.
+- Root checkpoint-note compatibility files remain present.
+- `docs/base1/releases/PRE_MOVE_CHECKS.md` defines group-specific pre-move checks.
+- Release/checkpoint pre-move tests exist.
+- No root checkpoint file may be removed.
 
 ## Full reorganization readiness criteria
 
@@ -67,9 +79,9 @@ The next safe step is not broad movement yet.
 Recommended order:
 
 1. Run `sh scripts/base1-test-inventory-verify.sh` and update `docs/base1/TEST_INVENTORY.md` if any reported tests are missing.
-2. Add group-specific pre-move tests for the first small doc group.
-3. Run `sh scripts/quality-check.sh base1-docs`.
-4. Only then move one small doc group at a time, preserving compatibility paths.
+2. Run `sh scripts/quality-check.sh base1-docs`.
+3. Move or mirror only one small doc group at a time, preserving compatibility paths.
+4. Keep the first candidate group limited to release/checkpoint note organization; do not remove root checkpoint files.
 
 ## Operator command
 
