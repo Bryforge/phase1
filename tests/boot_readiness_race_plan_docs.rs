@@ -70,6 +70,10 @@ fn boot_readiness_race_plan_lists_required_artifacts() {
 
     for artifact in [
         "ROADMAP.md",
+        "BOOT_READINESS_STATUS.md",
+        "B1_READ_ONLY_DETECTION_PLAN.md",
+        "scripts/base1-x86_64-detect.sh",
+        "tests/base1_x86_64_detect_script.rs",
         "X86_64_BOOT_SUPPORT_ROADMAP.md",
         "BASE1_IMAGE_BUILDER.md",
         "INSTALLER_RECOVERY.md",
@@ -81,6 +85,23 @@ fn boot_readiness_race_plan_lists_required_artifacts() {
         "../../base1/LIBREBOOT_PROFILE.md",
     ] {
         assert!(plan.contains(artifact), "missing boot artifact {artifact}: {plan}");
+    }
+}
+
+#[test]
+fn boot_readiness_race_plan_documents_b1_script_and_tests() {
+    let plan = std::fs::read_to_string("docs/os/BOOT_READINESS_RACE_PLAN.md")
+        .expect("boot readiness race plan");
+
+    for text in [
+        "implemented by `scripts/base1-x86_64-detect.sh`",
+        "guarded by `tests/base1_x86_64_detect_script.rs`",
+        "sh scripts/base1-x86_64-detect.sh --dry-run",
+        "cargo test -p phase1 --test base1_x86_64_detect_script",
+        "Initial script: `scripts/base1-x86_64-detect.sh`.",
+        "Initial tests: `tests/base1_x86_64_detect_script.rs`.",
+    ] {
+        assert!(plan.contains(text), "missing B1 script/test text {text}: {plan}");
     }
 }
 
