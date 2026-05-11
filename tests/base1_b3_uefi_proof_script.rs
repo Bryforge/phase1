@@ -44,7 +44,7 @@ fn base1_b3_uefi_proof_help_documents_usage_marker_display_and_boundaries() {
         "emits a serial proof marker",
         "prefers GRUB's unicode.pf2 font",
         "generated monospaced",
-        "box/glitch characters",
+        "serial text console over the graphical boot screen",
         "--build",
         "--run",
         "--check",
@@ -118,7 +118,7 @@ fn base1_b3_uefi_proof_uses_expected_artifacts_and_splash_fitting() {
 }
 
 #[test]
-fn base1_b3_uefi_proof_uses_unicode_font_and_keeps_menu_overlay() {
+fn base1_b3_uefi_proof_uses_unicode_font_keeps_menu_and_disables_visible_serial() {
     let script = std::fs::read_to_string(SCRIPT).expect("B3 UEFI proof source");
 
     for text in [
@@ -136,9 +136,11 @@ fn base1_b3_uefi_proof_uses_unicode_font_and_keeps_menu_overlay() {
         "echo \"base1 b3 uefi proof start\"",
         "echo \"$MARKER\"",
         "echo \"emulator-only evidence; no installer; no hardware-validation claim\"",
-        "display: readable GRUB overlay with unicode font",
+        "display: readable GRUB overlay with unicode font; visible serial disabled",
+        "-serial null",
         "b3-serial.log",
         "b3-summary.env",
+        "-serial \"file:$SERIAL_LOG\"",
         "grep -F \"$MARKER\" \"$SERIAL_LOG\"",
         "BASE1_B3_UEFI_PROOF_RESULT=$result",
         "BASE1_B3_UEFI_PROOF_SERIAL_LOG=reports/b3-serial.log",
@@ -159,11 +161,11 @@ fn base1_b3_uefi_proof_uses_unicode_font_and_keeps_menu_overlay() {
 
     assert!(
         !script.contains("Do not use menuentry here"),
-        "script should keep the boot menu/proof entry and fix font rendering instead: {script}"
+        "script should keep the boot menu/proof entry and fix font/rendering instead: {script}"
     );
     assert!(
         !script.contains("display: direct readable overlay; GRUB menu frame disabled"),
-        "script should keep the menu/proof entry and fix font rendering instead: {script}"
+        "script should keep the menu/proof entry and fix font/rendering instead: {script}"
     );
 }
 
