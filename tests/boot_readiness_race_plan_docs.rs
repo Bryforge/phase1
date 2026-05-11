@@ -53,12 +53,13 @@ fn boot_readiness_race_plan_defines_fast_sprints() {
         "Sprint 1: readiness inventory",
         "Sprint 2: read-only detection",
         "Sprint 3: B2 dry-run assembly",
-        "Sprint 4: boot parameter inventory",
-        "Sprint 5: image and initrd path",
-        "Sprint 6: VM validation",
-        "Sprint 7: recovery and rollback",
-        "Sprint 8: hardware validation",
-        "Sprint 9: release-candidate evidence",
+        "Sprint 4: B3 VM validation planning",
+        "Sprint 5: boot parameter inventory",
+        "Sprint 6: image and initrd path",
+        "Sprint 7: VM validation",
+        "Sprint 8: recovery and rollback",
+        "Sprint 9: hardware validation",
+        "Sprint 10: release-candidate evidence",
     ] {
         assert!(plan.contains(sprint), "missing boot readiness sprint {sprint}: {plan}");
     }
@@ -78,6 +79,9 @@ fn boot_readiness_race_plan_lists_required_artifacts() {
         "B2_DRY_RUN_ASSEMBLY_PLAN.md",
         "scripts/base1-b2-assembly-dry-run.sh",
         "tests/base1_b2_assembly_dry_run_script.rs",
+        "B2_DRY_RUN_ASSEMBLY_TEST_SUITE.md",
+        "B3_VM_BOOT_VALIDATION_PLAN.md",
+        "tests/b3_vm_boot_validation_plan_docs.rs",
         "X86_64_BOOT_SUPPORT_ROADMAP.md",
         "BASE1_IMAGE_BUILDER.md",
         "INSTALLER_RECOVERY.md",
@@ -120,9 +124,26 @@ fn boot_readiness_race_plan_documents_b2_script_and_tests() {
         "guarded by `tests/base1_b2_assembly_dry_run_script.rs`",
         "sh scripts/base1-b2-assembly-dry-run.sh --dry-run --profile x86_64-vm-validation",
         "cargo test -p phase1 --test base1_b2_assembly_dry_run_script",
-        "B2 remains dry-run-only until limitations, validation report, review, and status updates are complete.",
+        "B2 remains dry-run-only until validation has passed locally or in CI.",
     ] {
         assert!(plan.contains(text), "missing B2 script/test text {text}: {plan}");
+    }
+}
+
+#[test]
+fn boot_readiness_race_plan_documents_b3_planning() {
+    let plan = std::fs::read_to_string("docs/os/BOOT_READINESS_RACE_PLAN.md")
+        .expect("boot readiness race plan");
+
+    for text in [
+        "B3 VM validation planning starts in [`B3_VM_BOOT_VALIDATION_PLAN.md`](B3_VM_BOOT_VALIDATION_PLAN.md)",
+        "B3 claims require B2 validation to pass first",
+        "sh scripts/base1-b3-vm-validate.sh --dry-run --profile x86_64-vm-validation",
+        "cargo test -p phase1 --test b3_vm_boot_validation_plan_docs",
+        "B3 remains planning-only until B2 validation has passed locally or in CI",
+        "Preserve that VM validation does not imply physical hardware support.",
+    ] {
+        assert!(plan.contains(text), "missing B3 planning text {text}: {plan}");
     }
 }
 
