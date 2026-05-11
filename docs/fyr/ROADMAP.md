@@ -5,6 +5,7 @@ Fyr is the Phase1-native language path for VFS automation, self-construction, an
 ## Current foundation
 
 - `PHASE1_NATIVE_LANGUAGE.md` names Fyr, reserves `.fyr`, and defines `fyr` as the command surface.
+- Current Fyr visual assets live at `assets/fyr_symbol.png` and `assets/fyr_word.png`.
 - `examples/fyr/hello.fyr` and `examples/fyr/self_check.fyr` document the first source shape.
 - `fyr status`, `fyr spec`, and seed `fyr run <file.fyr>` support are wired into Phase1.
 - The seed runner can execute simple print string literals from `.fyr` files stored in the Phase1 VFS.
@@ -13,7 +14,7 @@ Fyr is the Phase1-native language path for VFS automation, self-construction, an
 
 | Stage | Goal | Deliverables | Status |
 | --- | --- | --- | --- |
-| F0 — Identity | Establish the language name, file extension, command, and visual mark. | `assets/fyr-flame.svg`, README reference, native language spec, roadmap. | Active |
+| F0 — Identity | Establish the language name, file extension, command, and visual mark. | `assets/fyr_symbol.png`, `assets/fyr_word.png`, README reference, native language spec, roadmap. | Active |
 | F1 — Seed runner | Let Phase1 run simple `.fyr` programs from the VFS. | `fyr status`, `fyr spec`, `fyr run`, print literal support, guard tests. | Active |
 | F2 — Authoring loop | Make Fyr usable without manually echoing source code. | `fyr new <name>`, `fyr cat <file>`, `fyr self`, starter templates, safer VFS writes. | Active |
 | F3 — Core syntax | Define stable parser behavior inspired by C, Rust, and Python. | Lexer, parser, function blocks, variables, return values, comments, diagnostics. | Planned |
@@ -50,4 +51,9 @@ Hello, hacker!
 
 ## Visual reference
 
-The Fyr README/post image lives at [`assets/fyr-flame.svg`](../../assets/fyr-flame.svg). It uses a flame symbol with `fyr` written inside the flame for a clear language identity.
+The current Fyr visual assets are:
+
+- Symbol: [`assets/fyr_symbol.png`](../../assets/fyr_symbol.png)
+- Word mark: [`assets/fyr_word.png`](../../assets/fyr_word.png)
+
+Older references to `assets/fyr-flame.svg` are outdated.
