@@ -6,7 +6,15 @@ Review date: 2026-05-06
 
 This review covers the current phase1 source tree, runtime design, host-touching command paths, persistent state behavior, repository ignore rules, and release hygiene.
 
-The goal is to reduce the chance that phase1 can compromise the host system, leak account information, or accidentally commit secrets.
+The goal is to reduce the chance that phase1 can compromise the host system, leak account information, or accidentally commit secrets while preserving practical usability for normal development, learning, validation, and local operator workflows.
+
+## Security and usability goal
+
+Phase1 should be as secure as possible while maintaining practical usability.
+
+Security improvements should prefer safe defaults, explicit trust gates, redaction, dry-runs, read-only validation, and visible operator confirmation. They should not make legitimate local workflows unusable unless the restriction meaningfully reduces risk and is clearly documented.
+
+Usability improvements should not bypass safe mode, host-trust gates, secret redaction, compatibility checks, or evidence-backed security claims.
 
 ## Security posture summary
 
@@ -144,3 +152,4 @@ Expected result: no real credentials. Documentation references to those words mu
 - Do not share `phase1.state`, `.phase1_history`, logs, or screenshots without reviewing them for secrets.
 - Keep host-backed command support as trusted-user functionality only.
 - Consider a future stronger host-tools gate such as `PHASE1_ALLOW_HOST_TOOLS=1` in addition to disabling safe mode.
+- Preserve practical usability while strengthening security controls; prefer guarded opt-in flows over removing useful workflows outright.
