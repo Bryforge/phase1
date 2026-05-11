@@ -127,11 +127,48 @@ fn support_request_template_preserves_security_routing() {
 }
 
 #[test]
+fn documentation_issue_template_collects_docs_context() {
+    let template = std::fs::read_to_string(".github/ISSUE_TEMPLATE/documentation_issue.yml")
+        .expect("documentation issue template");
+
+    for text in [
+        "name: Documentation issue",
+        "Project area",
+        "Documentation path or page",
+        "Documentation issue type",
+        "What is wrong or missing?",
+        "Suggested change",
+        "User impact",
+        "Claim and safety check",
+    ] {
+        assert!(template.contains(text), "missing documentation template text {text}: {template}");
+    }
+}
+
+#[test]
+fn documentation_issue_template_preserves_claim_and_secret_safety() {
+    let template = std::fs::read_to_string(".github/ISSUE_TEMPLATE/documentation_issue.yml")
+        .expect("documentation issue template");
+
+    for text in [
+        "Unsupported claim or overclaim",
+        "Missing status / validation / non-claims block",
+        "Unsafe instruction or secret-sharing risk",
+        "do not include secrets, tokens, private keys, recovery codes, private logs, or unrevised screenshots",
+        "Follow `SECURITY.md` instead.",
+        "If this reports an unsupported claim, I have identified the claim or page where it appears.",
+    ] {
+        assert!(template.contains(text), "missing documentation safety text {text}: {template}");
+    }
+}
+
+#[test]
 fn issue_templates_cover_project_areas() {
     for path in [
         ".github/ISSUE_TEMPLATE/bug_report.yml",
         ".github/ISSUE_TEMPLATE/feature_request.yml",
         ".github/ISSUE_TEMPLATE/support_request.yml",
+        ".github/ISSUE_TEMPLATE/documentation_issue.yml",
     ] {
         let template = std::fs::read_to_string(path).expect(path);
         for area in [
