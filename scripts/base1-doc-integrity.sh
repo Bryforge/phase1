@@ -3,9 +3,9 @@
 #
 # This check is read-only. It verifies the current Base1 documentation layout,
 # inventory, test inventory, test inventory reporter, migration table, script
-# compatibility plan, link check strategy, readiness checklist, core references,
-# release-note mirrors, root compatibility paths, and dry-run guardrails before
-# file reorganization continues.
+# compatibility plan, link check strategy, post-reorganization layout,
+# readiness checklist, core references, release-note mirrors, root compatibility
+# paths, and dry-run guardrails before file reorganization continues.
 
 set -eu
 
@@ -55,6 +55,7 @@ check_core_docs() {
     docs/base1/MIGRATION_TABLE.md \
     docs/base1/SCRIPT_COMPATIBILITY_PLAN.md \
     docs/base1/LINK_CHECK_STRATEGY.md \
+    docs/base1/POST_REORGANIZATION_LAYOUT.md \
     docs/base1/REORGANIZATION_READINESS.md \
     docs/base1/VALIDATION_RUNBOOK.md \
     docs/base1/VALIDATION_REPORT_TEMPLATE.md \
@@ -143,6 +144,7 @@ check_references() {
   check_contains docs/base1/README.md 'MIGRATION_TABLE.md'
   check_contains docs/base1/README.md 'SCRIPT_COMPATIBILITY_PLAN.md'
   check_contains docs/base1/README.md 'LINK_CHECK_STRATEGY.md'
+  check_contains docs/base1/README.md 'POST_REORGANIZATION_LAYOUT.md'
   check_contains docs/base1/README.md 'REORGANIZATION_READINESS.md'
   check_contains docs/base1/README.md 'releases/README.md'
   check_contains docs/base1/DOCUMENTATION_MAP.md '../../base1/README.md'
@@ -152,6 +154,7 @@ check_references() {
   check_contains docs/base1/DOCUMENTATION_MAP.md 'MIGRATION_TABLE.md'
   check_contains docs/base1/DOCUMENTATION_MAP.md 'SCRIPT_COMPATIBILITY_PLAN.md'
   check_contains docs/base1/DOCUMENTATION_MAP.md 'LINK_CHECK_STRATEGY.md'
+  check_contains docs/base1/DOCUMENTATION_MAP.md 'POST_REORGANIZATION_LAYOUT.md'
   check_contains docs/base1/DOCUMENTATION_MAP.md 'REORGANIZATION_READINESS.md'
   check_contains docs/base1/DOCUMENTATION_MAP.md 'ROOT_COMPATIBILITY_MAP.md'
   check_contains docs/base1/DOCUMENTATION_MAP.md 'docs/base1/releases/'
@@ -179,6 +182,12 @@ check_references() {
   check_contains docs/base1/LINK_CHECK_STRATEGY.md 'scripts/base1-link-check.sh'
   check_contains docs/base1/LINK_CHECK_STRATEGY.md 'Fail on missing local targets.'
   check_contains docs/base1/LINK_CHECK_STRATEGY.md 'Stay read-only.'
+  check_contains docs/base1/POST_REORGANIZATION_LAYOUT.md 'Base1 post-reorganization layout'
+  check_contains docs/base1/POST_REORGANIZATION_LAYOUT.md 'proposed stable layout'
+  check_contains docs/base1/POST_REORGANIZATION_LAYOUT.md 'Stable public paths'
+  check_contains docs/base1/POST_REORGANIZATION_LAYOUT.md 'Compatibility policy'
+  check_contains docs/base1/POST_REORGANIZATION_LAYOUT.md 'scripts/base1-*.sh'
+  check_contains docs/base1/POST_REORGANIZATION_LAYOUT.md 'tests/base1_*.rs'
   check_contains scripts/base1-link-check.sh 'mode: read-only'
   check_contains scripts/base1-link-check.sh 'missing local link target'
   check_contains scripts/base1-link-check.sh 'external-links: skipped'
@@ -213,6 +222,7 @@ check_non_claims() {
   check_contains docs/base1/MIGRATION_TABLE.md 'does not make Base1 installer-ready'
   check_contains docs/base1/SCRIPT_COMPATIBILITY_PLAN.md 'does not make Base1 installer-ready'
   check_contains docs/base1/LINK_CHECK_STRATEGY.md 'does not make Base1 installer-ready'
+  check_contains docs/base1/POST_REORGANIZATION_LAYOUT.md 'does not make Base1 installer-ready'
   check_contains docs/base1/REORGANIZATION_READINESS.md 'does not make Base1 installer-ready'
   check_contains docs/base1/releases/README.md 'No destructive disk writes'
   check_contains docs/base1/ROOT_COMPATIBILITY_MAP.md 'Base1 installer-ready'
@@ -227,5 +237,5 @@ check_scripts
 check_references
 check_non_claims
 
-info 'integrity complete; Base1 docs, inventory, test inventory, test inventory reporter, migration table, script compatibility plan, link-check strategy, link checker, readiness checklist, root compatibility paths, release mirrors, and dry-run references are present'
+info 'integrity complete; Base1 docs, inventory, test inventory, test inventory reporter, migration table, script compatibility plan, link-check strategy, post-reorganization layout, link checker, readiness checklist, root compatibility paths, release mirrors, and dry-run references are present'
 info 'writes: no'
