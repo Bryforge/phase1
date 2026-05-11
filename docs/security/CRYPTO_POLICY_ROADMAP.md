@@ -106,6 +106,24 @@ crypto status
 
 Unknown profiles and scopes should fail closed.
 
+## Implementation plan
+
+The implementation sequence is defined in [`CRYPTO_IMPLEMENTATION_PLAN.md`](CRYPTO_IMPLEMENTATION_PLAN.md).
+
+Crypto work should proceed in this order:
+
+1. Documentation and registry surface.
+2. Read-only command surface.
+3. Config parser and validator.
+4. Provider abstraction.
+5. Test-vector harness.
+6. Profile policy engine.
+7. Scoped integration points.
+8. Migration and rollback tooling.
+9. External review and audit preparation.
+
+No runtime control point should use cryptographic policy until the earlier phases are complete for that scope.
+
 ## Points of control
 
 Operators should be able to choose policy by control point.
@@ -155,6 +173,8 @@ Every profile should follow the structure in [`crypto-profiles/README.md`](crypt
 
 Every config schema change should follow [`CRYPTO_CONFIG_SCHEMA.md`](CRYPTO_CONFIG_SCHEMA.md) before it is connected to runtime behavior.
 
+Every implementation phase should follow [`CRYPTO_IMPLEMENTATION_PLAN.md`](CRYPTO_IMPLEMENTATION_PLAN.md) before it is connected to runtime behavior.
+
 ## Safety gates
 
 Crypto profile changes should:
@@ -176,6 +196,7 @@ Crypto profile changes should:
 - Create profile planning index: [`crypto-profiles/README.md`](crypto-profiles/README.md).
 - Create operator command plan: [`CRYPTO_OPERATOR_COMMANDS.md`](CRYPTO_OPERATOR_COMMANDS.md).
 - Create config schema plan: [`CRYPTO_CONFIG_SCHEMA.md`](CRYPTO_CONFIG_SCHEMA.md).
+- Create implementation plan: [`CRYPTO_IMPLEMENTATION_PLAN.md`](CRYPTO_IMPLEMENTATION_PLAN.md).
 - Draft safe-default, high-security, compatibility, post-quantum-preview, and lab-only profiles.
 - Add tests that preserve non-claims.
 
