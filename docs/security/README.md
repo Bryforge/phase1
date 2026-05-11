@@ -2,7 +2,7 @@
 
 > **Status:** Documentation index and review entry point.
 >
-> **Validation:** Links to the trust model, crypto policy roadmap, crypto registry, crypto profiles index, crypto algorithm template, claims policy, review guide, and manual roadmap added in this repository.
+> **Validation:** Links to the trust model, crypto policy roadmap, crypto registry, crypto profiles index, crypto operator command plan, crypto algorithm template, claims policy, review guide, and manual roadmap added in this repository.
 >
 > **Non-claims:** Phase1 is not currently a finished secure OS replacement, Base1 is not currently a released bootable daily-driver image, and this documentation index does not prove a security property by itself.
 
@@ -20,14 +20,15 @@ Security docs should preserve safe defaults, explicit trust gates, read-only and
 2. [`CRYPTO_POLICY_ROADMAP.md`](CRYPTO_POLICY_ROADMAP.md) — cryptographic policy registry, operator-selectable profiles, documentation requirements, and Base1 alignment.
 3. [`CRYPTO_REGISTRY.md`](CRYPTO_REGISTRY.md) — planning registry for crypto profiles, control points, algorithm families, status labels, and review requirements.
 4. [`crypto-profiles/README.md`](crypto-profiles/README.md) — planning index for operator-selectable cryptographic profiles.
-5. [`CRYPTO_ALGORITHM_TEMPLATE.md`](CRYPTO_ALGORITHM_TEMPLATE.md) — required template for documenting cryptographic algorithms, designs, providers, and profile components.
-6. [`DOCS_CLAIMS.md`](DOCS_CLAIMS.md) — allowed wording, disallowed wording, status labels, and required evidence.
-7. [`REVIEW_GUIDE.md`](REVIEW_GUIDE.md) — practical reviewer checklist for safety-sensitive documentation.
-8. [`../MANUAL_ROADMAP.md`](../MANUAL_ROADMAP.md) — full Codex architecture, safety model, glossary, and launch plan.
+5. [`CRYPTO_OPERATOR_COMMANDS.md`](CRYPTO_OPERATOR_COMMANDS.md) — planning design for future operator-facing crypto policy commands.
+6. [`CRYPTO_ALGORITHM_TEMPLATE.md`](CRYPTO_ALGORITHM_TEMPLATE.md) — required template for documenting cryptographic algorithms, designs, providers, and profile components.
+7. [`DOCS_CLAIMS.md`](DOCS_CLAIMS.md) — allowed wording, disallowed wording, status labels, and required evidence.
+8. [`REVIEW_GUIDE.md`](REVIEW_GUIDE.md) — practical reviewer checklist for safety-sensitive documentation.
+9. [`../MANUAL_ROADMAP.md`](../MANUAL_ROADMAP.md) — full Codex architecture, safety model, glossary, and launch plan.
 
 ## Review order for safety-sensitive docs
 
-Use this order when reviewing pages about host tools, Base1, recovery, rollback, hardware, installers, image writing, cryptographic policy, cryptographic algorithms, cryptographic profiles, or security claims:
+Use this order when reviewing pages about host tools, Base1, recovery, rollback, hardware, installers, image writing, cryptographic policy, cryptographic algorithms, cryptographic profiles, crypto operator commands, or security claims:
 
 1. Confirm the page has a status block.
 2. Confirm the page names the current implementation status.
@@ -39,9 +40,10 @@ Use this order when reviewing pages about host tools, Base1, recovery, rollback,
 8. Confirm algorithm pages use [`CRYPTO_ALGORITHM_TEMPLATE.md`](CRYPTO_ALGORITHM_TEMPLATE.md).
 9. Confirm registry entries are listed or planned through [`CRYPTO_REGISTRY.md`](CRYPTO_REGISTRY.md) before they are connected to profiles.
 10. Confirm profile docs follow [`crypto-profiles/README.md`](crypto-profiles/README.md) before they are connected to runtime behavior.
-11. Confirm no page claims secure OS replacement, bootable Base1 release, installer readiness, daily-driver readiness, recovery completion, cryptographic completeness, audit completion, certification, or quantum safety without linked evidence.
-12. Use [`REVIEW_GUIDE.md`](REVIEW_GUIDE.md) before approving safety-sensitive documentation.
+11. Confirm crypto operator commands follow [`CRYPTO_OPERATOR_COMMANDS.md`](CRYPTO_OPERATOR_COMMANDS.md) before they are connected to runtime behavior.
+12. Confirm no page claims secure OS replacement, bootable Base1 release, installer readiness, daily-driver readiness, recovery completion, cryptographic completeness, audit completion, certification, or quantum safety without linked evidence.
+13. Use [`REVIEW_GUIDE.md`](REVIEW_GUIDE.md) before approving safety-sensitive documentation.
 
 ## Security documentation rule
 
-Security documentation must be operator-visible and testable. Prefer narrow claims such as `requires explicit confirmation`, `blocked by default`, `read-only validation`, `profile is operator-selected`, `uses documented parameters`, or `logged for review` over broad claims such as `safe`, `secure`, `quantum-safe`, `certified`, or `hardened`.
+Security documentation must be operator-visible and testable. Prefer narrow claims such as `requires explicit confirmation`, `blocked by default`, `read-only validation`, `profile is operator-selected`, `uses documented parameters`, `fails closed`, or `logged for review` over broad claims such as `safe`, `secure`, `quantum-safe`, `certified`, or `hardened`.
