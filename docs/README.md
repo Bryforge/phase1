@@ -17,6 +17,7 @@ Start with [`MANUAL_ROADMAP.md`](MANUAL_ROADMAP.md) for the full book, manual, a
 ## Fast navigation
 
 - [`REPOSITORY_NAVIGATION.md`](REPOSITORY_NAVIGATION.md) — repository map, fast paths, reader paths, issue-template chooser, quality-gate chooser, and reorganization rules.
+- [`REORGANIZATION_PLAN.md`](REORGANIZATION_PLAN.md) — minimalist target structure, destination map, move policy, and rollback rules.
 - [`../README.md`](../README.md) — public project entry point and quick start.
 - [`../CONTRIBUTING.md`](../CONTRIBUTING.md) — repository-wide contribution guidelines.
 - [`../QUALITY.md`](../QUALITY.md) — quality gates and validation commands.
@@ -29,17 +30,22 @@ Start with [`MANUAL_ROADMAP.md`](MANUAL_ROADMAP.md) for the full book, manual, a
 | First-time user | [`operators/README.md`](operators/README.md) | Launch Phase1 safely and understand the current boundary. |
 | Operator | [`phase1/README.md`](phase1/README.md) | Learn boot modes, shell workflows, VFS, host tools, and logs. |
 | Repository navigator | [`REPOSITORY_NAVIGATION.md`](REPOSITORY_NAVIGATION.md) | Find the right repo area, support path, contribution path, or validation gate quickly. |
+| Repository organizer | [`REORGANIZATION_PLAN.md`](REORGANIZATION_PLAN.md) | Follow preservation-first moves, destination mapping, compatibility, and rollback rules. |
 | Contributor | [`../CONTRIBUTING.md`](../CONTRIBUTING.md) | Prepare repository contributions while preserving quality, safety, compatibility, and non-claims. |
 | Developer | [`developers/README.md`](developers/README.md) | Extend Phase1 while preserving tests, docs, and capability metadata. |
 | Security reviewer | [`security/TRUST_MODEL.md`](security/TRUST_MODEL.md) | Review safety claims, trust boundaries, and host-tool behavior. |
 | Recovery/hardware operator | [`recovery/README.md`](recovery/README.md) | Follow Base1 and recovery planning without destructive assumptions. |
 | Fyr contributor | [`fyr/README.md`](fyr/README.md) | Work on the Phase1-native language and toolchain track. |
 | Community/support contributor | [`community/README.md`](community/README.md) | Plan support, forum, and community workflows without asking users to expose private data. |
+| Website/branding contributor | [`website/README.md`](website/README.md) | Work on public website structure, branding, content accuracy, accessibility, and mobile fit. |
+| Release docs organizer | [`releases/README.md`](releases/README.md) | Organize release notes and checkpoint docs while preserving compatibility paths. |
+| Examples/tools organizer | [`../examples/README.md`](../examples/README.md) | Place safe examples and future internal tooling in the right locations. |
 | Documentation contributor | [`templates/README.md`](templates/README.md) | Start from reusable status blocks, page skeletons, and claim-review examples. |
 
 ## Manual sections
 
 - [`REPOSITORY_NAVIGATION.md`](REPOSITORY_NAVIGATION.md) — repository navigation guide and fast-path map.
+- [`REORGANIZATION_PLAN.md`](REORGANIZATION_PLAN.md) — repository reorganization plan and minimalist target structure.
 - [`phase1/`](phase1/) — Phase1 Operator Manual.
 - [`base1/`](base1/) — Base1 Recovery and OS Foundation Manual.
 - [`fyr/`](fyr/) — Fyr Language Book.
@@ -48,7 +54,16 @@ Start with [`MANUAL_ROADMAP.md`](MANUAL_ROADMAP.md) for the full book, manual, a
 - [`community/`](community/) — Community support and forum planning.
 - [`recovery/`](recovery/) — Recovery and hardware planning.
 - [`security/`](security/) — Trust model, claims policy, and review guide.
+- [`releases/`](releases/) — Organized release and checkpoint documentation.
+- [`website/`](website/) — Website, branding, accessibility, and public content planning.
 - [`templates/`](templates/) — Reusable Codex status blocks, page skeletons, and claim-review examples.
+
+## Repository destination indexes
+
+- [`../examples/README.md`](../examples/README.md) — safe examples, walkthrough inputs, Fyr scripts, and dry-run demo material.
+- [`../tools/README.md`](../tools/README.md) — internal maintainer utilities, local helpers, future automation, and repo-maintenance tools.
+- [`releases/README.md`](releases/README.md) — release documentation destination index.
+- [`website/README.md`](website/README.md) — website documentation destination index.
 
 ## Contribution entry points
 
