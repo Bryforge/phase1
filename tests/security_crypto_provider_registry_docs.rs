@@ -15,6 +15,22 @@ fn crypto_provider_registry_defines_purpose_and_security_goal() {
 }
 
 #[test]
+fn crypto_provider_registry_requires_provider_template() {
+    let registry = std::fs::read_to_string("docs/security/CRYPTO_PROVIDER_REGISTRY.md")
+        .expect("crypto provider registry");
+
+    assert!(registry.contains("CRYPTO_PROVIDER_TEMPLATE.md"), "{registry}");
+    assert!(
+        registry.contains("Every provider entry must use [`CRYPTO_PROVIDER_TEMPLATE.md`](CRYPTO_PROVIDER_TEMPLATE.md)"),
+        "{registry}"
+    );
+    assert!(
+        registry.contains("provider entry uses `CRYPTO_PROVIDER_TEMPLATE.md`"),
+        "{registry}"
+    );
+}
+
+#[test]
 fn crypto_provider_registry_lists_required_provider_metadata() {
     let registry = std::fs::read_to_string("docs/security/CRYPTO_PROVIDER_REGISTRY.md")
         .expect("crypto provider registry");
@@ -87,6 +103,7 @@ fn crypto_provider_registry_requires_review_before_profile_use() {
 
     for item in [
         "provider metadata is complete",
+        "provider entry uses `CRYPTO_PROVIDER_TEMPLATE.md`",
         "license is compatible",
         "version/source pinning is defined",
         "maintenance status is acceptable",
@@ -114,6 +131,20 @@ fn crypto_provider_registry_is_linked_from_security_docs() {
 
     for doc in [&index, &roadmap, &implementation, &gate] {
         assert!(doc.contains("CRYPTO_PROVIDER_REGISTRY.md"), "{doc}");
+    }
+}
+
+#[test]
+fn crypto_provider_template_is_linked_from_registry_index_and_integrity_gate() {
+    let registry = std::fs::read_to_string("docs/security/CRYPTO_PROVIDER_REGISTRY.md")
+        .expect("crypto provider registry");
+    let index = std::fs::read_to_string("docs/security/README.md")
+        .expect("security docs index");
+    let gate = std::fs::read_to_string("scripts/security-crypto-doc-integrity.sh")
+        .expect("crypto docs integrity gate");
+
+    for doc in [&registry, &index, &gate] {
+        assert!(doc.contains("CRYPTO_PROVIDER_TEMPLATE.md"), "{doc}");
     }
 }
 
