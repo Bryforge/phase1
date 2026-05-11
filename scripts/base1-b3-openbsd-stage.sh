@@ -18,6 +18,7 @@ EXPECT=${BASE1_B3_OPENBSD_MARKER:-OpenBSD}
 QEMU_BIN=${BASE1_QEMU:-qemu-system-x86_64}
 MEMORY_MB=${BASE1_QEMU_MEMORY_MB:-1024}
 BOOT_MODE=auto
+CHECK_MODE=${BASE1_B3_OPENBSD_CHECK_MODE:-marker}
 
 usage() {
   cat <<'USAGE'
@@ -33,6 +34,7 @@ options:
   --prepare            create evidence directory and stage metadata only, default
   --dry-run            print the guarded QEMU OpenBSD boot plan
   --check              run guarded QEMU serial-marker check
+  --check-mode <mode>  marker or launch, default: marker
   --timeout <seconds>  check timeout, default: 45
   --expect <text>      expected serial marker, default: OpenBSD
   --memory-mb <n>      QEMU memory size, default: 1024
@@ -43,6 +45,11 @@ stage model:
   separate from the GNU/Linux kernel/initrd handoff because OpenBSD uses its own
   bootloader, kernel, ramdisk, and installer media shape.
 
+check modes:
+  marker   pass only when the expected marker appears in the captured serial log
+  launch   pass when QEMU launches in a bounded run, even if the OpenBSD console
+           is not yet routed to serial; this is launch evidence, not boot proof
+
 outputs:
   <out>/openbsd-stage.env
   <out>/reports/openbsd-qemu-boot.log       when --check is used
@@ -50,8 +57,9 @@ outputs:
 
 non-claims:
   This is emulator-only OpenBSD staging evidence. It does not make Base1 an
-  OpenBSD distribution, install Base1, validate physical hardware, validate an
-  installer, validate recovery, prove hardening, or prove daily-driver readiness.
+  OpenBSD distribution, install Base1, modify host boot settings, validate
+  physical hardware, validate an installer, validate recovery, prove hardening,
+  or prove daily-driver readiness.
 USAGE
 }
 
@@ -63,6 +71,13 @@ fail() {
 require_build_out_dir() {
   case "$1" in
     build/*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+valid_check_mode() {
+  case "$1" in
+    marker|launch) return 0 ;;
     *) return 1 ;;
   esac
 }
@@ -97,6 +112,11 @@ while [ "$#" -gt 0 ]; do
     --check)
       MODE=check
       shift
+      ;;
+    --check-mode)
+      [ "$#" -ge 2 ] || fail '--check-mode requires a value'
+      CHECK_MODE=$2
+      shift 2
       ;;
     --timeout)
       [ "$#" -ge 2 ] || fail '--timeout requires a value'
@@ -134,6 +154,7 @@ case "$MEMORY_MB" in
 esac
 [ "$MEMORY_MB" -gt 0 ] || fail '--memory-mb must be greater than zero'
 
+valid_check_mode "$CHECK_MODE" || fail "unsupported check mode: $CHECK_MODE"
 require_build_out_dir "$OUT_DIR" || fail "output directory must be under build/: $OUT_DIR"
 
 case "$BOOT_MODE" in
@@ -163,6 +184,7 @@ mkdir -p "$OUT_DIR"
 cat > "$STAGE_ENV" <<EOF
 BASE1_B3_OPENBSD_STAGE_MODE=$MODE
 BASE1_B3_OPENBSD_BOOT_MODE=$BOOT_MODE
+BASE1_B3_OPENBSD_CHECK_MODE=$CHECK_MODE
 BASE1_B3_OPENBSD_ARTIFACT=$ARTIFACT
 BASE1_B3_OPENBSD_EXPECT=$EXPECT
 BASE1_B3_OPENBSD_LOG=reports/openbsd-qemu-boot.log
@@ -176,12 +198,13 @@ BASE1_B3_OPENBSD_NON_CLAIM_DAILY_DRIVER=1
 EOF
 
 printf 'BASE1 B3 OPENBSD STAGE\n'
-printf 'mode     : %s\n' "$MODE"
-printf 'out      : %s\n' "$OUT_DIR"
-printf 'boot_mode: %s\n' "$BOOT_MODE"
-printf 'artifact : %s\n' "$ARTIFACT"
-printf 'expect   : %s\n' "$EXPECT"
-printf 'stage_env: %s\n' "$STAGE_ENV"
+printf 'mode      : %s\n' "$MODE"
+printf 'out       : %s\n' "$OUT_DIR"
+printf 'boot_mode : %s\n' "$BOOT_MODE"
+printf 'check_mode: %s\n' "$CHECK_MODE"
+printf 'artifact  : %s\n' "$ARTIFACT"
+printf 'expect    : %s\n' "$EXPECT"
+printf 'stage_env : %s\n' "$STAGE_ENV"
 printf '\n'
 
 if [ "$MODE" = prepare ]; then
@@ -195,7 +218,7 @@ case "$BOOT_MODE" in
     QEMU_ARGS="-m $MEMORY_MB -display none -serial file:$LOG -no-reboot -cdrom $ARTIFACT -boot d"
     ;;
   img)
-    QEMU_ARGS="-m $MEMORY_MB -display none -serial file:$LOG -no-reboot -drive file=$ARTIFACT,format=raw,if=virtio -boot c"
+    QEMU_ARGS="-m $MEMORY_MB -display none -serial file:$LOG -no-reboot -drive file=$ARTIFACT,format=raw,if=ide -boot c"
     ;;
 esac
 
@@ -227,17 +250,29 @@ set +e
 rc=$?
 set -e
 
-if grep -F "$EXPECT" "$LOG" >/dev/null 2>&1; then
-  result=pass
-else
-  result=failed
-fi
+case "$CHECK_MODE" in
+  marker)
+    if grep -F "$EXPECT" "$LOG" >/dev/null 2>&1; then
+      result=pass
+    else
+      result=failed
+    fi
+    ;;
+  launch)
+    if [ "$rc" -eq 124 ] || [ "$rc" -eq 0 ]; then
+      result=pass
+    else
+      result=failed
+    fi
+    ;;
+esac
 
 cat > "$SUMMARY" <<EOF
 BASE1_B3_OPENBSD_RESULT=$result
 BASE1_B3_OPENBSD_EXIT_CODE=$rc
 BASE1_B3_OPENBSD_EXPECT=$EXPECT
 BASE1_B3_OPENBSD_BOOT_MODE=$BOOT_MODE
+BASE1_B3_OPENBSD_CHECK_MODE=$CHECK_MODE
 BASE1_B3_OPENBSD_ARTIFACT=$ARTIFACT
 BASE1_B3_OPENBSD_LOG=reports/openbsd-qemu-boot.log
 BASE1_B3_OPENBSD_CLAIM=not_claimed
