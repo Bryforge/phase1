@@ -28,7 +28,8 @@ Marker:
 Display behavior:
   Visible QEMU runs show the splash plus readable GRUB proof text. The build
   prefers GRUB's unicode.pf2 font, then falls back to a generated monospaced
-  font, so menu/text glyphs render correctly instead of box/glitch characters.
+  font. Visible runs also send the serial console to null so QEMU does not draw
+  a duplicate serial text console over the graphical boot screen.
 
 Non-claims:
   This is QEMU/OVMF proof-of-life only. It does not make Base1 installer-ready,
@@ -254,7 +255,7 @@ build_image() {
   printf 'base1_b3_uefi_proof: built %s\n' "$IMG"
   printf 'marker: %s\n' "$MARKER"
   printf 'splash: assets/phase1_word.png fitted to %sx%s max edge %s\n' "$SPLASH_WIDTH" "$SPLASH_HEIGHT" "$SPLASH_MAX_EDGE"
-  printf 'display: readable GRUB overlay with unicode font\n'
+  printf 'display: readable GRUB overlay with unicode font; visible serial disabled\n'
   printf 'boot_readiness_claim: no\n'
 }
 
@@ -286,6 +287,7 @@ run_visible() {
     -boot menu=off \
     -vga std \
     -display cocoa,zoom-to-fit=on \
+    -serial null \
     $fullscreen_arg \
     -net none
 }
