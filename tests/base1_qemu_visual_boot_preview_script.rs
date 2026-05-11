@@ -40,7 +40,9 @@ fn qemu_visual_boot_preview_script_help_documents_usage_and_boundaries() {
     for text in [
         "usage: sh scripts/base1-qemu-visual-boot-preview.sh --build [--run] [--fullscreen]",
         "Builds a local UEFI FAT image",
-        "small centered Phase1 symbol-only",
+        "assets/phase1_word.png",
+        "small,",
+        "centered, padded boot splash",
         "visual boot preview only",
         "--build",
         "--run",
@@ -91,15 +93,19 @@ fn qemu_visual_boot_preview_script_uses_expected_local_artifacts() {
     for text in [
         "build/base1-qemu-visual-boot-preview",
         "build/base1-qemu-visual-boot-preview.img",
+        "SPLASH_SOURCE=\"$ROOT_DIR/assets/phase1_word.png\"",
         "QEMU_SPLASH=\"$WORK_DIR/boot/grub/phase1-qemu-splash.png\"",
+        "QEMU_SPLASH_FIT=\"$WORK_DIR/boot/grub/phase1-qemu-splash-fit.png\"",
         "QEMU_SPLASH_WIDTH=1024",
         "QEMU_SPLASH_HEIGHT=768",
-        "QEMU_SPLASH_SYMBOL_SIZE=176",
+        "QEMU_SPLASH_MAX_EDGE=560",
         "EFI/BOOT/BOOTX64.EFI",
         "boot/grub/phase1-qemu-splash.png",
         "boot/grub/fonts/phase1.pf2",
-        "generate_qemu_symbol_splash",
-        "python3",
+        "generate_qemu_splash",
+        "sips -Z \"$QEMU_SPLASH_MAX_EDGE\"",
+        "--padToHeightWidth \"$QEMU_SPLASH_HEIGHT\" \"$QEMU_SPLASH_WIDTH\"",
+        "--padColor 000000",
         "x86_64-elf-grub-mkstandalone",
         "mformat",
         "mcopy",
@@ -111,28 +117,29 @@ fn qemu_visual_boot_preview_script_uses_expected_local_artifacts() {
 }
 
 #[test]
-fn qemu_visual_boot_preview_script_keeps_splash_symbol_only_and_small() {
+fn qemu_visual_boot_preview_script_uses_phase1_wordmark_and_fits_it() {
     let script = std::fs::read_to_string(SCRIPT).expect("QEMU visual boot preview source");
 
     for required in [
-        "small centered Phase1 symbol-only",
-        "No word mark is rendered here",
-        "bounded to roughly 18% of a 1024px-wide QEMU viewport",
-        "splash: small centered phase1 symbol-only image",
+        "assets/phase1_word.png",
+        "smallish centered 1024x768 splash",
+        "not an oversized crop",
         "background_image /boot/grub/phase1-qemu-splash.png",
+        "splash: assets/phase1_word.png fitted to",
     ] {
-        assert!(script.contains(required), "missing symbol-only guard text {required}: {script}");
+        assert!(script.contains(required), "missing fitted wordmark guard text {required}: {script}");
     }
 
     for forbidden in [
-        "cp \"$SPLASH\"",
+        "QEMU_SPLASH_SYMBOL_SIZE",
+        "generate_qemu_symbol_splash",
+        "small centered Phase1 symbol-only",
         "assets/phase1-splash.png",
         "boot/grub/phase1-splash.png",
-        "Phase1</text>",
     ] {
         assert!(
             !script.contains(forbidden),
-            "QEMU splash should not use the full word-mark splash path {forbidden}: {script}"
+            "QEMU splash should use the fitted phase1_word.png path, not {forbidden}: {script}"
         );
     }
 }
@@ -163,13 +170,10 @@ fn qemu_visual_boot_preview_script_preserves_non_install_boundary() {
     let script = std::fs::read_to_string(SCRIPT).expect("QEMU visual boot preview source");
 
     for required in [
-        "showcase-only boot splash path",
-        "does not install Base1",
-        "modify host boot settings",
-        "partition disks",
+        "Showcase-only",
+        "makes no boot-readiness claim",
         "boot_readiness_claim: no",
         "writes: build-directory-only",
-        "no boot-readiness claim",
     ] {
         assert!(script.contains(required), "missing boundary text {required}: {script}");
     }
