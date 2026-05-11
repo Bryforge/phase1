@@ -50,7 +50,7 @@ Use [`CRYPTO_ALGORITHM_TEMPLATE.md`](CRYPTO_ALGORITHM_TEMPLATE.md) for each algo
 
 ## Operator-selectable profiles
 
-Phase1 should support named cryptographic profiles.
+Phase1 should support named cryptographic profiles. The profile planning index is [`crypto-profiles/README.md`](crypto-profiles/README.md).
 
 | Profile | Purpose |
 | --- | --- |
@@ -118,6 +118,8 @@ Every supported algorithm page should use [`CRYPTO_ALGORITHM_TEMPLATE.md`](CRYPT
 8. Migration and rotation guidance.
 9. Non-claims.
 
+Every profile should follow the structure in [`crypto-profiles/README.md`](crypto-profiles/README.md) before it is connected to runtime behavior.
+
 ## Configuration model
 
 Future configuration should use explicit scopes.
@@ -160,6 +162,7 @@ Crypto profile changes should:
 
 - Create registry format: [`CRYPTO_REGISTRY.md`](CRYPTO_REGISTRY.md).
 - Create algorithm documentation template: [`CRYPTO_ALGORITHM_TEMPLATE.md`](CRYPTO_ALGORITHM_TEMPLATE.md).
+- Create profile planning index: [`crypto-profiles/README.md`](crypto-profiles/README.md).
 - Draft safe-default, high-security, compatibility, and lab-only profiles.
 - Add tests that preserve non-claims.
 
