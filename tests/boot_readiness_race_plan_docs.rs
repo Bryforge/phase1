@@ -52,12 +52,13 @@ fn boot_readiness_race_plan_defines_fast_sprints() {
     for sprint in [
         "Sprint 1: readiness inventory",
         "Sprint 2: read-only detection",
-        "Sprint 3: boot parameter inventory",
-        "Sprint 4: image and initrd path",
-        "Sprint 5: VM validation",
-        "Sprint 6: recovery and rollback",
-        "Sprint 7: hardware validation",
-        "Sprint 8: release-candidate evidence",
+        "Sprint 3: B2 dry-run assembly",
+        "Sprint 4: boot parameter inventory",
+        "Sprint 5: image and initrd path",
+        "Sprint 6: VM validation",
+        "Sprint 7: recovery and rollback",
+        "Sprint 8: hardware validation",
+        "Sprint 9: release-candidate evidence",
     ] {
         assert!(plan.contains(sprint), "missing boot readiness sprint {sprint}: {plan}");
     }
@@ -74,6 +75,9 @@ fn boot_readiness_race_plan_lists_required_artifacts() {
         "B1_READ_ONLY_DETECTION_PLAN.md",
         "scripts/base1-x86_64-detect.sh",
         "tests/base1_x86_64_detect_script.rs",
+        "B2_DRY_RUN_ASSEMBLY_PLAN.md",
+        "scripts/base1-b2-assembly-dry-run.sh",
+        "tests/base1_b2_assembly_dry_run_script.rs",
         "X86_64_BOOT_SUPPORT_ROADMAP.md",
         "BASE1_IMAGE_BUILDER.md",
         "INSTALLER_RECOVERY.md",
@@ -102,6 +106,23 @@ fn boot_readiness_race_plan_documents_b1_script_and_tests() {
         "Initial tests: `tests/base1_x86_64_detect_script.rs`.",
     ] {
         assert!(plan.contains(text), "missing B1 script/test text {text}: {plan}");
+    }
+}
+
+#[test]
+fn boot_readiness_race_plan_documents_b2_script_and_tests() {
+    let plan = std::fs::read_to_string("docs/os/BOOT_READINESS_RACE_PLAN.md")
+        .expect("boot readiness race plan");
+
+    for text in [
+        "B2 dry-run assembly starts in [`B2_DRY_RUN_ASSEMBLY_PLAN.md`](B2_DRY_RUN_ASSEMBLY_PLAN.md)",
+        "implemented initially by `scripts/base1-b2-assembly-dry-run.sh`",
+        "guarded by `tests/base1_b2_assembly_dry_run_script.rs`",
+        "sh scripts/base1-b2-assembly-dry-run.sh --dry-run --profile x86_64-vm-validation",
+        "cargo test -p phase1 --test base1_b2_assembly_dry_run_script",
+        "B2 remains dry-run-only until limitations, validation report, review, and status updates are complete.",
+    ] {
+        assert!(plan.contains(text), "missing B2 script/test text {text}: {plan}");
     }
 }
 
