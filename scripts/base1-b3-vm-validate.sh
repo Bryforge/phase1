@@ -13,6 +13,7 @@ REPORT=${BASE1_B3_REPORT:-build/base1-b3-vm-validation/b3-validation-scaffold.en
 UEFI_DIR=${BASE1_B3_UEFI_DIR:-build/base1-b3-uefi-proof}
 HANDOFF_DIR=${BASE1_B3_HANDOFF_DIR:-build/base1-b3-kernel-handoff}
 GNULINUX_DIR=${BASE1_B3_GNULINUX_DIR:-build/base1-b3-gnulinux-stage}
+OPENBSD_DIR=${BASE1_B3_OPENBSD_DIR:-build/base1-b3-openbsd-stage}
 EXPECT=${BASE1_B3_MARKER:-phase1 6.0.0 ready}
 WRITE_REPORT=no
 
@@ -31,6 +32,7 @@ options:
   --uefi-dir <dir>      UEFI proof evidence dir, default: build/base1-b3-uefi-proof
   --handoff-dir <dir>   kernel/initrd handoff evidence dir, default: build/base1-b3-kernel-handoff
   --gnulinux-dir <dir>  GNU/Linux stage evidence dir, default: build/base1-b3-gnulinux-stage
+  --openbsd-dir <dir>   OpenBSD stage evidence dir, default: build/base1-b3-openbsd-stage
   --expect <text>       expected marker, default: phase1 6.0.0 ready
   -h, --help            show this help
 
@@ -99,6 +101,11 @@ while [ "$#" -gt 0 ]; do
       GNULINUX_DIR=$2
       shift 2
       ;;
+    --openbsd-dir)
+      [ "$#" -ge 2 ] || fail '--openbsd-dir requires a value'
+      OPENBSD_DIR=$2
+      shift 2
+      ;;
     --expect)
       [ "$#" -ge 2 ] || fail '--expect requires a value'
       EXPECT=$2
@@ -121,6 +128,7 @@ require_build_path "$REPORT" || fail "report path must be under build/: $REPORT"
 require_build_path "$UEFI_DIR" || fail "UEFI evidence dir must be under build/: $UEFI_DIR"
 require_build_path "$HANDOFF_DIR" || fail "handoff evidence dir must be under build/: $HANDOFF_DIR"
 require_build_path "$GNULINUX_DIR" || fail "GNU/Linux evidence dir must be under build/: $GNULINUX_DIR"
+require_build_path "$OPENBSD_DIR" || fail "OpenBSD evidence dir must be under build/: $OPENBSD_DIR"
 
 UEFI_SUMMARY="$UEFI_DIR/reports/b3-summary.env"
 UEFI_LOG="$UEFI_DIR/reports/b3-serial.log"
@@ -128,11 +136,14 @@ HANDOFF_SUMMARY="$HANDOFF_DIR/reports/qemu-boot-summary.env"
 HANDOFF_LOG="$HANDOFF_DIR/reports/qemu-boot.log"
 GNULINUX_SUMMARY="$GNULINUX_DIR/reports/qemu-boot-summary.env"
 GNULINUX_LOG="$GNULINUX_DIR/reports/qemu-boot.log"
+OPENBSD_SUMMARY="$OPENBSD_DIR/reports/openbsd-qemu-summary.env"
+OPENBSD_LOG="$OPENBSD_DIR/reports/openbsd-qemu-boot.log"
 
 present_count=0
 [ -f "$UEFI_SUMMARY" ] && present_count=$((present_count + 1))
 [ -f "$HANDOFF_SUMMARY" ] && present_count=$((present_count + 1))
 [ -f "$GNULINUX_SUMMARY" ] && present_count=$((present_count + 1))
+[ -f "$OPENBSD_SUMMARY" ] && present_count=$((present_count + 1))
 
 if [ "$present_count" -gt 0 ]; then
   evidence_state=evidence-present
@@ -155,6 +166,9 @@ BASE1_B3_HANDOFF_SUMMARY_PRESENT=$([ -f "$HANDOFF_SUMMARY" ] && printf yes || pr
 BASE1_B3_GNULINUX_SUMMARY=$GNULINUX_SUMMARY
 BASE1_B3_GNULINUX_LOG=$GNULINUX_LOG
 BASE1_B3_GNULINUX_SUMMARY_PRESENT=$([ -f "$GNULINUX_SUMMARY" ] && printf yes || printf no)
+BASE1_B3_OPENBSD_SUMMARY=$OPENBSD_SUMMARY
+BASE1_B3_OPENBSD_LOG=$OPENBSD_LOG
+BASE1_B3_OPENBSD_SUMMARY_PRESENT=$([ -f "$OPENBSD_SUMMARY" ] && printf yes || printf no)
 BASE1_B3_VALIDATION_CLAIM=not_claimed
 BASE1_B3_NON_CLAIM_BOOTABLE_PHYSICAL=1
 BASE1_B3_NON_CLAIM_INSTALLER=1
@@ -187,5 +201,7 @@ printf '  - B2 test suite pass record\n'
 printf '  - B3 UEFI proof summary/log\n'
 printf '  - B3 kernel/initrd handoff summary/log\n'
 printf '  - B3 GNU/Linux stage summary/log when used\n'
+printf '  - B3 OpenBSD stage summary/log when used\n'
 printf '  - validation report promoted from scaffold to reviewed evidence\n'
 printf 'non_claims: no installer; no recovery validation; no hardening; no hardware validation; no daily-driver claim\n'
+EOF
