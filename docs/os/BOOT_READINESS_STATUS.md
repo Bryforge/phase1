@@ -77,6 +77,8 @@ cargo test -p phase1 --test b1_read_only_detection_limitations_docs
 
 B1 validation expectations are documented in [`B1_READ_ONLY_DETECTION_VALIDATION.md`](B1_READ_ONLY_DETECTION_VALIDATION.md).
 
+B1 completion evidence is recorded locally in `build/base1-b1-completion/b1-completion-summary.env` and remains a read-only detection claim only.
+
 B1 validation report tests are present:
 
 ```bash
@@ -96,10 +98,10 @@ Before B1 is considered complete, confirm:
 - [x] B1 limitations tests exist.
 - [x] B1 validation report exists.
 - [x] B1 validation report tests exist.
-- [ ] B1 detector test suite passes in CI or local validation.
-- [ ] B1 status is linked from README, OS roadmap, race plan, and x86_64 roadmap after implementation.
-- [ ] B1 output is reviewed for secret redaction.
-- [ ] B1 does not contain mutating boot, disk, package, or network commands.
+- [x] B1 detector test suite passes in CI or local validation.
+- [x] B1 status is linked from README, OS roadmap, race plan, and x86_64 roadmap after implementation.
+- [x] B1 output is reviewed for secret redaction.
+- [x] B1 does not contain mutating boot, disk, package, or network commands.
 
 ## B2 implementation status
 

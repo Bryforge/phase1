@@ -66,7 +66,7 @@ done
   fail "--dry-run is required for B1 read-only detection"
 }
 
-printf 'base1-x86_64_detect: start\n'
+printf 'base1_x86_64_detect: start\n'
 printf 'status: B1 read-only detection preview\n'
 printf 'writes: no\n'
 printf 'mutation: no\n'
@@ -197,4 +197,4 @@ printf '  hardened_status: not claimed\n'
 printf '\n'
 
 printf 'next_read_only_check: sh scripts/base1-x86_64-boot-params.sh --dry-run (planned)\n'
-printf 'base1-x86_64_detect: complete\n'
+printf 'base1_x86_64_detect: complete\n'
