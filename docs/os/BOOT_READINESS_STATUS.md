@@ -11,7 +11,7 @@ The finish-first planning layer is complete for B1. The first B1 read-only detec
 
 B2 planning has started with a dry-run assembly plan, plan tests, initial dry-run assembly script, script tests, limitations note, limitations tests, validation report, validation report tests, output review, output review tests, focused test-suite command bundle, test-suite bundle tests, OS roadmap boot-readiness tests, QEMU visual boot preview script, visual boot preview script tests, QEMU visual boot preview docs, and QEMU visual boot preview doc tests.
 
-B3 planning has started with a VM boot validation plan, plan tests, limitations note, limitations tests, VM boot log capture notes, an initial B3 UEFI proof-of-life script, and B3 UEFI proof script tests.
+B3 planning has started with a VM boot validation plan, plan tests, limitations note, limitations tests, VM boot log capture notes, an initial B3 UEFI proof-of-life script, B3 UEFI proof script tests, B3 kernel/initrd handoff script, B3 kernel/initrd handoff tests, B3 kernel/initrd handoff docs, and B3 kernel/initrd handoff doc tests.
 
 ## Current readiness level
 
@@ -28,7 +28,7 @@ Do not claim Base1 boot readiness, installer readiness, hardware validation, har
 | B0 | Documentation ready | Complete for B1 start | Roadmaps, status tracker, checklist, links, tests. |
 | B1 | Read-only detection ready | Initial script present | Dry-run detection script, no writes, architecture/firmware/boot hints, limitations note, validation report. |
 | B2 | Dry-run assembly ready | Initial script present | Dry-run assembly plan, image/install/recovery previews with explicit no-write behavior, limitations note, validation report, output review, test-suite bundle. |
-| B3 | VM boot validated | Planning and plan tests present; proof-of-life script present | VM boot validation plan, VM boot report, logs, known limitations. |
+| B3 | VM boot validated | Planning and plan tests present; proof-of-life and handoff scaffolds present | VM boot validation plan, VM boot report, logs, known limitations. |
 | B4 | Recovery validated | Not started | Emergency shell, recovery media, rollback report. |
 | B5 | Physical target validated | Not started | Named hardware validation report. |
 | B6 | Release candidate | Not started | Repeatable build, validation bundle, docs, rollback evidence. |
@@ -253,7 +253,31 @@ B3 UEFI proof-of-life script tests are present:
 cargo test -p phase1 --test base1_b3_uefi_proof_script
 ```
 
-B3 remains planning plus proof-of-life until B2 validation has passed locally or in CI and B3 validation logs and report exist.
+B3 kernel/initrd handoff script is present:
+
+```bash
+sh scripts/base1-b3-kernel-handoff.sh --kernel /path/to/vmlinuz --initrd /path/to/initrd.img --prepare
+sh scripts/base1-b3-kernel-handoff.sh --kernel /path/to/vmlinuz --initrd /path/to/initrd.img --dry-run
+sh scripts/base1-b3-kernel-handoff.sh --kernel /path/to/vmlinuz --initrd /path/to/initrd.img --check
+```
+
+B3 kernel/initrd handoff script tests are present:
+
+```bash
+cargo test -p phase1 --test base1_b3_kernel_handoff_script
+```
+
+B3 kernel/initrd handoff documentation is present:
+
+- [`B3_KERNEL_INITRD_HANDOFF.md`](B3_KERNEL_INITRD_HANDOFF.md)
+
+B3 kernel/initrd handoff documentation tests are present:
+
+```bash
+cargo test -p phase1 --test b3_kernel_initrd_handoff_docs
+```
+
+B3 remains planning plus proof-of-life and handoff scaffolding until B2 validation has passed locally or in CI and B3 validation logs and report exist.
 
 ## B3 completion checklist
 
@@ -268,6 +292,11 @@ Before B3 is considered complete, confirm:
 - [ ] B2 test suite has passed locally or in CI.
 - [x] B3 UEFI proof script exists.
 - [x] B3 UEFI proof script tests exist.
+- [x] B3 kernel/initrd handoff script exists.
+- [x] B3 kernel/initrd handoff script tests exist.
+- [x] B3 kernel/initrd handoff documentation exists.
+- [x] B3 kernel/initrd handoff documentation tests exist.
+- [ ] known-good local kernel/initrd pair has been staged and checked.
 - [ ] B3 VM validation script exists.
 - [ ] B3 script tests exist.
 - [ ] B3 validation report exists.
@@ -347,10 +376,14 @@ Expected behavior:
 | B3 VM boot validation plan | Present | [`B3_VM_BOOT_VALIDATION_PLAN.md`](B3_VM_BOOT_VALIDATION_PLAN.md) |
 | B3 VM boot validation limitations note | Present | [`B3_VM_BOOT_VALIDATION_LIMITATIONS.md`](B3_VM_BOOT_VALIDATION_LIMITATIONS.md) |
 | B3 VM boot log capture notes | Present | [`B3_VM_BOOT_LOGS.md`](B3_VM_BOOT_LOGS.md) |
+| B3 kernel/initrd handoff doc | Present | [`B3_KERNEL_INITRD_HANDOFF.md`](B3_KERNEL_INITRD_HANDOFF.md) |
 | B3 VM boot validation plan tests | Present | `tests/b3_vm_boot_validation_plan_docs.rs` |
 | B3 VM boot validation limitations tests | Present | `tests/b3_vm_boot_validation_limitations_docs.rs` |
+| B3 kernel/initrd handoff doc tests | Present | `tests/b3_kernel_initrd_handoff_docs.rs` |
 | B3 UEFI proof script | Present | `scripts/base1-b3-uefi-proof.sh` |
 | B3 UEFI proof tests | Present | `tests/base1_b3_uefi_proof_script.rs` |
+| B3 kernel/initrd handoff script | Present | `scripts/base1-b3-kernel-handoff.sh` |
+| B3 kernel/initrd handoff tests | Present | `tests/base1_b3_kernel_handoff_script.rs` |
 | B3 VM validation script | Not started | `scripts/base1-b3-vm-validate.sh` |
 | B3 VM validation tests | Not started | planned |
 | VM validation report | Not started | planned |
@@ -369,4 +402,4 @@ Do not describe the current Base1 boot path as hardened until implementation, te
 
 This status tracker does not make Base1 bootable, installer-ready, recovery-complete, hardened, hardware-validated, release-candidate ready, or daily-driver ready.
 
-It records that the first B1 read-only detection script exists and remains bounded to detection-preview behavior only. B2 has an initial dry-run assembly script but remains dry-run preview only. B3 is planning plus proof-of-life until VM validation evidence exists.
+It records that the first B1 read-only detection script exists and remains bounded to detection-preview behavior only. B2 has an initial dry-run assembly script but remains dry-run preview only. B3 is planning plus proof-of-life and handoff scaffolding until VM validation evidence exists.
