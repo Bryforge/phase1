@@ -25,6 +25,7 @@ fn security_crypto_doc_integrity_gate_checks_required_docs() {
         "docs/security/CRYPTO_POLICY_ROADMAP.md",
         "docs/security/CRYPTO_REGISTRY.md",
         "docs/security/CRYPTO_ALGORITHM_TEMPLATE.md",
+        "docs/security/CRYPTO_OPERATOR_COMMANDS.md",
         "docs/security/crypto-profiles/README.md",
         "docs/security/crypto-profiles/SAFE_DEFAULT.md",
         "docs/security/crypto-profiles/HIGH_SECURITY.md",
@@ -46,6 +47,7 @@ fn security_crypto_doc_integrity_gate_checks_links_and_guardrails() {
         "Security and usability principle",
         "CRYPTO_POLICY_ROADMAP.md",
         "CRYPTO_REGISTRY.md",
+        "CRYPTO_OPERATOR_COMMANDS.md",
         "crypto-profiles/README.md",
         "CRYPTO_ALGORITHM_TEMPLATE.md",
         "Phase1 should not invent new cryptographic primitives for security-critical use.",
@@ -55,6 +57,28 @@ fn security_crypto_doc_integrity_gate_checks_links_and_guardrails() {
         "must not be used as a real security profile",
     ] {
         assert!(script.contains(text), "missing guardrail text {text}: {script}");
+    }
+}
+
+#[test]
+fn security_crypto_doc_integrity_gate_checks_operator_command_plan() {
+    let script = std::fs::read_to_string("scripts/security-crypto-doc-integrity.sh")
+        .expect("security crypto docs integrity script");
+
+    for text in [
+        "check_operator_commands()",
+        "crypto status",
+        "crypto profiles",
+        "crypto explain <profile-or-algorithm>",
+        "crypto select <profile> --scope <control-point> --confirm",
+        "crypto policy export",
+        "crypto policy verify",
+        "Unknown scopes should fail closed.",
+        "Unknown profiles should fail closed.",
+        "Lab-only selections must fail outside `lab`, `docs`, or `tests` scopes.",
+        "deprecated, rejected, or lab-only entries are not used in production scopes",
+    ] {
+        assert!(script.contains(text), "missing operator command check {text}: {script}");
     }
 }
 
