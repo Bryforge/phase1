@@ -4,8 +4,8 @@ fn boot_readiness_status_defines_current_level_and_target() {
         .expect("boot readiness status tracker");
 
     assert!(status.contains("Base1 boot readiness status"), "{status}");
-    assert!(status.contains("Current level: **B0 — Documentation ready, in progress**"), "{status}");
-    assert!(status.contains("Target next level: **B1 — Read-only detection ready**"), "{status}");
+    assert!(status.contains("Current level: **B1 — Read-only detection ready, initial script present**"), "{status}");
+    assert!(status.contains("Target next level: **B2 — Dry-run assembly ready**"), "{status}");
     assert!(
         status.contains("Do not claim Base1 boot readiness, installer readiness, hardware validation, hardened status, recovery completion, or daily-driver readiness from this tracker alone."),
         "{status}"
@@ -22,6 +22,7 @@ fn boot_readiness_status_preserves_ladder() {
         "Documentation ready",
         "B1",
         "Read-only detection ready",
+        "Initial script present",
         "B2",
         "Dry-run assembly ready",
         "B3",
@@ -54,25 +55,51 @@ fn boot_readiness_status_preserves_finish_before_coding_checklist() {
         "OS roadmap link to this status tracker.",
         "README link to this status tracker.",
         "B1 implementation issue/plan for read-only x86_64 detection.",
+        "B1 plan tests.",
+        "B1 plan link from OS roadmap, x86_64 roadmap, and race plan.",
     ] {
         assert!(status.contains(item), "missing finish-before-coding item {item}: {status}");
     }
+
+    assert!(
+        status.contains("Finish-first status: **complete for B1 implementation start**."),
+        "{status}"
+    );
 }
 
 #[test]
-fn boot_readiness_status_defines_b1_coding_start_gate() {
+fn boot_readiness_status_defines_b1_implementation_status() {
     let status = std::fs::read_to_string("docs/os/BOOT_READINESS_STATUS.md")
         .expect("boot readiness status tracker");
 
     for text in [
-        "B1 coding-start gate",
-        "link from [`ROADMAP.md`](ROADMAP.md)",
-        "link from [`BOOT_READINESS_RACE_PLAN.md`](BOOT_READINESS_RACE_PLAN.md)",
-        "link from [`X86_64_BOOT_SUPPORT_ROADMAP.md`](X86_64_BOOT_SUPPORT_ROADMAP.md)",
-        "README visibility",
-        "tests that preserve the status ladder and non-claims",
+        "B1 implementation status",
+        "B1 initial implementation is now present:",
+        "sh scripts/base1-x86_64-detect.sh --dry-run",
+        "cargo test -p phase1 --test base1_x86_64_detect_script",
+        "B1 detector must stay inside the read-only, dry-run, non-mutating scope",
     ] {
-        assert!(status.contains(text), "missing B1 gate text {text}: {status}");
+        assert!(status.contains(text), "missing B1 implementation status text {text}: {status}");
+    }
+}
+
+#[test]
+fn boot_readiness_status_preserves_b1_completion_checklist() {
+    let status = std::fs::read_to_string("docs/os/BOOT_READINESS_STATUS.md")
+        .expect("boot readiness status tracker");
+
+    for text in [
+        "B1 completion checklist",
+        "B1 implementation plan exists.",
+        "B1 read-only detector script exists.",
+        "B1 detector script tests exist.",
+        "B1 detector test suite passes in CI or local validation.",
+        "B1 status is linked from README, OS roadmap, race plan, and x86_64 roadmap after implementation.",
+        "B1 known limitations are documented.",
+        "B1 output is reviewed for secret redaction.",
+        "B1 does not contain mutating boot, disk, package, or network commands.",
+    ] {
+        assert!(status.contains(text), "missing B1 completion text {text}: {status}");
     }
 }
 
@@ -108,7 +135,10 @@ fn boot_readiness_status_preserves_evidence_map() {
         "BOOT_READINESS_RACE_PLAN.md",
         "X86_64_BOOT_SUPPORT_ROADMAP.md",
         "BOOT_READINESS_STATUS.md",
+        "B1_READ_ONLY_DETECTION_PLAN.md",
+        "tests/b1_read_only_detection_plan_docs.rs",
         "scripts/base1-x86_64-detect.sh",
+        "tests/base1_x86_64_detect_script.rs",
         "VM validation report",
         "Recovery validation report",
         "Hardware validation report",
@@ -147,6 +177,8 @@ fn boot_readiness_status_preserves_hardening_and_non_claims() {
         "hardware-validated",
         "release-candidate ready",
         "daily-driver ready",
+        "first B1 read-only detection script exists",
+        "detection-preview behavior only",
     ] {
         assert!(status.contains(text), "missing non-claim {text}: {status}");
     }
