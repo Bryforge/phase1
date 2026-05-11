@@ -21,7 +21,7 @@ Crypto profiles should provide safe defaults for normal users and explicit, revi
 | --- | --- | --- |
 | [`safe-default`](SAFE_DEFAULT.md) | planned | Conservative default choices for normal operators. |
 | [`high-security`](HIGH_SECURITY.md) | planned | Stricter choices for advanced operators. |
-| `compatibility` | planned | Interoperability with warnings and explicit consent. |
+| [`compatibility`](COMPATIBILITY.md) | planned | Interoperability with warnings and explicit consent. |
 | `post-quantum-preview` | planned | PQC-oriented options with maturity warnings. |
 | `lab-only` | planned | Educational or experimental entries barred from production use. |
 
@@ -53,6 +53,7 @@ Every profile document should define:
 
 - [`SAFE_DEFAULT.md`](SAFE_DEFAULT.md) — planned normal-operator default profile.
 - [`HIGH_SECURITY.md`](HIGH_SECURITY.md) — planned advanced-operator and Base1-stricter profile.
+- [`COMPATIBILITY.md`](COMPATIBILITY.md) — planned interoperability profile with warnings and explicit consent.
 
 ## Related docs
 
