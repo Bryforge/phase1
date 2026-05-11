@@ -9,7 +9,7 @@ This plan organizes the fastest safe path toward boot readiness for the Phase1/B
 
 The goal is speed without unsafe claims: move quickly through documentation, read-only checks, dry-run tooling, VM validation, recovery validation, and hardware validation before claiming boot readiness.
 
-Track current readiness in [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md). The first B1 coding slice is planned in [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md), implemented by `scripts/base1-x86_64-detect.sh`, and guarded by `tests/base1_x86_64_detect_script.rs`. B2 dry-run assembly starts in [`B2_DRY_RUN_ASSEMBLY_PLAN.md`](B2_DRY_RUN_ASSEMBLY_PLAN.md), is implemented initially by `scripts/base1-b2-assembly-dry-run.sh`, and is guarded by `tests/base1_b2_assembly_dry_run_script.rs`.
+Track current readiness in [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md). The first B1 coding slice is planned in [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md), implemented by `scripts/base1-x86_64-detect.sh`, and guarded by `tests/base1_x86_64_detect_script.rs`. B2 dry-run assembly starts in [`B2_DRY_RUN_ASSEMBLY_PLAN.md`](B2_DRY_RUN_ASSEMBLY_PLAN.md), is implemented initially by `scripts/base1-b2-assembly-dry-run.sh`, and is guarded by `tests/base1_b2_assembly_dry_run_script.rs`. B3 VM validation planning starts in [`B3_VM_BOOT_VALIDATION_PLAN.md`](B3_VM_BOOT_VALIDATION_PLAN.md), and B3 claims require B2 validation to pass first.
 
 ## Boot readiness goal
 
@@ -78,7 +78,21 @@ Initial B2 script tests:
 cargo test -p phase1 --test base1_b2_assembly_dry_run_script
 ```
 
-B2 remains dry-run-only until limitations, validation report, review, and status updates are complete.
+B2 remains dry-run-only until validation has passed locally or in CI.
+
+B3 VM validation planning is documented by:
+
+```bash
+sh scripts/base1-b3-vm-validate.sh --dry-run --profile x86_64-vm-validation
+```
+
+Initial B3 plan tests:
+
+```bash
+cargo test -p phase1 --test b3_vm_boot_validation_plan_docs
+```
+
+B3 remains planning-only until B2 validation has passed locally or in CI and B3 script, tests, limitations, logs, and validation report exist.
 
 ## Fastest safe sequence
 
@@ -108,18 +122,27 @@ B2 remains dry-run-only until limitations, validation report, review, and status
 - Add the B2 dry-run assembly plan: [`B2_DRY_RUN_ASSEMBLY_PLAN.md`](B2_DRY_RUN_ASSEMBLY_PLAN.md).
 - Add the B2 dry-run assembly script: `scripts/base1-b2-assembly-dry-run.sh`.
 - Add B2 dry-run assembly tests: `tests/base1_b2_assembly_dry_run_script.rs`.
+- Add B2 limitations, validation, output review, and test-suite docs.
 - Preview dry-run assembly for `x86_64-vm-validation`.
 - Connect B1 detection facts to profile, image, boot handoff, recovery, rollback, and validation bundle previews.
-- Keep B2 preview-only until limitations and validation report exist.
+- Keep B2 preview-only until focused B2 validation passes locally or in CI.
 
-### Sprint 4: boot parameter inventory
+### Sprint 4: B3 VM validation planning
+
+- Add the B3 VM boot validation plan: [`B3_VM_BOOT_VALIDATION_PLAN.md`](B3_VM_BOOT_VALIDATION_PLAN.md).
+- Add B3 plan tests: `tests/b3_vm_boot_validation_plan_docs.rs`.
+- Define the first VM profile as `x86_64-vm-validation`.
+- Keep B3 planning-only until B2 validation has passed locally or in CI.
+- Preserve that VM validation does not imply physical hardware support.
+
+### Sprint 5: boot parameter inventory
 
 - Connect to [`X86_64_BOOT_SUPPORT_ROADMAP.md`](X86_64_BOOT_SUPPORT_ROADMAP.md).
 - Define required boot parameters per boot profile.
 - Record unknown/unsupported parameters.
 - Fail closed on unknown boot states.
 
-### Sprint 5: image and initrd path
+### Sprint 6: image and initrd path
 
 - Verify Base1 image-builder docs.
 - Verify initramfs/initrd preview docs.
@@ -127,7 +150,7 @@ B2 remains dry-run-only until limitations, validation report, review, and status
 - Document emergency shell fallback.
 - Keep mutation disabled until dry-run and recovery evidence exist.
 
-### Sprint 6: VM validation
+### Sprint 7: VM validation
 
 - Define VM validation profile.
 - Capture boot log expectations.
@@ -135,7 +158,7 @@ B2 remains dry-run-only until limitations, validation report, review, and status
 - Record known limitations.
 - Do not generalize VM success to physical hardware.
 
-### Sprint 7: recovery and rollback
+### Sprint 8: recovery and rollback
 
 - Validate recovery shell path.
 - Validate recovery media docs.
@@ -143,14 +166,14 @@ B2 remains dry-run-only until limitations, validation report, review, and status
 - Validate read-only recovery reports.
 - Keep restore path visible before installer claims are strengthened.
 
-### Sprint 8: hardware validation
+### Sprint 9: hardware validation
 
 - Validate one named hardware target at a time.
 - Start with explicit target docs.
 - Require validation reports before support claims.
 - Keep known limitations visible.
 
-### Sprint 9: release-candidate evidence
+### Sprint 10: release-candidate evidence
 
 - Create target-specific release checklist.
 - Collect build, boot, recovery, rollback, and docs validation evidence.
@@ -168,6 +191,9 @@ B2 remains dry-run-only until limitations, validation report, review, and status
 | B2 dry-run assembly plan | [`B2_DRY_RUN_ASSEMBLY_PLAN.md`](B2_DRY_RUN_ASSEMBLY_PLAN.md) |
 | B2 dry-run assembly script | `scripts/base1-b2-assembly-dry-run.sh` |
 | B2 dry-run assembly tests | `tests/base1_b2_assembly_dry_run_script.rs` |
+| B2 dry-run assembly test suite | [`B2_DRY_RUN_ASSEMBLY_TEST_SUITE.md`](B2_DRY_RUN_ASSEMBLY_TEST_SUITE.md) |
+| B3 VM boot validation plan | [`B3_VM_BOOT_VALIDATION_PLAN.md`](B3_VM_BOOT_VALIDATION_PLAN.md) |
+| B3 VM boot validation tests | `tests/b3_vm_boot_validation_plan_docs.rs` |
 | x86_64 boot support roadmap | [`X86_64_BOOT_SUPPORT_ROADMAP.md`](X86_64_BOOT_SUPPORT_ROADMAP.md) |
 | Base1 image-builder design | [`BASE1_IMAGE_BUILDER.md`](BASE1_IMAGE_BUILDER.md) |
 | Installer/recovery design | [`INSTALLER_RECOVERY.md`](INSTALLER_RECOVERY.md) |
@@ -243,6 +269,12 @@ B2 dry-run assembly validation:
 
 ```bash
 cargo test -p phase1 --test base1_b2_assembly_dry_run_script
+```
+
+B3 planning validation:
+
+```bash
+cargo test -p phase1 --test b3_vm_boot_validation_plan_docs
 ```
 
 ## Non-claims
