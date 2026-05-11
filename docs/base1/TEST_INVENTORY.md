@@ -45,6 +45,7 @@ The verifier compares reporter output against this document and fails if a repor
 | Test file | Coverage |
 | --- | --- |
 | `tests/base1_inventory_docs.rs` | Base1 inventory and test inventory docs. |
+| `tests/base1_manual_verification_rule_docs.rs` | Base1 manual verification rule docs. |
 | `tests/base1_migration_table_docs.rs` | Base1 migration table docs. |
 | `tests/base1_root_compatibility_map_docs.rs` | Root checkpoint-note compatibility map, mirror paths, and integrity references. |
 | `tests/base1_script_compatibility_plan_docs.rs` | Script compatibility plan docs. |
