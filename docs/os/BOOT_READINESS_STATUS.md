@@ -9,7 +9,7 @@ This tracker shows what must be finished before Phase1/Base1 moves from planning
 
 The finish-first planning layer is complete for B1. The first B1 read-only detection script, guard tests, limitations note, limitations tests, validation report, and validation report tests now exist while preserving the B1 boundary.
 
-B2 planning has started with a dry-run assembly plan, plan tests, initial dry-run assembly script, script tests, limitations note, limitations tests, validation report, validation report tests, output review, output review tests, focused test-suite command bundle, test-suite bundle tests, OS roadmap boot-readiness tests, QEMU visual boot preview script, visual boot preview script tests, QEMU visual boot preview docs, and QEMU visual boot preview doc tests.
+B2 planning has started with a dry-run assembly plan, plan tests, initial dry-run assembly script, script tests, limitations note, limitations tests, validation report, validation report tests, output review, output review tests, focused test-suite command bundle, test-suite bundle tests, focused test-suite checker script, focused test-suite checker tests, OS roadmap boot-readiness tests, QEMU visual boot preview script, visual boot preview script tests, QEMU visual boot preview docs, QEMU visual boot preview doc tests, and a local focused-suite pass record.
 
 B3 planning has started with a VM boot validation plan, plan tests, limitations note, limitations tests, VM boot log capture notes, VM boot log capture notes tests, an initial B3 UEFI proof-of-life script, B3 UEFI proof script tests, B3 kernel/initrd handoff script, B3 kernel/initrd handoff tests, B3 kernel/initrd handoff docs, B3 kernel/initrd handoff doc tests, B3 GNU/Linux stage script, B3 GNU/Linux stage tests, B3 GNU/Linux stage docs, B3 GNU/Linux stage doc tests, B3 OpenBSD stage script, B3 OpenBSD stage tests, B3 OpenBSD stage docs, B3 OpenBSD stage doc tests, B3 OpenBSD serial limitation docs, B3 OpenBSD serial limitation tests, B3 VM validation script, B3 VM validation script tests, an initial B3 VM validation report scaffold, and B3 VM validation report tests.
 
@@ -27,7 +27,7 @@ Do not claim Base1 boot readiness, installer readiness, hardware validation, har
 | --- | --- | --- | --- |
 | B0 | Documentation ready | Complete for B1 start | Roadmaps, status tracker, checklist, links, tests. |
 | B1 | Read-only detection ready | Initial script present | Dry-run detection script, no writes, architecture/firmware/boot hints, limitations note, validation report. |
-| B2 | Dry-run assembly ready | Initial script present | Dry-run assembly plan, image/install/recovery previews with explicit no-write behavior, limitations note, validation report, output review, test-suite bundle. |
+| B2 | Dry-run assembly ready | Local focused-suite pass record present | Dry-run assembly plan, image/install/recovery previews with explicit no-write behavior, limitations note, validation report, output review, test-suite bundle. |
 | B3 | VM boot validated | Planning, proof-of-life, handoff, GNU/Linux, OpenBSD, and validation-report scaffolds present | VM boot validation plan, reviewed VM boot report, logs, known limitations. |
 | B4 | Recovery validated | Not started | Emergency shell, recovery media, rollback report. |
 | B5 | Physical target validated | Not started | Named hardware validation report. |
@@ -153,6 +153,24 @@ B2 test-suite bundle tests are present:
 cargo test -p phase1 --test b2_dry_run_assembly_test_suite_docs
 ```
 
+B2 focused test-suite checker script is present:
+
+```bash
+sh scripts/base1-b2-test-suite-check.sh --check --write-report
+```
+
+B2 focused test-suite checker tests are present:
+
+```bash
+cargo test -p phase1 --test base1_b2_test_suite_check_script
+```
+
+B2 focused test-suite local pass record is present:
+
+```text
+build/base1-b2-test-suite/b2-test-suite-summary.env
+```
+
 OS roadmap boot-readiness tests are present:
 
 ```bash
@@ -184,7 +202,7 @@ cargo test -p phase1 --test qemu_visual_boot_preview_docs
 
 B2 status and boundaries are linked from README, OS roadmap, race plan, and x86_64 roadmap.
 
-B2 remains dry-run-only until validation has passed locally or in CI. The QEMU visual boot preview remains showcase-only and does not strengthen boot-readiness claims.
+B2 local focused-suite validation has passed, but the QEMU visual boot preview remains showcase-only and does not strengthen boot-readiness claims.
 
 ## B2 completion checklist
 
@@ -204,12 +222,14 @@ Before B2 is considered complete, confirm:
 - [x] B2 output review tests exist.
 - [x] B2 focused test-suite command bundle exists.
 - [x] B2 test-suite bundle tests exist.
+- [x] B2 focused test-suite checker script exists.
+- [x] B2 focused test-suite checker tests exist.
+- [x] B2 test suite passes in CI or local validation.
 - [x] OS roadmap boot-readiness tests exist.
 - [x] B2 QEMU visual boot preview script exists.
 - [x] B2 QEMU visual boot preview script tests exist.
 - [x] B2 QEMU visual boot preview documentation exists.
 - [x] B2 QEMU visual boot preview documentation tests exist.
-- [ ] B2 test suite passes in CI or local validation.
 
 ## B3 planning status
 
@@ -362,7 +382,7 @@ B3 VM validation report tests are present:
 cargo test -p phase1 --test b3_vm_validation_report_docs
 ```
 
-B3 remains planning plus proof-of-life, handoff, GNU/Linux staging, OpenBSD staging, and validation-report scaffolding until B2 validation has passed locally or in CI and a reviewed B3 log bundle/report exists.
+B3 remains planning plus proof-of-life, handoff, GNU/Linux staging, OpenBSD staging, and validation-report scaffolding until a reviewed B3 log bundle/report exists.
 
 ## B3 completion checklist
 
@@ -372,9 +392,9 @@ Before B3 is considered complete, confirm:
 - [x] B3 plan tests exist.
 - [x] B3 limitations note exists.
 - [x] B3 limitations tests exist.
-- [x] B3 log capture notes exist.
+- [x] B3 log capture notes exists.
 - [x] B3 log capture notes tests exist.
-- [ ] B2 test suite has passed locally or in CI.
+- [x] B2 test suite has passed locally or in CI.
 - [x] B3 UEFI proof script exists.
 - [x] B3 UEFI proof script tests exist.
 - [x] B3 kernel/initrd handoff script exists.
@@ -469,6 +489,9 @@ Expected behavior:
 | B2 dry-run assembly test-suite tests | Present | `tests/b2_dry_run_assembly_test_suite_docs.rs` |
 | B2 dry-run assembly script | Present | `scripts/base1-b2-assembly-dry-run.sh` |
 | B2 dry-run assembly tests | Present | `tests/base1_b2_assembly_dry_run_script.rs` |
+| B2 focused test-suite checker script | Present | `scripts/base1-b2-test-suite-check.sh` |
+| B2 focused test-suite checker tests | Present | `tests/base1_b2_test_suite_check_script.rs` |
+| B2 focused test-suite local pass record | Present local evidence | `build/base1-b2-test-suite/b2-test-suite-summary.env` |
 | B2 QEMU visual boot preview script | Present | `scripts/base1-qemu-visual-boot-preview.sh` |
 | B2 QEMU visual boot preview tests | Present | `tests/base1_qemu_visual_boot_preview_script.rs` |
 | B2 QEMU visual boot preview docs | Present | [`QEMU_VISUAL_BOOT_PREVIEW.md`](QEMU_VISUAL_BOOT_PREVIEW.md) |
@@ -515,4 +538,4 @@ Do not describe the current Base1 boot path as hardened until implementation, te
 
 This status tracker does not make Base1 bootable, installer-ready, recovery-complete, hardened, hardware-validated, release-candidate ready, or daily-driver ready.
 
-It records that the first B1 read-only detection script exists and remains bounded to detection-preview behavior only. B2 has an initial dry-run assembly script but remains dry-run preview only. B3 is planning plus proof-of-life, handoff, GNU/Linux staging, OpenBSD staging, and validation-report scaffolding until reviewed VM validation evidence exists.
+It records that the first B1 read-only detection script exists and remains bounded to detection-preview behavior only. B2 has an initial dry-run assembly script and local focused-suite pass record, but remains dry-run preview only. B3 is planning plus proof-of-life, handoff, GNU/Linux staging, OpenBSD staging, and validation-report scaffolding until reviewed VM validation evidence exists.
