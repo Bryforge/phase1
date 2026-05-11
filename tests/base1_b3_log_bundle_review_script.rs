@@ -139,7 +139,7 @@ fn base1_b3_log_bundle_review_preserves_boundaries_and_expected_markers() {
         "install Base1",
         "mutate disks",
         "modify host boot settings",
-        "prove hardening",
+        "hardening",
         "validate hardware",
         "claim daily-driver readiness",
         "BASE1_B3_LOG_REVIEW_CLAIM=not_claimed",
