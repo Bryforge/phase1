@@ -32,6 +32,7 @@ Rules:
 - Keep existing public links working where possible.
 - Prefer indexes and redirects before moving pages.
 - Keep branding assets in `assets/` unless a future asset map says otherwise.
+- Use [`../../assets/README.md`](../../assets/README.md) as the current public asset filename index.
 - Keep public claims aligned with `README.md`, `FEATURE_STATUS.md`, `SECURITY.md`, and `QUALITY.md`.
 - Do not claim production readiness, hardened status, hardware validation, audit status, certification, or quantum safety without linked evidence.
 
@@ -57,6 +58,7 @@ Website-facing content should include clear links to:
 - [`../../CONTRIBUTING.md`](../../CONTRIBUTING.md)
 - [`../../SECURITY.md`](../../SECURITY.md)
 - [`../../QUALITY.md`](../../QUALITY.md)
+- [`../../assets/README.md`](../../assets/README.md)
 - [`../REPOSITORY_NAVIGATION.md`](../REPOSITORY_NAVIGATION.md)
 - [`../community/README.md`](../community/README.md)
 
@@ -68,19 +70,30 @@ Public visuals should be stored under:
 assets/
 ```
 
+Current public asset filenames are documented in [`../../assets/README.md`](../../assets/README.md).
+
+Current key assets:
+
+- [`../../assets/phase1_base_fyr_banner1.png`](../../assets/phase1_base_fyr_banner1.png) — public Phase1/Base1/Fyr banner.
+- [`../../assets/phase1-splash.svg`](../../assets/phase1-splash.svg) — Phase1 boot splash SVG.
+- [`../../assets/fyr_symbol.png`](../../assets/fyr_symbol.png) — current standalone Fyr symbol.
+- [`../../assets/fyr_word.png`](../../assets/fyr_word.png) — current Fyr word mark.
+
+Older references to `assets/fyr-flame.svg` are outdated and should not be used for current Fyr branding.
+
 Use consistent naming for Phase1, Base1, and Fyr assets.
 
 Suggested naming patterns:
 
 ```text
-phase1-*.png
-phase1-*.svg
-base1-*.png
-base1-*.svg
-fyr-*.png
-fyr-*.svg
-bryforge-*.png
-bryforge-*.svg
+phase1_*.png
+phase1_*.svg
+base1_*.png
+base1_*.svg
+fyr_*.png
+fyr_*.svg
+bryforge_*.png
+bryforge_*.svg
 ```
 
 Do not commit private, unrevised, or accidental screenshots.
