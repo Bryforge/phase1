@@ -7,7 +7,7 @@ Scope: Base1 boot readiness levels, open prerequisites, validation evidence, and
 
 This tracker shows what must be finished before Phase1/Base1 moves from planning back into implementation work for boot readiness.
 
-The finish-first planning layer is complete for B1. The first B1 read-only detection script, guard tests, and limitations note now exist while preserving the B1 boundary.
+The finish-first planning layer is complete for B1. The first B1 read-only detection script, guard tests, limitations note, and limitations tests now exist while preserving the B1 boundary.
 
 ## Current readiness level
 
@@ -65,6 +65,12 @@ cargo test -p phase1 --test base1_x86_64_detect_script
 
 B1 limitations are documented in [`B1_READ_ONLY_DETECTION_LIMITATIONS.md`](B1_READ_ONLY_DETECTION_LIMITATIONS.md).
 
+B1 limitations tests are present:
+
+```bash
+cargo test -p phase1 --test b1_read_only_detection_limitations_docs
+```
+
 The B1 detector must stay inside the read-only, dry-run, non-mutating scope defined by [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md).
 
 ## B1 completion checklist
@@ -75,7 +81,7 @@ Before B1 is considered complete, confirm:
 - [x] B1 read-only detector script exists.
 - [x] B1 detector script tests exist.
 - [x] B1 known limitations are documented.
-- [ ] B1 limitations tests exist.
+- [x] B1 limitations tests exist.
 - [ ] B1 detector test suite passes in CI or local validation.
 - [ ] B1 status is linked from README, OS roadmap, race plan, and x86_64 roadmap after implementation.
 - [ ] B1 output is reviewed for secret redaction.
@@ -121,6 +127,7 @@ Expected behavior:
 | B1 read-only detection plan | Present | [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md) |
 | B1 limitations note | Present | [`B1_READ_ONLY_DETECTION_LIMITATIONS.md`](B1_READ_ONLY_DETECTION_LIMITATIONS.md) |
 | B1 plan tests | Present | `tests/b1_read_only_detection_plan_docs.rs` |
+| B1 limitations tests | Present | `tests/b1_read_only_detection_limitations_docs.rs` |
 | B1 detection script | Present | `scripts/base1-x86_64-detect.sh` |
 | B1 detection tests | Present | `tests/base1_x86_64_detect_script.rs` |
 | VM validation report | Not started | planned |
