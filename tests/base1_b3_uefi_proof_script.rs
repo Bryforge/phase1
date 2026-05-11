@@ -42,8 +42,9 @@ fn base1_b3_uefi_proof_help_documents_usage_marker_display_and_boundaries() {
         "Builds a local B3 UEFI proof image under build/",
         "displays the fitted Phase1 word-mark splash",
         "emits a serial proof marker",
-        "GRUB executes the boot proof directly instead of drawing a menu",
-        "menu frame glyphs",
+        "prefers GRUB's unicode.pf2 font",
+        "generated monospaced",
+        "box/glitch characters",
         "--build",
         "--run",
         "--check",
@@ -117,30 +118,32 @@ fn base1_b3_uefi_proof_uses_expected_artifacts_and_splash_fitting() {
 }
 
 #[test]
-fn base1_b3_uefi_proof_executes_directly_without_grub_menu_frame() {
+fn base1_b3_uefi_proof_uses_unicode_font_and_keeps_menu_overlay() {
     let script = std::fs::read_to_string(SCRIPT).expect("B3 UEFI proof source");
 
     for text in [
         "MARKER=${BASE1_B3_MARKER:-phase1 6.0.0 ready}",
         "serial --unit=0 --speed=115200",
+        "GRUB_FONT=\"$WORK_DIR/boot/grub/fonts/phase1.pf2\"",
+        "copy_grub_unicode_font",
+        "unicode.pf2",
+        "Monaco.ttf",
+        "Menlo.ttc",
+        "Courier New.ttf",
         "if loadfont /boot/grub/fonts/phase1.pf2; then",
-        "set gfxterm_font=phase1",
         "terminal_output gfxterm serial",
-        "Do not use menuentry here",
-        "GRUB menu frames use box-drawing glyphs",
-        "clear",
-        "background_image /boot/grub/phase1-qemu-splash.png",
+        "menuentry \"Phase1 / Base1 B3 UEFI proof\"",
         "echo \"base1 b3 uefi proof start\"",
         "echo \"$MARKER\"",
         "echo \"emulator-only evidence; no installer; no hardware-validation claim\"",
-        "display: direct readable overlay; GRUB menu frame disabled",
+        "display: readable GRUB overlay with unicode font",
         "b3-serial.log",
         "b3-summary.env",
         "grep -F \"$MARKER\" \"$SERIAL_LOG\"",
         "BASE1_B3_UEFI_PROOF_RESULT=$result",
         "BASE1_B3_UEFI_PROOF_SERIAL_LOG=reports/b3-serial.log",
     ] {
-        assert!(script.contains(text), "missing direct proof text {text}: {script}");
+        assert!(script.contains(text), "missing readable menu proof text {text}: {script}");
     }
 
     let loadfont_pos = script
@@ -155,12 +158,12 @@ fn base1_b3_uefi_proof_executes_directly_without_grub_menu_frame() {
     );
 
     assert!(
-        !script.contains("\nmenuentry "),
-        "B3 UEFI proof should not draw a GRUB menu frame: {script}"
+        !script.contains("Do not use menuentry here"),
+        "script should keep the boot menu/proof entry and fix font rendering instead: {script}"
     );
     assert!(
-        !script.contains("display: splash-only; proof text routed to serial"),
-        "script should keep the readable overlay instead of hiding proof text: {script}"
+        !script.contains("display: direct readable overlay; GRUB menu frame disabled"),
+        "script should keep the menu/proof entry and fix font rendering instead: {script}"
     );
 }
 
