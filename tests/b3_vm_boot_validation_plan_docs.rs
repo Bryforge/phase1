@@ -14,7 +14,7 @@ fn b3_vm_boot_validation_plan_defines_scope_and_entry_gate() {
     );
     assert!(plan.contains("B2_DRY_RUN_ASSEMBLY_TEST_SUITE.md"), "{plan}");
     assert!(
-        plan.contains("UEFI proof-of-life and kernel/initrd handoff paths may be used as development scaffolding"),
+        plan.contains("UEFI proof-of-life, kernel/initrd handoff, and GNU/Linux stage paths may be used as development scaffolding"),
         "{plan}"
     );
 }
@@ -57,6 +57,13 @@ fn b3_vm_boot_validation_plan_documents_current_scaffold_commands() {
         "build/base1-b3-kernel-handoff/staging/boot/initrd.img",
         "build/base1-b3-kernel-handoff/reports/qemu-boot.log",
         "B3_KERNEL_INITRD_HANDOFF.md",
+        "Current GNU/Linux stage command shape",
+        "sh scripts/base1-b3-gnulinux-stage.sh",
+        "--boot /path/to/boot",
+        "build/base1-b3-gnulinux-stage/staging/boot/vmlinuz",
+        "build/base1-b3-gnulinux-stage/staging/boot/initrd.img",
+        "build/base1-b3-gnulinux-stage/reports/qemu-boot.log",
+        "B3_GNULINUX_STAGE.md",
     ] {
         assert!(plan.contains(text), "missing B3 scaffold command/output text {text}: {plan}");
     }
@@ -107,6 +114,12 @@ fn b3_vm_boot_validation_plan_preserves_checklists() {
         "B3 kernel/initrd handoff script tests exist.",
         "B3 kernel/initrd handoff documentation exists.",
         "A known-good local kernel/initrd pair has been staged and checked.",
+        "B3 GNU/Linux stage script exists.",
+        "B3 GNU/Linux stage script tests exist.",
+        "B3 GNU/Linux stage documentation exists.",
+        "B3 GNU/Linux stage documentation tests exist.",
+        "A known-good local GNU/Linux kernel/initrd pair has been staged and checked.",
+        "Passing GNU/Linux stage evidence has been copied into a validation report.",
         "Passing handoff evidence has been copied into a validation report.",
     ] {
         assert!(plan.contains(text), "missing B3 checklist text {text}: {plan}");
@@ -127,6 +140,7 @@ fn b3_vm_boot_validation_plan_links_related_docs() {
         "B2_DRY_RUN_ASSEMBLY_TEST_SUITE.md",
         "QEMU_VISUAL_BOOT_PREVIEW.md",
         "B3_KERNEL_INITRD_HANDOFF.md",
+        "B3_GNULINUX_STAGE.md",
     ] {
         assert!(plan.contains(link), "missing B3 related doc link {link}: {plan}");
     }
@@ -140,8 +154,10 @@ fn b3_vm_boot_validation_plan_is_linked_from_status_tracker() {
     assert!(status.contains("B3_VM_BOOT_VALIDATION_PLAN.md"), "{status}");
     assert!(status.contains("B3 VM boot validation planning is now present"), "{status}");
     assert!(status.contains("B3 UEFI proof-of-life script is present"), "{status}");
+    assert!(status.contains("B3 kernel/initrd handoff script is present"), "{status}");
+    assert!(status.contains("B3 GNU/Linux stage script is present"), "{status}");
     assert!(
-        status.contains("B3 remains planning plus proof-of-life until B2 validation has passed locally or in CI and B3 validation logs and report exist."),
+        status.contains("B3 remains planning plus proof-of-life, handoff, and GNU/Linux staging scaffolding until B2 validation has passed locally or in CI and B3 validation logs and report exist."),
         "{status}"
     );
 }
