@@ -4,9 +4,9 @@
 # This script aggregates local B3 evidence paths and prints or writes a validation
 # scaffold. It loads the selected Base1 profile from profiles/base1/*.env so B3
 # VM validation uses the same profile vocabulary as direct-first and supervisor
-# delivery paths. It does not launch QEMU, install Base1, mutate disks, fetch
-# kernels, validate hardware, validate recovery, prove hardening, or claim full
-# B3 completion by itself.
+# delivery paths. It does not launch QEMU, fetch kernels, install Base1, mutate
+# disks, validate hardware, validate recovery, prove hardening, or claim full B3
+# completion by itself.
 
 set -eu
 
