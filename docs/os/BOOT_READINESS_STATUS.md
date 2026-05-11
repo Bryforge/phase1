@@ -9,7 +9,7 @@ This tracker shows what must be finished before Phase1/Base1 moves from planning
 
 The finish-first planning layer is complete for B1. The first B1 read-only detection script, guard tests, limitations note, limitations tests, validation report, and validation report tests now exist while preserving the B1 boundary.
 
-B2 planning has started with a dry-run assembly plan, plan tests, initial dry-run assembly script, script tests, limitations note, limitations tests, validation report, validation report tests, output review, output review tests, and focused test-suite command bundle.
+B2 planning has started with a dry-run assembly plan, plan tests, initial dry-run assembly script, script tests, limitations note, limitations tests, validation report, validation report tests, output review, output review tests, focused test-suite command bundle, and test-suite bundle tests.
 
 ## Current readiness level
 
@@ -145,6 +145,12 @@ cargo test -p phase1 --test b2_dry_run_assembly_output_review_docs
 
 B2 focused test-suite command bundle is documented in [`B2_DRY_RUN_ASSEMBLY_TEST_SUITE.md`](B2_DRY_RUN_ASSEMBLY_TEST_SUITE.md).
 
+B2 test-suite bundle tests are present:
+
+```bash
+cargo test -p phase1 --test b2_dry_run_assembly_test_suite_docs
+```
+
 B2 status and boundaries are linked from README, OS roadmap, race plan, and x86_64 roadmap.
 
 B2 remains dry-run-only until validation has passed locally or in CI.
@@ -166,6 +172,7 @@ Before B2 is considered complete, confirm:
 - [x] B2 output is reviewed for secret redaction.
 - [x] B2 output review tests exist.
 - [x] B2 focused test-suite command bundle exists.
+- [x] B2 test-suite bundle tests exist.
 - [ ] B2 test suite passes in CI or local validation.
 
 ## Planned first coding slice
@@ -226,6 +233,7 @@ Expected behavior:
 | B2 dry-run assembly limitations tests | Present | `tests/b2_dry_run_assembly_limitations_docs.rs` |
 | B2 dry-run assembly validation tests | Present | `tests/b2_dry_run_assembly_validation_docs.rs` |
 | B2 dry-run assembly output review tests | Present | `tests/b2_dry_run_assembly_output_review_docs.rs` |
+| B2 dry-run assembly test-suite tests | Present | `tests/b2_dry_run_assembly_test_suite_docs.rs` |
 | B2 dry-run assembly script | Present | `scripts/base1-b2-assembly-dry-run.sh` |
 | B2 dry-run assembly tests | Present | `tests/base1_b2_assembly_dry_run_script.rs` |
 | VM validation report | Not started | planned |
