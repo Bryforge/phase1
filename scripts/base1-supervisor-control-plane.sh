@@ -9,6 +9,7 @@
 set -eu
 
 COMMAND=status
+REQUESTED_MODE=
 PROFILE=${BASE1_SUPERVISOR_PROFILE:-x200-supervisor-lite}
 PROFILE_DIR=${BASE1_PROFILE_DIR:-profiles/base1}
 OUT_DIR=${BASE1_SUPERVISOR_CONTROL_OUT:-build/base1-supervisor-control-plane}
@@ -31,7 +32,7 @@ usage() {
 base1 supervisor control plane
 
 usage:
-  sh scripts/base1-supervisor-control-plane.sh <command> [--profile <name>] [--write-report]
+  sh scripts/base1-supervisor-control-plane.sh <command> [--profile <name>] [--delivery-mode <mode>] [--write-report]
 
 commands:
   status
@@ -45,6 +46,7 @@ commands:
 
 options:
   --profile <name>     profile name, default: x200-supervisor-lite
+  --delivery-mode <mode> direct-first, supervisor-lite, or supervisor-concurrent
   --profile-dir <dir>  profile directory, default: profiles/base1
   --out <build/dir>    output directory, default: build/base1-supervisor-control-plane
   --write-report       write <out>/supervisor-control-plane.env
@@ -68,6 +70,11 @@ fi
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
+    --delivery-mode)
+      [ "$#" -ge 2 ] || fail "--delivery-mode requires a value"
+      REQUESTED_MODE=$2
+      shift 2
+      ;;
     --profile)
       [ "$#" -ge 2 ] || fail "--profile requires a value"
       PROFILE=$2
@@ -114,6 +121,38 @@ case "${BASE1_PROFILE_ALLOWED_DELIVERY_MODES:-}" in
   *) fail "profile must allow supervisor route: $PROFILE" ;;
 esac
 
+if [ -z "$REQUESTED_MODE" ]; then
+  REQUESTED_MODE=${BASE1_PROFILE_DEFAULT_DELIVERY_MODE:-direct-first}
+fi
+
+case "$REQUESTED_MODE" in
+  direct-first|supervisor-lite|supervisor-concurrent) : ;;
+  *) fail "unsupported delivery mode: $REQUESTED_MODE" ;;
+esac
+
+POLICY_OUT="$OUT_DIR/policy"
+POLICY_REPORT="$POLICY_OUT/supervisor-policy-bus.env"
+
+set +e
+POLICY_OUTPUT=$(sh scripts/base1-supervisor-policy-bus.sh "$COMMAND" --profile "$PROFILE" --profile-dir "$PROFILE_DIR" --delivery-mode "$REQUESTED_MODE" --out "$POLICY_OUT" --write-report 2>&1)
+POLICY_RC=$?
+set -e
+
+printf "%s\n" "$POLICY_OUTPUT"
+
+[ "$POLICY_RC" -eq 0 ] || fail "policy bus failed for command: $COMMAND"
+[ -f "$POLICY_REPORT" ] || fail "policy bus did not write report: $POLICY_REPORT"
+
+POLICY_DECISION=$(sed -n "s/^BASE1_SUPERVISOR_POLICY_DECISION=//p" "$POLICY_REPORT" | head -n 1)
+POLICY_REASON=$(sed -n "s/^BASE1_SUPERVISOR_POLICY_REASON=//p" "$POLICY_REPORT" | head -n 1)
+
+[ -n "$POLICY_DECISION" ] || fail "policy report missing decision"
+[ -n "$POLICY_REASON" ] || fail "policy report missing reason"
+
+if [ "$POLICY_DECISION" = deny ]; then
+  fail "policy denied: $POLICY_REASON"
+fi
+
 REPORT="$OUT_DIR/supervisor-control-plane.env"
 
 case "$COMMAND" in
@@ -132,6 +171,10 @@ cat_report() {
   cat <<EOF_REPORT
 BASE1_SUPERVISOR_CONTROL_COMMAND=$COMMAND
 BASE1_SUPERVISOR_CONTROL_ACTION=$ACTION
+BASE1_SUPERVISOR_CONTROL_REQUESTED_MODE=$REQUESTED_MODE
+BASE1_SUPERVISOR_CONTROL_POLICY_DECISION=$POLICY_DECISION
+BASE1_SUPERVISOR_CONTROL_POLICY_REASON=$POLICY_REASON
+BASE1_SUPERVISOR_CONTROL_POLICY_REPORT=$POLICY_REPORT
 BASE1_SUPERVISOR_CONTROL_PROFILE=$PROFILE
 BASE1_SUPERVISOR_CONTROL_PROFILE_FILE=$PROFILE_FILE
 BASE1_SUPERVISOR_CONTROL_PROFILE_CLASS=${BASE1_PROFILE_CLASS:-}

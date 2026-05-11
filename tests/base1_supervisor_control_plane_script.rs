@@ -79,7 +79,7 @@ fn base1_supervisor_control_plane_status_writes_report_for_x200_profile() {
     assert_contains(&stdout, "storage_policy: zram-plus-ssd-scratch-swap-backstop");
     assert_contains(&stdout, "result: planned");
 
-    let report_path = Path::new("build/base1-supervisor-control-plane/supervisor-control-plane.env");
+    let report_path = Path::new("build/base1-supervisor-control-plane-test-status/supervisor-control-plane.env");
     assert!(report_path.exists(), "report should be written");
     let report = fs::read_to_string(report_path).expect("read report");
     assert_contains(&report, "BASE1_SUPERVISOR_CONTROL_COMMAND=status");
@@ -133,4 +133,49 @@ fn base1_supervisor_control_plane_rejects_unknown_command_profile_and_non_build_
         .output()
         .expect("run bad out");
     assert!(!bad_out.status.success(), "non-build out should fail");
+}
+
+#[test]
+fn base1_supervisor_control_plane_blocks_x200_concurrent_launch_preview_by_policy() {
+    let output = Command::new("sh")
+        .arg("scripts/base1-supervisor-control-plane.sh")
+        .arg("launch-preview")
+        .arg("--profile")
+        .arg("x200-supervisor-lite")
+        .arg("--delivery-mode")
+        .arg("supervisor-concurrent")
+        .arg("--out")
+        .arg("build/base1-supervisor-control-plane-test-block")
+        .output()
+        .expect("run x200 blocked launch-preview");
+
+    assert!(!output.status.success(), "x200 supervisor-concurrent launch-preview should be policy-blocked");
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    let combined = format!("{stdout}{stderr}");
+    assert_contains(&combined, "decision");
+    assert_contains(&combined, "deny");
+    assert_contains(&combined, "profile-upgrade-required");
+}
+
+#[test]
+fn base1_supervisor_control_plane_records_policy_decision_for_status_report() {
+    let output = Command::new("sh")
+        .arg("scripts/base1-supervisor-control-plane.sh")
+        .arg("status")
+        .arg("--profile")
+        .arg("x200-supervisor-lite")
+        .arg("--out")
+        .arg("build/base1-supervisor-control-plane-test-status")
+        .arg("--write-report")
+        .output()
+        .expect("run policy-gated status");
+
+    assert!(output.status.success(), "status should pass");
+    let report_path = Path::new("build/base1-supervisor-control-plane-test-status/supervisor-control-plane.env");
+    assert!(report_path.exists(), "report should be written");
+    let report = fs::read_to_string(report_path).expect("read report");
+    assert_contains(&report, "BASE1_SUPERVISOR_CONTROL_POLICY_DECISION=allow");
+    assert_contains(&report, "BASE1_SUPERVISOR_CONTROL_POLICY_REASON=profile allows read-only planning command");
+    assert_contains(&report, "BASE1_SUPERVISOR_CONTROL_REQUESTED_MODE=direct-first");
 }
