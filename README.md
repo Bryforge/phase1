@@ -155,8 +155,8 @@ Phase1 separates implemented features from experimental host integrations and fu
 | Python/Git/Cargo/Rust host-backed workflows | Experimental | Useful local integrations, but not hardened secure execution. |
 | Host network/admin mutation | Restricted | Requires explicit trust gates and safe-mode changes. |
 | Hardened VM/chroot/container sandbox | Not planned | Use a real VM/container for hostile code. |
-| Base1 boot readiness | B0 in progress | Current readiness is tracked in [`docs/os/BOOT_READINESS_STATUS.md`](docs/os/BOOT_READINESS_STATUS.md); next target is B1 read-only detection. |
-| Base1 x86_64 boot support | Roadmap | Automatic x86_64 detection and boot-parameter support are planned in [`docs/os/X86_64_BOOT_SUPPORT_ROADMAP.md`](docs/os/X86_64_BOOT_SUPPORT_ROADMAP.md). |
+| Base1 boot readiness | B1 initial script present | Current readiness is tracked in [`docs/os/BOOT_READINESS_STATUS.md`](docs/os/BOOT_READINESS_STATUS.md); next target is completing B1 validation before B2 dry-run assembly. |
+| Base1 x86_64 boot support | B1 detection preview | The first read-only detector is `scripts/base1-x86_64-detect.sh --dry-run`; it is bounded by [`docs/os/B1_READ_ONLY_DETECTION_LIMITATIONS.md`](docs/os/B1_READ_ONLY_DETECTION_LIMITATIONS.md). |
 | Phase1 OS track | Long-term roadmap | Base1-backed path toward a bootable Phase1-first environment; not a current drop-in OS replacement. |
 
 Inside Phase1, run `capabilities` to inspect command-level gates and guard status.
@@ -201,7 +201,20 @@ The staged path is:
 
 Current guardrail: Phase1 remains a virtual OS console until boot images, recovery, update paths, hardware support, and audits exist.
 
-Boot readiness status is tracked in [`docs/os/BOOT_READINESS_STATUS.md`](docs/os/BOOT_READINESS_STATUS.md). The boot-readiness race plan lives at [`docs/os/BOOT_READINESS_RACE_PLAN.md`](docs/os/BOOT_READINESS_RACE_PLAN.md). x86_64 boot planning starts at [`docs/os/X86_64_BOOT_SUPPORT_ROADMAP.md`](docs/os/X86_64_BOOT_SUPPORT_ROADMAP.md). It covers UEFI, BIOS, Libreboot/GRUB, VM validation, recovery USB paths, boot profile names, boot parameters, read-only detection, and future hardening work.
+Boot readiness status is tracked in [`docs/os/BOOT_READINESS_STATUS.md`](docs/os/BOOT_READINESS_STATUS.md). The boot-readiness race plan lives at [`docs/os/BOOT_READINESS_RACE_PLAN.md`](docs/os/BOOT_READINESS_RACE_PLAN.md). x86_64 boot planning starts at [`docs/os/X86_64_BOOT_SUPPORT_ROADMAP.md`](docs/os/X86_64_BOOT_SUPPORT_ROADMAP.md). The B1 implementation plan is [`docs/os/B1_READ_ONLY_DETECTION_PLAN.md`](docs/os/B1_READ_ONLY_DETECTION_PLAN.md), and the B1 limitations note is [`docs/os/B1_READ_ONLY_DETECTION_LIMITATIONS.md`](docs/os/B1_READ_ONLY_DETECTION_LIMITATIONS.md).
+
+Run the initial B1 detector:
+
+```bash
+sh scripts/base1-x86_64-detect.sh --dry-run
+```
+
+Run the B1 detector tests:
+
+```bash
+cargo test -p phase1 --test base1_x86_64_detect_script
+cargo test -p phase1 --test b1_read_only_detection_limitations_docs
+```
 
 ## Fyr native language
 
@@ -353,6 +366,8 @@ Start here:
 - [`docs/os/ROADMAP.md`](docs/os/ROADMAP.md) — Phase1 operating-system track
 - [`docs/os/BOOT_READINESS_STATUS.md`](docs/os/BOOT_READINESS_STATUS.md) — current boot-readiness tracker and B1 coding-start gate
 - [`docs/os/BOOT_READINESS_RACE_PLAN.md`](docs/os/BOOT_READINESS_RACE_PLAN.md) — fast, evidence-bound path toward boot readiness
+- [`docs/os/B1_READ_ONLY_DETECTION_PLAN.md`](docs/os/B1_READ_ONLY_DETECTION_PLAN.md) — B1 read-only detection plan
+- [`docs/os/B1_READ_ONLY_DETECTION_LIMITATIONS.md`](docs/os/B1_READ_ONLY_DETECTION_LIMITATIONS.md) — B1 detector limitations and non-claims
 - [`docs/os/X86_64_BOOT_SUPPORT_ROADMAP.md`](docs/os/X86_64_BOOT_SUPPORT_ROADMAP.md) — x86_64 boot support and boot-parameter roadmap
 - [`docs/os/BASE1_IMAGE_BUILDER.md`](docs/os/BASE1_IMAGE_BUILDER.md) — Base1 image-builder design
 - [`docs/os/INSTALLER_RECOVERY.md`](docs/os/INSTALLER_RECOVERY.md) — Base1 installer and recovery design
@@ -365,6 +380,7 @@ Start here:
 First safe checks are read-only or dry-run oriented:
 
 ```bash
+sh scripts/base1-x86_64-detect.sh --dry-run
 sh scripts/base1-preflight.sh
 sh scripts/base1-libreboot-preflight.sh
 sh scripts/base1-install-dry-run.sh --dry-run --target /dev/example
@@ -373,7 +389,7 @@ sh scripts/base1-storage-layout-dry-run.sh --dry-run --target /dev/example
 sh scripts/base1-rollback-metadata-dry-run.sh --dry-run
 ```
 
-The preflight and dry-run checkers should report no writes.
+The preflight, detector, and dry-run checkers should report no writes.
 
 ## Runtime and host-backed features
 
