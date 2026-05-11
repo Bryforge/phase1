@@ -1,7 +1,7 @@
 # Base1 Documentation Map
 
 Status: active documentation index
-Scope: Base1 docs, scripts, validation reports, read-only evidence paths, release/checkpoint notes, compatibility paths, inventory, test inventory, migration planning, script compatibility, link checking, post-reorganization layout, pre-move checklist, and integrity gates
+Scope: Base1 docs, scripts, validation reports, read-only evidence paths, release/checkpoint notes, compatibility paths, inventory, test inventory, migration planning, script compatibility, link checking, post-reorganization layout, pre-move checklist, verification bundle, and integrity gates
 
 ## Purpose
 
@@ -48,10 +48,14 @@ Scripts remain under `scripts/` until a later tools reorganization is backed by 
 - [Base1 validation report template](VALIDATION_REPORT_TEMPLATE.md)
 - [Base1 validation reports index](VALIDATION_REPORTS.md)
 - Integrity gate: `sh scripts/base1-doc-integrity.sh`
+- Link check: `sh scripts/base1-link-check.sh`
+- Test inventory verification: `sh scripts/base1-test-inventory-verify.sh`
+- Reorganization verification bundle: `sh scripts/base1-reorganization-verify.sh`
 
 ## Release and checkpoint notes
 
 - [Release/checkpoint notes index](releases/README.md)
+- [Release/checkpoint pre-move checks](releases/PRE_MOVE_CHECKS.md)
 - [Libreboot read-only checkpoint v1](releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1.md)
 - [Libreboot read-only checkpoint v1.1](releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1_1.md)
 - [Recovery USB hardware read-only checkpoint v1](releases/RELEASE_BASE1_RECOVERY_USB_HARDWARE_READONLY_V1.md)
