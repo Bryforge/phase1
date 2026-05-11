@@ -125,8 +125,12 @@ fn boot_readiness_status_defines_b2_implementation_status() {
         "cargo test -p phase1 --test b2_dry_run_assembly_limitations_docs",
         "B2 validation expectations are documented in [`B2_DRY_RUN_ASSEMBLY_VALIDATION.md`](B2_DRY_RUN_ASSEMBLY_VALIDATION.md).",
         "cargo test -p phase1 --test b2_dry_run_assembly_validation_docs",
+        "B2 output review is documented in [`B2_DRY_RUN_ASSEMBLY_OUTPUT_REVIEW.md`](B2_DRY_RUN_ASSEMBLY_OUTPUT_REVIEW.md).",
+        "cargo test -p phase1 --test b2_dry_run_assembly_output_review_docs",
+        "B2 focused test-suite command bundle is documented in [`B2_DRY_RUN_ASSEMBLY_TEST_SUITE.md`](B2_DRY_RUN_ASSEMBLY_TEST_SUITE.md).",
+        "cargo test -p phase1 --test b2_dry_run_assembly_test_suite_docs",
         "B2 status and boundaries are linked from README, OS roadmap, race plan, and x86_64 roadmap.",
-        "B2 remains dry-run-only until output review is complete and validation has passed locally or in CI.",
+        "B2 remains dry-run-only until validation has passed locally or in CI.",
     ] {
         assert!(status.contains(text), "missing B2 implementation status text {text}: {status}");
     }
@@ -150,6 +154,9 @@ fn boot_readiness_status_preserves_b2_completion_checklist() {
         "B2 status is linked from README, OS roadmap, race plan, and x86_64 roadmap.",
         "B2 does not contain mutating boot, disk, package, or network commands.",
         "B2 output is reviewed for secret redaction.",
+        "B2 output review tests exist.",
+        "B2 focused test-suite command bundle exists.",
+        "B2 test-suite bundle tests exist.",
         "B2 test suite passes in CI or local validation.",
     ] {
         assert!(status.contains(text), "missing B2 completion text {text}: {status}");
@@ -202,9 +209,13 @@ fn boot_readiness_status_preserves_evidence_map() {
         "B2_DRY_RUN_ASSEMBLY_PLAN.md",
         "B2_DRY_RUN_ASSEMBLY_LIMITATIONS.md",
         "B2_DRY_RUN_ASSEMBLY_VALIDATION.md",
+        "B2_DRY_RUN_ASSEMBLY_OUTPUT_REVIEW.md",
+        "B2_DRY_RUN_ASSEMBLY_TEST_SUITE.md",
         "tests/b2_dry_run_assembly_plan_docs.rs",
         "tests/b2_dry_run_assembly_limitations_docs.rs",
         "tests/b2_dry_run_assembly_validation_docs.rs",
+        "tests/b2_dry_run_assembly_output_review_docs.rs",
+        "tests/b2_dry_run_assembly_test_suite_docs.rs",
         "scripts/base1-b2-assembly-dry-run.sh",
         "tests/base1_b2_assembly_dry_run_script.rs",
         "VM validation report",
