@@ -2,10 +2,10 @@
 # Phase1 security crypto documentation integrity gate.
 #
 # This check is read-only. It verifies the cryptographic policy roadmap,
-# registry, provider registry, algorithm template, operator command plan,
-# config schema, implementation plan, profile index, profile drafts, and
-# security documentation links before crypto policy implementation work
-# continues.
+# registry, provider registry, provider template, algorithm template, operator
+# command plan, config schema, implementation plan, profile index, profile
+# drafts, and security documentation links before crypto policy implementation
+# work continues.
 
 set -eu
 
@@ -41,6 +41,7 @@ check_files() {
     docs/security/CRYPTO_POLICY_ROADMAP.md \
     docs/security/CRYPTO_REGISTRY.md \
     docs/security/CRYPTO_PROVIDER_REGISTRY.md \
+    docs/security/CRYPTO_PROVIDER_TEMPLATE.md \
     docs/security/CRYPTO_ALGORITHM_TEMPLATE.md \
     docs/security/CRYPTO_OPERATOR_COMMANDS.md \
     docs/security/CRYPTO_CONFIG_SCHEMA.md \
@@ -66,6 +67,7 @@ check_links_and_goals() {
   check_contains docs/security/README.md 'CRYPTO_POLICY_ROADMAP.md'
   check_contains docs/security/README.md 'CRYPTO_REGISTRY.md'
   check_contains docs/security/README.md 'CRYPTO_PROVIDER_REGISTRY.md'
+  check_contains docs/security/README.md 'CRYPTO_PROVIDER_TEMPLATE.md'
   check_contains docs/security/README.md 'CRYPTO_OPERATOR_COMMANDS.md'
   check_contains docs/security/README.md 'CRYPTO_CONFIG_SCHEMA.md'
   check_contains docs/security/README.md 'CRYPTO_IMPLEMENTATION_PLAN.md'
@@ -80,6 +82,7 @@ check_links_and_goals() {
   check_contains docs/security/CRYPTO_POLICY_ROADMAP.md 'crypto-profiles/README.md'
   check_contains docs/security/CRYPTO_IMPLEMENTATION_PLAN.md 'CRYPTO_PROVIDER_REGISTRY.md'
   check_contains docs/security/CRYPTO_REGISTRY.md 'CRYPTO_ALGORITHM_TEMPLATE.md'
+  check_contains docs/security/CRYPTO_PROVIDER_REGISTRY.md 'CRYPTO_PROVIDER_TEMPLATE.md'
   check_contains docs/security/crypto-profiles/README.md 'SAFE_DEFAULT.md'
   check_contains docs/security/crypto-profiles/README.md 'HIGH_SECURITY.md'
   check_contains docs/security/crypto-profiles/README.md 'COMPATIBILITY.md'
@@ -144,6 +147,7 @@ check_implementation_plan() {
 
 check_provider_registry() {
   check_contains docs/security/CRYPTO_PROVIDER_REGISTRY.md 'Phase1 crypto provider registry'
+  check_contains docs/security/CRYPTO_PROVIDER_REGISTRY.md 'CRYPTO_PROVIDER_TEMPLATE.md'
   check_contains docs/security/CRYPTO_PROVIDER_REGISTRY.md 'No provider is currently approved by this registry for new production security claims.'
   check_contains docs/security/CRYPTO_PROVIDER_REGISTRY.md 'provider name'
   check_contains docs/security/CRYPTO_PROVIDER_REGISTRY.md 'library, crate, or system API'
@@ -153,6 +157,21 @@ check_provider_registry() {
   check_contains docs/security/CRYPTO_PROVIDER_REGISTRY.md 'reject unknown providers'
   check_contains docs/security/CRYPTO_PROVIDER_REGISTRY.md 'avoid silently falling back to a weaker provider'
   check_contains docs/security/CRYPTO_PROVIDER_REGISTRY.md 'failure behavior is fail-closed'
+}
+
+check_provider_template() {
+  check_contains docs/security/CRYPTO_PROVIDER_TEMPLATE.md 'Crypto provider documentation template'
+  check_contains docs/security/CRYPTO_PROVIDER_TEMPLATE.md 'Provider summary'
+  check_contains docs/security/CRYPTO_PROVIDER_TEMPLATE.md 'Source and license'
+  check_contains docs/security/CRYPTO_PROVIDER_TEMPLATE.md 'Supported capabilities'
+  check_contains docs/security/CRYPTO_PROVIDER_TEMPLATE.md 'Supported platforms'
+  check_contains docs/security/CRYPTO_PROVIDER_TEMPLATE.md 'Profile compatibility'
+  check_contains docs/security/CRYPTO_PROVIDER_TEMPLATE.md 'Control-point compatibility'
+  check_contains docs/security/CRYPTO_PROVIDER_TEMPLATE.md 'Test-vector coverage'
+  check_contains docs/security/CRYPTO_PROVIDER_TEMPLATE.md 'Failure behavior'
+  check_contains docs/security/CRYPTO_PROVIDER_TEMPLATE.md 'Fallback behavior'
+  check_contains docs/security/CRYPTO_PROVIDER_TEMPLATE.md 'Failure behavior is fail-closed.'
+  check_contains docs/security/CRYPTO_PROVIDER_TEMPLATE.md 'Fallback behavior is explicit.'
 }
 
 check_guardrails() {
@@ -172,6 +191,7 @@ check_non_claims() {
     docs/security/CRYPTO_POLICY_ROADMAP.md \
     docs/security/CRYPTO_REGISTRY.md \
     docs/security/CRYPTO_PROVIDER_REGISTRY.md \
+    docs/security/CRYPTO_PROVIDER_TEMPLATE.md \
     docs/security/CRYPTO_ALGORITHM_TEMPLATE.md \
     docs/security/CRYPTO_OPERATOR_COMMANDS.md \
     docs/security/CRYPTO_CONFIG_SCHEMA.md \
@@ -197,8 +217,9 @@ check_operator_commands
 check_config_schema
 check_implementation_plan
 check_provider_registry
+check_provider_template
 check_guardrails
 check_non_claims
 
-info 'integrity complete; crypto policy roadmap, registry, provider registry, algorithm template, operator command plan, config schema, implementation plan, profile drafts, links, guardrails, and non-claims are present'
+info 'integrity complete; crypto policy roadmap, registry, provider registry, provider template, algorithm template, operator command plan, config schema, implementation plan, profile drafts, links, guardrails, and non-claims are present'
 info 'writes: no'
