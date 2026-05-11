@@ -26,9 +26,9 @@ Marker:
   phase1 6.0.0 ready
 
 Display behavior:
-  Visible QEMU runs show the splash plus a readable proof-status overlay. GRUB
-  loads the generated font before switching to gfxterm so boot text does not
-  render as box or glitch characters.
+  GRUB executes the boot proof directly instead of drawing a menu. This avoids
+  macOS QEMU rendering GRUB menu frame glyphs as box/glitch characters while
+  still showing readable proof text over the splash.
 
 Non-claims:
   This is QEMU/OVMF proof-of-life only. It does not make Base1 installer-ready,
@@ -174,14 +174,14 @@ set color_highlight=black/light-cyan
 search --file /boot/grub/phase1-qemu-splash.png --set=root
 background_image /boot/grub/phase1-qemu-splash.png
 
-menuentry "Phase1 / Base1 B3 UEFI proof" {
-    clear
-    background_image /boot/grub/phase1-qemu-splash.png
-    echo "base1 b3 uefi proof start"
-    echo "$MARKER"
-    echo "emulator-only evidence; no installer; no hardware-validation claim"
-    sleep --interruptible 9999
-}
+# Do not use menuentry here. GRUB menu frames use box-drawing glyphs that can
+# render as repeated square/glitch characters in macOS QEMU before/around gfxterm.
+clear
+background_image /boot/grub/phase1-qemu-splash.png
+echo "base1 b3 uefi proof start"
+echo "$MARKER"
+echo "emulator-only evidence; no installer; no hardware-validation claim"
+sleep --interruptible 9999
 EOF
 }
 
@@ -217,7 +217,7 @@ build_image() {
   printf 'base1_b3_uefi_proof: built %s\n' "$IMG"
   printf 'marker: %s\n' "$MARKER"
   printf 'splash: assets/phase1_word.png fitted to %sx%s max edge %s\n' "$SPLASH_WIDTH" "$SPLASH_HEIGHT" "$SPLASH_MAX_EDGE"
-  printf 'display: readable gfxterm overlay with font preloaded\n'
+  printf 'display: direct readable overlay; GRUB menu frame disabled\n'
   printf 'boot_readiness_claim: no\n'
 }
 
