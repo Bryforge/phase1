@@ -9,7 +9,7 @@ This roadmap defines how Base1 should grow toward automatic support for generic 
 
 The goal is to make x86_64 boot support boring and predictable: detect the system, choose the correct boot profile, expose required boot parameters, validate before mutation, and keep rollback/recovery available.
 
-Current boot readiness is tracked in [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md). Do not start B1 implementation until that tracker says the finish-first gate is complete.
+Current boot readiness is tracked in [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md). The initial B1 read-only detection script is now present and must remain dry-run-only, read-only, and non-mutating.
 
 The first B1 implementation slice is planned in [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md).
 
@@ -121,10 +121,16 @@ sh scripts/base1-x86_64-validate.sh --dry-run
 
 These commands should report `writes: no` until installer mutation is separately designed and validated.
 
-The first B1 implementation slice should be only:
+The first B1 implementation slice is:
 
 ```bash
 sh scripts/base1-x86_64-detect.sh --dry-run
+```
+
+Initial B1 test:
+
+```bash
+cargo test -p phase1 --test base1_x86_64_detect_script
 ```
 
 Implementation plan:
@@ -192,6 +198,8 @@ Each hardening item must be labeled by status and validation level before being 
 ### Phase 2: read-only detection
 
 - Add dry-run architecture and firmware detection according to [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md).
+- Initial script: `scripts/base1-x86_64-detect.sh`.
+- Initial tests: `tests/base1_x86_64_detect_script.rs`.
 - Report x86_64, UEFI/BIOS/Libreboot hints, storage layout, boot loader hints, and recovery availability.
 - Write no disk state.
 - Keep current status visible in [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md).
