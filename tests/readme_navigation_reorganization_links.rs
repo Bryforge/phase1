@@ -27,6 +27,31 @@ fn readme_links_x86_64_and_hardening_roadmap() {
 }
 
 #[test]
+fn readme_links_boot_readiness_b1_docs_and_detector() {
+    let readme = std::fs::read_to_string("README.md").expect("README.md");
+
+    for link in [
+        "docs/os/BOOT_READINESS_STATUS.md",
+        "docs/os/BOOT_READINESS_RACE_PLAN.md",
+        "docs/os/B1_READ_ONLY_DETECTION_PLAN.md",
+        "docs/os/B1_READ_ONLY_DETECTION_LIMITATIONS.md",
+        "scripts/base1-x86_64-detect.sh --dry-run",
+    ] {
+        assert!(readme.contains(link), "README missing B1 boot-readiness link/text {link}: {readme}");
+    }
+
+    for text in [
+        "B1 initial script present",
+        "B1 detection preview",
+        "next target is completing B1 validation before B2 dry-run assembly",
+        "cargo test -p phase1 --test base1_x86_64_detect_script",
+        "cargo test -p phase1 --test b1_read_only_detection_limitations_docs",
+    ] {
+        assert!(readme.contains(text), "README missing B1 status text {text}: {readme}");
+    }
+}
+
+#[test]
 fn readme_links_organized_destinations() {
     let readme = std::fs::read_to_string("README.md").expect("README.md");
 
