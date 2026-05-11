@@ -2,6 +2,21 @@
 
 phase1 is an educational userspace simulator, not a hardened host sandbox. The simulator is designed to keep its virtual filesystem, process table, scheduler, audit log, boot state, and host-facing helpers separate from the real host operating system.
 
+## Security goal
+
+Phase1's security goal is to be as secure as possible while maintaining practical usability for operators, builders, and learners.
+
+This means security work should favor safe defaults, visible trust boundaries, explicit operator consent, useful guardrails, clear recovery paths, and evidence-backed claims without making the system so restrictive that legitimate development, learning, testing, and local workflows become unusable.
+
+When security and usability are in tension, Phase1 should prefer:
+
+- secure defaults with intentional opt-in escape hatches;
+- read-only and dry-run flows before real mutation;
+- clear prompts and capability metadata instead of hidden behavior;
+- local-first privacy and redaction without blocking normal operator visibility;
+- practical workflows that stay testable, documented, and reversible;
+- conservative claims until stronger isolation, validation, or audit evidence exists.
+
 ## Secure default and trust gate
 
 phase1 defaults to safe mode with the host trust gate off. In the default launch, host-backed execution and host-network inspection are blocked.
