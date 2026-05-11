@@ -25,6 +25,7 @@ OUT_DIR="${BASE1_B17_OUT:-build/base1-b17-bootsector}"
 SRC="$OUT_DIR/phase1-b17-bootsector.S"
 OBJ="$OUT_DIR/phase1-b17-bootsector.o"
 BIN="$OUT_DIR/phase1-b17-bootsector.bin"
+READBACK="$OUT_DIR/phase1-b17-bootsector-readback.bin"
 REPORT="$OUT_DIR/b17-bootsector-usb.env"
 
 fail() { printf 'x200-b17-bootsector-usb: %s\n' "$1" >&2; exit 1; }
@@ -55,7 +56,7 @@ case "$ROOT_SRC" in
   "$USB"|"$USB"[0-9]*|"$USB"p[0-9]*) fail "refusing to write the root filesystem device: $ROOT_SRC" ;;
 esac
 
-for cmd in sudo parted mkfs.vfat mount umount sync mkdir cp tee grub-install sha256sum as objcopy dd stat; do
+for cmd in sudo parted mkfs.vfat mount umount sync mkdir cp tee grub-install sha256sum as objcopy dd stat cmp tail od; do
   need_cmd "$cmd"
 done
 
@@ -74,13 +75,19 @@ cat > "$SRC" <<'EOF'
 _start:
     cli
     xor %ax, %ax
-    mov %ax, %ds
-    mov %ax, %es
     mov %ax, %ss
     mov $0x7C00, %sp
 
+    /* GRUB/BIOS chainload convention places the sector at physical 0x7C00.
+       Use DS=0x07C0 so labels assembled from offset 0 resolve correctly
+       whether the far jump used CS:IP 0000:7C00 or 07C0:0000. */
+    mov $0x07C0, %ax
+    mov %ax, %ds
+
+    sti
     mov $0x0003, %ax
     int $0x10
+    cli
 
     mov $0xB800, %ax
     mov %ax, %es
@@ -151,9 +158,12 @@ objcopy -O binary -j .text "$OBJ" "$BIN"
 [ -s "$BIN" ] || fail "bootsector build failed: $BIN"
 SIZE="$(stat -c %s "$BIN" 2>/dev/null || stat -f %z "$BIN")"
 [ "$SIZE" = 512 ] || fail "bootsector must be exactly 512 bytes, got $SIZE"
+SIG="$(tail -c 2 "$BIN" | od -An -tx1 | tr -d ' \n')"
+[ "$SIG" = "55aa" ] || fail "bootsector signature must be 55aa, got $SIG"
 
 printf 'Bootsector SHA256:\n'
 sha256sum "$BIN"
+printf 'Bootsector signature: %s\n' "$SIG"
 printf '\nThis will erase the selected USB target.\n\n'
 
 sudo umount "${USB}"* 2>/dev/null || true
@@ -161,7 +171,6 @@ sudo parted -s "$USB" mklabel msdos
 sudo parted -s "$USB" mkpart primary fat32 1MiB 128MiB
 sudo parted -s "$USB" set 1 boot on
 sudo parted -s "$USB" mkpart primary 128MiB 129MiB
-sudo parted -s "$USB" set 2 boot on || true
 sudo partprobe "$USB" 2>/dev/null || true
 sync
 sleep 2
@@ -171,6 +180,8 @@ sleep 2
 sudo mkfs.vfat -F 32 -n PHASE1B17 "$PART1"
 sudo dd if="$BIN" of="$PART2" bs=512 count=1 conv=notrunc status=none
 sync
+sudo dd if="$PART2" of="$READBACK" bs=512 count=1 status=none
+cmp "$BIN" "$READBACK" || fail "bootsector readback mismatch after writing $PART2"
 
 sudo mount "$PART1" "$MNT"
 sudo mkdir -p "$MNT/boot/grub" "$MNT/grub" "$MNT/boot/phase1" "$MNT/phase1-evidence"
@@ -181,7 +192,7 @@ set timeout=30
 set default=0
 set pager=1
 
-menuentry "B17-01 Phase1 raw bootsector chainload" {
+menuentry "B17-01 Phase1 raw bootsector chainload - hd0 partition 2" {
     echo "Phase1 Base1 B17: chainloading raw bootsector partition"
     echo "Target evidence: phase1_bootsector_seen"
     echo "Expected screen: Base1 B17 raw bootsector console"
@@ -189,18 +200,29 @@ menuentry "B17-01 Phase1 raw bootsector chainload" {
     boot
 }
 
-menuentry "B17-02 Phase1 raw bootsector chainload - USB second disk" {
+menuentry "B17-02 Phase1 raw bootsector chainload - hd1 partition 2" {
     echo "Phase1 Base1 B17: chainloading raw bootsector partition as hd1"
     echo "Target evidence: phase1_bootsector_seen"
     chainloader (hd1,msdos2)+1
     boot
 }
 
-menuentry "B17-03 Phase1 raw bootsector chainload - current root disk" {
-    echo "Phase1 Base1 B17: chainloading root disk partition 2"
+menuentry "B17-03 Phase1 raw bootsector chainload - hd2 partition 2" {
+    echo "Phase1 Base1 B17: chainloading raw bootsector partition as hd2"
     echo "Target evidence: phase1_bootsector_seen"
-    chainloader ($root,msdos2)+1
+    chainloader (hd2,msdos2)+1
     boot
+}
+
+menuentry "B17-04 GRUB device listing" {
+    clear
+    echo "Phase1 Base1 B17 device listing"
+    echo "Use this only if B17-01/02/03 do not find the raw bootsector partition."
+    echo "Visible GRUB devices:"
+    ls
+    echo ""
+    echo "Press ESC to return."
+    sleep --interruptible 999
 }
 
 menuentry "B11 fallback - Phase1 GRUB-native operations console" {
@@ -229,6 +251,8 @@ Phase1 Base1 B17 raw bootsector chainload USB.
 Profile: $PROFILE
 Bootsector partition: partition 2
 Bootsector image copy: /boot/phase1/phase1-b17-bootsector.bin
+Bootsector signature: $SIG
+Readback verification: pass
 
 Primary evidence state:
 - phase1_bootsector_seen: raw bootsector console appears.
@@ -258,6 +282,8 @@ BASE1_B17_BOOTSECTOR_TARGET=$USB
 BASE1_B17_BOOTSECTOR_GRUB_PARTITION=$PART1
 BASE1_B17_BOOTSECTOR_RAW_PARTITION=$PART2
 BASE1_B17_BOOTSECTOR_BIN=$BIN
+BASE1_B17_BOOTSECTOR_SIGNATURE=$SIG
+BASE1_B17_BOOTSECTOR_READBACK=pass
 BASE1_B17_BOOTSECTOR_RESULT=prepared
 BASE1_B17_BOOTSECTOR_EXPECTED_NEXT_RESULT=phase1_bootsector_seen
 BASE1_B17_BOOTSECTOR_CLAIM=not_claimed
@@ -269,5 +295,5 @@ BASE1_B17_NON_CLAIM_DAILY_DRIVER=1
 EOF
 
 printf '\nDONE: B17 bootsector USB prepared on %s\n' "$USB"
-printf 'Boot the X200 from USB and choose B17-01 first.\n'
+printf 'Boot the X200 from USB and choose B17-01 first, then B17-02, then B17-03 if needed.\n'
 printf 'If the raw bootsector console appears, record: phase1_bootsector_seen\n'
