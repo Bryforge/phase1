@@ -4,8 +4,8 @@ fn boot_readiness_status_defines_current_level_and_target() {
         .expect("boot readiness status tracker");
 
     assert!(status.contains("Base1 boot readiness status"), "{status}");
-    assert!(status.contains("Current level: **B1 — Read-only detection ready, initial script present**"), "{status}");
-    assert!(status.contains("Target next level: **B2 — Dry-run assembly ready**"), "{status}");
+    assert!(status.contains("Current level: **B2 — Dry-run assembly ready, initial script present**"), "{status}");
+    assert!(status.contains("Target next level: **B3 — VM boot validated**"), "{status}");
     assert!(
         status.contains("Do not claim Base1 boot readiness, installer readiness, hardware validation, hardened status, recovery completion, or daily-driver readiness from this tracker alone."),
         "{status}"
@@ -22,9 +22,9 @@ fn boot_readiness_status_preserves_ladder() {
         "Documentation ready",
         "B1",
         "Read-only detection ready",
-        "Initial script present",
         "B2",
         "Dry-run assembly ready",
+        "Initial script present",
         "B3",
         "VM boot validated",
         "B4",
@@ -111,6 +111,44 @@ fn boot_readiness_status_preserves_b1_completion_checklist() {
 }
 
 #[test]
+fn boot_readiness_status_defines_b2_implementation_status() {
+    let status = std::fs::read_to_string("docs/os/BOOT_READINESS_STATUS.md")
+        .expect("boot readiness status tracker");
+
+    for text in [
+        "B2 implementation status",
+        "B2 dry-run assembly initial implementation is now present:",
+        "sh scripts/base1-b2-assembly-dry-run.sh --dry-run --profile x86_64-vm-validation",
+        "cargo test -p phase1 --test b2_dry_run_assembly_plan_docs",
+        "cargo test -p phase1 --test base1_b2_assembly_dry_run_script",
+        "B2 remains dry-run-only until limitations, validation report, review, and status updates are complete.",
+    ] {
+        assert!(status.contains(text), "missing B2 implementation status text {text}: {status}");
+    }
+}
+
+#[test]
+fn boot_readiness_status_preserves_b2_completion_checklist() {
+    let status = std::fs::read_to_string("docs/os/BOOT_READINESS_STATUS.md")
+        .expect("boot readiness status tracker");
+
+    for text in [
+        "B2 completion checklist",
+        "B2 dry-run assembly plan exists.",
+        "B2 plan tests exist.",
+        "B2 dry-run assembly script exists.",
+        "B2 script tests exist.",
+        "B2 known limitations are documented.",
+        "B2 validation report exists.",
+        "B2 status is linked from README, OS roadmap, race plan, and x86_64 roadmap.",
+        "B2 output is reviewed for secret redaction.",
+        "B2 does not contain mutating boot, disk, package, or network commands.",
+    ] {
+        assert!(status.contains(text), "missing B2 completion text {text}: {status}");
+    }
+}
+
+#[test]
 fn boot_readiness_status_defines_first_coding_slice() {
     let status = std::fs::read_to_string("docs/os/BOOT_READINESS_STATUS.md")
         .expect("boot readiness status tracker");
@@ -153,6 +191,10 @@ fn boot_readiness_status_preserves_evidence_map() {
         "tests/b1_read_only_detection_validation_docs.rs",
         "scripts/base1-x86_64-detect.sh",
         "tests/base1_x86_64_detect_script.rs",
+        "B2_DRY_RUN_ASSEMBLY_PLAN.md",
+        "tests/b2_dry_run_assembly_plan_docs.rs",
+        "scripts/base1-b2-assembly-dry-run.sh",
+        "tests/base1_b2_assembly_dry_run_script.rs",
         "VM validation report",
         "Recovery validation report",
         "Hardware validation report",
@@ -193,6 +235,7 @@ fn boot_readiness_status_preserves_hardening_and_non_claims() {
         "daily-driver ready",
         "first B1 read-only detection script exists",
         "detection-preview behavior only",
+        "B2 has an initial dry-run assembly script but remains dry-run preview only",
     ] {
         assert!(status.contains(text), "missing non-claim {text}: {status}");
     }
