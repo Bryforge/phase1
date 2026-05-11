@@ -8,6 +8,9 @@ fn base1_delivery_mode_plan_script_exists_and_has_valid_shell_syntax() {
     assert!(contents.contains("Base1 dual-path delivery mode planner"), "{contents}");
     assert!(contents.contains("set -eu"), "{contents}");
     assert!(contents.contains("require_build_out_dir"), "{contents}");
+    assert!(contents.contains("PROFILE_FILE=\"$PROFILE_DIR/$PROFILE.env\""), "{contents}");
+    assert!(contents.contains(". \"$PROFILE_FILE\""), "{contents}");
+    assert!(contents.contains("BASE1_PROFILE_ALLOWED_DELIVERY_MODES"), "{contents}");
     assert!(contents.contains("direct-first"), "{contents}");
     assert!(contents.contains("supervisor-lite"), "{contents}");
     assert!(contents.contains("supervisor-concurrent"), "{contents}");
@@ -39,6 +42,7 @@ fn base1_delivery_mode_plan_help_documents_modes_profiles_contract_and_non_claim
         "--prepare",
         "--mode <name>",
         "--profile <name>",
+        "--profile-dir <dir>",
         "direct-first",
         "supervisor-lite",
         "supervisor-concurrent",
@@ -46,6 +50,10 @@ fn base1_delivery_mode_plan_help_documents_modes_profiles_contract_and_non_claim
         "fastest first-kernel/single-kernel route",
         "one active staged kernel plus Base1 control plane",
         "multiple staged kernels under orchestration",
+        "profile source:",
+        "profiles/base1/x200-supervisor-lite.env",
+        "profiles/base1/x86_64-vm-validation.env",
+        "profiles/base1/workstation-supervisor.env",
         "shared contract",
         "profile names",
         "policy vocabulary",
@@ -63,7 +71,7 @@ fn base1_delivery_mode_plan_help_documents_modes_profiles_contract_and_non_claim
 }
 
 #[test]
-fn base1_delivery_mode_plan_dry_run_defaults_to_x200_direct_first() {
+fn base1_delivery_mode_plan_dry_run_defaults_to_profile_default_x200_direct_first() {
     let output = Command::new("sh")
         .arg("scripts/base1-delivery-mode-plan.sh")
         .arg("--dry-run")
@@ -78,7 +86,10 @@ fn base1_delivery_mode_plan_dry_run_defaults_to_x200_direct_first() {
         "delivery_mode    : direct-first",
         "mode_family      : direct",
         "profile          : x200-supervisor-lite",
+        "profile_file     : profiles/base1/x200-supervisor-lite.env",
+        "profile_class    : low-resource",
         "4GB-class low-resource target",
+        "zram-plus-ssd-scratch-swap-backstop",
         "default_concur   : 1",
         "path_direct: enabled",
         "path_supervisor: enabled",
@@ -91,7 +102,7 @@ fn base1_delivery_mode_plan_dry_run_defaults_to_x200_direct_first() {
 }
 
 #[test]
-fn base1_delivery_mode_plan_prepare_writes_report_for_supervisor_lite() {
+fn base1_delivery_mode_plan_prepare_writes_report_from_profile_contract() {
     let out_dir = "build/test-base1-delivery-mode-plan";
     let _ = std::fs::remove_dir_all(out_dir);
 
@@ -120,7 +131,16 @@ fn base1_delivery_mode_plan_prepare_writes_report_for_supervisor_lite() {
         "BASE1_DELIVERY_MODE=supervisor-lite",
         "BASE1_DELIVERY_MODE_FAMILY=supervisor",
         "BASE1_DELIVERY_PROFILE=x200-supervisor-lite",
+        "BASE1_DELIVERY_PROFILE_FILE=profiles/base1/x200-supervisor-lite.env",
+        "BASE1_DELIVERY_PROFILE_CLASS=low-resource",
+        "BASE1_DELIVERY_PROFILE_TARGET_RAM_MB=4096",
+        "BASE1_DELIVERY_PROFILE_DEFAULT_MODE=direct-first",
+        "BASE1_DELIVERY_PROFILE_ALLOWED_MODES=direct-first,supervisor-lite",
         "BASE1_DELIVERY_DEFAULT_CONCURRENCY=1",
+        "BASE1_DELIVERY_PROFILE_MAX_CONCURRENCY=1",
+        "BASE1_DELIVERY_PROFILE_ZRAM_MB=1024",
+        "BASE1_DELIVERY_PROFILE_SWAP_MB=1024",
+        "BASE1_DELIVERY_PROFILE_SSD_SCRATCH_MB=2048",
         "BASE1_DELIVERY_DIRECT_PATH=enabled",
         "BASE1_DELIVERY_SUPERVISOR_PATH=enabled",
         "BASE1_DELIVERY_SHARED_CONTRACT=profiles,policy,artifacts,logs,evidence,storage,non_claims",
@@ -139,7 +159,7 @@ fn base1_delivery_mode_plan_prepare_writes_report_for_supervisor_lite() {
 }
 
 #[test]
-fn base1_delivery_mode_plan_supports_concurrent_but_keeps_claims_bound() {
+fn base1_delivery_mode_plan_supports_concurrent_when_profile_allows_it() {
     let output = Command::new("sh")
         .arg("scripts/base1-delivery-mode-plan.sh")
         .arg("--dry-run")
@@ -156,6 +176,8 @@ fn base1_delivery_mode_plan_supports_concurrent_but_keeps_claims_bound() {
     for text in [
         "delivery_mode    : supervisor-concurrent",
         "mode_family      : supervisor",
+        "profile_file     : profiles/base1/x86_64-vm-validation.env",
+        "profile_class    : vm-validation",
         "multiple staged kernels under Base1 orchestration",
         "default_concur   : 3",
         "VM evidence only until reviewed",
@@ -167,7 +189,24 @@ fn base1_delivery_mode_plan_supports_concurrent_but_keeps_claims_bound() {
 }
 
 #[test]
-fn base1_delivery_mode_plan_rejects_unknown_args_modes_profiles_and_non_build_out() {
+fn base1_delivery_mode_plan_rejects_mode_disallowed_by_profile() {
+    let output = Command::new("sh")
+        .arg("scripts/base1-delivery-mode-plan.sh")
+        .arg("--dry-run")
+        .arg("--mode")
+        .arg("supervisor-concurrent")
+        .arg("--profile")
+        .arg("x200-supervisor-lite")
+        .output()
+        .expect("run disallowed mode");
+
+    assert!(!output.status.success(), "x200 profile should reject supervisor-concurrent");
+    let stderr = String::from_utf8(output.stderr).expect("utf8 stderr");
+    assert!(stderr.contains("delivery mode supervisor-concurrent is not allowed by profile x200-supervisor-lite"), "{stderr}");
+}
+
+#[test]
+fn base1_delivery_mode_plan_rejects_unknown_args_profiles_and_non_build_out() {
     let bad_arg = Command::new("sh")
         .arg("scripts/base1-delivery-mode-plan.sh")
         .arg("--wat")
@@ -179,6 +218,8 @@ fn base1_delivery_mode_plan_rejects_unknown_args_modes_profiles_and_non_build_ou
         .arg("scripts/base1-delivery-mode-plan.sh")
         .arg("--mode")
         .arg("magic")
+        .arg("--profile")
+        .arg("workstation-supervisor")
         .output()
         .expect("run bad mode");
     assert!(!bad_mode.status.success(), "unknown mode should fail");
@@ -209,6 +250,7 @@ fn base1_delivery_mode_plan_preserves_boundaries_and_best_of_both_worlds() {
         "direct first-kernel delivery",
         "supervisor orchestration",
         "without fragmenting Base1",
+        "profiles/base1/*.env",
         "does not boot kernels",
         "launch QEMU",
         "install Base1",
