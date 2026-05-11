@@ -2,10 +2,10 @@
 # Base1 documentation integrity gate.
 #
 # This check is read-only. It verifies the current Base1 documentation layout,
-# inventory, test inventory, migration table, script compatibility plan, link
-# check strategy, readiness checklist, core references, release-note mirrors,
-# root compatibility paths, and dry-run guardrails before file reorganization
-# continues.
+# inventory, test inventory, test inventory reporter, migration table, script
+# compatibility plan, link check strategy, readiness checklist, core references,
+# release-note mirrors, root compatibility paths, and dry-run guardrails before
+# file reorganization continues.
 
 set -eu
 
@@ -116,6 +116,7 @@ check_scripts() {
     scripts/base1-preflight.sh \
     scripts/base1-doc-integrity.sh \
     scripts/base1-link-check.sh \
+    scripts/base1-test-inventory.sh \
     scripts/base1-install-dry-run.sh \
     scripts/base1-recovery-dry-run.sh \
     scripts/base1-storage-layout-dry-run.sh \
@@ -159,6 +160,7 @@ check_references() {
   check_contains docs/base1/INVENTORY.md 'Base1 scripts'
   check_contains docs/base1/INVENTORY.md 'Test groups'
   check_contains docs/base1/TEST_INVENTORY.md 'Base1 test inventory'
+  check_contains docs/base1/TEST_INVENTORY.md 'sh scripts/base1-test-inventory.sh'
   check_contains docs/base1/TEST_INVENTORY.md 'quality_base1_docs_gate.rs'
   check_contains docs/base1/TEST_INVENTORY.md 'base1_root_compatibility_map_docs.rs'
   check_contains docs/base1/TEST_INVENTORY.md 'Recovery USB emergency-shell tests'
@@ -180,6 +182,10 @@ check_references() {
   check_contains scripts/base1-link-check.sh 'mode: read-only'
   check_contains scripts/base1-link-check.sh 'missing local link target'
   check_contains scripts/base1-link-check.sh 'external-links: skipped'
+  check_contains scripts/base1-test-inventory.sh 'mode: read-only'
+  check_contains scripts/base1-test-inventory.sh 'tests/base1_*.rs'
+  check_contains scripts/base1-test-inventory.sh 'tests/quality_base1_*.rs'
+  check_contains scripts/base1-test-inventory.sh 'inventory complete; no files were changed'
   check_contains docs/base1/REORGANIZATION_READINESS.md 'Base1 is not ready for a full reorganization yet.'
   check_contains docs/base1/REORGANIZATION_READINESS.md 'complete inventory'
   check_contains docs/base1/ROOT_COMPATIBILITY_MAP.md 'RELEASE_BASE1_LIBREBOOT_READONLY_V1.md'
@@ -221,5 +227,5 @@ check_scripts
 check_references
 check_non_claims
 
-info 'integrity complete; Base1 docs, inventory, test inventory, migration table, script compatibility plan, link-check strategy, link checker, readiness checklist, root compatibility paths, release mirrors, and dry-run references are present'
+info 'integrity complete; Base1 docs, inventory, test inventory, test inventory reporter, migration table, script compatibility plan, link-check strategy, link checker, readiness checklist, root compatibility paths, release mirrors, and dry-run references are present'
 info 'writes: no'
