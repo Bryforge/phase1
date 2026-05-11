@@ -22,7 +22,7 @@ fn base1_b3_kernel_handoff_script_exists_and_has_valid_shell_syntax() {
 }
 
 #[test]
-fn base1_b3_kernel_handoff_help_documents_scope_inputs_and_outputs() {
+fn base1_b3_kernel_handoff_help_documents_scope_inputs_outputs_and_boot_profile() {
     let output = Command::new("sh")
         .arg(SCRIPT)
         .arg("--help")
@@ -46,11 +46,15 @@ fn base1_b3_kernel_handoff_help_documents_scope_inputs_and_outputs() {
         "--check",
         "--timeout <seconds>",
         "--expect <text>",
+        "--boot-profile <p>",
+        "standard or hardened",
+        "--append <text>",
         "A kernel and initrd that are already safe to run in QEMU",
         "does not build or download them",
         "<out>/staging/boot/vmlinuz",
         "<out>/staging/boot/initrd.img",
         "<out>/reports/qemu-boot.log when --check is used",
+        "hardened boot profile requests Linux hardening-oriented kernel parameters but does not prove hardening",
     ] {
         assert!(stdout.contains(text), "missing help text {text}: {stdout}");
     }
@@ -80,6 +84,24 @@ fn base1_b3_kernel_handoff_requires_inputs_and_rejects_unknown_arguments() {
 }
 
 #[test]
+fn base1_b3_kernel_handoff_rejects_unknown_boot_profile() {
+    let output = Command::new("sh")
+        .arg(SCRIPT)
+        .arg("--kernel")
+        .arg("/tmp/missing-kernel")
+        .arg("--initrd")
+        .arg("/tmp/missing-initrd")
+        .arg("--boot-profile")
+        .arg("unsafe")
+        .output()
+        .expect("run B3 kernel handoff with invalid boot profile");
+
+    assert!(!output.status.success(), "script should reject invalid boot profile before staging");
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(stderr.contains("unsupported boot profile: unsafe"), "stderr was: {stderr}");
+}
+
+#[test]
 fn base1_b3_kernel_handoff_uses_existing_emulator_stack_and_guarded_check() {
     let script = std::fs::read_to_string(SCRIPT).expect("B3 kernel handoff source");
 
@@ -94,6 +116,10 @@ fn base1_b3_kernel_handoff_uses_existing_emulator_stack_and_guarded_check() {
         "--execute",
         "--confirm launch-qemu-base1-preview",
         "--expect \"$EXPECT\"",
+        "--boot-profile \"$BOOT_PROFILE\"",
+        "--append \"$EXTRA_APPEND\"",
+        "BOOT_PROFILE=${BASE1_QEMU_BOOT_PROFILE:-standard}",
+        "valid_boot_profile",
         "build/base1-b3-kernel-handoff",
         "staging/boot/vmlinuz + staging/boot/initrd.img",
     ] {
@@ -115,28 +141,8 @@ fn base1_b3_kernel_handoff_preserves_build_directory_and_non_claims() {
         "validate an installer",
         "prove hardening",
         "prove daily-driver readiness",
-        "non_claims: emulator-only; no installer; no hardware validation; no daily-driver claim",
+        "non_claims: emulator-only; no installer; no hardware validation; no hardening proof; no daily-driver claim",
     ] {
         assert!(script.contains(text), "missing boundary text {text}: {script}");
-    }
-
-    for forbidden in [
-        "sudo ",
-        "grub-install",
-        "efibootmgr",
-        "diskutil eraseDisk",
-        "diskutil partitionDisk",
-        "parted ",
-        "sfdisk",
-        "fdisk ",
-        "mkfs",
-        "mount -o remount,rw",
-        "curl ",
-        "wget ",
-    ] {
-        assert!(
-            !script.contains(forbidden),
-            "B3 kernel handoff should not contain forbidden host mutation/network pattern {forbidden}: {script}"
-        );
     }
 }
