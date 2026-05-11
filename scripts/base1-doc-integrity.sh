@@ -2,10 +2,11 @@
 # Base1 documentation integrity gate.
 #
 # This check is read-only. It verifies the current Base1 documentation layout,
-# inventory, test inventory, test inventory reporter, migration table, script
-# compatibility plan, link check strategy, post-reorganization layout,
-# readiness checklist, core references, release-note mirrors, root compatibility
-# paths, and dry-run guardrails before file reorganization continues.
+# inventory, test inventory, test inventory reporter and verifier, migration
+# table, script compatibility plan, link check strategy, post-reorganization
+# layout, readiness checklist, core references, release-note mirrors, root
+# compatibility paths, and dry-run guardrails before file reorganization
+# continues.
 
 set -eu
 
@@ -118,6 +119,7 @@ check_scripts() {
     scripts/base1-doc-integrity.sh \
     scripts/base1-link-check.sh \
     scripts/base1-test-inventory.sh \
+    scripts/base1-test-inventory-verify.sh \
     scripts/base1-install-dry-run.sh \
     scripts/base1-recovery-dry-run.sh \
     scripts/base1-storage-layout-dry-run.sh \
@@ -195,6 +197,10 @@ check_references() {
   check_contains scripts/base1-test-inventory.sh 'tests/base1_*.rs'
   check_contains scripts/base1-test-inventory.sh 'tests/quality_base1_*.rs'
   check_contains scripts/base1-test-inventory.sh 'inventory complete; no files were changed'
+  check_contains scripts/base1-test-inventory-verify.sh 'mode: read-only'
+  check_contains scripts/base1-test-inventory-verify.sh 'reported test missing from docs inventory'
+  check_contains scripts/base1-test-inventory-verify.sh 'missing-from-doc'
+  check_contains scripts/base1-test-inventory-verify.sh 'verification complete; no files were changed'
   check_contains docs/base1/REORGANIZATION_READINESS.md 'Base1 is not ready for a full reorganization yet.'
   check_contains docs/base1/REORGANIZATION_READINESS.md 'complete inventory'
   check_contains docs/base1/ROOT_COMPATIBILITY_MAP.md 'RELEASE_BASE1_LIBREBOOT_READONLY_V1.md'
@@ -237,5 +243,5 @@ check_scripts
 check_references
 check_non_claims
 
-info 'integrity complete; Base1 docs, inventory, test inventory, test inventory reporter, migration table, script compatibility plan, link-check strategy, post-reorganization layout, link checker, readiness checklist, root compatibility paths, release mirrors, and dry-run references are present'
+info 'integrity complete; Base1 docs, inventory, test inventory, test inventory reporter and verifier, migration table, script compatibility plan, link-check strategy, post-reorganization layout, link checker, readiness checklist, root compatibility paths, release mirrors, and dry-run references are present'
 info 'writes: no'
