@@ -1,7 +1,7 @@
 # Phase1 repository navigation guide
 
 Status: active navigation guide
-Scope: repository organization, reader paths, contribution paths, support paths, and validation paths
+Scope: repository organization, reader paths, contribution paths, support paths, asset paths, and validation paths
 
 ## Purpose
 
@@ -14,7 +14,7 @@ Phase1 now covers several connected workstreams:
 - Fyr native language track;
 - security and crypto policy planning;
 - community support and future support AI planning;
-- website, docs, quality, and contribution workflows.
+- website, assets, docs, quality, and contribution workflows.
 
 ## Fast paths
 
@@ -24,6 +24,7 @@ Phase1 now covers several connected workstreams:
 | Understand what is implemented | [`../FEATURE_STATUS.md`](../FEATURE_STATUS.md) |
 | Learn the docs structure | [`README.md`](README.md) |
 | Understand the reorganization plan | [`REORGANIZATION_PLAN.md`](REORGANIZATION_PLAN.md) |
+| Review public asset filenames | [`../assets/README.md`](../assets/README.md) |
 | Contribute | [`../CONTRIBUTING.md`](../CONTRIBUTING.md) |
 | Open a PR | [`../.github/pull_request_template.md`](../.github/pull_request_template.md) |
 | Report a bug | [`../.github/ISSUE_TEMPLATE/bug_report.yml`](../.github/ISSUE_TEMPLATE/bug_report.yml) |
@@ -69,7 +70,8 @@ Phase1 now covers several connected workstreams:
 | `tools/` | Internal maintainer utilities, local helpers, future automation, and repo-maintenance tools. |
 | `scripts/` | Quality gates, Base1 validation, runtime helpers, wiki/docs helpers. |
 | `tests/` | Rust tests and docs guard tests. |
-| `assets/` | Project imagery, logos, and public-facing visual assets. |
+| `assets/` | Project imagery, logos, icons, banners, Fyr marks, and public-facing visual assets. |
+| `assets/README.md` | Current public asset filename index and asset-safety rules. |
 
 ## Reader paths
 
@@ -105,9 +107,10 @@ Phase1 now covers several connected workstreams:
 ### Website/asset organizer
 
 1. Read [`website/README.md`](website/README.md).
-2. Keep website claims aligned with repository evidence.
-3. Keep branding assets under `assets/` unless a future asset map says otherwise.
-4. Run website and quality checks before changing public-facing structure.
+2. Read [`../assets/README.md`](../assets/README.md) before linking or renaming public visual assets.
+3. Keep website claims aligned with repository evidence.
+4. Keep branding assets under `assets/` unless a future asset map says otherwise.
+5. Run website and quality checks before changing public-facing structure.
 
 ### Examples/tools organizer
 
@@ -152,8 +155,9 @@ sh scripts/quality-check.sh base1-docs
 
 1. Read [`fyr/README.md`](fyr/README.md).
 2. Read [`../PHASE1_NATIVE_LANGUAGE.md`](../PHASE1_NATIVE_LANGUAGE.md).
-3. Add tests for parser/runtime behavior when changing implemented behavior.
-4. Avoid production-ready claims unless evidence exists.
+3. Check [`../assets/README.md`](../assets/README.md) before changing Fyr symbols or word marks.
+4. Add tests for parser/runtime behavior when changing implemented behavior.
+5. Avoid production-ready claims unless evidence exists.
 
 ### Community/support contributor
 
@@ -197,7 +201,7 @@ Rules:
 - Add navigation docs before broad restructuring.
 - Add tests for new navigation and required links.
 - Keep safety, non-claims, and validation paths visible.
-- Keep users one or two clicks away from quick start, contribution rules, issue templates, quality gates, and security reporting.
+- Keep users one or two clicks away from quick start, contribution rules, issue templates, asset index, quality gates, and security reporting.
 
 ## Non-claims
 
