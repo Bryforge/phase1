@@ -2,6 +2,7 @@
 # Record the best observed X200 external USB boot result.
 #
 # Usage examples:
+#   sh scripts/x200-b7-record-result.sh phase1_kernel_vga_console_seen
 #   sh scripts/x200-b7-record-result.sh phase1_grub_console_seen
 #   sh scripts/x200-b7-record-result.sh phase1_multiboot_kernel_seen
 #   sh scripts/x200-b7-record-result.sh phase1_initramfs_shell
@@ -23,13 +24,14 @@ REPORT="$OUT_DIR/b7-hardware-boot-evidence.env"
 fail() { printf 'x200-b7-record-result: %s\n' "$1" >&2; exit 1; }
 
 case "$RESULT" in
-  phase1_grub_console_seen|phase1_multiboot_kernel_seen|phase1_initramfs_shell|boot_started|reset_after_linux16_handoff|blocked_after_multiboot_load|blocked_after_initrd_load|blocked_after_kernel_load|phase1_marker_seen|blocked|failed) : ;;
+  phase1_kernel_vga_console_seen|phase1_grub_console_seen|phase1_multiboot_kernel_seen|phase1_initramfs_shell|boot_started|reset_after_linux16_handoff|blocked_after_multiboot_load|blocked_after_initrd_load|blocked_after_kernel_load|phase1_marker_seen|blocked|failed) : ;;
   *)
     cat <<'USAGE'
 Usage:
   sh scripts/x200-b7-record-result.sh <result>
 
 Allowed results:
+  phase1_kernel_vga_console_seen
   phase1_grub_console_seen
   phase1_multiboot_kernel_seen
   phase1_initramfs_shell
