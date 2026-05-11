@@ -23,11 +23,15 @@ fn reorganization_readiness_lists_current_safeguards() {
         "docs/base1/INVENTORY.md",
         "docs/base1/TEST_INVENTORY.md",
         "scripts/base1-test-inventory.sh",
+        "scripts/base1-test-inventory-verify.sh",
+        "scripts/base1-reorganization-verify.sh",
         "docs/base1/MIGRATION_TABLE.md",
         "docs/base1/SCRIPT_COMPATIBILITY_PLAN.md",
         "docs/base1/LINK_CHECK_STRATEGY.md",
         "scripts/base1-link-check.sh",
         "docs/base1/POST_REORGANIZATION_LAYOUT.md",
+        "docs/base1/PRE_MOVE_CHECKLIST.md",
+        "docs/base1/releases/PRE_MOVE_CHECKS.md",
         "docs/base1/ROOT_COMPATIBILITY_MAP.md",
         "scripts/base1-doc-integrity.sh",
         "sh scripts/quality-check.sh base1-docs",
@@ -42,9 +46,9 @@ fn reorganization_readiness_lists_remaining_blockers() {
         .expect("Base1 reorganization readiness doc");
 
     for blocker in [
-        "complete repository-wide Base1 test listing confirmed against reporter output",
-        "Tests for every major moved group before that group is moved",
-        "final integrity pass through `sh scripts/quality-check.sh base1-docs` and `cargo test --all-targets`",
+        "successful verified comparison of reporter output against `docs/base1/TEST_INVENTORY.md`",
+        "successful final run of `sh scripts/base1-reorganization-verify.sh` on a Rust-capable host",
+        "No deletion of compatibility paths unless explicitly approved in a future change.",
     ] {
         assert!(doc.contains(blocker), "missing blocker {blocker}: {doc}");
     }
@@ -63,6 +67,8 @@ fn reorganization_readiness_requires_compatibility_and_validation() {
         "Any script relocation has a wrapper or compatibility command plan.",
         "Markdown path movement is protected by a local, read-only link checker or equivalent validation.",
         "The post-reorganization layout names the stable public paths.",
+        "The pre-move checklist is satisfied for the first group to move.",
+        "The reorganization verifier passes on a Rust-capable host.",
     ] {
         assert!(doc.contains(requirement), "missing requirement {requirement}: {doc}");
     }
