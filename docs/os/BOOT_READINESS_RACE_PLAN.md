@@ -9,6 +9,8 @@ This plan organizes the fastest safe path toward boot readiness for the Phase1/B
 
 The goal is speed without unsafe claims: move quickly through documentation, read-only checks, dry-run tooling, VM validation, recovery validation, and hardware validation before claiming boot readiness.
 
+Track current readiness in [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md).
+
 ## Boot readiness goal
 
 Base1 should become a bootable foundation that can launch Phase1 as the primary operator surface while keeping recovery, rollback, validation, and safe defaults visible.
@@ -46,6 +48,12 @@ Hardening is a valid roadmap goal. Current hardened-status claims require implem
 
 Do not skip levels when strengthening claims.
 
+## Finish-first gate
+
+Before implementation resumes, keep the finish-first checklist current in [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md).
+
+B1 coding begins only after the status tracker is linked from the OS roadmap, this race plan, the x86_64 roadmap, and the README, with tests preserving the ladder and non-claims.
+
 ## Fastest safe sequence
 
 ### Sprint 1: readiness inventory
@@ -53,7 +61,7 @@ Do not skip levels when strengthening claims.
 - Add this boot readiness race plan.
 - Link it from the OS roadmap and README.
 - Create a boot readiness checklist.
-- Create a boot readiness status table.
+- Create a boot readiness status table: [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md).
 - Protect the docs with tests.
 
 ### Sprint 2: read-only detection
@@ -114,6 +122,7 @@ Do not skip levels when strengthening claims.
 | Artifact | Path or planned path |
 | --- | --- |
 | OS roadmap | [`ROADMAP.md`](ROADMAP.md) |
+| Boot readiness status tracker | [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md) |
 | x86_64 boot support roadmap | [`X86_64_BOOT_SUPPORT_ROADMAP.md`](X86_64_BOOT_SUPPORT_ROADMAP.md) |
 | Base1 image-builder design | [`BASE1_IMAGE_BUILDER.md`](BASE1_IMAGE_BUILDER.md) |
 | Installer/recovery design | [`INSTALLER_RECOVERY.md`](INSTALLER_RECOVERY.md) |
