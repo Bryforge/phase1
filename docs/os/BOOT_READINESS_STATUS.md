@@ -9,7 +9,7 @@ This tracker shows what must be finished before Phase1/Base1 moves from planning
 
 The finish-first planning layer is complete for B1. The first B1 read-only detection script, guard tests, limitations note, limitations tests, validation report, and validation report tests now exist while preserving the B1 boundary.
 
-B2 planning has started with a dry-run assembly plan, plan tests, initial dry-run assembly script, script tests, limitations note, limitations tests, validation report, validation report tests, output review, output review tests, focused test-suite command bundle, test-suite bundle tests, and OS roadmap boot-readiness tests.
+B2 planning has started with a dry-run assembly plan, plan tests, initial dry-run assembly script, script tests, limitations note, limitations tests, validation report, validation report tests, output review, output review tests, focused test-suite command bundle, test-suite bundle tests, OS roadmap boot-readiness tests, QEMU visual boot preview script, and visual boot preview script tests.
 
 B3 planning has started with a VM boot validation plan, plan tests, limitations note, limitations tests, and VM boot log capture notes.
 
@@ -159,9 +159,22 @@ OS roadmap boot-readiness tests are present:
 cargo test -p phase1 --test os_roadmap_boot_readiness_docs
 ```
 
+B2 QEMU visual boot preview script is present:
+
+```bash
+sh scripts/base1-qemu-visual-boot-preview.sh --build
+sh scripts/base1-qemu-visual-boot-preview.sh --build --run
+```
+
+B2 QEMU visual boot preview script tests are present:
+
+```bash
+cargo test -p phase1 --test base1_qemu_visual_boot_preview_script
+```
+
 B2 status and boundaries are linked from README, OS roadmap, race plan, and x86_64 roadmap.
 
-B2 remains dry-run-only until validation has passed locally or in CI.
+B2 remains dry-run-only until validation has passed locally or in CI. The QEMU visual boot preview remains showcase-only and does not strengthen boot-readiness claims.
 
 ## B2 completion checklist
 
@@ -182,6 +195,8 @@ Before B2 is considered complete, confirm:
 - [x] B2 focused test-suite command bundle exists.
 - [x] B2 test-suite bundle tests exist.
 - [x] OS roadmap boot-readiness tests exist.
+- [x] B2 QEMU visual boot preview script exists.
+- [x] B2 QEMU visual boot preview script tests exist.
 - [ ] B2 test suite passes in CI or local validation.
 
 ## B3 planning status
@@ -297,6 +312,8 @@ Expected behavior:
 | B2 dry-run assembly test-suite tests | Present | `tests/b2_dry_run_assembly_test_suite_docs.rs` |
 | B2 dry-run assembly script | Present | `scripts/base1-b2-assembly-dry-run.sh` |
 | B2 dry-run assembly tests | Present | `tests/base1_b2_assembly_dry_run_script.rs` |
+| B2 QEMU visual boot preview script | Present | `scripts/base1-qemu-visual-boot-preview.sh` |
+| B2 QEMU visual boot preview tests | Present | `tests/base1_qemu_visual_boot_preview_script.rs` |
 | B3 VM boot validation plan | Present | [`B3_VM_BOOT_VALIDATION_PLAN.md`](B3_VM_BOOT_VALIDATION_PLAN.md) |
 | B3 VM boot validation limitations note | Present | [`B3_VM_BOOT_VALIDATION_LIMITATIONS.md`](B3_VM_BOOT_VALIDATION_LIMITATIONS.md) |
 | B3 VM boot log capture notes | Present | [`B3_VM_BOOT_LOGS.md`](B3_VM_BOOT_LOGS.md) |
@@ -320,4 +337,4 @@ Do not describe the current Base1 boot path as hardened until implementation, te
 
 This status tracker does not make Base1 bootable, installer-ready, recovery-complete, hardened, hardware-validated, release-candidate ready, or daily-driver ready.
 
-It records that the first B1 read-only detection script exists and remains bounded to detection-preview behavior only. B2 has an initial dry-run assembly script but remains dry-run preview only. B3 is planning-only until VM validation evidence exists.
+It records that the first B1 read-only detection script exists and remains bounded to detection-preview behavior only. B2 has an initial dry-run assembly script and a QEMU visual boot preview helper but remains dry-run preview only. B3 is planning-only until VM validation evidence exists.
