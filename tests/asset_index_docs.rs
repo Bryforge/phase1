@@ -7,12 +7,26 @@ fn asset_index_documents_current_public_assets() {
 
     for asset in [
         "assets/phase1_base_fyr_banner1.png",
-        "assets/phase1-splash.svg",
+        "assets/phase1-splash.png",
         "assets/fyr_symbol.png",
         "assets/fyr_word.png",
     ] {
         assert!(index.contains(asset), "missing asset reference {asset}: {index}");
     }
+}
+
+#[test]
+fn asset_index_marks_old_phase1_splash_svg_reference_outdated() {
+    let index = std::fs::read_to_string("assets/README.md").expect("assets index");
+
+    assert!(
+        index.contains("Older references to `phase1-splash.svg` are outdated"),
+        "{index}"
+    );
+    assert!(
+        index.contains("should be replaced with the current PNG asset above"),
+        "{index}"
+    );
 }
 
 #[test]
@@ -51,19 +65,24 @@ fn asset_index_referenced_from_readme_and_website_docs() {
 
     for asset in [
         "assets/phase1_base_fyr_banner1.png",
-        "assets/phase1-splash.svg",
+        "assets/phase1-splash.png",
         "assets/fyr_symbol.png",
         "assets/fyr_word.png",
     ] {
         assert!(readme.contains(asset), "README missing asset {asset}: {readme}");
     }
+
+    assert!(
+        website.contains("../../assets/phase1-splash.png"),
+        "website docs should reference current Phase1 splash PNG: {website}"
+    );
 }
 
 #[test]
 fn current_asset_files_exist_and_are_non_empty() {
     for asset in [
         "assets/phase1_base_fyr_banner1.png",
-        "assets/phase1-splash.svg",
+        "assets/phase1-splash.png",
         "assets/fyr_symbol.png",
         "assets/fyr_word.png",
     ] {
