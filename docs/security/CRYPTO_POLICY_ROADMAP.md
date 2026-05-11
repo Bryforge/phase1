@@ -60,6 +60,10 @@ Phase1 should support named cryptographic profiles. The profile planning index i
 | `post-quantum-preview` | Experimental or early PQC-capable options with maturity notes. |
 | `lab-only` | Educational experiments barred from production use. |
 
+## Operator command surface
+
+The future operator command surface is planned in [`CRYPTO_OPERATOR_COMMANDS.md`](CRYPTO_OPERATOR_COMMANDS.md).
+
 Future operator commands may include:
 
 ```text
@@ -163,12 +167,14 @@ Crypto profile changes should:
 - Create registry format: [`CRYPTO_REGISTRY.md`](CRYPTO_REGISTRY.md).
 - Create algorithm documentation template: [`CRYPTO_ALGORITHM_TEMPLATE.md`](CRYPTO_ALGORITHM_TEMPLATE.md).
 - Create profile planning index: [`crypto-profiles/README.md`](crypto-profiles/README.md).
-- Draft safe-default, high-security, compatibility, and lab-only profiles.
+- Create operator command plan: [`CRYPTO_OPERATOR_COMMANDS.md`](CRYPTO_OPERATOR_COMMANDS.md).
+- Draft safe-default, high-security, compatibility, post-quantum-preview, and lab-only profiles.
 - Add tests that preserve non-claims.
 
 ### Phase 2: policy engine
 
 - Add `crypto status` and `crypto profiles` commands.
+- Add `crypto explain` for profiles and registry entries.
 - Parse crypto profile config.
 - Reject unknown algorithms and scopes.
 - Emit audit events for profile changes.
