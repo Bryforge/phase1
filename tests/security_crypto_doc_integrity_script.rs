@@ -24,8 +24,12 @@ fn security_crypto_doc_integrity_gate_checks_required_docs() {
         "docs/security/TRUST_MODEL.md",
         "docs/security/CRYPTO_POLICY_ROADMAP.md",
         "docs/security/CRYPTO_REGISTRY.md",
+        "docs/security/CRYPTO_PROVIDER_REGISTRY.md",
+        "docs/security/CRYPTO_PROVIDER_TEMPLATE.md",
         "docs/security/CRYPTO_ALGORITHM_TEMPLATE.md",
         "docs/security/CRYPTO_OPERATOR_COMMANDS.md",
+        "docs/security/CRYPTO_CONFIG_SCHEMA.md",
+        "docs/security/CRYPTO_IMPLEMENTATION_PLAN.md",
         "docs/security/crypto-profiles/README.md",
         "docs/security/crypto-profiles/SAFE_DEFAULT.md",
         "docs/security/crypto-profiles/HIGH_SECURITY.md",
@@ -47,11 +51,16 @@ fn security_crypto_doc_integrity_gate_checks_links_and_guardrails() {
         "Security and usability principle",
         "CRYPTO_POLICY_ROADMAP.md",
         "CRYPTO_REGISTRY.md",
+        "CRYPTO_PROVIDER_REGISTRY.md",
+        "CRYPTO_PROVIDER_TEMPLATE.md",
         "CRYPTO_OPERATOR_COMMANDS.md",
+        "CRYPTO_CONFIG_SCHEMA.md",
+        "CRYPTO_IMPLEMENTATION_PLAN.md",
         "crypto-profiles/README.md",
         "CRYPTO_ALGORITHM_TEMPLATE.md",
         "Phase1 should not invent new cryptographic primitives for security-critical use.",
         "No algorithm is currently approved by this registry for new production security claims.",
+        "No provider is currently approved by this registry for new production security claims.",
         "Does not invent a custom security-critical primitive.",
         "unsupported claims of quantum safety",
         "must not be used as a real security profile",
@@ -79,6 +88,56 @@ fn security_crypto_doc_integrity_gate_checks_operator_command_plan() {
         "deprecated, rejected, or lab-only entries are not used in production scopes",
     ] {
         assert!(script.contains(text), "missing operator command check {text}: {script}");
+    }
+}
+
+#[test]
+fn security_crypto_doc_integrity_gate_checks_config_and_implementation_plans() {
+    let script = std::fs::read_to_string("scripts/security-crypto-doc-integrity.sh")
+        .expect("security crypto docs integrity script");
+
+    for text in [
+        "check_config_schema()",
+        "default_profile = \"safe-default\"",
+        "`lab-only` outside `lab`, `docs`, or `tests`",
+        "`compatibility` without a reason",
+        "`post-quantum-preview` without a reason",
+        "production scopes using deprecated, rejected, or lab-only registry entries",
+        "check_implementation_plan()",
+        "No runtime control point should use cryptographic policy until the earlier phases are complete for that scope.",
+        "Do not implement these until their prerequisites exist",
+    ] {
+        assert!(script.contains(text), "missing config/implementation check {text}: {script}");
+    }
+}
+
+#[test]
+fn security_crypto_doc_integrity_gate_checks_provider_registry_and_template() {
+    let script = std::fs::read_to_string("scripts/security-crypto-doc-integrity.sh")
+        .expect("security crypto docs integrity script");
+
+    for text in [
+        "check_provider_registry()",
+        "check_provider_template()",
+        "CRYPTO_PROVIDER_REGISTRY.md",
+        "CRYPTO_PROVIDER_TEMPLATE.md",
+        "provider name",
+        "library, crate, or system API",
+        "version or source pinning plan",
+        "supported algorithm families",
+        "test-vector source",
+        "reject unknown providers",
+        "avoid silently falling back to a weaker provider",
+        "failure behavior is fail-closed",
+        "Provider summary",
+        "Source and license",
+        "Supported capabilities",
+        "Supported platforms",
+        "Profile compatibility",
+        "Control-point compatibility",
+        "Fallback behavior",
+    ] {
+        assert!(script.contains(text), "missing provider integrity check {text}: {script}");
     }
 }
 
