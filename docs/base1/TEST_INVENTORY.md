@@ -15,6 +15,14 @@ Update this file when Base1-related tests are added, moved, renamed, or split.
 
 Before broader organization work, compare this inventory against the repository `tests/` directory and update missing entries.
 
+Use the read-only reporter:
+
+```bash
+sh scripts/base1-test-inventory.sh
+```
+
+The reporter lists `tests/base1_*.rs`, `tests/quality_base1_*.rs`, and other `tests/*base1*.rs` files without changing the repository.
+
 ## Core and OS-track tests
 
 | Test file | Coverage |
@@ -28,8 +36,13 @@ Before broader organization work, compare this inventory against the repository 
 
 | Test file | Coverage |
 | --- | --- |
+| `tests/base1_inventory_docs.rs` | Base1 inventory and test inventory docs. |
+| `tests/base1_migration_table_docs.rs` | Base1 migration table docs. |
 | `tests/base1_root_compatibility_map_docs.rs` | Root checkpoint-note compatibility map, mirror paths, and integrity references. |
-| `tests/quality_base1_docs_gate.rs` | Quality gate integration for `base1-docs` and `scripts/base1-doc-integrity.sh`. |
+| `tests/base1_script_compatibility_plan_docs.rs` | Script compatibility plan docs. |
+| `tests/base1_link_check_strategy_docs.rs` | Link-check strategy docs. |
+| `tests/base1_link_check_script.rs` | Local Base1 link-check script behavior. |
+| `tests/quality_base1_docs_gate.rs` | Quality gate integration for `base1-docs`, integrity, and link checks. |
 
 ## Libreboot tests
 
@@ -114,7 +127,7 @@ Known real-device read-only test coverage should be inventoried here before a fu
 
 ## Next inventory work
 
-This file is still a seed inventory. The next step is to add a generated or manually verified full test listing for every `tests/base1_*`, `tests/quality_base1_*`, and related Base1 preview/real-device test.
+This file is still a seed inventory. The next step is to compare the reporter output from `sh scripts/base1-test-inventory.sh` against this inventory and add any missing Base1 preview or real-device test files.
 
 ## Non-claims
 
