@@ -2,16 +2,19 @@
 # Base1 dual-path delivery mode planner.
 #
 # This chooses between direct first-kernel delivery and supervisor orchestration
-# delivery without fragmenting Base1. It creates only build-directory planning
-# artifacts. It does not boot kernels, launch QEMU, install Base1, mutate disks,
-# modify host boot settings, validate hardware, prove hardening, or claim daily-
-# driver readiness.
+# delivery without fragmenting Base1. It loads shared profile contracts from
+# profiles/base1/*.env so direct-first, supervisor-lite, concurrent supervisor,
+# and workstation supervisor modes use one profile vocabulary. It creates only
+# build-directory planning artifacts. It does not boot kernels, launch QEMU,
+# install Base1, mutate disks, modify host boot settings, validate hardware,
+# prove hardening, or claim daily-driver readiness.
 
 set -eu
 
 MODE=dry-run
-DELIVERY_MODE=${BASE1_DELIVERY_MODE:-direct-first}
+DELIVERY_MODE=${BASE1_DELIVERY_MODE:-}
 PROFILE=${BASE1_DELIVERY_PROFILE:-x200-supervisor-lite}
+PROFILE_DIR=${BASE1_PROFILE_DIR:-profiles/base1}
 OUT_DIR=${BASE1_DELIVERY_OUT:-build/base1-delivery-mode}
 WRITE_REPORT=no
 
@@ -23,19 +26,25 @@ usage:
   sh scripts/base1-delivery-mode-plan.sh [--dry-run|--prepare] [--mode <name>] [--profile <name>] [--write-report]
 
 options:
-  --dry-run          print the dual-path delivery plan, default
-  --prepare          create a build-only delivery-mode report
-  --mode <name>      direct-first, supervisor-lite, supervisor-concurrent, or workstation-supervisor
-  --profile <name>   x200-supervisor-lite, x86_64-vm-validation, or workstation-supervisor
-  --out <build/dir>  output directory, default: build/base1-delivery-mode
-  --write-report     write <out>/delivery-mode-plan.env
-  -h, --help         show this help
+  --dry-run             print the dual-path delivery plan, default
+  --prepare             create a build-only delivery-mode report
+  --mode <name>         direct-first, supervisor-lite, supervisor-concurrent, or workstation-supervisor
+  --profile <name>      x200-supervisor-lite, x86_64-vm-validation, or workstation-supervisor
+  --profile-dir <dir>   profile directory, default: profiles/base1
+  --out <build/dir>     output directory, default: build/base1-delivery-mode
+  --write-report        write <out>/delivery-mode-plan.env
+  -h, --help            show this help
 
 delivery modes:
   direct-first            fastest first-kernel/single-kernel route
   supervisor-lite         one active staged kernel plus Base1 control plane
   supervisor-concurrent   multiple staged kernels under orchestration
   workstation-supervisor  larger-memory workflow and parallel validation profile
+
+profile source:
+  profiles/base1/x200-supervisor-lite.env
+  profiles/base1/x86_64-vm-validation.env
+  profiles/base1/workstation-supervisor.env
 
 shared contract:
   Both paths must share profile names, policy vocabulary, boot artifact IDs,
@@ -56,6 +65,15 @@ fail() {
 require_build_out_dir() {
   case "$1" in
     build/*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+csv_contains() {
+  list=$1
+  value=$2
+  case ",$list," in
+    *",$value,"*) return 0 ;;
     *) return 1 ;;
   esac
 }
@@ -81,6 +99,11 @@ while [ "$#" -gt 0 ]; do
       PROFILE=$2
       shift 2
       ;;
+    --profile-dir)
+      [ "$#" -ge 2 ] || fail '--profile-dir requires a value'
+      PROFILE_DIR=$2
+      shift 2
+      ;;
     --out)
       [ "$#" -ge 2 ] || fail '--out requires a value'
       OUT_DIR=$2
@@ -103,50 +126,80 @@ done
 
 require_build_out_dir "$OUT_DIR" || fail "output directory must be under build/: $OUT_DIR"
 
+PROFILE_FILE="$PROFILE_DIR/$PROFILE.env"
+[ -f "$PROFILE_FILE" ] || fail "profile file not found: $PROFILE_FILE"
+
+# shellcheck disable=SC1090
+. "$PROFILE_FILE"
+
+[ "${BASE1_PROFILE_NAME:-}" = "$PROFILE" ] || fail "profile name mismatch in $PROFILE_FILE"
+[ "${BASE1_PROFILE_CLAIM:-}" = not_claimed ] || fail "profile must keep BASE1_PROFILE_CLAIM=not_claimed"
+
+for required_non_claim in \
+  BASE1_PROFILE_NON_CLAIM_BOOTABLE \
+  BASE1_PROFILE_NON_CLAIM_INSTALLER \
+  BASE1_PROFILE_NON_CLAIM_HARDENED \
+  BASE1_PROFILE_NON_CLAIM_HYPERVISOR \
+  BASE1_PROFILE_NON_CLAIM_HARDWARE \
+  BASE1_PROFILE_NON_CLAIM_DAILY_DRIVER
+ do
+  value=$(eval "printf '%s' \"\${$required_non_claim:-}\"")
+  [ "$value" = 1 ] || fail "profile missing required non-claim: $required_non_claim=1"
+done
+
+if [ -z "$DELIVERY_MODE" ]; then
+  DELIVERY_MODE=${BASE1_PROFILE_DEFAULT_DELIVERY_MODE:-direct-first}
+fi
+
+csv_contains "${BASE1_PROFILE_ALLOWED_DELIVERY_MODES:-}" "$DELIVERY_MODE" || \
+  fail "delivery mode $DELIVERY_MODE is not allowed by profile $PROFILE"
+
 case "$DELIVERY_MODE" in
   direct-first)
     MODE_FAMILY=direct
     MODE_INTENT="minimal first-kernel delivery route"
-    DEFAULT_CONCURRENCY=1
+    SELECTED_CONCURRENCY=${BASE1_PROFILE_DEFAULT_CONCURRENCY:-1}
+    SELECTED_PLAN="keep the shortest boot route; one explicit boot artifact; fastest validation loop"
     ;;
   supervisor-lite)
     MODE_FAMILY=supervisor
     MODE_INTENT="one active staged kernel plus Base1 control plane"
-    DEFAULT_CONCURRENCY=1
+    SELECTED_CONCURRENCY=${BASE1_PROFILE_DEFAULT_CONCURRENCY:-1}
+    SELECTED_PLAN="one active staged kernel plus Base1 control plane; low overhead; X200-friendly"
     ;;
   supervisor-concurrent)
     MODE_FAMILY=supervisor
     MODE_INTENT="multiple staged kernels under Base1 orchestration"
-    DEFAULT_CONCURRENCY=3
+    SELECTED_CONCURRENCY=${BASE1_PROFILE_MAX_CONCURRENCY:-1}
+    SELECTED_PLAN="concurrent staged-kernel evidence; higher memory; VM evidence only until reviewed"
     ;;
   workstation-supervisor)
     MODE_FAMILY=supervisor
     MODE_INTENT="larger-memory workflow and parallel validation"
-    DEFAULT_CONCURRENCY=3
+    SELECTED_CONCURRENCY=${BASE1_PROFILE_MAX_CONCURRENCY:-1}
+    SELECTED_PLAN="broad parallel workflow; highest resource use; still evidence-bound"
     ;;
   *)
     fail "unknown delivery mode: $DELIVERY_MODE"
     ;;
 esac
 
-case "$PROFILE" in
-  x200-supervisor-lite)
+case "${BASE1_PROFILE_CLASS:-}" in
+  low-resource)
     PROFILE_INTENT="4GB-class low-resource target; prefer direct-first or supervisor-lite"
-    PROFILE_MEMORY_POLICY="serial/headless; one active staged kernel by default; zram plus SSD scratch"
     ;;
-  x86_64-vm-validation)
+  vm-validation)
     PROFILE_INTENT="deterministic VM evidence profile"
-    PROFILE_MEMORY_POLICY="serial capture, explicit artifacts, no generalized hardware claim"
     ;;
-  workstation-supervisor)
+  workstation)
     PROFILE_INTENT="larger-memory development and validation target"
-    PROFILE_MEMORY_POLICY="concurrency allowed only when logs and artifacts remain explicit"
     ;;
   *)
-    fail "unknown profile: $PROFILE"
+    PROFILE_INTENT="profile class ${BASE1_PROFILE_CLASS:-unknown}"
     ;;
 esac
 
+PROFILE_MEMORY_POLICY=${BASE1_PROFILE_STORAGE_TIER_POLICY:-unknown}
 REPORT="$OUT_DIR/delivery-mode-plan.env"
 
 write_report() {
@@ -157,9 +210,19 @@ BASE1_DELIVERY_MODE=$DELIVERY_MODE
 BASE1_DELIVERY_MODE_FAMILY=$MODE_FAMILY
 BASE1_DELIVERY_MODE_INTENT=$MODE_INTENT
 BASE1_DELIVERY_PROFILE=$PROFILE
+BASE1_DELIVERY_PROFILE_FILE=$PROFILE_FILE
+BASE1_DELIVERY_PROFILE_CLASS=${BASE1_PROFILE_CLASS:-}
+BASE1_DELIVERY_PROFILE_TARGET_RAM_MB=${BASE1_PROFILE_TARGET_RAM_MB:-}
 BASE1_DELIVERY_PROFILE_INTENT=$PROFILE_INTENT
 BASE1_DELIVERY_PROFILE_MEMORY_POLICY=$PROFILE_MEMORY_POLICY
-BASE1_DELIVERY_DEFAULT_CONCURRENCY=$DEFAULT_CONCURRENCY
+BASE1_DELIVERY_PROFILE_DEFAULT_MODE=${BASE1_PROFILE_DEFAULT_DELIVERY_MODE:-}
+BASE1_DELIVERY_PROFILE_ALLOWED_MODES=${BASE1_PROFILE_ALLOWED_DELIVERY_MODES:-}
+BASE1_DELIVERY_DEFAULT_CONCURRENCY=$SELECTED_CONCURRENCY
+BASE1_DELIVERY_PROFILE_MAX_CONCURRENCY=${BASE1_PROFILE_MAX_CONCURRENCY:-}
+BASE1_DELIVERY_PROFILE_TMPFS_MB=${BASE1_PROFILE_TMPFS_MB:-}
+BASE1_DELIVERY_PROFILE_ZRAM_MB=${BASE1_PROFILE_ZRAM_MB:-}
+BASE1_DELIVERY_PROFILE_SWAP_MB=${BASE1_PROFILE_SWAP_MB:-}
+BASE1_DELIVERY_PROFILE_SSD_SCRATCH_MB=${BASE1_PROFILE_SSD_SCRATCH_MB:-}
 BASE1_DELIVERY_DIRECT_PATH=enabled
 BASE1_DELIVERY_SUPERVISOR_PATH=enabled
 BASE1_DELIVERY_SHARED_CONTRACT=profiles,policy,artifacts,logs,evidence,storage,non_claims
@@ -181,9 +244,11 @@ printf 'delivery_mode    : %s\n' "$DELIVERY_MODE"
 printf 'mode_family      : %s\n' "$MODE_FAMILY"
 printf 'mode_intent      : %s\n' "$MODE_INTENT"
 printf 'profile          : %s\n' "$PROFILE"
+printf 'profile_file     : %s\n' "$PROFILE_FILE"
+printf 'profile_class    : %s\n' "${BASE1_PROFILE_CLASS:-}"
 printf 'profile_intent   : %s\n' "$PROFILE_INTENT"
 printf 'memory_policy    : %s\n' "$PROFILE_MEMORY_POLICY"
-printf 'default_concur   : %s\n' "$DEFAULT_CONCURRENCY"
+printf 'default_concur   : %s\n' "$SELECTED_CONCURRENCY"
 printf 'out              : %s\n' "$OUT_DIR"
 printf 'report           : %s\n' "$REPORT"
 printf '\n'
@@ -192,22 +257,7 @@ printf 'path_direct: enabled; first-kernel/single-kernel delivery remains first-
 printf 'path_supervisor: enabled; orchestration/control-plane delivery remains first-class\n'
 printf 'bridge: shared profiles, policy vocabulary, artifact IDs, logs, evidence states, storage tiers, and non-claims\n'
 printf '\n'
-
-case "$DELIVERY_MODE" in
-  direct-first)
-    printf 'selected_plan: keep the shortest boot route; one explicit boot artifact; fastest validation loop\n'
-    ;;
-  supervisor-lite)
-    printf 'selected_plan: one active staged kernel plus Base1 control plane; low overhead; X200-friendly\n'
-    ;;
-  supervisor-concurrent)
-    printf 'selected_plan: concurrent staged-kernel evidence; higher memory; VM evidence only until reviewed\n'
-    ;;
-  workstation-supervisor)
-    printf 'selected_plan: broad parallel workflow; highest resource use; still evidence-bound\n'
-    ;;
-esac
-
+printf 'selected_plan: %s\n' "$SELECTED_PLAN"
 printf 'non_claims: no boot-ready claim; no installer claim; no recovery claim; no hardening proof; no hypervisor claim; no hardware validation; no daily-driver claim\n'
 
 if [ "$MODE" = dry-run ]; then
