@@ -20,10 +20,12 @@ Start with [`MANUAL_ROADMAP.md`](MANUAL_ROADMAP.md) for the full book, manual, a
 | --- | --- | --- |
 | First-time user | [`operators/README.md`](operators/README.md) | Launch Phase1 safely and understand the current boundary. |
 | Operator | [`phase1/README.md`](phase1/README.md) | Learn boot modes, shell workflows, VFS, host tools, and logs. |
+| Contributor | [`../CONTRIBUTING.md`](../CONTRIBUTING.md) | Prepare repository contributions while preserving quality, safety, compatibility, and non-claims. |
 | Developer | [`developers/README.md`](developers/README.md) | Extend Phase1 while preserving tests, docs, and capability metadata. |
 | Security reviewer | [`security/TRUST_MODEL.md`](security/TRUST_MODEL.md) | Review safety claims, trust boundaries, and host-tool behavior. |
 | Recovery/hardware operator | [`recovery/README.md`](recovery/README.md) | Follow Base1 and recovery planning without destructive assumptions. |
 | Fyr contributor | [`fyr/README.md`](fyr/README.md) | Work on the Phase1-native language and toolchain track. |
+| Community/support contributor | [`community/README.md`](community/README.md) | Plan support, forum, and community workflows without asking users to expose private data. |
 | Documentation contributor | [`templates/README.md`](templates/README.md) | Start from reusable status blocks, page skeletons, and claim-review examples. |
 
 ## Manual sections
@@ -33,9 +35,18 @@ Start with [`MANUAL_ROADMAP.md`](MANUAL_ROADMAP.md) for the full book, manual, a
 - [`fyr/`](fyr/) — Fyr Language Book.
 - [`operators/`](operators/) — Operator workflows.
 - [`developers/`](developers/) — Developer contribution guide.
+- [`community/`](community/) — Community support and forum planning.
 - [`recovery/`](recovery/) — Recovery and hardware planning.
 - [`security/`](security/) — Trust model, claims policy, and review guide.
 - [`templates/`](templates/) — Reusable Codex status blocks, page skeletons, and claim-review examples.
+
+## Contribution entry points
+
+- [`../CONTRIBUTING.md`](../CONTRIBUTING.md) — repository-wide contribution guidelines.
+- [`developers/README.md`](developers/README.md) — developer reader path.
+- [`developers/DOCS_CONTRIBUTING.md`](developers/DOCS_CONTRIBUTING.md) — documentation contribution guide.
+- [`developers/PR_CHECKLIST.md`](developers/PR_CHECKLIST.md) — documentation PR checklist.
+- [`../.github/pull_request_template.md`](../.github/pull_request_template.md) — pull request template.
 
 ## Required page status block
 
