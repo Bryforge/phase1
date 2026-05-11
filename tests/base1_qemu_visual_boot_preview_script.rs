@@ -40,7 +40,7 @@ fn qemu_visual_boot_preview_script_help_documents_usage_and_boundaries() {
     for text in [
         "usage: sh scripts/base1-qemu-visual-boot-preview.sh --build [--run] [--fullscreen]",
         "Builds a local UEFI FAT image",
-        "assets/phase1-splash.png",
+        "small centered Phase1 symbol-only",
         "visual boot preview only",
         "--build",
         "--run",
@@ -91,10 +91,15 @@ fn qemu_visual_boot_preview_script_uses_expected_local_artifacts() {
     for text in [
         "build/base1-qemu-visual-boot-preview",
         "build/base1-qemu-visual-boot-preview.img",
-        "assets/phase1-splash.png",
+        "QEMU_SPLASH=\"$WORK_DIR/boot/grub/phase1-qemu-splash.png\"",
+        "QEMU_SPLASH_WIDTH=1024",
+        "QEMU_SPLASH_HEIGHT=768",
+        "QEMU_SPLASH_SYMBOL_SIZE=176",
         "EFI/BOOT/BOOTX64.EFI",
-        "boot/grub/phase1-splash.png",
+        "boot/grub/phase1-qemu-splash.png",
         "boot/grub/fonts/phase1.pf2",
+        "generate_qemu_symbol_splash",
+        "python3",
         "x86_64-elf-grub-mkstandalone",
         "mformat",
         "mcopy",
@@ -102,6 +107,33 @@ fn qemu_visual_boot_preview_script_uses_expected_local_artifacts() {
         "qemu-system-x86_64",
     ] {
         assert!(script.contains(text), "missing expected artifact/tool text {text}: {script}");
+    }
+}
+
+#[test]
+fn qemu_visual_boot_preview_script_keeps_splash_symbol_only_and_small() {
+    let script = std::fs::read_to_string(SCRIPT).expect("QEMU visual boot preview source");
+
+    for required in [
+        "small centered Phase1 symbol-only",
+        "No word mark is rendered here",
+        "bounded to roughly 18% of a 1024px-wide QEMU viewport",
+        "splash: small centered phase1 symbol-only image",
+        "background_image /boot/grub/phase1-qemu-splash.png",
+    ] {
+        assert!(script.contains(required), "missing symbol-only guard text {required}: {script}");
+    }
+
+    for forbidden in [
+        "cp \"$SPLASH\"",
+        "assets/phase1-splash.png",
+        "boot/grub/phase1-splash.png",
+        "Phase1</text>",
+    ] {
+        assert!(
+            !script.contains(forbidden),
+            "QEMU splash should not use the full word-mark splash path {forbidden}: {script}"
+        );
     }
 }
 
