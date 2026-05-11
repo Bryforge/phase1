@@ -54,10 +54,15 @@ check_base1_reorganization() {
     run sh scripts/base1-reorganization-verify.sh
 }
 
+check_security_crypto_docs() {
+    run sh scripts/security-crypto-doc-integrity.sh
+}
+
 quick() {
     check_required_files
     check_scripts
     check_base1_docs
+    check_security_crypto_docs
     run sh scripts/quality-score.sh
     run cargo fmt --all -- --check
     run cargo check --all-targets
@@ -101,6 +106,9 @@ case "$mode" in
     base1-reorg|base1-reorganization)
         check_base1_reorganization
         ;;
+    security-crypto-docs|crypto-docs)
+        check_security_crypto_docs
+        ;;
     help|-h|--help)
         cat <<'EOF'
 Phase1 quality check
@@ -113,6 +121,7 @@ Usage:
   sh scripts/quality-check.sh files
   sh scripts/quality-check.sh base1-docs
   sh scripts/quality-check.sh base1-reorg
+  sh scripts/quality-check.sh security-crypto-docs
 EOF
         ;;
     *)
