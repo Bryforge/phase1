@@ -12,6 +12,25 @@ This page defines the trust and safety language for **The Phase1 Codex**.
 
 Phase1 should make capability, trust, and risk visible to the operator. It should not hide host mutation, imply guarantees that are not implemented, or market roadmap items as current security properties.
 
+Phase1's security goal is to be as secure as possible while maintaining practical usability. Security controls should reduce risk without making legitimate learning, development, validation, local operation, and recovery workflows unnecessarily difficult.
+
+## Security and usability principle
+
+Phase1 should prefer secure defaults with usable opt-in paths.
+
+Good Phase1 security design should:
+
+- start in the safer mode by default;
+- make risk, trust, and capability visible;
+- require explicit operator consent for host-backed or mutating workflows;
+- keep dry-run/read-only paths easy to run;
+- provide clear recovery and rollback guidance;
+- avoid hiding useful operator information unless it creates a real exposure risk;
+- preserve practical development and validation workflows;
+- back stronger security claims with tests, audits, or validation reports.
+
+Security that blocks normal safe work without adding meaningful protection should be redesigned. Usability that bypasses trust gates, redaction, evidence, or compatibility checks should not be accepted.
+
 ## Current trust boundary
 
 Phase1 currently runs on a host operating system. The host controls process execution, the real filesystem, devices, network, credentials, and kernel-level enforcement. Phase1 can model, organize, gate, log, and explain actions inside its own environment, but it does not currently replace the host kernel or turn the host into a trusted computing base.
@@ -121,3 +140,4 @@ A security reviewer should verify:
 - Host trust is described as operator consent, not host hardening.
 - Recovery and rollback claims include validation status.
 - Secrets are never requested in docs, examples, issue templates, or screenshots.
+- Security controls preserve practical usability or explain why restriction is necessary.
