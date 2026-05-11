@@ -26,8 +26,9 @@ Marker:
   phase1 6.0.0 ready
 
 Display behavior:
-  Visible QEMU runs keep the screen splash-only. Proof text is routed to serial
-  for --check so the GRUB graphics view does not show character noise.
+  Visible QEMU runs show the splash plus a readable proof-status overlay. GRUB
+  loads the generated font before switching to gfxterm so boot text does not
+  render as box or glitch characters.
 
 Non-claims:
   This is QEMU/OVMF proof-of-life only. It does not make Base1 installer-ready,
@@ -144,41 +145,41 @@ set timeout=0
 set default=0
 
 insmod all_video
-insmod gfxterm
 insmod png
 insmod fat
 insmod search
 insmod search_fs_file
 insmod font
+insmod gfxterm
 insmod serial
 insmod terminal
 
 serial --unit=0 --speed=115200 --word=8 --parity=no --stop=1
-terminal_input console serial
-terminal_output gfxterm
-
-if loadfont /boot/grub/fonts/phase1.pf2; then
-  true
-fi
 
 set gfxmode=1024x768,auto
 set gfxpayload=keep
-set color_normal=black/black
-set color_highlight=black/black
+
+# Load a real GRUB font before enabling gfxterm. Enabling gfxterm first can make
+# proof text render as square/glitch glyphs on macOS QEMU.
+if loadfont /boot/grub/fonts/phase1.pf2; then
+  set gfxterm_font=phase1
+fi
+
+terminal_input console serial
+terminal_output gfxterm serial
+
+set color_normal=white/black
+set color_highlight=black/light-cyan
 
 search --file /boot/grub/phase1-qemu-splash.png --set=root
 background_image /boot/grub/phase1-qemu-splash.png
 
-menuentry " " {
+menuentry "Phase1 / Base1 B3 UEFI proof" {
     clear
     background_image /boot/grub/phase1-qemu-splash.png
-    terminal_output serial
     echo "base1 b3 uefi proof start"
     echo "$MARKER"
     echo "emulator-only evidence; no installer; no hardware-validation claim"
-    terminal_output gfxterm
-    clear
-    background_image /boot/grub/phase1-qemu-splash.png
     sleep --interruptible 9999
 }
 EOF
@@ -216,7 +217,7 @@ build_image() {
   printf 'base1_b3_uefi_proof: built %s\n' "$IMG"
   printf 'marker: %s\n' "$MARKER"
   printf 'splash: assets/phase1_word.png fitted to %sx%s max edge %s\n' "$SPLASH_WIDTH" "$SPLASH_HEIGHT" "$SPLASH_MAX_EDGE"
-  printf 'display: splash-only; proof text routed to serial\n'
+  printf 'display: readable gfxterm overlay with font preloaded\n'
   printf 'boot_readiness_claim: no\n'
 }
 
