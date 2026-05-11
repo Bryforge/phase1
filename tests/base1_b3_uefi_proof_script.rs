@@ -42,9 +42,8 @@ fn base1_b3_uefi_proof_help_documents_usage_marker_display_and_boundaries() {
         "Builds a local B3 UEFI proof image under build/",
         "displays the fitted Phase1 word-mark splash",
         "emits a serial proof marker",
-        "prefers GRUB's unicode.pf2 font",
-        "generated monospaced",
-        "serial text console over the graphical boot screen",
+        "GRUB searches for the font on the FAT image before loading it",
+        "enables gfxterm so menu/text glyphs render correctly",
         "--build",
         "--run",
         "--check",
@@ -118,7 +117,7 @@ fn base1_b3_uefi_proof_uses_expected_artifacts_and_splash_fitting() {
 }
 
 #[test]
-fn base1_b3_uefi_proof_uses_unicode_font_keeps_menu_and_disables_visible_serial() {
+fn base1_b3_uefi_proof_searches_root_before_loading_font_and_keeps_menu_overlay() {
     let script = std::fs::read_to_string(SCRIPT).expect("B3 UEFI proof source");
 
     for text in [
@@ -127,16 +126,14 @@ fn base1_b3_uefi_proof_uses_unicode_font_keeps_menu_and_disables_visible_serial(
         "GRUB_FONT=\"$WORK_DIR/boot/grub/fonts/phase1.pf2\"",
         "copy_grub_unicode_font",
         "unicode.pf2",
-        "Monaco.ttf",
-        "Menlo.ttc",
-        "Courier New.ttf",
+        "search --file /boot/grub/fonts/phase1.pf2 --set=root",
         "if loadfont /boot/grub/fonts/phase1.pf2; then",
         "terminal_output gfxterm serial",
         "menuentry \"Phase1 / Base1 B3 UEFI proof\"",
         "echo \"base1 b3 uefi proof start\"",
         "echo \"$MARKER\"",
         "echo \"emulator-only evidence; no installer; no hardware-validation claim\"",
-        "display: readable GRUB overlay with unicode font; visible serial disabled",
+        "display: root searched before font load; visible serial disabled",
         "-serial null",
         "b3-serial.log",
         "b3-summary.env",
@@ -148,6 +145,9 @@ fn base1_b3_uefi_proof_uses_unicode_font_keeps_menu_and_disables_visible_serial(
         assert!(script.contains(text), "missing readable menu proof text {text}: {script}");
     }
 
+    let search_font_pos = script
+        .find("search --file /boot/grub/fonts/phase1.pf2 --set=root")
+        .expect("font root search must exist");
     let loadfont_pos = script
         .find("if loadfont /boot/grub/fonts/phase1.pf2; then")
         .expect("loadfont must exist");
@@ -155,17 +155,21 @@ fn base1_b3_uefi_proof_uses_unicode_font_keeps_menu_and_disables_visible_serial(
         .find("terminal_output gfxterm serial")
         .expect("terminal_output gfxterm serial must exist");
     assert!(
+        search_font_pos < loadfont_pos,
+        "GRUB root search must happen before loadfont: {script}"
+    );
+    assert!(
         loadfont_pos < terminal_output_pos,
         "font must be loaded before enabling gfxterm output to avoid box/glitch glyphs: {script}"
     );
 
     assert!(
         !script.contains("Do not use menuentry here"),
-        "script should keep the boot menu/proof entry and fix font/rendering instead: {script}"
+        "script should keep the boot menu/proof entry and fix font/root ordering instead: {script}"
     );
     assert!(
         !script.contains("display: direct readable overlay; GRUB menu frame disabled"),
-        "script should keep the menu/proof entry and fix font/rendering instead: {script}"
+        "script should keep the menu/proof entry and fix font/root ordering instead: {script}"
     );
 }
 
