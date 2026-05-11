@@ -26,7 +26,7 @@ Phase1 should be:
 | Test | Behavior is backed by tests | `cargo test --all-targets` |
 | Scripts | Shell tooling stays valid | `sh -n` checks and script-specific tests |
 | Docs | User-facing claims stay discoverable | required docs, links, maps, and compatibility paths exist |
-| Base1 integrity | Base1 organization preserves root compatibility and release mirrors | `sh scripts/base1-doc-integrity.sh` |
+| Base1 integrity | Base1 organization preserves root compatibility, release mirrors, local links, and test inventory coverage | `sh scripts/quality-check.sh base1-docs` |
 | Release | Version and release metadata stay aligned | release metadata checks |
 | Safety | Risky behavior remains explicit and guarded | safety docs and policy checks |
 | Dependency | Dependency risk is reviewed | `cargo audit`, `cargo deny check` when tools are available |
@@ -39,7 +39,7 @@ Phase1 should be:
 sh scripts/quality-check.sh quick
 ```
 
-The quick gate validates formatting, compilation, Clippy, tests, script syntax, required docs, Base1 documentation integrity, and quality score generation.
+The quick gate validates formatting, compilation, Clippy, tests, script syntax, required docs, Base1 documentation integrity, Base1 local link checks, Base1 test-inventory verification, and quality score generation.
 
 ### Base1 documentation integrity only
 
@@ -47,7 +47,15 @@ The quick gate validates formatting, compilation, Clippy, tests, script syntax, 
 sh scripts/quality-check.sh base1-docs
 ```
 
-This focused gate runs the Base1 documentation integrity checker. It verifies the current Base1 documentation map, root compatibility paths, organized release mirrors, real-device read-only docs, script syntax, non-claims, and dry-run guardrails.
+This focused gate runs the Base1 documentation integrity checker, local Markdown link checker, and test-inventory verifier:
+
+```bash
+sh scripts/base1-doc-integrity.sh
+sh scripts/base1-link-check.sh
+sh scripts/base1-test-inventory-verify.sh
+```
+
+It verifies the current Base1 documentation map, inventory, test inventory, migration table, script compatibility plan, link-check strategy, post-reorganization layout, root compatibility paths, organized release mirrors, real-device read-only docs, script syntax, local links, non-claims, and dry-run guardrails.
 
 ### Required before release
 
@@ -101,6 +109,9 @@ scripts/quality-check.sh
 scripts/quality-score.sh
 scripts/base1-preflight.sh
 scripts/base1-doc-integrity.sh
+scripts/base1-link-check.sh
+scripts/base1-test-inventory.sh
+scripts/base1-test-inventory-verify.sh
 scripts/test-release-metadata.sh
 scripts/test-website.sh
 ```
@@ -115,14 +126,17 @@ Before and after Base1 documentation organization work, run:
 sh scripts/quality-check.sh base1-docs
 ```
 
-The Base1 integrity gate should verify:
+The Base1 docs quality gate verifies:
 
 - required Base1 docs are present
 - root checkpoint-note compatibility files are present
 - organized release mirrors are present
 - `docs/base1/ROOT_COMPATIBILITY_MAP.md` links old paths to organized mirrors
+- inventory, test inventory, migration table, script compatibility plan, link-check strategy, and post-reorganization layout are present
 - real-device read-only docs remain present
 - Base1 shell scripts pass `sh -n`
+- local Markdown links resolve or are intentionally skipped as external links
+- reported Base1 test files are listed in `docs/base1/TEST_INVENTORY.md`
 - dry-run guardrails remain visible
 - non-claims are preserved
 
@@ -150,7 +164,7 @@ Every PR should answer:
 | Base1 | `base1/`, `docs/base1/`, `docs/os/BASE1_*`, `scripts/base1-*` |
 | Website/wiki | `index.html`, `docs/wiki/`, `WIKI_ROADMAP.md` |
 | Release/update | `UPDATE_PROTOCOL.md`, `CHANGELOG.md`, `Cargo.toml` |
-| Quality system | `QUALITY.md`, `QUALITY_SCORECARD.md`, `scripts/quality-*`, `scripts/base1-doc-integrity.sh`, `.github/workflows/quality.yml` |
+| Quality system | `QUALITY.md`, `QUALITY_SCORECARD.md`, `scripts/quality-*`, `scripts/base1-doc-integrity.sh`, `scripts/base1-link-check.sh`, `scripts/base1-test-inventory*.sh`, `.github/workflows/quality.yml` |
 
 ## Safety baseline
 
@@ -163,6 +177,7 @@ Quality work must preserve these defaults:
 - docs do not overclaim unimplemented features
 - tests are preferred over claims
 - Base1 organization keeps compatibility paths recoverable
+- Base1 script paths remain stable unless wrappers are planned and tested
 
 ## Local workflow
 
