@@ -44,6 +44,8 @@ Phase1 should maintain a registry of supported cryptographic capabilities. Each 
 - default, advanced, compatibility, deprecated, or lab-only classification;
 - migration guidance.
 
+Use [`CRYPTO_ALGORITHM_TEMPLATE.md`](CRYPTO_ALGORITHM_TEMPLATE.md) for each algorithm, design, profile component, or implementation provider added to the registry.
+
 ## Operator-selectable profiles
 
 Phase1 should support named cryptographic profiles.
@@ -102,7 +104,7 @@ The registry should cover these families over time:
 
 ## Documentation requirement
 
-Every supported algorithm page should document:
+Every supported algorithm page should use [`CRYPTO_ALGORITHM_TEMPLATE.md`](CRYPTO_ALGORITHM_TEMPLATE.md) and document:
 
 1. Status.
 2. Purpose.
@@ -155,7 +157,7 @@ Crypto profile changes should:
 ### Phase 1: registry and docs
 
 - Create registry format.
-- Create algorithm documentation template.
+- Create algorithm documentation template: [`CRYPTO_ALGORITHM_TEMPLATE.md`](CRYPTO_ALGORITHM_TEMPLATE.md).
 - Draft safe-default, high-security, compatibility, and lab-only profiles.
 - Add tests that preserve non-claims.
 
