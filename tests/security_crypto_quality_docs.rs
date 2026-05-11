@@ -47,9 +47,13 @@ fn quality_docs_define_security_crypto_gate_scope() {
         "docs/security/CRYPTO_POLICY_ROADMAP.md",
         "docs/security/CRYPTO_REGISTRY.md",
         "docs/security/CRYPTO_ALGORITHM_TEMPLATE.md",
+        "docs/security/CRYPTO_OPERATOR_COMMANDS.md",
         "docs/security/crypto-profiles/README.md",
         "all current profile drafts are present",
         "profile drafts link the registry and algorithm template",
+        "operator command plans fail closed for unknown scopes and profiles",
+        "lab-only profile use is blocked outside lab/docs/tests scopes",
+        "deprecated, rejected, or lab-only entries are blocked from production scopes",
         "custom security-critical primitives are rejected",
         "lab-only behavior is not presented as real security protection",
         "unsupported quantum-safety claims are blocked",
@@ -69,6 +73,10 @@ fn quality_docs_preserve_crypto_safety_baseline() {
     );
     assert!(
         quality.contains("custom security-critical primitives are not accepted as production protection"),
+        "{quality}"
+    );
+    assert!(
+        quality.contains("cryptographic operator commands fail closed for unknown scopes and profiles"),
         "{quality}"
     );
 }
