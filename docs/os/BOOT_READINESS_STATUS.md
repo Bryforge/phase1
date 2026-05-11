@@ -7,7 +7,7 @@ Scope: Base1 boot readiness levels, open prerequisites, validation evidence, and
 
 This tracker shows what must be finished before Phase1/Base1 moves from planning back into implementation work for boot readiness.
 
-The finish-first planning layer is complete for B1. The first B1 read-only detection script, guard tests, limitations note, and limitations tests now exist while preserving the B1 boundary.
+The finish-first planning layer is complete for B1. The first B1 read-only detection script, guard tests, limitations note, limitations tests, validation report, and validation report tests now exist while preserving the B1 boundary.
 
 ## Current readiness level
 
@@ -22,7 +22,7 @@ Do not claim Base1 boot readiness, installer readiness, hardware validation, har
 | Level | Name | Status | Required before claim strengthens |
 | --- | --- | --- | --- |
 | B0 | Documentation ready | Complete for B1 start | Roadmaps, status tracker, checklist, links, tests. |
-| B1 | Read-only detection ready | Initial script present | Dry-run detection script, no writes, architecture/firmware/boot hints, limitations note. |
+| B1 | Read-only detection ready | Initial script present | Dry-run detection script, no writes, architecture/firmware/boot hints, limitations note, validation report. |
 | B2 | Dry-run assembly ready | Not started | Image/install/recovery previews with explicit no-write behavior. |
 | B3 | VM boot validated | Not started | VM boot report, logs, known limitations. |
 | B4 | Recovery validated | Not started | Emergency shell, recovery media, rollback report. |
@@ -71,6 +71,14 @@ B1 limitations tests are present:
 cargo test -p phase1 --test b1_read_only_detection_limitations_docs
 ```
 
+B1 validation expectations are documented in [`B1_READ_ONLY_DETECTION_VALIDATION.md`](B1_READ_ONLY_DETECTION_VALIDATION.md).
+
+B1 validation report tests are present:
+
+```bash
+cargo test -p phase1 --test b1_read_only_detection_validation_docs
+```
+
 The B1 detector must stay inside the read-only, dry-run, non-mutating scope defined by [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md).
 
 ## B1 completion checklist
@@ -82,6 +90,8 @@ Before B1 is considered complete, confirm:
 - [x] B1 detector script tests exist.
 - [x] B1 known limitations are documented.
 - [x] B1 limitations tests exist.
+- [x] B1 validation report exists.
+- [x] B1 validation report tests exist.
 - [ ] B1 detector test suite passes in CI or local validation.
 - [ ] B1 status is linked from README, OS roadmap, race plan, and x86_64 roadmap after implementation.
 - [ ] B1 output is reviewed for secret redaction.
@@ -102,6 +112,10 @@ Implementation plan:
 Limitations note:
 
 - [`B1_READ_ONLY_DETECTION_LIMITATIONS.md`](B1_READ_ONLY_DETECTION_LIMITATIONS.md)
+
+Validation report:
+
+- [`B1_READ_ONLY_DETECTION_VALIDATION.md`](B1_READ_ONLY_DETECTION_VALIDATION.md)
 
 Expected behavior:
 
@@ -126,8 +140,10 @@ Expected behavior:
 | Boot readiness status tracker | Present | [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md) |
 | B1 read-only detection plan | Present | [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md) |
 | B1 limitations note | Present | [`B1_READ_ONLY_DETECTION_LIMITATIONS.md`](B1_READ_ONLY_DETECTION_LIMITATIONS.md) |
+| B1 validation report | Present | [`B1_READ_ONLY_DETECTION_VALIDATION.md`](B1_READ_ONLY_DETECTION_VALIDATION.md) |
 | B1 plan tests | Present | `tests/b1_read_only_detection_plan_docs.rs` |
 | B1 limitations tests | Present | `tests/b1_read_only_detection_limitations_docs.rs` |
+| B1 validation report tests | Present | `tests/b1_read_only_detection_validation_docs.rs` |
 | B1 detection script | Present | `scripts/base1-x86_64-detect.sh` |
 | B1 detection tests | Present | `tests/base1_x86_64_detect_script.rs` |
 | VM validation report | Not started | planned |
