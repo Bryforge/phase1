@@ -1,0 +1,17 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability report
+    url: https://github.com/Bryforge/phase1/security/policy
+    about: Do not disclose private vulnerabilities publicly. Use the security policy for sensitive reports.
+  - name: Phase1 documentation
+    url: https://github.com/Bryforge/phase1/tree/edge/stable/docs
+    about: Read the repository documentation before opening a support issue.
+  - name: Contribution guidelines
+    url: https://github.com/Bryforge/phase1/blob/edge/stable/CONTRIBUTING.md
+    about: Review contribution rules, validation gates, safety rules, and PR expectations before contributing.
+  - name: Quality gates
+    url: https://github.com/Bryforge/phase1/blob/edge/stable/QUALITY.md
+    about: See required validation commands and quality gates for Phase1, Base1, Fyr, and security crypto docs.
+  - name: Community and support roadmap
+    url: https://github.com/Bryforge/phase1/tree/edge/stable/docs/community
+    about: Review planned forum and automated support AI workflows for the Bryforge project family.
