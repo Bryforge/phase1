@@ -30,6 +30,8 @@
   ·
   <a href="QUALITY.md">Quality</a>
   ·
+  <a href="CONTRIBUTING.md">Contributing</a>
+  ·
   <a href="base1/README.md">Base1</a>
   ·
   <a href="EDGE.md">Edge</a>
@@ -429,7 +431,9 @@ Security claims stay conservative until they are backed by repeatable builds, te
 
 ## Contributing
 
-Phase1 values useful engineering over hype. Good contributions improve clarity, safety, documentation, validation, mobile fit, terminal usability, runtime support, Base1 compatibility, or the staged OS track.
+Read [`CONTRIBUTING.md`](CONTRIBUTING.md) before opening work. Phase1 values useful engineering over hype. Good contributions improve clarity, safety, documentation, validation, mobile fit, terminal usability, runtime support, Base1 compatibility, Fyr language work, crypto policy, or the staged OS track.
+
+Pull requests should use the repository template in [`.github/pull_request_template.md`](.github/pull_request_template.md) and explain validation, risk, safe-default impact, and compatibility impact.
 
 Before opening release-facing work, run:
 
@@ -438,6 +442,13 @@ cargo fmt --all -- --check
 cargo check --all-targets
 cargo test --all-targets
 sh scripts/quality-check.sh quick
+```
+
+For focused documentation or safety-sensitive work, also run the relevant gate:
+
+```bash
+sh scripts/quality-check.sh base1-docs
+sh scripts/quality-check.sh security-crypto-docs
 ```
 
 ## License
