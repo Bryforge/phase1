@@ -52,6 +52,7 @@ The verifier compares reporter output against this document and fails if a repor
 | `tests/base1_link_check_script.rs` | Local Base1 link-check script behavior. |
 | `tests/base1_test_inventory_script.rs` | Test inventory reporter behavior. |
 | `tests/base1_test_inventory_verify_script.rs` | Test inventory verifier behavior. |
+| `tests/base1_reorganization_verify_script.rs` | Reorganization verification bundle behavior. |
 | `tests/base1_post_reorganization_layout_docs.rs` | Post-reorganization layout docs. |
 | `tests/base1_pre_move_checklist_docs.rs` | Pre-move checklist docs. |
 | `tests/base1_release_pre_move_checks_docs.rs` | Release/checkpoint pre-move checks docs. |
