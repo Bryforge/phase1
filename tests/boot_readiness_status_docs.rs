@@ -27,6 +27,7 @@ fn boot_readiness_status_preserves_ladder() {
         "Initial script present",
         "B3",
         "VM boot validated",
+        "Planning and plan tests present",
         "B4",
         "Recovery validated",
         "B5",
@@ -164,6 +165,49 @@ fn boot_readiness_status_preserves_b2_completion_checklist() {
 }
 
 #[test]
+fn boot_readiness_status_defines_b3_planning_status() {
+    let status = std::fs::read_to_string("docs/os/BOOT_READINESS_STATUS.md")
+        .expect("boot readiness status tracker");
+
+    for text in [
+        "B3 planning status",
+        "B3 VM boot validation planning is now present:",
+        "B3_VM_BOOT_VALIDATION_PLAN.md",
+        "cargo test -p phase1 --test b3_vm_boot_validation_plan_docs",
+        "sh scripts/base1-b3-vm-validate.sh --dry-run --profile x86_64-vm-validation",
+        "B3 remains planning-only until B2 validation has passed locally or in CI and B3 script, tests, limitations, logs, and validation report exist.",
+    ] {
+        assert!(status.contains(text), "missing B3 planning status text {text}: {status}");
+    }
+}
+
+#[test]
+fn boot_readiness_status_preserves_b3_completion_checklist() {
+    let status = std::fs::read_to_string("docs/os/BOOT_READINESS_STATUS.md")
+        .expect("boot readiness status tracker");
+
+    for text in [
+        "B3 completion checklist",
+        "B3 VM boot validation plan exists.",
+        "B3 plan tests exist.",
+        "B2 test suite has passed locally or in CI.",
+        "B3 VM validation script exists.",
+        "B3 script tests exist.",
+        "B3 limitations note exists.",
+        "B3 log capture notes exist.",
+        "B3 validation report exists.",
+        "VM profile is explicit.",
+        "VM runtime is explicit.",
+        "boot artifact is explicit.",
+        "boot logs are captured.",
+        "Phase1 launch result is recorded.",
+        "non-claims are preserved.",
+    ] {
+        assert!(status.contains(text), "missing B3 completion text {text}: {status}");
+    }
+}
+
+#[test]
 fn boot_readiness_status_defines_first_coding_slice() {
     let status = std::fs::read_to_string("docs/os/BOOT_READINESS_STATUS.md")
         .expect("boot readiness status tracker");
@@ -218,6 +262,9 @@ fn boot_readiness_status_preserves_evidence_map() {
         "tests/b2_dry_run_assembly_test_suite_docs.rs",
         "scripts/base1-b2-assembly-dry-run.sh",
         "tests/base1_b2_assembly_dry_run_script.rs",
+        "B3_VM_BOOT_VALIDATION_PLAN.md",
+        "tests/b3_vm_boot_validation_plan_docs.rs",
+        "scripts/base1-b3-vm-validate.sh",
         "VM validation report",
         "Recovery validation report",
         "Hardware validation report",
@@ -259,6 +306,7 @@ fn boot_readiness_status_preserves_hardening_and_non_claims() {
         "first B1 read-only detection script exists",
         "detection-preview behavior only",
         "B2 has an initial dry-run assembly script but remains dry-run preview only",
+        "B3 is planning-only until VM validation evidence exists",
     ] {
         assert!(status.contains(text), "missing non-claim {text}: {status}");
     }
