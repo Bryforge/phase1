@@ -9,7 +9,7 @@ This plan organizes the fastest safe path toward boot readiness for the Phase1/B
 
 The goal is speed without unsafe claims: move quickly through documentation, read-only checks, dry-run tooling, VM validation, recovery validation, and hardware validation before claiming boot readiness.
 
-Track current readiness in [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md). The first B1 coding slice is planned in [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md), implemented by `scripts/base1-x86_64-detect.sh`, and guarded by `tests/base1_x86_64_detect_script.rs`.
+Track current readiness in [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md). The first B1 coding slice is planned in [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md), implemented by `scripts/base1-x86_64-detect.sh`, and guarded by `tests/base1_x86_64_detect_script.rs`. B2 dry-run assembly planning starts in [`B2_DRY_RUN_ASSEMBLY_PLAN.md`](B2_DRY_RUN_ASSEMBLY_PLAN.md).
 
 ## Boot readiness goal
 
@@ -66,6 +66,14 @@ Initial B1 script tests:
 cargo test -p phase1 --test base1_x86_64_detect_script
 ```
 
+B2 planning is defined by:
+
+```bash
+sh scripts/base1-b2-assembly-dry-run.sh --dry-run --profile x86_64-vm-validation
+```
+
+B2 remains planning-only until the dry-run assembly script, tests, limitations note, validation report, and status updates exist.
+
 ## Fastest safe sequence
 
 ### Sprint 1: readiness inventory
@@ -89,14 +97,21 @@ cargo test -p phase1 --test base1_x86_64_detect_script
 - Add or plan recovery-media detection.
 - Report `writes: no`.
 
-### Sprint 3: boot parameter inventory
+### Sprint 3: B2 dry-run assembly
+
+- Add the B2 dry-run assembly plan: [`B2_DRY_RUN_ASSEMBLY_PLAN.md`](B2_DRY_RUN_ASSEMBLY_PLAN.md).
+- Plan a dry-run assembly command for `x86_64-vm-validation`.
+- Connect B1 detection facts to profile, image, boot handoff, recovery, rollback, and validation bundle previews.
+- Keep B2 preview-only until implementation and validation exist.
+
+### Sprint 4: boot parameter inventory
 
 - Connect to [`X86_64_BOOT_SUPPORT_ROADMAP.md`](X86_64_BOOT_SUPPORT_ROADMAP.md).
 - Define required boot parameters per boot profile.
 - Record unknown/unsupported parameters.
 - Fail closed on unknown boot states.
 
-### Sprint 4: image and initrd path
+### Sprint 5: image and initrd path
 
 - Verify Base1 image-builder docs.
 - Verify initramfs/initrd preview docs.
@@ -104,7 +119,7 @@ cargo test -p phase1 --test base1_x86_64_detect_script
 - Document emergency shell fallback.
 - Keep mutation disabled until dry-run and recovery evidence exist.
 
-### Sprint 5: VM validation
+### Sprint 6: VM validation
 
 - Define VM validation profile.
 - Capture boot log expectations.
@@ -112,7 +127,7 @@ cargo test -p phase1 --test base1_x86_64_detect_script
 - Record known limitations.
 - Do not generalize VM success to physical hardware.
 
-### Sprint 6: recovery and rollback
+### Sprint 7: recovery and rollback
 
 - Validate recovery shell path.
 - Validate recovery media docs.
@@ -120,14 +135,14 @@ cargo test -p phase1 --test base1_x86_64_detect_script
 - Validate read-only recovery reports.
 - Keep restore path visible before installer claims are strengthened.
 
-### Sprint 7: hardware validation
+### Sprint 8: hardware validation
 
 - Validate one named hardware target at a time.
 - Start with explicit target docs.
 - Require validation reports before support claims.
 - Keep known limitations visible.
 
-### Sprint 8: release-candidate evidence
+### Sprint 9: release-candidate evidence
 
 - Create target-specific release checklist.
 - Collect build, boot, recovery, rollback, and docs validation evidence.
@@ -142,6 +157,9 @@ cargo test -p phase1 --test base1_x86_64_detect_script
 | B1 read-only detection plan | [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md) |
 | B1 read-only detector | `scripts/base1-x86_64-detect.sh` |
 | B1 detector tests | `tests/base1_x86_64_detect_script.rs` |
+| B2 dry-run assembly plan | [`B2_DRY_RUN_ASSEMBLY_PLAN.md`](B2_DRY_RUN_ASSEMBLY_PLAN.md) |
+| B2 dry-run assembly script | `scripts/base1-b2-assembly-dry-run.sh` |
+| B2 dry-run assembly tests | planned |
 | x86_64 boot support roadmap | [`X86_64_BOOT_SUPPORT_ROADMAP.md`](X86_64_BOOT_SUPPORT_ROADMAP.md) |
 | Base1 image-builder design | [`BASE1_IMAGE_BUILDER.md`](BASE1_IMAGE_BUILDER.md) |
 | Installer/recovery design | [`INSTALLER_RECOVERY.md`](INSTALLER_RECOVERY.md) |
@@ -205,6 +223,12 @@ B1 detector validation:
 
 ```bash
 cargo test -p phase1 --test base1_x86_64_detect_script
+```
+
+B2 planning validation:
+
+```bash
+cargo test -p phase1 --test b2_dry_run_assembly_plan_docs
 ```
 
 ## Non-claims
