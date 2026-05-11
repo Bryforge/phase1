@@ -2,9 +2,9 @@
 # Phase1 security crypto documentation integrity gate.
 #
 # This check is read-only. It verifies the cryptographic policy roadmap,
-# registry, algorithm template, operator command plan, config schema, profile
-# index, profile drafts, and security documentation links before crypto policy
-# implementation work continues.
+# registry, algorithm template, operator command plan, config schema,
+# implementation plan, profile index, profile drafts, and security
+# documentation links before crypto policy implementation work continues.
 
 set -eu
 
@@ -42,6 +42,7 @@ check_files() {
     docs/security/CRYPTO_ALGORITHM_TEMPLATE.md \
     docs/security/CRYPTO_OPERATOR_COMMANDS.md \
     docs/security/CRYPTO_CONFIG_SCHEMA.md \
+    docs/security/CRYPTO_IMPLEMENTATION_PLAN.md \
     docs/security/crypto-profiles/README.md \
     docs/security/crypto-profiles/SAFE_DEFAULT.md \
     docs/security/crypto-profiles/HIGH_SECURITY.md \
@@ -64,12 +65,14 @@ check_links_and_goals() {
   check_contains docs/security/README.md 'CRYPTO_REGISTRY.md'
   check_contains docs/security/README.md 'CRYPTO_OPERATOR_COMMANDS.md'
   check_contains docs/security/README.md 'CRYPTO_CONFIG_SCHEMA.md'
+  check_contains docs/security/README.md 'CRYPTO_IMPLEMENTATION_PLAN.md'
   check_contains docs/security/README.md 'crypto-profiles/README.md'
   check_contains docs/security/README.md 'CRYPTO_ALGORITHM_TEMPLATE.md'
   check_contains docs/security/CRYPTO_POLICY_ROADMAP.md 'CRYPTO_REGISTRY.md'
   check_contains docs/security/CRYPTO_POLICY_ROADMAP.md 'CRYPTO_ALGORITHM_TEMPLATE.md'
   check_contains docs/security/CRYPTO_POLICY_ROADMAP.md 'CRYPTO_OPERATOR_COMMANDS.md'
   check_contains docs/security/CRYPTO_POLICY_ROADMAP.md 'CRYPTO_CONFIG_SCHEMA.md'
+  check_contains docs/security/CRYPTO_POLICY_ROADMAP.md 'CRYPTO_IMPLEMENTATION_PLAN.md'
   check_contains docs/security/CRYPTO_POLICY_ROADMAP.md 'crypto-profiles/README.md'
   check_contains docs/security/CRYPTO_REGISTRY.md 'CRYPTO_ALGORITHM_TEMPLATE.md'
   check_contains docs/security/crypto-profiles/README.md 'SAFE_DEFAULT.md'
@@ -120,6 +123,20 @@ check_config_schema() {
   check_contains docs/security/CRYPTO_CONFIG_SCHEMA.md 'fyr-packages'
 }
 
+check_implementation_plan() {
+  check_contains docs/security/CRYPTO_IMPLEMENTATION_PLAN.md 'Phase1 crypto implementation plan'
+  check_contains docs/security/CRYPTO_IMPLEMENTATION_PLAN.md 'Documentation and registry surface'
+  check_contains docs/security/CRYPTO_IMPLEMENTATION_PLAN.md 'Read-only command surface'
+  check_contains docs/security/CRYPTO_IMPLEMENTATION_PLAN.md 'Config parser and validator'
+  check_contains docs/security/CRYPTO_IMPLEMENTATION_PLAN.md 'Provider abstraction'
+  check_contains docs/security/CRYPTO_IMPLEMENTATION_PLAN.md 'Test-vector harness'
+  check_contains docs/security/CRYPTO_IMPLEMENTATION_PLAN.md 'Profile policy engine'
+  check_contains docs/security/CRYPTO_IMPLEMENTATION_PLAN.md 'Scoped integration points'
+  check_contains docs/security/CRYPTO_IMPLEMENTATION_PLAN.md 'Migration and rollback tooling'
+  check_contains docs/security/CRYPTO_IMPLEMENTATION_PLAN.md 'No runtime control point should use cryptographic policy until the earlier phases are complete for that scope.'
+  check_contains docs/security/CRYPTO_IMPLEMENTATION_PLAN.md 'Do not implement these until their prerequisites exist'
+}
+
 check_guardrails() {
   check_contains docs/security/CRYPTO_POLICY_ROADMAP.md 'Phase1 should not invent new cryptographic primitives for security-critical use.'
   check_contains docs/security/CRYPTO_REGISTRY.md 'No algorithm is currently approved by this registry for new production security claims.'
@@ -138,6 +155,7 @@ check_non_claims() {
     docs/security/CRYPTO_ALGORITHM_TEMPLATE.md \
     docs/security/CRYPTO_OPERATOR_COMMANDS.md \
     docs/security/CRYPTO_CONFIG_SCHEMA.md \
+    docs/security/CRYPTO_IMPLEMENTATION_PLAN.md \
     docs/security/crypto-profiles/README.md \
     docs/security/crypto-profiles/SAFE_DEFAULT.md \
     docs/security/crypto-profiles/HIGH_SECURITY.md \
@@ -157,8 +175,9 @@ check_links_and_goals
 check_profiles
 check_operator_commands
 check_config_schema
+check_implementation_plan
 check_guardrails
 check_non_claims
 
-info 'integrity complete; crypto policy roadmap, registry, algorithm template, operator command plan, config schema, profile drafts, links, guardrails, and non-claims are present'
+info 'integrity complete; crypto policy roadmap, registry, algorithm template, operator command plan, config schema, implementation plan, profile drafts, links, guardrails, and non-claims are present'
 info 'writes: no'
