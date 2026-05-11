@@ -1,0 +1,119 @@
+name: Support request
+description: Ask for help using Phase1, Base1, Fyr, docs, or community support workflows.
+title: "support: "
+labels:
+  - support
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for asking for support. Please do not include secrets, tokens, private keys, recovery codes, private logs, or unrevised screenshots.
+
+        If this involves a private vulnerability, account compromise, safety bypass, or sensitive data exposure, do not file a public support issue. Follow `SECURITY.md` instead.
+
+  - type: dropdown
+    id: project_area
+    attributes:
+      label: Project area
+      options:
+        - Phase1
+        - Base1
+        - Fyr
+        - Security / trust guidance
+        - Crypto policy docs
+        - Website / branding
+        - Community / support
+        - Documentation
+        - Build / install
+        - Unsure
+    validations:
+      required: true
+
+  - type: textarea
+    id: goal
+    attributes:
+      label: What are you trying to do?
+      description: Describe the outcome or workflow you want help with.
+      placeholder: "Example: I am trying to launch Phase1 and run the first safe diagnostics."
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version, branch, or commit
+      description: Include the release, branch, or commit if known.
+      placeholder: "v6.0.0, edge/stable, or commit SHA"
+    validations:
+      required: false
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, terminal, device, Rust version, or relevant runtime details.
+      placeholder: "macOS, Linux, Windows, iOS terminal, Raspberry Pi, etc."
+    validations:
+      required: false
+
+  - type: textarea
+    id: command_or_page
+    attributes:
+      label: Command, page, or workflow involved
+      description: What command, script, doc page, or workflow are you using?
+      placeholder: "Example: sh phase1 doctor, docs/security/README.md, Fyr quick start, Base1 dry-run docs"
+    validations:
+      required: false
+
+  - type: textarea
+    id: what_happened
+    attributes:
+      label: What happened?
+      description: Describe the result, error, confusing step, or missing information.
+    validations:
+      required: true
+
+  - type: textarea
+    id: tried
+    attributes:
+      label: What have you already tried?
+      description: Include safe/read-only diagnostics if you ran them.
+      placeholder: |
+        sh phase1 version
+        sh phase1 doctor
+        sh phase1 selftest
+        sh scripts/quality-check.sh quick
+    validations:
+      required: false
+
+  - type: textarea
+    id: redacted_context
+    attributes:
+      label: Redacted context
+      description: Paste only redacted logs, redacted terminal output, or reviewed screenshots. Remove secrets and private paths when possible.
+      render: text
+    validations:
+      required: false
+
+  - type: dropdown
+    id: urgency
+    attributes:
+      label: Support urgency
+      options:
+        - General question
+        - Blocking local development
+        - Possible bug, but not confirmed
+        - Documentation gap
+        - Possible safety/security concern - I will avoid details and follow SECURITY.md if private
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety check
+      options:
+        - label: I removed secrets, tokens, private keys, recovery codes, private logs, and unrevised screenshots.
+          required: true
+        - label: I understand public support is not the place for private vulnerability details and will follow SECURITY.md if needed.
+          required: true
