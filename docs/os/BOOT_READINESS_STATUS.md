@@ -528,6 +528,10 @@ Expected behavior:
 | Base1 supervisor orchestration planner | Present | `scripts/base1-supervisor-orchestration-plan.sh` |
 | Base1 supervisor control-plane dispatcher | Present | `scripts/base1-supervisor-control-plane.sh` |
 | Base1 supervisor policy bus dispatcher | Present | `scripts/base1-supervisor-policy-bus.sh` |
+| Base1 supervisor storage-tier contract | Present | [`BASE1_SUPERVISOR_STORAGE_TIER.md`](BASE1_SUPERVISOR_STORAGE_TIER.md) |
+| Base1 supervisor storage-tier contract tests | Present | `tests/base1_supervisor_storage_tier_docs.rs` |
+| Base1 supervisor storage-tier planner | Present | `scripts/base1-supervisor-storage-tier-plan.sh` |
+| Base1 supervisor storage-tier planner tests | Present | `tests/base1_supervisor_storage_tier_plan_script.rs` |
 | B3 VM validation script | Present | `scripts/base1-b3-vm-validate.sh` |
 | B3 VM validation tests | Present | `tests/base1_b3_vm_validate_script.rs` |
 | VM validation report | Present scaffold | [`B3_VM_VALIDATION_REPORT.md`](B3_VM_VALIDATION_REPORT.md) |
