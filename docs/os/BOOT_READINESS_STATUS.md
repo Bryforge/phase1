@@ -9,7 +9,7 @@ This tracker shows what must be finished before Phase1/Base1 moves from planning
 
 The finish-first planning layer is complete for B1. The first B1 read-only detection script, guard tests, limitations note, limitations tests, validation report, and validation report tests now exist while preserving the B1 boundary.
 
-B2 planning has started with a dry-run assembly plan, plan tests, initial dry-run assembly script, script tests, and limitations note.
+B2 planning has started with a dry-run assembly plan, plan tests, initial dry-run assembly script, script tests, limitations note, and limitations tests.
 
 ## Current readiness level
 
@@ -121,7 +121,13 @@ cargo test -p phase1 --test base1_b2_assembly_dry_run_script
 
 B2 limitations are documented in [`B2_DRY_RUN_ASSEMBLY_LIMITATIONS.md`](B2_DRY_RUN_ASSEMBLY_LIMITATIONS.md).
 
-B2 remains dry-run-only until limitations tests, validation report, review, and status updates are complete.
+B2 limitations tests are present:
+
+```bash
+cargo test -p phase1 --test b2_dry_run_assembly_limitations_docs
+```
+
+B2 remains dry-run-only until validation report, review, and status updates are complete.
 
 ## B2 completion checklist
 
@@ -132,7 +138,7 @@ Before B2 is considered complete, confirm:
 - [x] B2 dry-run assembly script exists.
 - [x] B2 script tests exist.
 - [x] B2 known limitations are documented.
-- [ ] B2 limitations tests exist.
+- [x] B2 limitations tests exist.
 - [ ] B2 validation report exists.
 - [ ] B2 status is linked from README, OS roadmap, race plan, and x86_64 roadmap.
 - [ ] B2 output is reviewed for secret redaction.
@@ -190,6 +196,7 @@ Expected behavior:
 | B2 dry-run assembly plan | Present | [`B2_DRY_RUN_ASSEMBLY_PLAN.md`](B2_DRY_RUN_ASSEMBLY_PLAN.md) |
 | B2 dry-run assembly limitations note | Present | [`B2_DRY_RUN_ASSEMBLY_LIMITATIONS.md`](B2_DRY_RUN_ASSEMBLY_LIMITATIONS.md) |
 | B2 dry-run assembly plan tests | Present | `tests/b2_dry_run_assembly_plan_docs.rs` |
+| B2 dry-run assembly limitations tests | Present | `tests/b2_dry_run_assembly_limitations_docs.rs` |
 | B2 dry-run assembly script | Present | `scripts/base1-b2-assembly-dry-run.sh` |
 | B2 dry-run assembly tests | Present | `tests/base1_b2_assembly_dry_run_script.rs` |
 | VM validation report | Not started | planned |
