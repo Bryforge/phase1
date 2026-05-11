@@ -43,6 +43,57 @@ fn crypto_implementation_plan_preserves_security_rules() {
 }
 
 #[test]
+fn crypto_implementation_plan_lists_required_docs_including_provider_registry() {
+    let plan = std::fs::read_to_string("docs/security/CRYPTO_IMPLEMENTATION_PLAN.md")
+        .expect("crypto implementation plan");
+
+    for doc in [
+        "CRYPTO_POLICY_ROADMAP.md",
+        "CRYPTO_REGISTRY.md",
+        "CRYPTO_PROVIDER_REGISTRY.md",
+        "CRYPTO_ALGORITHM_TEMPLATE.md",
+        "CRYPTO_OPERATOR_COMMANDS.md",
+        "CRYPTO_CONFIG_SCHEMA.md",
+        "crypto-profiles/README.md",
+    ] {
+        assert!(plan.contains(doc), "missing required crypto doc {doc}: {plan}");
+    }
+
+    assert!(
+        plan.contains("no provider is approved for production claims by documentation alone"),
+        "{plan}"
+    );
+}
+
+#[test]
+fn crypto_implementation_plan_defines_provider_abstraction_requirements() {
+    let plan = std::fs::read_to_string("docs/security/CRYPTO_IMPLEMENTATION_PLAN.md")
+        .expect("crypto implementation plan");
+
+    assert!(
+        plan.contains("Provider metadata and review requirements are tracked in [`CRYPTO_PROVIDER_REGISTRY.md`](CRYPTO_PROVIDER_REGISTRY.md)."),
+        "{plan}"
+    );
+
+    for item in [
+        "provider name",
+        "library or crate name",
+        "version or source pinning plan",
+        "license",
+        "supported algorithms",
+        "supported platforms",
+        "audit/review status",
+        "test-vector source",
+        "failure behavior",
+        "unsupported providers fail closed",
+        "providers are not silently selected",
+        "no provider is used for production claims until registry status allows it",
+    ] {
+        assert!(plan.contains(item), "missing provider requirement {item}: {plan}");
+    }
+}
+
+#[test]
 fn crypto_implementation_plan_blocks_runtime_use_until_prerequisites() {
     let plan = std::fs::read_to_string("docs/security/CRYPTO_IMPLEMENTATION_PLAN.md")
         .expect("crypto implementation plan");
