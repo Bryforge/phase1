@@ -9,9 +9,9 @@ This roadmap defines how Base1 should grow toward automatic support for generic 
 
 The goal is to make x86_64 boot support boring and predictable: detect the system, choose the correct boot profile, expose required boot parameters, validate before mutation, and keep rollback/recovery available.
 
-Current boot readiness is tracked in [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md). The initial B1 read-only detection script is now present and must remain dry-run-only, read-only, and non-mutating.
+Current boot readiness is tracked in [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md). The initial B1 read-only detection script is present and the initial B2 dry-run assembly script is present. Both must remain dry-run-only, read-only/non-mutating, and evidence-bound.
 
-The first B1 implementation slice is planned in [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md).
+The first B1 implementation slice is planned in [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md). The B2 dry-run assembly slice is planned in [`B2_DRY_RUN_ASSEMBLY_PLAN.md`](B2_DRY_RUN_ASSEMBLY_PLAN.md).
 
 ## Security and hardening goal
 
@@ -108,12 +108,13 @@ Each profile should define:
 - known limitations;
 - non-claims.
 
-## Proposed read-only commands
+## Proposed read-only and dry-run commands
 
 Initial command work should be non-destructive:
 
 ```bash
 sh scripts/base1-x86_64-detect.sh --dry-run
+sh scripts/base1-b2-assembly-dry-run.sh --dry-run --profile x86_64-vm-validation
 sh scripts/base1-x86_64-boot-params.sh --dry-run
 sh scripts/base1-x86_64-profile-report.sh --dry-run
 sh scripts/base1-x86_64-validate.sh --dry-run
@@ -133,9 +134,38 @@ Initial B1 test:
 cargo test -p phase1 --test base1_x86_64_detect_script
 ```
 
-Implementation plan:
+B1 implementation plan:
 
 - [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md)
+
+B1 limitations and validation:
+
+- [`B1_READ_ONLY_DETECTION_LIMITATIONS.md`](B1_READ_ONLY_DETECTION_LIMITATIONS.md)
+- [`B1_READ_ONLY_DETECTION_VALIDATION.md`](B1_READ_ONLY_DETECTION_VALIDATION.md)
+
+The first B2 dry-run assembly slice is:
+
+```bash
+sh scripts/base1-b2-assembly-dry-run.sh --dry-run --profile x86_64-vm-validation
+```
+
+Initial B2 tests:
+
+```bash
+cargo test -p phase1 --test b2_dry_run_assembly_plan_docs
+cargo test -p phase1 --test base1_b2_assembly_dry_run_script
+cargo test -p phase1 --test b2_dry_run_assembly_limitations_docs
+cargo test -p phase1 --test b2_dry_run_assembly_validation_docs
+```
+
+B2 implementation plan:
+
+- [`B2_DRY_RUN_ASSEMBLY_PLAN.md`](B2_DRY_RUN_ASSEMBLY_PLAN.md)
+
+B2 limitations and validation:
+
+- [`B2_DRY_RUN_ASSEMBLY_LIMITATIONS.md`](B2_DRY_RUN_ASSEMBLY_LIMITATIONS.md)
+- [`B2_DRY_RUN_ASSEMBLY_VALIDATION.md`](B2_DRY_RUN_ASSEMBLY_VALIDATION.md)
 
 Expected B1 output categories:
 
@@ -148,11 +178,26 @@ Expected B1 output categories:
 - unknown/unsupported state warnings;
 - `writes: no`.
 
+Expected B2 output categories:
+
+- selected profile;
+- B1 detection summary;
+- profile assumptions;
+- image-builder preview;
+- boot handoff preview;
+- installer preview;
+- recovery preview;
+- rollback preview;
+- validation bundle preview;
+- known limitations;
+- `writes: no`.
+
 ## Validation requirements
 
 Before x86_64 support is claimed, the repository should contain:
 
 - read-only detection report;
+- dry-run assembly report;
 - boot parameter report;
 - boot profile report;
 - VM validation report;
@@ -193,6 +238,7 @@ Each hardening item must be labeled by status and validation level before being 
 - Link from the OS roadmap and Base1 docs.
 - Link from [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md).
 - Link from [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md).
+- Link from [`B2_DRY_RUN_ASSEMBLY_PLAN.md`](B2_DRY_RUN_ASSEMBLY_PLAN.md).
 - Add docs tests that preserve non-claims.
 
 ### Phase 2: read-only detection
@@ -204,27 +250,36 @@ Each hardening item must be labeled by status and validation level before being 
 - Write no disk state.
 - Keep current status visible in [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md).
 
-### Phase 3: boot parameter report
+### Phase 3: B2 dry-run assembly
+
+- Add dry-run assembly according to [`B2_DRY_RUN_ASSEMBLY_PLAN.md`](B2_DRY_RUN_ASSEMBLY_PLAN.md).
+- Initial script: `scripts/base1-b2-assembly-dry-run.sh`.
+- Initial tests: `tests/base1_b2_assembly_dry_run_script.rs`.
+- Preview profile, image, boot handoff, installer, recovery, rollback, validation bundle, and limitations.
+- Write no disk state.
+- Keep current status visible in [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md).
+
+### Phase 4: boot parameter report
 
 - Generate a read-only boot parameter report.
 - Explain required, optional, unknown, and unsupported parameters.
 - Preserve recovery and rollback guidance.
 
-### Phase 4: VM validation
+### Phase 5: VM validation
 
 - Validate generic x86_64 boot profile in a VM.
 - Capture logs and known limitations.
 - Do not generalize VM success to hardware claims.
 
-### Phase 5: physical hardware validation
+### Phase 6: physical hardware validation
 
 - Validate specific hardware classes one at a time.
 - Start with explicitly documented targets.
 - Require validation reports before hardware support claims.
 
-### Phase 6: installer integration
+### Phase 7: installer integration
 
-- Only after detection, boot parameter reporting, recovery, and rollback validation exist.
+- Only after detection, dry-run assembly, boot parameter reporting, recovery, and rollback validation exist.
 - Keep mutation explicit and recoverable.
 - Require confirmation for boot-loader or partition changes.
 
@@ -244,6 +299,11 @@ Each hardening item must be labeled by status and validation level before being 
 - [`BOOT_READINESS_RACE_PLAN.md`](BOOT_READINESS_RACE_PLAN.md)
 - [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md)
 - [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md)
+- [`B1_READ_ONLY_DETECTION_LIMITATIONS.md`](B1_READ_ONLY_DETECTION_LIMITATIONS.md)
+- [`B1_READ_ONLY_DETECTION_VALIDATION.md`](B1_READ_ONLY_DETECTION_VALIDATION.md)
+- [`B2_DRY_RUN_ASSEMBLY_PLAN.md`](B2_DRY_RUN_ASSEMBLY_PLAN.md)
+- [`B2_DRY_RUN_ASSEMBLY_LIMITATIONS.md`](B2_DRY_RUN_ASSEMBLY_LIMITATIONS.md)
+- [`B2_DRY_RUN_ASSEMBLY_VALIDATION.md`](B2_DRY_RUN_ASSEMBLY_VALIDATION.md)
 - [`BASE1_IMAGE_BUILDER.md`](BASE1_IMAGE_BUILDER.md)
 - [`INSTALLER_RECOVERY.md`](INSTALLER_RECOVERY.md)
 - [`BASE1_DRY_RUN_COMMANDS.md`](BASE1_DRY_RUN_COMMANDS.md)
@@ -255,6 +315,6 @@ Each hardening item must be labeled by status and validation level before being 
 
 This roadmap does not make Base1 bootable on all x86_64 systems.
 
-It does not claim hardened boot, secure boot support, measured boot support, installer readiness, recovery completion, hardware validation, or daily-driver readiness.
+It does not claim hardened boot, secure boot support, measured boot support, installer readiness, recovery completion, VM validation, hardware validation, or daily-driver readiness.
 
-It defines the plan for automatic x86_64 detection, boot parameter inventory, validation, and future hardening work.
+It defines the plan for automatic x86_64 detection, dry-run assembly, boot parameter inventory, validation, and future hardening work.
