@@ -11,7 +11,9 @@ The finish-first planning layer is complete for B1. The first B1 read-only detec
 
 B2 planning has started with a dry-run assembly plan, plan tests, initial dry-run assembly script, script tests, limitations note, limitations tests, validation report, validation report tests, output review, output review tests, focused test-suite command bundle, test-suite bundle tests, focused test-suite checker script, focused test-suite checker tests, OS roadmap boot-readiness tests, QEMU visual boot preview script, visual boot preview script tests, QEMU visual boot preview docs, QEMU visual boot preview doc tests, and a local focused-suite pass record.
 
-B3 planning has started with a VM boot validation plan, plan tests, limitations note, limitations tests, VM boot log capture notes, VM boot log capture notes tests, an initial B3 UEFI proof-of-life script, B3 UEFI proof script tests, B3 kernel/initrd handoff script, B3 kernel/initrd handoff tests, B3 kernel/initrd handoff docs, B3 kernel/initrd handoff doc tests, B3 GNU/Linux stage script, B3 GNU/Linux stage tests, B3 GNU/Linux stage docs, B3 GNU/Linux stage doc tests, B3 OpenBSD stage script, B3 OpenBSD stage tests, B3 OpenBSD stage docs, B3 OpenBSD stage doc tests, B3 OpenBSD serial limitation docs, B3 OpenBSD serial limitation tests, B3 VM validation script, B3 VM validation script tests, an initial B3 VM validation report scaffold, and B3 VM validation report tests.
+B3 planning has started with a VM boot validation plan, plan tests, limitations note, limitations tests, VM boot log capture notes, VM boot log capture notes tests, an initial B3 UEFI proof-of-life script, B3 UEFI proof script tests, B3 kernel/initrd handoff script, B3 kernel/initrd handoff tests, B3 kernel/initrd handoff docs, B3 kernel/initrd handoff doc tests, B3 GNU/Linux stage script, B3 GNU/Linux stage tests, B3 GNU/Linux stage docs, B3 GNU/Linux stage doc tests, B3 OpenBSD stage script, B3 OpenBSD stage tests, B3 OpenBSD stage docs, B3 OpenBSD stage doc tests, B3 OpenBSD serial limitation docs, B3 OpenBSD serial limitation tests, B3 VM validation script, B3 VM validation script tests, an initial B3 reviewed VM evidence is recorded in [`B3_REVIEWED_VM_EVIDENCE.md`](B3_REVIEWED_VM_EVIDENCE.md) with `reviewed_vm_evidence`, `BASE1_B3_EVIDENCE_STATE=evidence-present`, `BASE1_B3_EVIDENCE_SUMMARY_COUNT=4`, and `BASE1_B3_LOG_REVIEW_RESULT=pass`. This remains VM evidence only and does not claim physical hardware readiness.
+
+B3 VM validation report scaffold, and B3 VM validation report tests.
 
 ## Current readiness level
 
@@ -536,6 +538,7 @@ Expected behavior:
 | Base1 supervisor storage-tier contract tests | Present | `tests/base1_supervisor_storage_tier_docs.rs` |
 | Base1 supervisor storage-tier planner | Present | `scripts/base1-supervisor-storage-tier-plan.sh` |
 | Base1 supervisor storage-tier planner tests | Present | `tests/base1_supervisor_storage_tier_plan_script.rs` |
+| B3 reviewed VM evidence | Present | [`B3_REVIEWED_VM_EVIDENCE.md`](B3_REVIEWED_VM_EVIDENCE.md) |
 | B3 VM validation script | Present | `scripts/base1-b3-vm-validate.sh` |
 | B3 VM validation tests | Present | `tests/base1_b3_vm_validate_script.rs` |
 | VM validation report | Present scaffold | [`B3_VM_VALIDATION_REPORT.md`](B3_VM_VALIDATION_REPORT.md) |
