@@ -204,4 +204,3 @@ printf '  - B3 GNU/Linux stage summary/log when used\n'
 printf '  - B3 OpenBSD stage summary/log when used\n'
 printf '  - validation report promoted from scaffold to reviewed evidence\n'
 printf 'non_claims: no installer; no recovery validation; no hardening; no hardware validation; no daily-driver claim\n'
-EOF
