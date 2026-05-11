@@ -566,3 +566,9 @@ Do not describe the current Base1 boot path as hardened until implementation, te
 This status tracker does not make Base1 bootable, installer-ready, recovery-complete, hardened, hardware-validated, release-candidate ready, or daily-driver ready.
 
 It records that the first B1 read-only detection script exists and remains bounded to detection-preview behavior only. B2 has an initial dry-run assembly script and local focused-suite pass record, but remains dry-run preview only. B3 is planning plus proof-of-life, handoff, GNU/Linux staging, OpenBSD staging, and validation-report scaffolding until reviewed VM validation evidence exists.
+
+B6 hardware boot evidence scaffold is present.
+
+Current B6 baseline evidence is recorded in `build/base1-b6-hardware-boot-evidence/b6-hardware-boot-evidence.env` with `BASE1_B6_HARDWARE_BOOT_RESULT=not_attempted` and `BASE1_B6_HARDWARE_BOOT_CLAIM=not_claimed`.
+
+B6 remains a named hardware boot evidence scaffold only until a real target machine records `boot_menu_seen`, `boot_started`, or `phase1_marker_seen`.
