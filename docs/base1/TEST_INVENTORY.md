@@ -23,6 +23,14 @@ sh scripts/base1-test-inventory.sh
 
 The reporter lists `tests/base1_*.rs`, `tests/quality_base1_*.rs`, and other `tests/*base1*.rs` files without changing the repository.
 
+Use the read-only verifier:
+
+```bash
+sh scripts/base1-test-inventory-verify.sh
+```
+
+The verifier compares reporter output against this document and fails if a reported Base1 test is missing from the inventory.
+
 ## Core and OS-track tests
 
 | Test file | Coverage |
@@ -42,7 +50,10 @@ The reporter lists `tests/base1_*.rs`, `tests/quality_base1_*.rs`, and other `te
 | `tests/base1_script_compatibility_plan_docs.rs` | Script compatibility plan docs. |
 | `tests/base1_link_check_strategy_docs.rs` | Link-check strategy docs. |
 | `tests/base1_link_check_script.rs` | Local Base1 link-check script behavior. |
-| `tests/quality_base1_docs_gate.rs` | Quality gate integration for `base1-docs`, integrity, and link checks. |
+| `tests/base1_test_inventory_script.rs` | Test inventory reporter behavior. |
+| `tests/base1_test_inventory_verify_script.rs` | Test inventory verifier behavior. |
+| `tests/base1_post_reorganization_layout_docs.rs` | Post-reorganization layout docs. |
+| `tests/quality_base1_docs_gate.rs` | Quality gate integration for `base1-docs`, integrity, link checks, and test inventory verification. |
 
 ## Libreboot tests
 
