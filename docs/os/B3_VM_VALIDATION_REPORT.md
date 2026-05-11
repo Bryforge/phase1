@@ -21,10 +21,10 @@ The current evidence demonstrates that the B3 emulator scaffolds can produce loc
 | Evidence item | Current status | Evidence path | Claim boundary |
 | --- | --- | --- | --- |
 | B3 UEFI proof | Present locally | `build/base1-b3-uefi-proof/reports/b3-summary.env` | Emulator-only UEFI proof-of-life. |
+| B3 kernel/initrd handoff | Present locally | `build/base1-b3-kernel-handoff/reports/qemu-boot-summary.env` | Known-good local kernel/initrd handoff evidence; Linux kernel-start marker only. |
 | B3 GNU/Linux stage | Present locally | `build/base1-b3-gnulinux-stage/reports/qemu-boot-summary.env` | Hardened-profile request and Linux kernel-start evidence only. |
 | B3 OpenBSD stage | Present locally | `build/base1-b3-openbsd-stage/reports/openbsd-qemu-summary.env` | Launch-check evidence only until serial marker routing is tuned. |
 | B3 OpenBSD serial marker limitation | Documented | [`B3_OPENBSD_SERIAL_LIMITATION.md`](B3_OPENBSD_SERIAL_LIMITATION.md) | Marker-check is a known limitation until serial routing is tuned. |
-| B3 kernel/initrd handoff | Not yet present locally | `build/base1-b3-kernel-handoff/reports/qemu-boot-summary.env` | Requires a known-good local kernel/initrd check. |
 
 ## Commands represented by this report
 
@@ -32,6 +32,18 @@ UEFI proof evidence:
 
 ```bash
 sh scripts/base1-b3-uefi-proof.sh --build --check
+```
+
+Kernel/initrd handoff evidence:
+
+```bash
+sh scripts/base1-b3-kernel-handoff.sh \
+  --kernel build/linux/alpine-netboot/vmlinuz \
+  --initrd build/linux/alpine-netboot/initrd.img \
+  --check \
+  --boot-profile hardened \
+  --expect "Linux version" \
+  --timeout 45
 ```
 
 GNU/Linux hardened-profile stage evidence:
@@ -62,6 +74,18 @@ sh scripts/base1-b3-vm-validate.sh \
   --profile x86_64-vm-validation \
   --write-report
 ```
+
+## Kernel/initrd handoff interpretation
+
+The generic B3 kernel/initrd handoff has now staged the local Alpine netboot kernel/initrd pair and checked for this serial marker:
+
+```text
+Linux version
+```
+
+This proves the handoff pipeline can stage a caller-provided local kernel/initrd pair and observe Linux kernel-start evidence under QEMU.
+
+It does not prove a complete userspace boot, a Phase1 launch, installer readiness, hardware support, or hardening.
 
 ## GNU/Linux stage interpretation
 
@@ -97,7 +121,6 @@ The OpenBSD serial marker limitation is documented in [`B3_OPENBSD_SERIAL_LIMITA
 Before B3 can become “VM boot validated,” the project still needs:
 
 - B2 focused test suite pass record;
-- known-good local kernel/initrd handoff check;
 - reviewed B3 log bundle;
 - explicit VM profile;
 - explicit VM runtime;
@@ -109,4 +132,4 @@ Before B3 can become “VM boot validated,” the project still needs:
 
 This report does not make Base1 bootable on physical hardware, installer-ready, recovery-complete, hardened, hardware-validated, release-candidate ready, or daily-driver ready.
 
-It records local emulator evidence and preserves the current B3 boundary: proof-of-life, GNU/Linux kernel-start stage evidence, OpenBSD launch-check stage evidence, documented OpenBSD serial-marker limitation, and validation scaffolding only.
+It records local emulator evidence and preserves the current B3 boundary: proof-of-life, kernel/initrd handoff evidence, GNU/Linux kernel-start stage evidence, OpenBSD launch-check stage evidence, documented OpenBSD serial-marker limitation, and validation scaffolding only.
