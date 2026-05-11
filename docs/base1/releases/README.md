@@ -5,6 +5,12 @@ Scope: Base1 read-only release/checkpoint notes
 
 This directory collects Base1 release and checkpoint notes that used to live at the repository root. Keeping them here reduces root clutter while preserving the same non-claims, guardrails, and validation references.
 
+## Pre-move safety
+
+- [Release/checkpoint pre-move checks](PRE_MOVE_CHECKS.md)
+
+Use the pre-move checks before changing this group. Root checkpoint-note files remain compatibility paths and must not be removed during this phase.
+
 ## Libreboot checkpoints
 
 - [Base1 Libreboot read-only validation checkpoint v1](RELEASE_BASE1_LIBREBOOT_READONLY_V1.md)
@@ -19,7 +25,7 @@ This directory collects Base1 release and checkpoint notes that used to live at 
 
 ## Reorganization rule
 
-Release/checkpoint notes may move here only when inbound links, tests, and integrity checks are updated in the same change set.
+Release/checkpoint notes may move here only when inbound links, tests, integrity checks, link checks, and test-inventory verification are updated in the same change set.
 
 ## Non-claims
 
