@@ -9,6 +9,8 @@ This roadmap defines how Base1 should grow toward automatic support for generic 
 
 The goal is to make x86_64 boot support boring and predictable: detect the system, choose the correct boot profile, expose required boot parameters, validate before mutation, and keep rollback/recovery available.
 
+Current boot readiness is tracked in [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md). Do not start B1 implementation until that tracker says the finish-first gate is complete.
+
 ## Security and hardening goal
 
 Base1 and Phase1 should become as hardened as practical over time while maintaining usability.
@@ -117,6 +119,23 @@ sh scripts/base1-x86_64-validate.sh --dry-run
 
 These commands should report `writes: no` until installer mutation is separately designed and validated.
 
+The first B1 implementation slice should be only:
+
+```bash
+sh scripts/base1-x86_64-detect.sh --dry-run
+```
+
+Expected B1 output categories:
+
+- architecture hints;
+- firmware hints;
+- boot-loader hints;
+- virtualization hints;
+- storage-layout hints;
+- recovery availability hints;
+- unknown/unsupported state warnings;
+- `writes: no`.
+
 ## Validation requirements
 
 Before x86_64 support is claimed, the repository should contain:
@@ -160,6 +179,7 @@ Each hardening item must be labeled by status and validation level before being 
 - Define boot profile names.
 - Define required boot parameter categories.
 - Link from the OS roadmap and Base1 docs.
+- Link from [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md).
 - Add docs tests that preserve non-claims.
 
 ### Phase 2: read-only detection
@@ -167,6 +187,7 @@ Each hardening item must be labeled by status and validation level before being 
 - Add dry-run architecture and firmware detection.
 - Report x86_64, UEFI/BIOS/Libreboot hints, storage layout, boot loader hints, and recovery availability.
 - Write no disk state.
+- Keep current status visible in [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md).
 
 ### Phase 3: boot parameter report
 
@@ -205,6 +226,8 @@ Each hardening item must be labeled by status and validation level before being 
 ## Related docs
 
 - [`ROADMAP.md`](ROADMAP.md)
+- [`BOOT_READINESS_RACE_PLAN.md`](BOOT_READINESS_RACE_PLAN.md)
+- [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md)
 - [`BASE1_IMAGE_BUILDER.md`](BASE1_IMAGE_BUILDER.md)
 - [`INSTALLER_RECOVERY.md`](INSTALLER_RECOVERY.md)
 - [`BASE1_DRY_RUN_COMMANDS.md`](BASE1_DRY_RUN_COMMANDS.md)
