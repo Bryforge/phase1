@@ -9,7 +9,7 @@ This tracker shows what must be finished before Phase1/Base1 moves from planning
 
 The finish-first planning layer is complete for B1. The first B1 read-only detection script, guard tests, limitations note, limitations tests, validation report, and validation report tests now exist while preserving the B1 boundary.
 
-B2 planning has started with a dry-run assembly plan, plan tests, initial dry-run assembly script, script tests, limitations note, limitations tests, validation report, validation report tests, output review, and output review tests.
+B2 planning has started with a dry-run assembly plan, plan tests, initial dry-run assembly script, script tests, limitations note, limitations tests, validation report, validation report tests, output review, output review tests, and focused test-suite command bundle.
 
 ## Current readiness level
 
@@ -25,7 +25,7 @@ Do not claim Base1 boot readiness, installer readiness, hardware validation, har
 | --- | --- | --- | --- |
 | B0 | Documentation ready | Complete for B1 start | Roadmaps, status tracker, checklist, links, tests. |
 | B1 | Read-only detection ready | Initial script present | Dry-run detection script, no writes, architecture/firmware/boot hints, limitations note, validation report. |
-| B2 | Dry-run assembly ready | Initial script present | Dry-run assembly plan, image/install/recovery previews with explicit no-write behavior, limitations note, validation report, output review. |
+| B2 | Dry-run assembly ready | Initial script present | Dry-run assembly plan, image/install/recovery previews with explicit no-write behavior, limitations note, validation report, output review, test-suite bundle. |
 | B3 | VM boot validated | Not started | VM boot report, logs, known limitations. |
 | B4 | Recovery validated | Not started | Emergency shell, recovery media, rollback report. |
 | B5 | Physical target validated | Not started | Named hardware validation report. |
@@ -143,6 +143,8 @@ B2 output review tests are present:
 cargo test -p phase1 --test b2_dry_run_assembly_output_review_docs
 ```
 
+B2 focused test-suite command bundle is documented in [`B2_DRY_RUN_ASSEMBLY_TEST_SUITE.md`](B2_DRY_RUN_ASSEMBLY_TEST_SUITE.md).
+
 B2 status and boundaries are linked from README, OS roadmap, race plan, and x86_64 roadmap.
 
 B2 remains dry-run-only until validation has passed locally or in CI.
@@ -163,6 +165,7 @@ Before B2 is considered complete, confirm:
 - [x] B2 does not contain mutating boot, disk, package, or network commands.
 - [x] B2 output is reviewed for secret redaction.
 - [x] B2 output review tests exist.
+- [x] B2 focused test-suite command bundle exists.
 - [ ] B2 test suite passes in CI or local validation.
 
 ## Planned first coding slice
@@ -218,6 +221,7 @@ Expected behavior:
 | B2 dry-run assembly limitations note | Present | [`B2_DRY_RUN_ASSEMBLY_LIMITATIONS.md`](B2_DRY_RUN_ASSEMBLY_LIMITATIONS.md) |
 | B2 dry-run assembly validation report | Present | [`B2_DRY_RUN_ASSEMBLY_VALIDATION.md`](B2_DRY_RUN_ASSEMBLY_VALIDATION.md) |
 | B2 dry-run assembly output review | Present | [`B2_DRY_RUN_ASSEMBLY_OUTPUT_REVIEW.md`](B2_DRY_RUN_ASSEMBLY_OUTPUT_REVIEW.md) |
+| B2 dry-run assembly test suite | Present | [`B2_DRY_RUN_ASSEMBLY_TEST_SUITE.md`](B2_DRY_RUN_ASSEMBLY_TEST_SUITE.md) |
 | B2 dry-run assembly plan tests | Present | `tests/b2_dry_run_assembly_plan_docs.rs` |
 | B2 dry-run assembly limitations tests | Present | `tests/b2_dry_run_assembly_limitations_docs.rs` |
 | B2 dry-run assembly validation tests | Present | `tests/b2_dry_run_assembly_validation_docs.rs` |
