@@ -19,6 +19,8 @@ TIMEOUT_SECONDS=${BASE1_QEMU_BOOT_TIMEOUT:-30}
 EXPECT=${BASE1_QEMU_EXPECT_MARKER:-phase1 6.0.0 ready}
 QEMU_BIN=${BASE1_QEMU:-qemu-system-x86_64}
 MEMORY_MB=${BASE1_QEMU_MEMORY_MB:-1024}
+BOOT_PROFILE=${BASE1_QEMU_BOOT_PROFILE:-standard}
+EXTRA_APPEND=${BASE1_QEMU_EXTRA_APPEND:-}
 
 usage() {
   cat <<'USAGE'
@@ -34,7 +36,13 @@ options:
   --confirm <phrase>   required with --execute; phrase: launch-qemu-base1-preview
   --timeout <seconds>  max runtime before terminating QEMU, default: 30
   --expect <text>      serial marker required for PASS, default: phase1 6.0.0 ready
+  --boot-profile <p>   kernel command-line profile: standard or hardened
+  --append <text>      extra kernel command-line text appended after profile settings
   -h, --help           show this help
+
+profiles:
+  standard   serial console, safe preview flags, host tools disabled
+  hardened   standard profile plus hardening-oriented Linux kernel parameters
 
 outputs:
   <bundle>/reports/qemu-boot.log
@@ -46,7 +54,11 @@ result model:
   failed        marker missing or bundle invalid
 
 non-claims:
-  This is emulator-only boot evidence. It does not install Base1, validate real hardware, validate recovery, validate an installer, or prove daily-driver readiness. A pass only means the selected bundle emitted the expected marker during this QEMU run.
+  This is emulator-only boot evidence. The hardened profile requests Linux
+  hardening-oriented kernel parameters, but it does not prove the system is
+  hardened. This script does not install Base1, validate real hardware, validate
+  recovery, validate an installer, or prove daily-driver readiness. A pass only
+  means the selected bundle emitted the expected marker during this QEMU run.
 USAGE
 }
 
@@ -63,6 +75,20 @@ require_build_bundle() {
   case "$1" in
     build/*) return 0 ;;
     *) return 1 ;;
+  esac
+}
+
+append_for_profile() {
+  case "$1" in
+    standard)
+      printf '%s\n' 'console=ttyS0,115200 earlyprintk=serial,ttyS0,115200 loglevel=8 base1.preview=1 base1.emulator=1 phase1.safe=1 phase1.host_tools=0'
+      ;;
+    hardened)
+      printf '%s\n' 'console=ttyS0,115200 earlyprintk=serial,ttyS0,115200 loglevel=8 base1.preview=1 base1.emulator=1 phase1.safe=1 phase1.host_tools=0 module.sig_enforce=1 lockdown=confidentiality lsm=landlock,lockdown,yama,integrity,apparmor,bpf random.trust_cpu=off slab_nomerge init_on_alloc=1 init_on_free=1 page_alloc.shuffle=1 pti=on vsyscall=none debugfs=off oops=panic panic=10 quiet'
+      ;;
+    *)
+      return 1
+      ;;
   esac
 }
 
@@ -96,6 +122,16 @@ while [ "$#" -gt 0 ]; do
       EXPECT=$2
       shift 2
       ;;
+    --boot-profile)
+      [ "$#" -ge 2 ] || fail '--boot-profile requires a value'
+      BOOT_PROFILE=$2
+      shift 2
+      ;;
+    --append)
+      [ "$#" -ge 2 ] || fail '--append requires a value'
+      EXTRA_APPEND=$2
+      shift 2
+      ;;
     -h|--help)
       usage
       exit 0
@@ -116,6 +152,11 @@ case "$MEMORY_MB" in
 esac
 [ "$MEMORY_MB" -gt 0 ] || fail 'BASE1_QEMU_MEMORY_MB must be greater than zero'
 
+APPEND=$(append_for_profile "$BOOT_PROFILE") || fail "unsupported boot profile: $BOOT_PROFILE"
+if [ -n "$EXTRA_APPEND" ]; then
+  APPEND="$APPEND $EXTRA_APPEND"
+fi
+
 require_build_bundle "$BUNDLE_DIR" || fail "bundle must be under build/: $BUNDLE_DIR"
 [ -d "$BUNDLE_DIR" ] || fail "bundle directory does not exist: $BUNDLE_DIR"
 [ -f "$BUNDLE_DIR/run-qemu-bundle.sh" ] || fail "missing bundle QEMU scaffold: $BUNDLE_DIR/run-qemu-bundle.sh"
@@ -129,7 +170,6 @@ SUMMARY="$REPORTS_DIR/qemu-boot-summary.env"
 KERNEL="$BUNDLE_DIR/staging/boot/vmlinuz"
 INITRD="$BUNDLE_DIR/staging/boot/initrd.img"
 SANDBOX="$BUNDLE_DIR/base1-sandbox.raw"
-APPEND="console=ttyS0,115200 earlyprintk=serial,ttyS0,115200 loglevel=8 base1.preview=1 base1.emulator=1 phase1.safe=1 phase1.host_tools=0"
 
 printf 'BASE1 QEMU BOOT CHECK\n'
 printf 'bundle : %s\n' "$BUNDLE_DIR"
@@ -137,12 +177,14 @@ printf 'mode   : %s\n' "$MODE"
 printf 'expect : %s\n' "$EXPECT"
 printf 'timeout: %ss\n' "$TIMEOUT_SECONDS"
 printf 'qemu   : %s\n' "$QEMU_BIN"
+printf 'profile: %s\n' "$BOOT_PROFILE"
+printf 'append : %s\n' "$APPEND"
 
 if [ "$MODE" = "dry-run" ]; then
   printf '\nplan: sh %s/run-qemu-bundle.sh\n' "$BUNDLE_DIR"
   printf 'serial-capture-plan: %s -display none -serial file:%s\n' "$QEMU_BIN" "$LOG"
   printf 'result: dry-run\n'
-  printf 'non-claims: no emulator launched; no installer run; no hardware validation performed\n'
+  printf 'non-claims: no emulator launched; no installer run; no hardware validation performed; hardened profile is request-only\n'
   exit 0
 fi
 
@@ -187,8 +229,11 @@ BASE1_QEMU_BOOT_RESULT=$result
 BASE1_QEMU_BOOT_EXIT_CODE=$rc
 BASE1_QEMU_BOOT_EXPECT=$EXPECT
 BASE1_QEMU_BOOT_LOG=reports/qemu-boot.log
+BASE1_QEMU_BOOT_PROFILE=$BOOT_PROFILE
+BASE1_QEMU_BOOT_APPEND=$APPEND
 BASE1_NON_CLAIM_HARDWARE_VALIDATED=1
 BASE1_NON_CLAIM_INSTALLER=1
+BASE1_NON_CLAIM_HARDENED=1
 BASE1_NON_CLAIM_DAILY_DRIVER=1
 EOF
 
@@ -196,6 +241,6 @@ printf '\nqemu-exit-code: %s\n' "$rc"
 printf 'result: %s\n' "$result"
 printf 'log: %s\n' "$LOG"
 printf 'summary: %s\n' "$SUMMARY"
-printf 'non-claims: emulator-only evidence; no installer; no hardware validation; no daily-driver claim\n'
+printf 'non-claims: emulator-only evidence; no installer; no hardware validation; no hardening proof; no daily-driver claim\n'
 
 [ "$result" = "pass" ] || exit 1
