@@ -43,3 +43,31 @@ The loaded profile defines:
 - evidence requirements;
 - recovery behavior;
 - non-claim boundaries.
+
+## Command surface
+
+The supervisor control plane should expose a small command surface:
+
+- status
+- plan
+- stage-artifact
+- validate-artifact
+- launch-preview
+- capture-evidence
+- request-recovery
+- stop
+
+## Policy gates
+
+The control plane must load the selected Base1 profile before doing any work.
+
+The selected profile must define:
+
+- maximum staged-kernel concurrency
+- target RAM budget
+- storage-tier policy
+- evidence requirements
+- recovery behavior
+- non-claim boundaries
+
+The control plane must reject work that exceeds the selected profile, especially on X200-class low-resource targets.
