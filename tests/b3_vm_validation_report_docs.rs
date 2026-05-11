@@ -27,10 +27,13 @@ fn b3_vm_validation_report_records_evidence_items() {
         "build/base1-b3-gnulinux-stage/reports/qemu-boot-summary.env",
         "B3 OpenBSD stage",
         "build/base1-b3-openbsd-stage/reports/openbsd-qemu-summary.env",
+        "B3 OpenBSD serial marker limitation",
+        "B3_OPENBSD_SERIAL_LIMITATION.md",
         "B3 kernel/initrd handoff",
         "build/base1-b3-kernel-handoff/reports/qemu-boot-summary.env",
         "Hardened-profile request and Linux kernel-start evidence only.",
         "Launch-check evidence only until serial marker routing is tuned.",
+        "Marker-check is a known limitation until serial routing is tuned.",
     ] {
         assert!(report.contains(text), "missing evidence item text {text}: {report}");
     }
@@ -72,6 +75,7 @@ fn b3_vm_validation_report_preserves_interpretation_boundaries() {
         "requires the expected serial marker",
         "does not prove OpenBSD booted to installer or userland",
         "inside the local evidence boundary",
+        "OpenBSD serial marker limitation is documented",
     ] {
         assert!(report.contains(text), "missing interpretation boundary text {text}: {report}");
     }
@@ -85,7 +89,6 @@ fn b3_vm_validation_report_lists_remaining_requirements_and_non_claims() {
     for text in [
         "B2 focused test suite pass record",
         "known-good local kernel/initrd handoff check",
-        "OpenBSD serial marker routing or a documented limitation",
         "reviewed B3 log bundle",
         "explicit VM profile",
         "explicit VM runtime",
@@ -99,6 +102,7 @@ fn b3_vm_validation_report_lists_remaining_requirements_and_non_claims() {
         "hardware-validated",
         "release-candidate ready",
         "daily-driver ready",
+        "documented OpenBSD serial-marker limitation",
     ] {
         assert!(report.contains(text), "missing remaining requirement/non-claim text {text}: {report}");
     }
