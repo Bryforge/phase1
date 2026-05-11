@@ -48,6 +48,16 @@ Each registry entry should include:
 
 Use [`CRYPTO_ALGORITHM_TEMPLATE.md`](CRYPTO_ALGORITHM_TEMPLATE.md) for each algorithm, design, profile component, or implementation provider added to the registry.
 
+## Provider registry
+
+Phase1 should also maintain a provider registry for implementation providers, libraries, crates, and platform capabilities.
+
+The provider registry is planned in [`CRYPTO_PROVIDER_REGISTRY.md`](CRYPTO_PROVIDER_REGISTRY.md).
+
+Provider entries should document provider source, license, version/source pinning, supported algorithms, supported platforms, feature flags, review status, test-vector source, failure behavior, and non-claims.
+
+No provider should be connected to runtime behavior until it is documented, reviewed, and compatible with the selected profile and control point.
+
 ## Operator-selectable profiles
 
 Phase1 should support named cryptographic profiles. The profile planning index is [`crypto-profiles/README.md`](crypto-profiles/README.md).
@@ -169,6 +179,8 @@ Every supported algorithm page should use [`CRYPTO_ALGORITHM_TEMPLATE.md`](CRYPT
 8. Migration and rotation guidance.
 9. Non-claims.
 
+Every provider entry should follow [`CRYPTO_PROVIDER_REGISTRY.md`](CRYPTO_PROVIDER_REGISTRY.md) before it is connected to runtime behavior.
+
 Every profile should follow the structure in [`crypto-profiles/README.md`](crypto-profiles/README.md) before it is connected to runtime behavior.
 
 Every config schema change should follow [`CRYPTO_CONFIG_SCHEMA.md`](CRYPTO_CONFIG_SCHEMA.md) before it is connected to runtime behavior.
@@ -192,6 +204,7 @@ Crypto profile changes should:
 ### Phase 1: registry and docs
 
 - Create registry format: [`CRYPTO_REGISTRY.md`](CRYPTO_REGISTRY.md).
+- Create provider registry: [`CRYPTO_PROVIDER_REGISTRY.md`](CRYPTO_PROVIDER_REGISTRY.md).
 - Create algorithm documentation template: [`CRYPTO_ALGORITHM_TEMPLATE.md`](CRYPTO_ALGORITHM_TEMPLATE.md).
 - Create profile planning index: [`crypto-profiles/README.md`](crypto-profiles/README.md).
 - Create operator command plan: [`CRYPTO_OPERATOR_COMMANDS.md`](CRYPTO_OPERATOR_COMMANDS.md).
@@ -224,6 +237,7 @@ Crypto profile changes should:
 ### Phase 5: review readiness
 
 - Algorithm inventory reports.
+- Provider inventory reports.
 - Test vector coverage.
 - Dependency review.
 - External audit checklist.
