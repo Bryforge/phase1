@@ -4,7 +4,7 @@ Welcome to the repository-first documentation home for Phase1.
 
 The long-form manual is organized as **The Phase1 Codex: Building a Terminal-First Operating World**.
 
-Start with [`MANUAL_ROADMAP.md`](MANUAL_ROADMAP.md) for the full book, manual, and wiki plan.
+Start with [`MANUAL_ROADMAP.md`](MANUAL_ROADMAP.md) for the full book, manual, and wiki plan. Use [`REPOSITORY_NAVIGATION.md`](REPOSITORY_NAVIGATION.md) when you need the fastest path to a repository area, support template, contribution workflow, or validation gate.
 
 ## Status boundary
 
@@ -14,12 +14,21 @@ Start with [`MANUAL_ROADMAP.md`](MANUAL_ROADMAP.md) for the full book, manual, a
 >
 > **Non-claims:** Phase1 is not currently a finished secure OS replacement, Base1 is not currently a released bootable daily-driver image, and Fyr is not currently claimed as a production language.
 
+## Fast navigation
+
+- [`REPOSITORY_NAVIGATION.md`](REPOSITORY_NAVIGATION.md) — repository map, fast paths, reader paths, issue-template chooser, quality-gate chooser, and reorganization rules.
+- [`../README.md`](../README.md) — public project entry point and quick start.
+- [`../CONTRIBUTING.md`](../CONTRIBUTING.md) — repository-wide contribution guidelines.
+- [`../QUALITY.md`](../QUALITY.md) — quality gates and validation commands.
+- [`../SECURITY.md`](../SECURITY.md) — security model and reporting guidance.
+
 ## Reader paths
 
 | Reader | Start | Purpose |
 | --- | --- | --- |
 | First-time user | [`operators/README.md`](operators/README.md) | Launch Phase1 safely and understand the current boundary. |
 | Operator | [`phase1/README.md`](phase1/README.md) | Learn boot modes, shell workflows, VFS, host tools, and logs. |
+| Repository navigator | [`REPOSITORY_NAVIGATION.md`](REPOSITORY_NAVIGATION.md) | Find the right repo area, support path, contribution path, or validation gate quickly. |
 | Contributor | [`../CONTRIBUTING.md`](../CONTRIBUTING.md) | Prepare repository contributions while preserving quality, safety, compatibility, and non-claims. |
 | Developer | [`developers/README.md`](developers/README.md) | Extend Phase1 while preserving tests, docs, and capability metadata. |
 | Security reviewer | [`security/TRUST_MODEL.md`](security/TRUST_MODEL.md) | Review safety claims, trust boundaries, and host-tool behavior. |
@@ -30,6 +39,7 @@ Start with [`MANUAL_ROADMAP.md`](MANUAL_ROADMAP.md) for the full book, manual, a
 
 ## Manual sections
 
+- [`REPOSITORY_NAVIGATION.md`](REPOSITORY_NAVIGATION.md) — repository navigation guide and fast-path map.
 - [`phase1/`](phase1/) — Phase1 Operator Manual.
 - [`base1/`](base1/) — Base1 Recovery and OS Foundation Manual.
 - [`fyr/`](fyr/) — Fyr Language Book.
@@ -47,6 +57,14 @@ Start with [`MANUAL_ROADMAP.md`](MANUAL_ROADMAP.md) for the full book, manual, a
 - [`developers/DOCS_CONTRIBUTING.md`](developers/DOCS_CONTRIBUTING.md) — documentation contribution guide.
 - [`developers/PR_CHECKLIST.md`](developers/PR_CHECKLIST.md) — documentation PR checklist.
 - [`../.github/pull_request_template.md`](../.github/pull_request_template.md) — pull request template.
+
+## Support and issue entry points
+
+- [`../.github/ISSUE_TEMPLATE/bug_report.yml`](../.github/ISSUE_TEMPLATE/bug_report.yml) — reproducible defects.
+- [`../.github/ISSUE_TEMPLATE/support_request.yml`](../.github/ISSUE_TEMPLATE/support_request.yml) — help using the project.
+- [`../.github/ISSUE_TEMPLATE/feature_request.yml`](../.github/ISSUE_TEMPLATE/feature_request.yml) — proposed improvements.
+- [`../.github/ISSUE_TEMPLATE/documentation_issue.yml`](../.github/ISSUE_TEMPLATE/documentation_issue.yml) — documentation problems.
+- [`community/README.md`](community/README.md) — community support planning.
 
 ## Required page status block
 
