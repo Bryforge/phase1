@@ -2,7 +2,7 @@
 
 > **Status:** Roadmap and design index.
 >
-> **Validation:** Links to current Base1 design docs, dry-run scripts, inventory, test inventory, migration table, script compatibility plan, link-check strategy, post-reorganization layout, readiness checklist, compatibility maps, validation runbook, validation report template, validation reports archive, preview stack runbook, preview checks, and future validation reports.
+> **Validation:** Links to current Base1 design docs, dry-run scripts, inventory, test inventory, migration table, script compatibility plan, link-check strategy, post-reorganization layout, pre-move checklist, readiness checklist, compatibility maps, validation runbook, validation report template, validation reports archive, preview stack runbook, preview checks, and future validation reports.
 >
 > **Non-claims:** Base1 is not currently documented here as a released bootable daily-driver image, finished secure OS replacement, or destructive installer-ready system.
 
@@ -32,6 +32,7 @@ Base1 is the planned minimal host foundation for future Phase1-first bootable en
 - [`SCRIPT_COMPATIBILITY_PLAN.md`](SCRIPT_COMPATIBILITY_PLAN.md)
 - [`LINK_CHECK_STRATEGY.md`](LINK_CHECK_STRATEGY.md)
 - [`POST_REORGANIZATION_LAYOUT.md`](POST_REORGANIZATION_LAYOUT.md)
+- [`PRE_MOVE_CHECKLIST.md`](PRE_MOVE_CHECKLIST.md)
 - [`REORGANIZATION_READINESS.md`](REORGANIZATION_READINESS.md)
 - [`DOCUMENTATION_ORGANIZATION_PLAN.md`](DOCUMENTATION_ORGANIZATION_PLAN.md)
 - [`ROOT_COMPATIBILITY_MAP.md`](ROOT_COMPATIBILITY_MAP.md)
@@ -68,6 +69,8 @@ Use [`LINK_CHECK_STRATEGY.md`](LINK_CHECK_STRATEGY.md) before moving Base1 markd
 
 Use [`POST_REORGANIZATION_LAYOUT.md`](POST_REORGANIZATION_LAYOUT.md) as the proposed stable layout target before any broad Base1 file movement.
 
+Use [`PRE_MOVE_CHECKLIST.md`](PRE_MOVE_CHECKLIST.md) before moving or mirroring any Base1 group. It defines required inventory, tests, compatibility, link-check, and quality-gate checks.
+
 ## Base1 wording rule
 
 Use `planned`, `design`, `dry-run`, `preview`, or `validated` according to evidence. Do not call Base1 bootable, daily-driver ready, recovery-complete, or installer-ready without release artifacts and validation reports.
@@ -100,6 +103,7 @@ Store future Base1 reports under [`validation/`](validation/) so evidence remain
 - [Base1 script compatibility plan](SCRIPT_COMPATIBILITY_PLAN.md)
 - [Base1 link-check strategy](LINK_CHECK_STRATEGY.md)
 - [Base1 post-reorganization layout](POST_REORGANIZATION_LAYOUT.md)
+- [Base1 pre-move checklist](PRE_MOVE_CHECKLIST.md)
 - [Reorganization readiness checklist](REORGANIZATION_READINESS.md)
 - [Documentation organization plan](DOCUMENTATION_ORGANIZATION_PLAN.md)
 - [Root compatibility map](ROOT_COMPATIBILITY_MAP.md)
