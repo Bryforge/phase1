@@ -2,10 +2,9 @@
 # Record the best observed X200 external USB boot result.
 #
 # Usage examples:
+#   sh scripts/x200-b7-record-result.sh phase1_runtime_workspace_seen
+#   sh scripts/x200-b7-record-result.sh phase1_persistent_workspace_seen
 #   sh scripts/x200-b7-record-result.sh phase1_gnulinux_shell_seen
-#   sh scripts/x200-b7-record-result.sh phase1_gnulinux_initramfs_seen
-#   sh scripts/x200-b7-record-result.sh blocked_after_gnulinux_load
-#   sh scripts/x200-b7-record-result.sh phase1_polished_system_seen
 #
 # This writes a small evidence file only. It does not write disks, boot
 # anything, or make an installer/daily-driver claim.
@@ -21,13 +20,15 @@ REPORT="$OUT_DIR/b7-hardware-boot-evidence.env"
 fail() { printf 'x200-b7-record-result: %s\n' "$1" >&2; exit 1; }
 
 case "$RESULT" in
-  phase1_gnulinux_shell_seen|phase1_gnulinux_initramfs_seen|blocked_after_gnulinux_load|phase1_polished_system_seen|phase1_splash_mode_seen|phase1_system_console_v2_seen|phase1_system_console_seen|phase1_seabios_multiboot_seen|blocked_after_seabios_multiboot_load|phase1_seabios_grub_seen|seabios_usb_not_booting|phase1_mbr_bootsector_seen|blocked_after_seabios_payload|phase1_bootsector_seen|blocked_after_chainload|phase1_keyboard_input_not_observed|phase1_kernel_keyboard_console_seen|phase1_kernel_framebuffer_seen|phase1_kernel_vga_console_seen|phase1_grub_console_seen|phase1_multiboot_kernel_seen|phase1_initramfs_shell|boot_started|reset_after_linux16_handoff|blocked_after_multiboot_load|blocked_after_initrd_load|blocked_after_kernel_load|phase1_marker_seen|blocked|failed) : ;;
+  phase1_runtime_workspace_seen|phase1_persistent_workspace_seen|phase1_gnulinux_shell_seen|phase1_gnulinux_initramfs_seen|blocked_after_gnulinux_load|phase1_polished_system_seen|phase1_splash_mode_seen|phase1_system_console_v2_seen|phase1_system_console_seen|phase1_seabios_multiboot_seen|blocked_after_seabios_multiboot_load|phase1_seabios_grub_seen|seabios_usb_not_booting|phase1_mbr_bootsector_seen|blocked_after_seabios_payload|phase1_bootsector_seen|blocked_after_chainload|phase1_keyboard_input_not_observed|phase1_kernel_keyboard_console_seen|phase1_kernel_framebuffer_seen|phase1_kernel_vga_console_seen|phase1_grub_console_seen|phase1_multiboot_kernel_seen|phase1_initramfs_shell|boot_started|reset_after_linux16_handoff|blocked_after_multiboot_load|blocked_after_initrd_load|blocked_after_kernel_load|phase1_marker_seen|blocked|failed) : ;;
   *)
     cat <<'USAGE'
 Usage:
   sh scripts/x200-b7-record-result.sh <result>
 
 Allowed results:
+  phase1_runtime_workspace_seen
+  phase1_persistent_workspace_seen
   phase1_gnulinux_shell_seen
   phase1_gnulinux_initramfs_seen
   blocked_after_gnulinux_load
