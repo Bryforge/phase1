@@ -64,6 +64,7 @@ fn crypto_policy_roadmap_documents_registry_and_algorithm_requirements() {
 
     for text in [
         "Cryptographic capability registry",
+        "CRYPTO_REGISTRY.md",
         "CRYPTO_ALGORITHM_TEMPLATE.md",
         "algorithm or design name",
         "implementation provider",
@@ -78,6 +79,37 @@ fn crypto_policy_roadmap_documents_registry_and_algorithm_requirements() {
     ] {
         assert!(roadmap.contains(text), "missing registry/doc requirement {text}: {roadmap}");
     }
+}
+
+#[test]
+fn crypto_policy_roadmap_links_operator_commands_and_config_schema() {
+    let roadmap = std::fs::read_to_string("docs/security/CRYPTO_POLICY_ROADMAP.md")
+        .expect("crypto policy roadmap");
+
+    for text in [
+        "CRYPTO_OPERATOR_COMMANDS.md",
+        "CRYPTO_CONFIG_SCHEMA.md",
+        "Operator command surface",
+        "Configuration model",
+        "Unknown profiles and scopes should fail closed.",
+        "Every config schema change should follow [`CRYPTO_CONFIG_SCHEMA.md`](CRYPTO_CONFIG_SCHEMA.md)",
+        "Create operator command plan: [`CRYPTO_OPERATOR_COMMANDS.md`](CRYPTO_OPERATOR_COMMANDS.md).",
+        "Create config schema plan: [`CRYPTO_CONFIG_SCHEMA.md`](CRYPTO_CONFIG_SCHEMA.md).",
+    ] {
+        assert!(roadmap.contains(text), "missing roadmap config/operator text {text}: {roadmap}");
+    }
+}
+
+#[test]
+fn crypto_policy_roadmap_links_all_profile_planning_docs() {
+    let roadmap = std::fs::read_to_string("docs/security/CRYPTO_POLICY_ROADMAP.md")
+        .expect("crypto policy roadmap");
+
+    assert!(roadmap.contains("crypto-profiles/README.md"), "{roadmap}");
+    assert!(
+        roadmap.contains("Draft safe-default, high-security, compatibility, post-quantum-preview, and lab-only profiles."),
+        "{roadmap}"
+    );
 }
 
 #[test]
@@ -135,22 +167,21 @@ fn crypto_policy_roadmap_preserves_non_claims() {
 }
 
 #[test]
-fn security_index_links_crypto_policy_roadmap_and_template() {
+fn security_index_links_crypto_policy_surface() {
     let index = std::fs::read_to_string("docs/security/README.md")
         .expect("security docs index");
 
-    assert!(index.contains("CRYPTO_POLICY_ROADMAP.md"), "{index}");
-    assert!(index.contains("CRYPTO_ALGORITHM_TEMPLATE.md"), "{index}");
-    assert!(
-        index.contains("cryptographic policy docs"),
-        "{index}"
-    );
-    assert!(
-        index.contains("cryptographic completeness"),
-        "{index}"
-    );
-    assert!(
-        index.contains("algorithm pages use [`CRYPTO_ALGORITHM_TEMPLATE.md`](CRYPTO_ALGORITHM_TEMPLATE.md)"),
-        "{index}"
-    );
+    for text in [
+        "CRYPTO_POLICY_ROADMAP.md",
+        "CRYPTO_REGISTRY.md",
+        "CRYPTO_OPERATOR_COMMANDS.md",
+        "CRYPTO_CONFIG_SCHEMA.md",
+        "CRYPTO_ALGORITHM_TEMPLATE.md",
+        "crypto-profiles/README.md",
+        "cryptographic completeness",
+        "algorithm pages use [`CRYPTO_ALGORITHM_TEMPLATE.md`](CRYPTO_ALGORITHM_TEMPLATE.md)",
+        "crypto configuration follows [`CRYPTO_CONFIG_SCHEMA.md`](CRYPTO_CONFIG_SCHEMA.md)",
+    ] {
+        assert!(index.contains(text), "missing security index text {text}: {index}");
+    }
 }
