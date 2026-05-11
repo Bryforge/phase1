@@ -45,6 +45,7 @@ Required docs:
 
 - [`CRYPTO_POLICY_ROADMAP.md`](CRYPTO_POLICY_ROADMAP.md)
 - [`CRYPTO_REGISTRY.md`](CRYPTO_REGISTRY.md)
+- [`CRYPTO_PROVIDER_REGISTRY.md`](CRYPTO_PROVIDER_REGISTRY.md)
 - [`CRYPTO_ALGORITHM_TEMPLATE.md`](CRYPTO_ALGORITHM_TEMPLATE.md)
 - [`CRYPTO_OPERATOR_COMMANDS.md`](CRYPTO_OPERATOR_COMMANDS.md)
 - [`CRYPTO_CONFIG_SCHEMA.md`](CRYPTO_CONFIG_SCHEMA.md)
@@ -55,7 +56,8 @@ Exit criteria:
 - all docs are linked from the security index;
 - all docs are checked by `scripts/security-crypto-doc-integrity.sh`;
 - profile drafts preserve non-claims;
-- no algorithm is approved for production claims by documentation alone.
+- no algorithm is approved for production claims by documentation alone;
+- no provider is approved for production claims by documentation alone.
 
 ## Phase 2: read-only command surface
 
@@ -106,6 +108,8 @@ Exit criteria:
 
 Add a provider layer that can map registry entries to reviewed implementation providers.
 
+Provider metadata and review requirements are tracked in [`CRYPTO_PROVIDER_REGISTRY.md`](CRYPTO_PROVIDER_REGISTRY.md).
+
 Provider entries should include:
 
 - provider name;
@@ -124,7 +128,8 @@ Exit criteria:
 - provider metadata is inspectable;
 - unsupported providers fail closed;
 - providers are not silently selected;
-- tests verify provider metadata and rejection behavior.
+- tests verify provider metadata and rejection behavior;
+- no provider is used for production claims until registry status allows it.
 
 ## Phase 5: test-vector harness
 
@@ -243,6 +248,7 @@ Do not implement these until their prerequisites exist:
 
 - [`CRYPTO_POLICY_ROADMAP.md`](CRYPTO_POLICY_ROADMAP.md)
 - [`CRYPTO_REGISTRY.md`](CRYPTO_REGISTRY.md)
+- [`CRYPTO_PROVIDER_REGISTRY.md`](CRYPTO_PROVIDER_REGISTRY.md)
 - [`CRYPTO_OPERATOR_COMMANDS.md`](CRYPTO_OPERATOR_COMMANDS.md)
 - [`CRYPTO_CONFIG_SCHEMA.md`](CRYPTO_CONFIG_SCHEMA.md)
 - [`CRYPTO_ALGORITHM_TEMPLATE.md`](CRYPTO_ALGORITHM_TEMPLATE.md)
