@@ -13,7 +13,7 @@ fn x86_64_boot_support_roadmap_defines_scope_and_safety_boundary() {
         "{roadmap}"
     );
     assert!(
-        roadmap.contains("dry-run-only, read-only, and non-mutating"),
+        roadmap.contains("dry-run-only, read-only/non-mutating, and evidence-bound"),
         "{roadmap}"
     );
 }
@@ -114,6 +114,8 @@ fn x86_64_boot_support_roadmap_documents_b1_script_and_tests() {
         "sh scripts/base1-x86_64-detect.sh --dry-run",
         "cargo test -p phase1 --test base1_x86_64_detect_script",
         "B1_READ_ONLY_DETECTION_PLAN.md",
+        "B1_READ_ONLY_DETECTION_LIMITATIONS.md",
+        "B1_READ_ONLY_DETECTION_VALIDATION.md",
         "Initial script: `scripts/base1-x86_64-detect.sh`.",
         "Initial tests: `tests/base1_x86_64_detect_script.rs`.",
         "architecture hints;",
@@ -125,6 +127,33 @@ fn x86_64_boot_support_roadmap_documents_b1_script_and_tests() {
         "`writes: no`.",
     ] {
         assert!(roadmap.contains(text), "missing B1 script/test text {text}: {roadmap}");
+    }
+}
+
+#[test]
+fn x86_64_boot_support_roadmap_documents_b2_script_and_tests() {
+    let roadmap = std::fs::read_to_string("docs/os/X86_64_BOOT_SUPPORT_ROADMAP.md")
+        .expect("x86_64 boot support roadmap");
+
+    for text in [
+        "sh scripts/base1-b2-assembly-dry-run.sh --dry-run --profile x86_64-vm-validation",
+        "cargo test -p phase1 --test b2_dry_run_assembly_plan_docs",
+        "cargo test -p phase1 --test base1_b2_assembly_dry_run_script",
+        "cargo test -p phase1 --test b2_dry_run_assembly_limitations_docs",
+        "cargo test -p phase1 --test b2_dry_run_assembly_validation_docs",
+        "B2_DRY_RUN_ASSEMBLY_PLAN.md",
+        "B2_DRY_RUN_ASSEMBLY_LIMITATIONS.md",
+        "B2_DRY_RUN_ASSEMBLY_VALIDATION.md",
+        "selected profile;",
+        "B1 detection summary;",
+        "image-builder preview;",
+        "boot handoff preview;",
+        "installer preview;",
+        "recovery preview;",
+        "rollback preview;",
+        "validation bundle preview;",
+    ] {
+        assert!(roadmap.contains(text), "missing B2 script/test text {text}: {roadmap}");
     }
 }
 
@@ -160,6 +189,11 @@ fn x86_64_boot_support_roadmap_links_required_docs() {
         "BOOT_READINESS_RACE_PLAN.md",
         "BOOT_READINESS_STATUS.md",
         "B1_READ_ONLY_DETECTION_PLAN.md",
+        "B1_READ_ONLY_DETECTION_LIMITATIONS.md",
+        "B1_READ_ONLY_DETECTION_VALIDATION.md",
+        "B2_DRY_RUN_ASSEMBLY_PLAN.md",
+        "B2_DRY_RUN_ASSEMBLY_LIMITATIONS.md",
+        "B2_DRY_RUN_ASSEMBLY_VALIDATION.md",
         "BASE1_IMAGE_BUILDER.md",
         "INSTALLER_RECOVERY.md",
         "BASE1_DRY_RUN_COMMANDS.md",
@@ -183,6 +217,7 @@ fn x86_64_boot_support_roadmap_preserves_non_claims() {
         "measured boot support",
         "installer readiness",
         "recovery completion",
+        "VM validation",
         "hardware validation",
         "daily-driver readiness",
     ] {
