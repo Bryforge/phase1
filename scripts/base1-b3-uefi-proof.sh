@@ -26,9 +26,9 @@ Marker:
   phase1 6.0.0 ready
 
 Display behavior:
-  GRUB executes the boot proof directly instead of drawing a menu. This avoids
-  macOS QEMU rendering GRUB menu frame glyphs as box/glitch characters while
-  still showing readable proof text over the splash.
+  Visible QEMU runs show the splash plus readable GRUB proof text. The build
+  prefers GRUB's unicode.pf2 font, then falls back to a generated monospaced
+  font, so menu/text glyphs render correctly instead of box/glitch characters.
 
 Non-claims:
   This is QEMU/OVMF proof-of-life only. It does not make Base1 installer-ready,
@@ -85,6 +85,7 @@ IMG="$ROOT_DIR/build/base1-b3-uefi-proof.img"
 SPLASH_SOURCE="$ROOT_DIR/assets/phase1_word.png"
 SPLASH_FIT="$WORK_DIR/boot/grub/phase1-qemu-splash-fit.png"
 SPLASH="$WORK_DIR/boot/grub/phase1-qemu-splash.png"
+GRUB_FONT="$WORK_DIR/boot/grub/fonts/phase1.pf2"
 REPORTS_DIR="$WORK_DIR/reports"
 SERIAL_LOG="$REPORTS_DIR/b3-serial.log"
 SUMMARY="$REPORTS_DIR/b3-summary.env"
@@ -95,6 +96,12 @@ SPLASH_MAX_EDGE=560
 qemu_share() {
   if have brew; then
     brew --prefix qemu 2>/dev/null | sed 's:$:/share/qemu:'
+  fi
+}
+
+grub_prefix() {
+  if have brew; then
+    brew --prefix x86_64-elf-grub 2>/dev/null || true
   fi
 }
 
@@ -126,17 +133,47 @@ generate_splash() {
     "$SPLASH_FIT" --out "$SPLASH" >/dev/null 2>&1
 }
 
+copy_grub_unicode_font() {
+  local prefix found
+  prefix=$(grub_prefix || true)
+  if [ -n "$prefix" ]; then
+    found=$(find "$prefix" -name 'unicode.pf2' 2>/dev/null | head -n 1 || true)
+    if [ -n "$found" ] && [ -f "$found" ]; then
+      cp "$found" "$GRUB_FONT"
+      return 0
+    fi
+  fi
+  found=$(find /opt/homebrew /usr/local -path '*grub*' -name 'unicode.pf2' 2>/dev/null | head -n 1 || true)
+  if [ -n "$found" ] && [ -f "$found" ]; then
+    cp "$found" "$GRUB_FONT"
+    return 0
+  fi
+  return 1
+}
+
 generate_font() {
   local mkfont font_src
+  if copy_grub_unicode_font; then
+    return 0
+  fi
+
   mkfont=$(command -v x86_64-elf-grub-mkfont || command -v grub-mkfont || true)
-  [ -n "$mkfont" ] || return 0
-  font_src="/System/Library/Fonts/Supplemental/Arial.ttf"
-  if [ ! -f "$font_src" ]; then
-    font_src=$(find /System/Library/Fonts /Library/Fonts -name '*.ttf' 2>/dev/null | head -n 1 || true)
-  fi
-  if [ -n "$font_src" ] && [ -f "$font_src" ]; then
-    "$mkfont" -s 24 -o "$WORK_DIR/boot/grub/fonts/phase1.pf2" "$font_src"
-  fi
+  [ -n "$mkfont" ] || fail 'missing grub-mkfont and unicode.pf2; install x86_64-elf-grub'
+
+  for font_src in \
+    "/System/Library/Fonts/Monaco.ttf" \
+    "/System/Library/Fonts/Menlo.ttc" \
+    "/System/Library/Fonts/Supplemental/Courier New.ttf" \
+    "/System/Library/Fonts/Supplemental/Arial.ttf"
+  do
+    if [ -f "$font_src" ]; then
+      if "$mkfont" -s 24 -o "$GRUB_FONT" "$font_src" >/dev/null 2>&1; then
+        [ -s "$GRUB_FONT" ] && return 0
+      fi
+    fi
+  done
+
+  fail 'could not prepare a GRUB font for readable gfxterm output'
 }
 
 write_grub_config() {
@@ -159,10 +196,10 @@ serial --unit=0 --speed=115200 --word=8 --parity=no --stop=1
 set gfxmode=1024x768,auto
 set gfxpayload=keep
 
-# Load a real GRUB font before enabling gfxterm. Enabling gfxterm first can make
-# proof text render as square/glitch glyphs on macOS QEMU.
+# Load a known-good GRUB font before enabling gfxterm. Missing or mismatched
+# fonts make ASCII/menu text render as repeated box/glitch glyphs on macOS QEMU.
 if loadfont /boot/grub/fonts/phase1.pf2; then
-  set gfxterm_font=phase1
+  true
 fi
 
 terminal_input console serial
@@ -174,14 +211,14 @@ set color_highlight=black/light-cyan
 search --file /boot/grub/phase1-qemu-splash.png --set=root
 background_image /boot/grub/phase1-qemu-splash.png
 
-# Do not use menuentry here. GRUB menu frames use box-drawing glyphs that can
-# render as repeated square/glitch characters in macOS QEMU before/around gfxterm.
-clear
-background_image /boot/grub/phase1-qemu-splash.png
-echo "base1 b3 uefi proof start"
-echo "$MARKER"
-echo "emulator-only evidence; no installer; no hardware-validation claim"
-sleep --interruptible 9999
+menuentry "Phase1 / Base1 B3 UEFI proof" {
+    clear
+    background_image /boot/grub/phase1-qemu-splash.png
+    echo "base1 b3 uefi proof start"
+    echo "$MARKER"
+    echo "emulator-only evidence; no installer; no hardware-validation claim"
+    sleep --interruptible 9999
+}
 EOF
 }
 
@@ -210,14 +247,14 @@ build_image() {
   mmd -i "$IMG" ::/EFI ::/EFI/BOOT ::/boot ::/boot/grub ::/boot/grub/fonts
   mcopy -i "$IMG" "$WORK_DIR/EFI/BOOT/BOOTX64.EFI" ::/EFI/BOOT/BOOTX64.EFI
   mcopy -i "$IMG" "$SPLASH" ::/boot/grub/phase1-qemu-splash.png
-  if [ -f "$WORK_DIR/boot/grub/fonts/phase1.pf2" ]; then
-    mcopy -i "$IMG" "$WORK_DIR/boot/grub/fonts/phase1.pf2" ::/boot/grub/fonts/phase1.pf2
+  if [ -f "$GRUB_FONT" ]; then
+    mcopy -i "$IMG" "$GRUB_FONT" ::/boot/grub/fonts/phase1.pf2
   fi
 
   printf 'base1_b3_uefi_proof: built %s\n' "$IMG"
   printf 'marker: %s\n' "$MARKER"
   printf 'splash: assets/phase1_word.png fitted to %sx%s max edge %s\n' "$SPLASH_WIDTH" "$SPLASH_HEIGHT" "$SPLASH_MAX_EDGE"
-  printf 'display: direct readable overlay; GRUB menu frame disabled\n'
+  printf 'display: readable GRUB overlay with unicode font\n'
   printf 'boot_readiness_claim: no\n'
 }
 
