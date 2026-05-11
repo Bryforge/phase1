@@ -147,6 +147,8 @@ B2 output review tests are present:
 cargo test -p phase1 --test b2_dry_run_assembly_output_review_docs
 ```
 
+B2 focused test-suite evidence is recorded locally in `build/base1-b2-test-suite/b2-test-suite-summary.env` with `BASE1_B2_TEST_SUITE_RESULT=pass` and remains a dry-run assembly claim only.
+
 B2 focused test-suite command bundle is documented in [`B2_DRY_RUN_ASSEMBLY_TEST_SUITE.md`](B2_DRY_RUN_ASSEMBLY_TEST_SUITE.md).
 
 B2 test-suite bundle tests are present:
