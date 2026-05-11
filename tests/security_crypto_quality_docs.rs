@@ -48,10 +48,14 @@ fn quality_docs_define_security_crypto_gate_scope() {
         "docs/security/CRYPTO_REGISTRY.md",
         "docs/security/CRYPTO_ALGORITHM_TEMPLATE.md",
         "docs/security/CRYPTO_OPERATOR_COMMANDS.md",
+        "docs/security/CRYPTO_CONFIG_SCHEMA.md",
         "docs/security/crypto-profiles/README.md",
         "all current profile drafts are present",
         "profile drafts link the registry and algorithm template",
         "operator command plans fail closed for unknown scopes and profiles",
+        "config schema fails closed for unknown scopes and profiles",
+        "config schema blocks `lab-only` outside lab/docs/tests scopes",
+        "config schema requires reasons for `compatibility` and `post-quantum-preview`",
         "lab-only profile use is blocked outside lab/docs/tests scopes",
         "deprecated, rejected, or lab-only entries are blocked from production scopes",
         "custom security-critical primitives are rejected",
@@ -77,6 +81,10 @@ fn quality_docs_preserve_crypto_safety_baseline() {
     );
     assert!(
         quality.contains("cryptographic operator commands fail closed for unknown scopes and profiles"),
+        "{quality}"
+    );
+    assert!(
+        quality.contains("cryptographic config fails closed for unknown scopes and profiles"),
         "{quality}"
     );
 }
