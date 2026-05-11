@@ -19,7 +19,7 @@ Crypto profiles should provide safe defaults for normal users and explicit, revi
 
 | Profile | Status | Purpose |
 | --- | --- | --- |
-| `safe-default` | planned | Conservative default choices for normal operators. |
+| [`safe-default`](SAFE_DEFAULT.md) | planned | Conservative default choices for normal operators. |
 | `high-security` | planned | Stricter choices for advanced operators. |
 | `compatibility` | planned | Interoperability with warnings and explicit consent. |
 | `post-quantum-preview` | planned | PQC-oriented options with maturity warnings. |
@@ -48,6 +48,10 @@ Every profile document should define:
 - Lab-only profiles must not protect real data or production workflows.
 - No profile may claim audit completion, certification, quantum safety, or production hardening without evidence.
 - No profile may use registry entries that lack documentation through `docs/security/CRYPTO_ALGORITHM_TEMPLATE.md`.
+
+## Current profile drafts
+
+- [`SAFE_DEFAULT.md`](SAFE_DEFAULT.md) — planned normal-operator default profile.
 
 ## Related docs
 
