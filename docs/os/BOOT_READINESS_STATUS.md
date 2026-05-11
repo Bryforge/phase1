@@ -11,7 +11,7 @@ The finish-first planning layer is complete for B1. The first B1 read-only detec
 
 B2 planning has started with a dry-run assembly plan, plan tests, initial dry-run assembly script, script tests, limitations note, limitations tests, validation report, validation report tests, output review, output review tests, focused test-suite command bundle, test-suite bundle tests, OS roadmap boot-readiness tests, QEMU visual boot preview script, visual boot preview script tests, QEMU visual boot preview docs, and QEMU visual boot preview doc tests.
 
-B3 planning has started with a VM boot validation plan, plan tests, limitations note, limitations tests, VM boot log capture notes, an initial B3 UEFI proof-of-life script, B3 UEFI proof script tests, B3 kernel/initrd handoff script, B3 kernel/initrd handoff tests, B3 kernel/initrd handoff docs, B3 kernel/initrd handoff doc tests, B3 GNU/Linux stage script, B3 GNU/Linux stage tests, B3 GNU/Linux stage docs, B3 GNU/Linux stage doc tests, B3 OpenBSD stage script, B3 OpenBSD stage tests, B3 OpenBSD stage docs, B3 OpenBSD stage doc tests, B3 VM validation script, B3 VM validation script tests, an initial B3 VM validation report scaffold, and B3 VM validation report tests.
+B3 planning has started with a VM boot validation plan, plan tests, limitations note, limitations tests, VM boot log capture notes, VM boot log capture notes tests, an initial B3 UEFI proof-of-life script, B3 UEFI proof script tests, B3 kernel/initrd handoff script, B3 kernel/initrd handoff tests, B3 kernel/initrd handoff docs, B3 kernel/initrd handoff doc tests, B3 GNU/Linux stage script, B3 GNU/Linux stage tests, B3 GNU/Linux stage docs, B3 GNU/Linux stage doc tests, B3 OpenBSD stage script, B3 OpenBSD stage tests, B3 OpenBSD stage docs, B3 OpenBSD stage doc tests, B3 VM validation script, B3 VM validation script tests, an initial B3 VM validation report scaffold, and B3 VM validation report tests.
 
 ## Current readiness level
 
@@ -233,6 +233,12 @@ cargo test -p phase1 --test b3_vm_boot_validation_limitations_docs
 
 B3 VM boot log capture notes are documented in [`B3_VM_BOOT_LOGS.md`](B3_VM_BOOT_LOGS.md).
 
+B3 VM boot log capture notes tests are present:
+
+```bash
+cargo test -p phase1 --test b3_vm_boot_logs_docs
+```
+
 Planned B3 dry-run command shape:
 
 ```bash
@@ -357,7 +363,7 @@ Before B3 is considered complete, confirm:
 - [x] B3 limitations note exists.
 - [x] B3 limitations tests exist.
 - [x] B3 log capture notes exist.
-- [ ] B3 log capture notes tests exist.
+- [x] B3 log capture notes tests exist.
 - [ ] B2 test suite has passed locally or in CI.
 - [x] B3 UEFI proof script exists.
 - [x] B3 UEFI proof script tests exist.
@@ -458,6 +464,7 @@ Expected behavior:
 | B3 VM boot validation plan | Present | [`B3_VM_BOOT_VALIDATION_PLAN.md`](B3_VM_BOOT_VALIDATION_PLAN.md) |
 | B3 VM boot validation limitations note | Present | [`B3_VM_BOOT_VALIDATION_LIMITATIONS.md`](B3_VM_BOOT_VALIDATION_LIMITATIONS.md) |
 | B3 VM boot log capture notes | Present | [`B3_VM_BOOT_LOGS.md`](B3_VM_BOOT_LOGS.md) |
+| B3 VM boot log capture notes tests | Present | `tests/b3_vm_boot_logs_docs.rs` |
 | B3 kernel/initrd handoff doc | Present | [`B3_KERNEL_INITRD_HANDOFF.md`](B3_KERNEL_INITRD_HANDOFF.md) |
 | B3 GNU/Linux stage doc | Present | [`B3_GNULINUX_STAGE.md`](B3_GNULINUX_STAGE.md) |
 | B3 OpenBSD stage doc | Present | [`B3_OPENBSD_STAGE.md`](B3_OPENBSD_STAGE.md) |
