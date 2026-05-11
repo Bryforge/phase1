@@ -47,3 +47,5 @@ build/**/*.pf2
 build/**/*.png
 build/linux/
 build/openbsd/
+
+build/*
