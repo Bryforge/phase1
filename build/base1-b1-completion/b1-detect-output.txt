@@ -1,0 +1,43 @@
+base1_x86_64_detect: start
+status: B1 read-only detection preview
+writes: no
+mutation: no
+network: no
+
+architecture:
+  machine: arm64
+  x86_64_hint: no
+  warning: this B1 detector is scoped to x86_64 planning
+
+firmware:
+  mode_hint: bios_or_unknown
+  efivars_hint: absent_or_unavailable
+
+boot_loader:
+  grub_hint: absent_or_unknown
+  systemd_boot_hint: absent_or_unknown
+  selected_hint: unknown
+
+kernel_cmdline:
+  available: no
+  value: unknown
+
+virtualization:
+  hint: unknown
+
+storage_layout:
+  source: unknown
+  value: unknown
+
+recovery:
+  recovery_path_hint: absent_or_unknown
+  emergency_mode_hint: absent_or_unknown
+
+unknowns:
+  boot_profile: requires future profile report
+  boot_parameters: requires future boot-params report
+  hardware_validation: not claimed
+  hardened_status: not claimed
+
+next_read_only_check: sh scripts/base1-x86_64-boot-params.sh --dry-run (planned)
+base1_x86_64_detect: complete

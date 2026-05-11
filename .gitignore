@@ -34,3 +34,16 @@ id_ed25519*
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+
+# Generated Base1 boot artifacts: keep out of normal Git history
+build/**/*.img
+build/**/*.raw
+build/**/*.tar
+build/**/*.iso
+build/**/vmlinuz
+build/**/initrd.img
+build/**/BOOTX64.EFI
+build/**/*.pf2
+build/**/*.png
+build/linux/
+build/openbsd/
