@@ -28,7 +28,7 @@ Phase1 should be:
 | Docs | User-facing claims stay discoverable | required docs, links, maps, and compatibility paths exist |
 | Base1 integrity | Base1 organization preserves root compatibility, release mirrors, local links, and test inventory coverage | `sh scripts/quality-check.sh base1-docs` |
 | Base1 reorganization | Base1 broad organization readiness stays gated by full read-only verification | `sh scripts/quality-check.sh base1-reorg` |
-| Security crypto docs | Cryptographic policy docs preserve profile links, registry rules, command plans, guardrails, and non-claims | `sh scripts/quality-check.sh security-crypto-docs` |
+| Security crypto docs | Cryptographic policy docs preserve profile links, registry rules, command/config plans, guardrails, and non-claims | `sh scripts/quality-check.sh security-crypto-docs` |
 | Release | Version and release metadata stay aligned | release metadata checks |
 | Safety | Risky behavior remains explicit and guarded | safety docs and policy checks |
 | Dependency | Dependency risk is reviewed | `cargo audit`, `cargo deny check` when tools are available |
@@ -97,7 +97,7 @@ This focused gate runs the read-only security crypto documentation integrity che
 sh scripts/security-crypto-doc-integrity.sh
 ```
 
-It verifies the cryptographic policy roadmap, registry, algorithm template, operator command plan, profile index, profile drafts, security documentation links, fail-closed command guardrails, custom-primitive guardrails, profile safety rules, and crypto non-claims.
+It verifies the cryptographic policy roadmap, registry, algorithm template, operator command plan, config schema, profile index, profile drafts, security documentation links, fail-closed command/config guardrails, custom-primitive guardrails, profile safety rules, and crypto non-claims.
 
 ### Required before release
 
@@ -177,10 +177,14 @@ The security crypto docs quality gate verifies:
 - `docs/security/CRYPTO_REGISTRY.md` is present
 - `docs/security/CRYPTO_ALGORITHM_TEMPLATE.md` is present
 - `docs/security/CRYPTO_OPERATOR_COMMANDS.md` is present
+- `docs/security/CRYPTO_CONFIG_SCHEMA.md` is present
 - `docs/security/crypto-profiles/README.md` is present
 - all current profile drafts are present
 - profile drafts link the registry and algorithm template
 - operator command plans fail closed for unknown scopes and profiles
+- config schema fails closed for unknown scopes and profiles
+- config schema blocks `lab-only` outside lab/docs/tests scopes
+- config schema requires reasons for `compatibility` and `post-quantum-preview`
 - lab-only profile use is blocked outside lab/docs/tests scopes
 - deprecated, rejected, or lab-only entries are blocked from production scopes
 - custom security-critical primitives are rejected
@@ -262,6 +266,7 @@ Quality work must preserve these defaults:
 - cryptographic policy work remains documentation-first until implementation, tests, review, and validation exist
 - custom security-critical primitives are not accepted as production protection
 - cryptographic operator commands fail closed for unknown scopes and profiles
+- cryptographic config fails closed for unknown scopes and profiles
 
 ## Local workflow
 
