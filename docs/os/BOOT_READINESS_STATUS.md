@@ -135,7 +135,9 @@ B2 validation report tests are present:
 cargo test -p phase1 --test b2_dry_run_assembly_validation_docs
 ```
 
-B2 remains dry-run-only until review and status links are complete.
+B2 status and boundaries are linked from README, OS roadmap, race plan, and x86_64 roadmap.
+
+B2 remains dry-run-only until output review is complete and validation has passed locally or in CI.
 
 ## B2 completion checklist
 
@@ -149,9 +151,10 @@ Before B2 is considered complete, confirm:
 - [x] B2 limitations tests exist.
 - [x] B2 validation report exists.
 - [x] B2 validation report tests exist.
-- [ ] B2 status is linked from README, OS roadmap, race plan, and x86_64 roadmap.
+- [x] B2 status is linked from README, OS roadmap, race plan, and x86_64 roadmap.
+- [x] B2 does not contain mutating boot, disk, package, or network commands.
 - [ ] B2 output is reviewed for secret redaction.
-- [ ] B2 does not contain mutating boot, disk, package, or network commands.
+- [ ] B2 test suite passes in CI or local validation.
 
 ## Planned first coding slice
 
