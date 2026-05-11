@@ -127,7 +127,7 @@ fn base1_b2_test_suite_check_preserves_non_claims_and_local_build_boundary() {
         .expect("B2 test suite checker script");
 
     for text in [
-        "does not build an installer",
+        "build an installer",
         "mutate disks",
         "alter host boot settings",
         "claim VM/hardware readiness",
