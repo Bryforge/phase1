@@ -25,6 +25,8 @@ fn reorganization_readiness_lists_current_safeguards() {
         "scripts/base1-test-inventory.sh",
         "scripts/base1-test-inventory-verify.sh",
         "scripts/base1-reorganization-verify.sh",
+        "sh scripts/quality-check.sh base1-reorg",
+        "sh scripts/quality-check.sh base1-reorganization",
         "docs/base1/MIGRATION_TABLE.md",
         "docs/base1/SCRIPT_COMPATIBILITY_PLAN.md",
         "docs/base1/LINK_CHECK_STRATEGY.md",
@@ -47,7 +49,7 @@ fn reorganization_readiness_lists_remaining_blockers() {
 
     for blocker in [
         "successful verified comparison of reporter output against `docs/base1/TEST_INVENTORY.md`",
-        "successful final run of `sh scripts/base1-reorganization-verify.sh` on a Rust-capable host",
+        "successful final run of `sh scripts/quality-check.sh base1-reorg` on a Rust-capable host",
         "No deletion of compatibility paths unless explicitly approved in a future change.",
     ] {
         assert!(doc.contains(blocker), "missing blocker {blocker}: {doc}");
@@ -68,7 +70,7 @@ fn reorganization_readiness_requires_compatibility_and_validation() {
         "Markdown path movement is protected by a local, read-only link checker or equivalent validation.",
         "The post-reorganization layout names the stable public paths.",
         "The pre-move checklist is satisfied for the first group to move.",
-        "The reorganization verifier passes on a Rust-capable host.",
+        "The reorganization quality mode passes on a Rust-capable host.",
     ] {
         assert!(doc.contains(requirement), "missing requirement {requirement}: {doc}");
     }
