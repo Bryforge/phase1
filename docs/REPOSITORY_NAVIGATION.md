@@ -23,6 +23,7 @@ Phase1 now covers several connected workstreams:
 | Run Phase1 | [`../README.md`](../README.md#quick-start) |
 | Understand what is implemented | [`../FEATURE_STATUS.md`](../FEATURE_STATUS.md) |
 | Learn the docs structure | [`README.md`](README.md) |
+| Understand the reorganization plan | [`REORGANIZATION_PLAN.md`](REORGANIZATION_PLAN.md) |
 | Contribute | [`../CONTRIBUTING.md`](../CONTRIBUTING.md) |
 | Open a PR | [`../.github/pull_request_template.md`](../.github/pull_request_template.md) |
 | Report a bug | [`../.github/ISSUE_TEMPLATE/bug_report.yml`](../.github/ISSUE_TEMPLATE/bug_report.yml) |
@@ -52,6 +53,8 @@ Phase1 now covers several connected workstreams:
 | `phase1-core/` | Core package workspace member. |
 | `base1/` | Base1 root-level docs, compatibility paths, hardware/recovery docs. |
 | `docs/` | Repository-first manual, navigation, developer docs, security docs, community docs. |
+| `docs/REPOSITORY_NAVIGATION.md` | Fast-path map for users, contributors, support, and validation. |
+| `docs/REORGANIZATION_PLAN.md` | Minimalist target structure, destination map, move policy, and rollback rules. |
 | `docs/security/` | Trust model, crypto policy, registry, providers, config, implementation plan, review guidance. |
 | `docs/community/` | Support forum roadmap and automated support AI roadmap. |
 | `docs/base1/` | Organized Base1 manual and release mirrors. |
@@ -75,6 +78,14 @@ Phase1 now covers several connected workstreams:
 2. Read [`developers/README.md`](developers/README.md).
 3. Use the PR template in [`../.github/pull_request_template.md`](../.github/pull_request_template.md).
 4. Run the relevant quality gate before opening work.
+
+### Repository organizer
+
+1. Read [`REORGANIZATION_PLAN.md`](REORGANIZATION_PLAN.md).
+2. Create a move map before moving files.
+3. Keep compatibility paths unless a tested wrapper, mirror, or index exists.
+4. Add or update tests for required navigation links.
+5. Run the relevant quality gate before and after reorganization work.
 
 ### Security reviewer
 
@@ -152,6 +163,7 @@ Repository reorganization should be preservation-first.
 Rules:
 
 - Keep existing public/root compatibility paths unless a future plan explicitly replaces them.
+- Use [`REORGANIZATION_PLAN.md`](REORGANIZATION_PLAN.md) before broad restructuring.
 - Prefer adding indexes and mirrors before moving files.
 - Add navigation docs before broad restructuring.
 - Add tests for new navigation and required links.
