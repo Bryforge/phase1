@@ -9,7 +9,7 @@ This plan organizes the fastest safe path toward boot readiness for the Phase1/B
 
 The goal is speed without unsafe claims: move quickly through documentation, read-only checks, dry-run tooling, VM validation, recovery validation, and hardware validation before claiming boot readiness.
 
-Track current readiness in [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md).
+Track current readiness in [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md). The first B1 coding slice is planned in [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md).
 
 ## Boot readiness goal
 
@@ -54,6 +54,8 @@ Before implementation resumes, keep the finish-first checklist current in [`BOOT
 
 B1 coding begins only after the status tracker is linked from the OS roadmap, this race plan, the x86_64 roadmap, and the README, with tests preserving the ladder and non-claims.
 
+The first B1 implementation plan is [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md). It must be linked, tested, and status-tracked before writing the script.
+
 ## Fastest safe sequence
 
 ### Sprint 1: readiness inventory
@@ -62,10 +64,12 @@ B1 coding begins only after the status tracker is linked from the OS roadmap, th
 - Link it from the OS roadmap and README.
 - Create a boot readiness checklist.
 - Create a boot readiness status table: [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md).
+- Create the B1 plan: [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md).
 - Protect the docs with tests.
 
 ### Sprint 2: read-only detection
 
+- Implement only the B1 detector planned in [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md).
 - Add or plan read-only architecture detection.
 - Add or plan firmware-mode detection.
 - Add or plan boot-loader detection.
@@ -123,6 +127,7 @@ B1 coding begins only after the status tracker is linked from the OS roadmap, th
 | --- | --- |
 | OS roadmap | [`ROADMAP.md`](ROADMAP.md) |
 | Boot readiness status tracker | [`BOOT_READINESS_STATUS.md`](BOOT_READINESS_STATUS.md) |
+| B1 read-only detection plan | [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md) |
 | x86_64 boot support roadmap | [`X86_64_BOOT_SUPPORT_ROADMAP.md`](X86_64_BOOT_SUPPORT_ROADMAP.md) |
 | Base1 image-builder design | [`BASE1_IMAGE_BUILDER.md`](BASE1_IMAGE_BUILDER.md) |
 | Installer/recovery design | [`INSTALLER_RECOVERY.md`](INSTALLER_RECOVERY.md) |
