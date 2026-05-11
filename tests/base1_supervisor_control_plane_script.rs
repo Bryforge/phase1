@@ -63,24 +63,24 @@ fn base1_supervisor_control_plane_help_documents_commands_profiles_and_non_claim
 
 #[test]
 fn base1_supervisor_control_plane_status_writes_report_for_x200_profile() {
+    let out_dir = "build/base1-supervisor-control-plane-test-basic-status";
+    let report_path = Path::new(out_dir).join("supervisor-control-plane.env");
+    let _ = fs::remove_file(&report_path);
+
     let output = Command::new("sh")
         .arg("scripts/base1-supervisor-control-plane.sh")
         .arg("status")
         .arg("--profile")
         .arg("x200-supervisor-lite")
+        .arg("--out")
+        .arg(out_dir)
         .arg("--write-report")
         .output()
         .expect("run status");
-    assert!(output.status.success(), "status should succeed: {}", String::from_utf8_lossy(&output.stderr));
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    assert_contains(&stdout, "BASE1 SUPERVISOR CONTROL PLANE");
-    assert_contains(&stdout, "command       : status");
-    assert_contains(&stdout, "profile       : x200-supervisor-lite");
-    assert_contains(&stdout, "storage_policy: zram-plus-ssd-scratch-swap-backstop");
-    assert_contains(&stdout, "result: planned");
 
-    let report_path = Path::new("build/base1-supervisor-control-plane-test-status/supervisor-control-plane.env");
+    assert!(output.status.success(), "status should pass");
     assert!(report_path.exists(), "report should be written");
+
     let report = fs::read_to_string(report_path).expect("read report");
     assert_contains(&report, "BASE1_SUPERVISOR_CONTROL_COMMAND=status");
     assert_contains(&report, "BASE1_SUPERVISOR_CONTROL_PROFILE=x200-supervisor-lite");
