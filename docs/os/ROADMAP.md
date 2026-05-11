@@ -28,6 +28,8 @@ The Phase1 operating-system track means:
 
 Current target: finish B0 documentation/status coverage, then begin B1 read-only x86_64 detection.
 
+The B1 implementation plan is [`B1_READ_ONLY_DETECTION_PLAN.md`](B1_READ_ONLY_DETECTION_PLAN.md). It defines the first coding slice and keeps the initial detector read-only, dry-run-only, and non-mutating.
+
 ## Boot readiness race
 
 [`BOOT_READINESS_RACE_PLAN.md`](BOOT_READINESS_RACE_PLAN.md) defines the fastest safe path toward Base1 boot readiness.
@@ -188,13 +190,14 @@ Hardening is a valid roadmap goal. Current hardened-status claims require implem
 1. Add this roadmap and README positioning.
 2. Add the [`Base1 boot readiness race plan`](BOOT_READINESS_RACE_PLAN.md).
 3. Add the [`Base1 boot readiness status tracker`](BOOT_READINESS_STATUS.md).
-4. Add the [`Base1 x86_64 boot support roadmap`](X86_64_BOOT_SUPPORT_ROADMAP.md).
-5. Add the [`Base1 image-builder design`](BASE1_IMAGE_BUILDER.md).
-6. Add the [`Base1 installer and recovery design`](INSTALLER_RECOVERY.md).
-7. Add the [`Base1 installer dry-run design`](BASE1_INSTALLER_DRY_RUN.md).
-8. Add system-surface command stubs behind safe defaults.
-9. Add hardware-target checklists.
-10. Add read-only boot readiness status reporting.
+4. Add the [`Base1 B1 read-only detection plan`](B1_READ_ONLY_DETECTION_PLAN.md).
+5. Add the [`Base1 x86_64 boot support roadmap`](X86_64_BOOT_SUPPORT_ROADMAP.md).
+6. Add the [`Base1 image-builder design`](BASE1_IMAGE_BUILDER.md).
+7. Add the [`Base1 installer and recovery design`](INSTALLER_RECOVERY.md).
+8. Add the [`Base1 installer dry-run design`](BASE1_INSTALLER_DRY_RUN.md).
+9. Add system-surface command stubs behind safe defaults.
+10. Add hardware-target checklists.
+11. Add read-only boot readiness status reporting.
 
 
 ## Stage 1 recovery command design
