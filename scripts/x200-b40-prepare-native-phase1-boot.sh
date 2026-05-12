@@ -30,6 +30,17 @@
 
 set -eu
 
+# Native rustup installs Cargo here. Add it early so non-login shells launched
+# from desktop terminals can still find cargo/rustc.
+if [ -d "$HOME/.cargo/bin" ]; then
+  PATH="$HOME/.cargo/bin:$PATH"
+  export PATH
+fi
+if [ -f "$HOME/.cargo/env" ]; then
+  # shellcheck disable=SC1090
+  . "$HOME/.cargo/env" 2>/dev/null || true
+fi
+
 USB="${1:-}"
 CONFIRM="${2:-}"
 AUTO_INSTALL="${BASE1_AUTO_INSTALL_PACKAGES:-0}"
@@ -106,13 +117,14 @@ ensure_cargo_if_needed() {
     return 0
   fi
   if command -v cargo >/dev/null 2>&1; then
+    printf 'cargo: %s\n' "$(command -v cargo)"
     return 0
   fi
-  printf 'Cargo is missing.\n'
+  printf 'Cargo is missing from PATH. Checked native rustup path: %s/.cargo/bin\n' "$HOME"
   if apt_install_if_allowed "cargo rustc"; then
     command -v cargo >/dev/null 2>&1 && return 0
   fi
-  fail "missing command: cargo. Run: sudo apt install -y cargo rustc  (or set BASE1_AUTO_INSTALL_PACKAGES=1, or provide BASE1_B40_PHASE1_BIN and BASE1_SKIP_BUILD=1)"
+  fail "missing command: cargo. Try: export PATH=\"$HOME/.cargo/bin:\$PATH\"  or run: source ~/.cargo/env  (or provide BASE1_B40_PHASE1_BIN and BASE1_SKIP_BUILD=1)"
 }
 
 install_busybox_static_if_allowed() {
@@ -134,7 +146,8 @@ printf 'PHASE1 B40 NATIVE BOOT AUTOMATION\n\n'
 printf 'target usb : %s\n' "$USB"
 printf 'kernel     : %s\n' "$KERNEL"
 printf 'phase1 bin : %s\n' "$PHASE1_BIN"
-printf 'writer     : %s\n\n' "$B40_WRITER"
+printf 'writer     : %s\n' "$B40_WRITER"
+printf 'PATH       : %s\n\n' "$PATH"
 
 if [ "$SKIP_PULL" != "1" ]; then
   printf '--- updating repository ---\n'
