@@ -9,7 +9,7 @@
 #
 # This first pass is intentionally conservative. It creates the new structure
 # and moves only obvious backup/root-facing/historical files. It does not move
-# Cargo src/, tests/, .github/, or the root phase1 launcher in this pass.
+# Cargo src/, tests/, or .github in this pass.
 
 set -eu
 
@@ -53,6 +53,14 @@ move_if_exists() {
   fi
 }
 
+move_conflicting_root_file() {
+  name="$1"
+  dst="$2"
+  if [ -e "$name" ] && [ ! -d "$name" ]; then
+    move_if_exists "$name" "$dst"
+  fi
+}
+
 write_doc() {
   path="$1"
   kind="$2"
@@ -80,6 +88,8 @@ EOF
 Phase1 is the operator/runtime system: shell, UI, renderer, local tools, and user-facing environment.
 
 Active Rust implementation currently remains in the root `src/` tree until a separate Rust module migration plan is approved.
+
+The old root `phase1` launcher was moved to `scripts/launchers/phase1` so this directory can become the logical Phase1 project home.
 EOF
       ;;
     base1-readme)
@@ -107,6 +117,8 @@ EOF
 Use `scripts/phase1-base1.sh` as the active front door during the Phase1/Base1 focus period.
 
 Historical scripts are being sorted into active, project-specific, or junk preservation paths.
+
+Legacy launchers are preserved under `scripts/launchers/`.
 EOF
       ;;
     active-os-path)
@@ -126,6 +138,14 @@ printf 'Phase1/Base1/Fyr reorganization\n'
 printf 'mode: %s\n' "$MODE"
 printf 'plan: %s\n\n' "$PLAN"
 
+# First resolve root name conflicts. The repository has historically had a
+# root file named `phase1`; a directory with the same name cannot be created
+# until that launcher is preserved elsewhere.
+move_conflicting_root_file "phase1" "scripts/launchers/phase1"
+move_conflicting_root_file "fyr" "scripts/launchers/fyr"
+move_conflicting_root_file "shared" "junk/root-archive/shared"
+move_conflicting_root_file "junk" "junk/root-archive/junk-file"
+
 # New primary directories.
 for dir in \
   phase1/docs phase1/tools \
@@ -133,7 +153,7 @@ for dir in \
   fyr/docs fyr/examples fyr/tests \
   shared/assets shared/docs shared/tooling \
   junk/legacy/docs junk/legacy/scripts junk/experiments junk/old-docs junk/old-scripts junk/generated-backups junk/root-archive \
-  scripts/active scripts/base1 scripts/phase1 scripts/fyr scripts/maintenance
+  scripts/active scripts/base1 scripts/phase1 scripts/fyr scripts/maintenance scripts/launchers
  do
   mkdir_logged "$dir"
 done
@@ -166,7 +186,7 @@ move_if_exists "SECURITY_REVIEW.md" "shared/docs/SECURITY_REVIEW.md"
 move_if_exists "SECURITY.md" "shared/docs/SECURITY.md"
 move_if_exists "CONTRIBUTING.md" "shared/docs/CONTRIBUTING.md"
 
-# Keep LICENSE, Cargo.toml, Cargo.lock, README.md, TRACKER.md, FOCUS.md, phase1 launcher, .github, src, tests in place for first pass.
+# Keep LICENSE, Cargo.toml, Cargo.lock, README.md, TRACKER.md, FOCUS.md, .github, src, tests in place for first pass.
 
 # Script sorting: move older B-series script experiments to junk, keep active/current helpers in scripts/ for now.
 for f in scripts/x200-b0*.sh scripts/x200-b1*.sh scripts/x200-b2*.sh scripts/base1-b1*.sh scripts/base1-b2*.sh; do
