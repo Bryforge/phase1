@@ -2,10 +2,8 @@
 # Phase1 X200/Pi boot automation, backward-compatible filename.
 #
 # Current target: B42 stable-safe native color UTF-8 boot.
-#
-# This script calls the B42 writer, captures a full writer log, and verifies the
-# USB after writing. On Raspberry Pi, the external USB writer may be /dev/sda;
-# this automation allows that only after refusing the actual root filesystem.
+# This script verifies prerequisites before running the B42 writer and then
+# verifies the written USB after the writer completes.
 #
 # Usage:
 #   sh scripts/x200-b40-prepare-native-phase1-boot.sh /dev/sda YES_WRITE_USB
@@ -74,6 +72,15 @@ prepare_runtime_writer() {
       print "# The automation already refuses the actual root filesystem device.";
       next;
     }
+    /^copy_libs_for_binary "\$PHASE1_BIN_PATH" "\$ROOTFS"$/ {
+      print "# B42-R4: tolerate ldd/read EOF and partial optional library-copy exits.";
+      print "copy_libs_for_binary \"$PHASE1_BIN_PATH\" \"$ROOTFS\" || true";
+      next;
+    }
+    /^copy_common_loaders "\$ROOTFS"$/ {
+      print "copy_common_loaders \"$ROOTFS\" || true";
+      next;
+    }
     { print }
   ' "$WRITER" > "$RUNTIME_WRITER"
   chmod +x "$RUNTIME_WRITER"
@@ -83,8 +90,25 @@ prepare_runtime_writer() {
 show_log_tail() {
   log="$1"
   printf '\n--- tail: %s ---\n' "$log"
-  if [ -f "$log" ]; then tail -n 140 "$log"; else printf 'log not found\n'; fi
+  if [ -f "$log" ]; then tail -n 180 "$log"; else printf 'log not found\n'; fi
   printf -- '--- end tail ---\n'
+}
+
+missing_grub_install_help() {
+  cat <<'EOF'
+Missing grub-install.
+
+This writer creates an x86 BIOS/Libreboot-bootable USB, so it needs GRUB's i386-pc installer.
+
+Try on Debian/Ubuntu/Raspberry Pi OS:
+  sudo apt update
+  sudo apt install -y grub-pc-bin grub-common parted dosfstools mtools
+
+Then rerun:
+  sh scripts/x200-b40-prepare-native-phase1-boot.sh /dev/sda YES_WRITE_USB
+
+If grub-pc-bin is not available on this machine, prepare the bootloader once on the X200 or another x86 Linux machine, then use this Pi only for file refreshes later.
+EOF
 }
 
 [ -n "$USB" ] || fail "usage: sh scripts/x200-b40-prepare-native-phase1-boot.sh /dev/sda YES_WRITE_USB"
@@ -108,6 +132,13 @@ printf 'verify log      : %s\n' "$VERIFY_LOG"
 git log -1 --oneline || true
 git log -1 --oneline -- "$WRITER" || true
 root_device_check
+
+section "--- host bootloader prerequisite check ---"
+if ! command -v grub-install >/dev/null 2>&1; then
+  missing_grub_install_help
+  fail "missing command: grub-install"
+fi
+grub-install --version || true
 
 section "--- checking B42 writer content ---"
 [ -f "$WRITER" ] || fail "missing $WRITER"
