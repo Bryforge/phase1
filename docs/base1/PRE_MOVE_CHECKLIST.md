@@ -17,7 +17,7 @@ Before moving or mirroring a Base1 group, confirm:
 2. Related tests are listed in `docs/base1/TEST_INVENTORY.md`.
 3. Current and proposed paths are listed in `docs/base1/MIGRATION_TABLE.md`.
 4. Stable public paths are consistent with `docs/base1/POST_REORGANIZATION_LAYOUT.md`.
-5. Compatibility paths are documented in `docs/base1/ROOT_COMPATIBILITY_MAP.md` or the relevant compatibility plan.
+5. Compatibility paths are documented in `docs/base1/RELEASE_ARCHIVE_MAP.md` or the relevant compatibility plan.
 6. Script movement, if any, follows `docs/base1/SCRIPT_COMPATIBILITY_PLAN.md`.
 7. Markdown movement, if any, passes `scripts/base1-link-check.sh`.
 8. The docs quality gate passes:
@@ -41,7 +41,7 @@ At minimum, tests must prove:
 
 ## First safe candidate group
 
-The safest current candidate group is release/checkpoint notes because organized mirrors already exist under `docs/base1/releases/` while root compatibility paths remain present.
+The safest current candidate group is release/checkpoint notes because organized mirrors already exist under `docs/base1/releases/` while release archive paths remain present.
 
 Even for this group, no root checkpoint file should be removed.
 

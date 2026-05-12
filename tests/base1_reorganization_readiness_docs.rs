@@ -32,7 +32,7 @@ fn reorganization_readiness_lists_current_safeguards() {
         "docs/base1/POST_REORGANIZATION_LAYOUT.md",
         "docs/base1/PRE_MOVE_CHECKLIST.md",
         "docs/base1/releases/PRE_MOVE_CHECKS.md",
-        "docs/base1/ROOT_COMPATIBILITY_MAP.md",
+        "docs/base1/RELEASE_ARCHIVE_MAP.md",
         "scripts/base1-doc-integrity.sh",
         "sh scripts/quality-check.sh base1-docs",
     ] {

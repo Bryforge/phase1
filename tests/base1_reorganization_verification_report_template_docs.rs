@@ -57,7 +57,7 @@ fn reorganization_report_template_includes_compatibility_review_and_decision() {
         "Compatibility review",
         "Root checkpoint-note files remain present.",
         "Organized release/checkpoint mirrors remain present.",
-        "docs/base1/ROOT_COMPATIBILITY_MAP.md` remains accurate.",
+        "docs/base1/RELEASE_ARCHIVE_MAP.md` remains accurate.",
         "docs/base1/releases/PRE_MOVE_CHECKS.md` remains accurate.",
         "Existing `scripts/base1-*.sh` paths remain stable.",
         "Test inventory matches reporter output.",

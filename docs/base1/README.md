@@ -36,7 +36,7 @@ Base1 is the planned minimal host foundation for future Phase1-first bootable en
 - [`REORGANIZATION_READINESS.md`](REORGANIZATION_READINESS.md)
 - [`REORGANIZATION_VERIFICATION_REPORT_TEMPLATE.md`](REORGANIZATION_VERIFICATION_REPORT_TEMPLATE.md)
 - [`DOCUMENTATION_ORGANIZATION_PLAN.md`](DOCUMENTATION_ORGANIZATION_PLAN.md)
-- [`ROOT_COMPATIBILITY_MAP.md`](ROOT_COMPATIBILITY_MAP.md)
+- [`RELEASE_ARCHIVE_MAP.md`](RELEASE_ARCHIVE_MAP.md)
 - [`releases/README.md`](releases/README.md)
 - [`READINESS_MATRIX.md`](READINESS_MATRIX.md)
 - [`VALIDATION_RUNBOOK.md`](VALIDATION_RUNBOOK.md)
@@ -54,7 +54,7 @@ Base1 is the planned minimal host foundation for future Phase1-first bootable en
 
 ## Compatibility rule
 
-root-level Base1 checkpoint notes remain compatibility paths. Use [`ROOT_COMPATIBILITY_MAP.md`](ROOT_COMPATIBILITY_MAP.md) to see which root files mirror organized notes under [`releases/`](releases/).
+root-level Base1 checkpoint notes remain compatibility paths. Use [`RELEASE_ARCHIVE_MAP.md`](RELEASE_ARCHIVE_MAP.md) to see which root files mirror organized notes under [`releases/`](releases/).
 
 ## Inventory rule
 
@@ -128,7 +128,7 @@ Store future Base1 reports under [`validation/`](validation/) so evidence remain
 - [Base1 reorganization verification report template](REORGANIZATION_VERIFICATION_REPORT_TEMPLATE.md)
 - [Reorganization readiness checklist](REORGANIZATION_READINESS.md)
 - [Documentation organization plan](DOCUMENTATION_ORGANIZATION_PLAN.md)
-- [Root compatibility map](ROOT_COMPATIBILITY_MAP.md)
+- [Root compatibility map](RELEASE_ARCHIVE_MAP.md)
 - [`base1/RECOVERY_USB_HARDWARE_SUMMARY.md`](../../base1/RECOVERY_USB_HARDWARE_SUMMARY.md) — Recovery USB hardware summary.
 - [`base1/RECOVERY_USB_IMAGE_COMMAND_INDEX.md`](../../base1/RECOVERY_USB_IMAGE_COMMAND_INDEX.md) — Recovery USB image command index.
 - [`base1/RECOVERY_USB_TARGET_COMMAND_INDEX.md`](../../base1/RECOVERY_USB_TARGET_COMMAND_INDEX.md) — Recovery USB target command index.
@@ -139,11 +139,11 @@ Store future Base1 reports under [`validation/`](validation/) so evidence remain
 
 ## Base1 public compatibility path
 
-- [`docs/base1/ROOT_COMPATIBILITY_MAP.md`](ROOT_COMPATIBILITY_MAP.md) — Public path for the Base1 root compatibility map.
+- [`docs/base1/RELEASE_ARCHIVE_MAP.md`](RELEASE_ARCHIVE_MAP.md) — Public path for the Base1 root compatibility map.
 
 ## Root compatibility map public path
 
-- [`ROOT_COMPATIBILITY_MAP.md`](ROOT_COMPATIBILITY_MAP.md) — Base1 root compatibility map.
-- `docs/base1/ROOT_COMPATIBILITY_MAP.md` — Public compatibility-map path.
-- [`docs/base1/ROOT_COMPATIBILITY_MAP.md`](ROOT_COMPATIBILITY_MAP.md) — Repository-root public path for the Base1 root compatibility map.
+- [`RELEASE_ARCHIVE_MAP.md`](RELEASE_ARCHIVE_MAP.md) — Base1 root compatibility map.
+- `docs/base1/RELEASE_ARCHIVE_MAP.md` — Public compatibility-map path.
+- [`docs/base1/RELEASE_ARCHIVE_MAP.md`](RELEASE_ARCHIVE_MAP.md) — Repository-root public path for the Base1 root compatibility map.
 - [`VALIDATION_REPORTS.md`](VALIDATION_REPORTS.md) — Base1 validation reports archive.

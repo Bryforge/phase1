@@ -24,7 +24,7 @@ These paths should remain stable for users, contributors, and existing links:
 | `docs/base1/SCRIPT_COMPATIBILITY_PLAN.md` | Script compatibility plan. |
 | `docs/base1/LINK_CHECK_STRATEGY.md` | Link-check strategy. |
 | `docs/base1/REORGANIZATION_READINESS.md` | Reorganization readiness checklist. |
-| `docs/base1/ROOT_COMPATIBILITY_MAP.md` | Root compatibility map. |
+| `docs/base1/RELEASE_ARCHIVE_MAP.md` | Root compatibility map. |
 
 ## Core docs layout
 
@@ -55,7 +55,7 @@ docs/base1/MIGRATION_TABLE.md
 docs/base1/SCRIPT_COMPATIBILITY_PLAN.md
 docs/base1/LINK_CHECK_STRATEGY.md
 docs/base1/REORGANIZATION_READINESS.md
-docs/base1/ROOT_COMPATIBILITY_MAP.md
+docs/base1/RELEASE_ARCHIVE_MAP.md
 ```
 
 ## Release/checkpoint notes layout

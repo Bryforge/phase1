@@ -69,7 +69,7 @@ fn release_pre_move_checks_block_unsafe_release_moves() {
     for blocker in [
         "Root compatibility files are missing.",
         "Organized mirror files are missing.",
-        "docs/base1/ROOT_COMPATIBILITY_MAP.md",
+        "docs/base1/RELEASE_ARCHIVE_MAP.md",
         "docs/base1/releases/README.md",
         "Local link checking fails.",
         "Test inventory verification fails.",
@@ -93,7 +93,7 @@ fn release_pre_move_checks_are_linked_and_integrity_checked() {
         "{integrity}"
     );
     assert!(
-        integrity.contains("No root release/checkpoint file should be removed"),
+        integrity.contains("No archived release/checkpoint file should be removed"),
         "{integrity}"
     );
 }

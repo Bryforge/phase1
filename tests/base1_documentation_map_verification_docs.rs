@@ -31,7 +31,7 @@ fn documentation_map_links_organization_guardrails() {
         "PRE_MOVE_CHECKLIST.md",
         "REORGANIZATION_READINESS.md",
         "REORGANIZATION_VERIFICATION_REPORT_TEMPLATE.md",
-        "ROOT_COMPATIBILITY_MAP.md",
+        "RELEASE_ARCHIVE_MAP.md",
     ] {
         assert!(map.contains(link), "missing guardrail link {link}: {map}");
     }
@@ -45,7 +45,7 @@ fn documentation_map_links_release_pre_move_checks() {
     assert!(map.contains("Release/checkpoint pre-move checks"), "{map}");
     assert!(map.contains("releases/PRE_MOVE_CHECKS.md"), "{map}");
     assert!(
-        map.contains("Root checkpoint-note files remain compatibility paths"),
+        map.contains("Base1 release/checkpoint notes live under docs/base1/releases"),
         "{map}"
     );
 }

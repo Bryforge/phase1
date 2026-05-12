@@ -37,7 +37,7 @@ fn manual_keeps_organization_guardrails_visible() {
     let manual = std::fs::read_to_string("docs/base1/README.md").expect("Base1 manual");
 
     for text in [
-        "ROOT_COMPATIBILITY_MAP.md",
+        "RELEASE_ARCHIVE_MAP.md",
         "INVENTORY.md",
         "TEST_INVENTORY.md",
         "MIGRATION_TABLE.md",

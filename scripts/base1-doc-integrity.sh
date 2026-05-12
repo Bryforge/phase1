@@ -6,7 +6,7 @@
 # table, script compatibility plan, link check strategy, post-reorganization
 # layout, pre-move checklist, release pre-move checks, reorganization verifier,
 # verification report template, readiness checklist, core references,
-# release-note mirrors, root compatibility paths, and dry-run guardrails before
+# release-note mirrors, release archive paths and dry-run guardrails before
 # file reorganization continues.
 
 set -eu
@@ -51,7 +51,7 @@ check_core_docs() {
     docs/base1/README.md \
     docs/base1/DOCUMENTATION_MAP.md \
     docs/base1/DOCUMENTATION_ORGANIZATION_PLAN.md \
-    docs/base1/ROOT_COMPATIBILITY_MAP.md \
+    docs/base1/RELEASE_ARCHIVE_MAP.md \
     docs/base1/INVENTORY.md \
     docs/base1/TEST_INVENTORY.md \
     docs/base1/MIGRATION_TABLE.md \
@@ -75,17 +75,8 @@ check_core_docs() {
   done
 }
 
-check_root_compatibility_docs() {
-  for file in \
-    RELEASE_BASE1_LIBREBOOT_READONLY_V1.md \
-    RELEASE_BASE1_LIBREBOOT_READONLY_V1_1.md \
-    RELEASE_BASE1_RECOVERY_USB_HARDWARE_READONLY_V1.md \
-    RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md \
-    RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md \
-    RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md
-  do
-    check_file "$file"
-  done
+check_release_compatibility_docs() {
+  info "root Base1 release compatibility files are archived under docs/base1/releases"
 }
 
 check_release_docs() {
@@ -145,7 +136,7 @@ check_scripts() {
 check_references() {
   check_contains docs/base1/README.md 'DOCUMENTATION_MAP.md'
   check_contains docs/base1/README.md 'DOCUMENTATION_ORGANIZATION_PLAN.md'
-  check_contains docs/base1/README.md 'ROOT_COMPATIBILITY_MAP.md'
+  check_contains docs/base1/README.md 'RELEASE_ARCHIVE_MAP.md'
   check_contains docs/base1/README.md 'INVENTORY.md'
   check_contains docs/base1/README.md 'TEST_INVENTORY.md'
   check_contains docs/base1/README.md 'MIGRATION_TABLE.md'
@@ -167,7 +158,7 @@ check_references() {
   check_contains docs/base1/DOCUMENTATION_MAP.md 'PRE_MOVE_CHECKLIST.md'
   check_contains docs/base1/DOCUMENTATION_MAP.md 'REORGANIZATION_READINESS.md'
   check_contains docs/base1/DOCUMENTATION_MAP.md 'REORGANIZATION_VERIFICATION_REPORT_TEMPLATE.md'
-  check_contains docs/base1/DOCUMENTATION_MAP.md 'ROOT_COMPATIBILITY_MAP.md'
+  check_contains docs/base1/DOCUMENTATION_MAP.md 'RELEASE_ARCHIVE_MAP.md'
   check_contains docs/base1/DOCUMENTATION_MAP.md 'docs/base1/releases/'
   check_contains docs/base1/DOCUMENTATION_MAP.md 'sh scripts/base1-doc-integrity.sh'
   check_contains docs/base1/INVENTORY.md 'Release and checkpoint notes'
@@ -180,7 +171,7 @@ check_references() {
   check_contains docs/base1/TEST_INVENTORY.md 'Recovery USB emergency-shell tests'
   check_contains docs/base1/MIGRATION_TABLE.md 'Base1 migration table'
   check_contains docs/base1/MIGRATION_TABLE.md 'Compatibility decision'
-  check_contains docs/base1/MIGRATION_TABLE.md 'keep root compatibility path'
+  check_contains docs/base1/MIGRATION_TABLE.md 'keep archived release path'
   check_contains docs/base1/MIGRATION_TABLE.md 'scripts/base1-doc-integrity.sh'
   check_contains docs/base1/MIGRATION_TABLE.md 'No move until links, tests, and compatibility shims are planned.'
   check_contains docs/base1/SCRIPT_COMPATIBILITY_PLAN.md 'Base1 script compatibility plan'
@@ -210,10 +201,10 @@ check_references() {
   check_contains docs/base1/REORGANIZATION_VERIFICATION_REPORT_TEMPLATE.md 'cargo test --all-targets'
   check_contains docs/base1/REORGANIZATION_VERIFICATION_REPORT_TEMPLATE.md 'Compatibility review'
   check_contains docs/base1/releases/README.md 'PRE_MOVE_CHECKS.md'
-  check_contains docs/base1/releases/README.md 'Root checkpoint-note files remain compatibility paths'
+  check_contains docs/base1/releases/README.md 'Base1 release/checkpoint notes live under docs/base1/releases'
   check_contains docs/base1/releases/PRE_MOVE_CHECKS.md 'Base1 release/checkpoint pre-move checks'
-  check_contains docs/base1/releases/PRE_MOVE_CHECKS.md 'No root release/checkpoint file should be removed'
-  check_contains docs/base1/releases/PRE_MOVE_CHECKS.md 'Root compatibility paths'
+  check_contains docs/base1/releases/PRE_MOVE_CHECKS.md 'No archived release/checkpoint file should be removed'
+  check_contains docs/base1/releases/PRE_MOVE_CHECKS.md 'Archived Base1 release paths'
   check_contains docs/base1/releases/PRE_MOVE_CHECKS.md 'Organized mirror paths'
   check_contains docs/base1/releases/PRE_MOVE_CHECKS.md 'sh scripts/quality-check.sh base1-docs'
   check_contains scripts/base1-link-check.sh 'mode: read-only'
@@ -235,10 +226,10 @@ check_references() {
   check_contains scripts/base1-reorganization-verify.sh 'cargo test --all-targets'
   check_contains docs/base1/REORGANIZATION_READINESS.md 'Base1 is not ready for a full reorganization yet.'
   check_contains docs/base1/REORGANIZATION_READINESS.md 'complete inventory'
-  check_contains docs/base1/ROOT_COMPATIBILITY_MAP.md 'RELEASE_BASE1_LIBREBOOT_READONLY_V1.md'
-  check_contains docs/base1/ROOT_COMPATIBILITY_MAP.md 'docs/base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1.md'
-  check_contains docs/base1/ROOT_COMPATIBILITY_MAP.md 'RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md'
-  check_contains docs/base1/ROOT_COMPATIBILITY_MAP.md 'docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md'
+  check_contains docs/base1/RELEASE_ARCHIVE_MAP.md 'RELEASE_BASE1_LIBREBOOT_READONLY_V1.md'
+  check_contains docs/base1/RELEASE_ARCHIVE_MAP.md 'docs/base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1.md'
+  check_contains docs/base1/RELEASE_ARCHIVE_MAP.md 'RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md'
+  check_contains docs/base1/RELEASE_ARCHIVE_MAP.md 'docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md'
   check_contains base1/README.md 'NETWORK_LOCKDOWN_DRY_RUN.md'
   check_contains base1/README.md 'scripts/base1-network-lockdown-dry-run.sh'
   check_contains docs/os/BASE1_DRY_RUN_COMMANDS.md 'scripts/base1-network-lockdown-dry-run.sh --dry-run'
@@ -266,17 +257,17 @@ check_non_claims() {
   check_contains docs/base1/releases/PRE_MOVE_CHECKS.md 'does not make Base1 installer-ready'
   check_contains docs/base1/REORGANIZATION_READINESS.md 'does not make Base1 installer-ready'
   check_contains docs/base1/releases/README.md 'No destructive disk writes'
-  check_contains docs/base1/ROOT_COMPATIBILITY_MAP.md 'Base1 installer-ready'
+  check_contains docs/base1/RELEASE_ARCHIVE_MAP.md 'Base1 installer-ready'
   check_contains base1/README.md 'They do not yet constitute a destructive installer or complete operating system image.'
 }
 
 check_core_docs
-check_root_compatibility_docs
+check_release_compatibility_docs
 check_release_docs
 check_real_device_docs
 check_scripts
 check_references
 check_non_claims
 
-info 'integrity complete; Base1 docs, inventory, test inventory, test inventory reporter and verifier, migration table, script compatibility plan, link-check strategy, post-reorganization layout, pre-move checklist, release pre-move checks, reorganization verifier, verification report template, link checker, readiness checklist, root compatibility paths, release mirrors, and dry-run references are present'
+info 'integrity complete; Base1 docs, inventory, test inventory, test inventory reporter and verifier, migration table, script compatibility plan, link-check strategy, post-reorganization layout, pre-move checklist, release pre-move checks, reorganization verifier, verification report template, link checker, readiness checklist, release archive paths, and dry-run references are present'
 info 'writes: no'

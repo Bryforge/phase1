@@ -17,7 +17,7 @@ fn post_reorganization_layout_defines_stable_public_paths() {
         "docs/base1/SCRIPT_COMPATIBILITY_PLAN.md",
         "docs/base1/LINK_CHECK_STRATEGY.md",
         "docs/base1/REORGANIZATION_READINESS.md",
-        "docs/base1/ROOT_COMPATIBILITY_MAP.md",
+        "docs/base1/RELEASE_ARCHIVE_MAP.md",
     ] {
         assert!(doc.contains(path), "missing stable path {path}: {doc}");
     }

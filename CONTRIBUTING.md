@@ -227,7 +227,7 @@ Base1 is preservation-first and non-destructive by default.
 
 Rules:
 
-- keep root compatibility paths recoverable;
+- keep release archive paths recoverable;
 - keep organized mirrors linked;
 - run `base1-docs` before and after organization work;
 - do not remove checkpoint/release files without explicit future approval;

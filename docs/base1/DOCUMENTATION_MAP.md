@@ -44,7 +44,7 @@ Scripts remain under `scripts/` until a later tools reorganization is backed by 
 - [Reorganization readiness checklist](REORGANIZATION_READINESS.md)
 - [Reorganization verification report template](REORGANIZATION_VERIFICATION_REPORT_TEMPLATE.md)
 - [Documentation organization plan](DOCUMENTATION_ORGANIZATION_PLAN.md)
-- [Root compatibility map](ROOT_COMPATIBILITY_MAP.md)
+- [Root compatibility map](RELEASE_ARCHIVE_MAP.md)
 - [Base1 validation runbook](VALIDATION_RUNBOOK.md)
 - [Base1 validation report template](VALIDATION_REPORT_TEMPLATE.md)
 - [Base1 validation reports index](VALIDATION_REPORTS.md)
@@ -65,7 +65,7 @@ Scripts remain under `scripts/` until a later tools reorganization is backed by 
 - [Recovery USB emergency shell read-only checkpoint v1](releases/RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md)
 
 Canonical browsing location: `docs/base1/releases/`.
-Root checkpoint-note files remain compatibility paths. See [root compatibility map](ROOT_COMPATIBILITY_MAP.md).
+Base1 release/checkpoint notes live under docs/base1/releases. See [root compatibility map](RELEASE_ARCHIVE_MAP.md).
 
 ## OS-track dry-run design slices
 
@@ -127,10 +127,10 @@ It does not promote Base1 to installer-ready, hardware-validated, or daily-drive
 
 ## Base1 public compatibility path
 
-- [`docs/base1/ROOT_COMPATIBILITY_MAP.md`](ROOT_COMPATIBILITY_MAP.md) — Public path for the Base1 root compatibility map.
+- [`docs/base1/RELEASE_ARCHIVE_MAP.md`](RELEASE_ARCHIVE_MAP.md) — Public path for the Base1 root compatibility map.
 
 ## Root compatibility map public path
 
-- [`ROOT_COMPATIBILITY_MAP.md`](ROOT_COMPATIBILITY_MAP.md) — Base1 root compatibility map.
-- `docs/base1/ROOT_COMPATIBILITY_MAP.md` — Public compatibility-map path.
-- [`docs/base1/ROOT_COMPATIBILITY_MAP.md`](ROOT_COMPATIBILITY_MAP.md) — Repository-root public path for the Base1 root compatibility map.
+- [`RELEASE_ARCHIVE_MAP.md`](RELEASE_ARCHIVE_MAP.md) — Base1 root compatibility map.
+- `docs/base1/RELEASE_ARCHIVE_MAP.md` — Public compatibility-map path.
+- [`docs/base1/RELEASE_ARCHIVE_MAP.md`](RELEASE_ARCHIVE_MAP.md) — Repository-root public path for the Base1 root compatibility map.

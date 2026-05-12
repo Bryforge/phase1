@@ -12,7 +12,7 @@ It groups known Base1 material without removing anything. It is not yet a comple
 ## Inventory rules
 
 - Do not remove existing files during inventory work.
-- Keep root compatibility paths available.
+- Keep release archive paths available.
 - Prefer adding mirrors, indexes, and compatibility maps before moving anything.
 - Update this inventory when Base1 docs, scripts, tests, or release/checkpoint notes are added.
 - Run `sh scripts/quality-check.sh base1-docs` after inventory or organization changes.
@@ -38,7 +38,7 @@ It groups known Base1 material without removing anything. It is not yet a comple
 | `docs/base1/DOCUMENTATION_MAP.md` | Organization | Current canonical navigation map. |
 | `docs/base1/TEST_INVENTORY.md` | Organization | Base1 test inventory and grouped test coverage map. |
 | `docs/base1/DOCUMENTATION_ORGANIZATION_PLAN.md` | Organization | Preservation-first organization plan. |
-| `docs/base1/ROOT_COMPATIBILITY_MAP.md` | Organization | Root path to organized mirror map. |
+| `docs/base1/RELEASE_ARCHIVE_MAP.md` | Organization | Root path to organized mirror map. |
 | `docs/base1/REORGANIZATION_READINESS.md` | Organization | Full-reorganization readiness criteria. |
 | `docs/base1/READINESS_MATRIX.md` | Validation | Evidence/maturity matrix. |
 | `docs/base1/VALIDATION_RUNBOOK.md` | Validation | Documentation-only validation runbook. |

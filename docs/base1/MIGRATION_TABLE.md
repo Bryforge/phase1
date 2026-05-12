@@ -13,7 +13,7 @@ It is preservation-first. The current path remains available unless explicit fut
 
 - Keep current paths recoverable.
 - Add mirrors or indexes before changing references.
-- Preserve root compatibility paths for public checkpoint notes.
+- Preserve release archive paths for public checkpoint notes.
 - Update tests and integrity gates with each group.
 - Do not weaken non-claims, dry-run wording, recovery references, or rollback references.
 - Run `sh scripts/quality-check.sh base1-docs` after each organization change.
@@ -38,7 +38,7 @@ It is preservation-first. The current path remains available unless explicit fut
 | `docs/base1/README.md` | keep | canonical manual index | active |
 | `docs/base1/DOCUMENTATION_MAP.md` | keep | canonical map | active |
 | `docs/base1/DOCUMENTATION_ORGANIZATION_PLAN.md` | keep | canonical plan | active |
-| `docs/base1/ROOT_COMPATIBILITY_MAP.md` | keep | canonical compatibility map | active |
+| `docs/base1/RELEASE_ARCHIVE_MAP.md` | keep | canonical compatibility map | active |
 | `docs/base1/INVENTORY.md` | keep | canonical inventory | active |
 | `docs/base1/TEST_INVENTORY.md` | keep | canonical test inventory | active |
 | `docs/base1/REORGANIZATION_READINESS.md` | keep | canonical readiness checklist | active |
@@ -47,13 +47,13 @@ It is preservation-first. The current path remains available unless explicit fut
 
 | Current path | Proposed organized path | Compatibility decision | Status |
 | --- | --- | --- | --- |
-| `RELEASE_BASE1_LIBREBOOT_READONLY_V1.md` | `docs/base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1.md` | keep root compatibility path | mirrored |
-| `RELEASE_BASE1_LIBREBOOT_READONLY_V1_1.md` | `docs/base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1_1.md` | keep root compatibility path | mirrored |
-| `RELEASE_BASE1_RECOVERY_USB_HARDWARE_READONLY_V1.md` | `docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_HARDWARE_READONLY_V1.md` | keep root compatibility path | mirrored |
-| `RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md` | `docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md` | keep root compatibility path | mirrored |
-| `RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md` | `docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md` | keep root compatibility path | mirrored |
-| `RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md` | `docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md` | keep root compatibility path | mirrored |
-| `docs/archive/checkpoints/DEVELOPMENT_CHECKPOINT_BASE1_RECOVERY_USB_READONLY_V1.md` | future `docs/base1/releases/` mirror | keep root compatibility path | pending review |
+| `RELEASE_BASE1_LIBREBOOT_READONLY_V1.md` | `docs/base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1.md` | keep archived release path | mirrored |
+| `RELEASE_BASE1_LIBREBOOT_READONLY_V1_1.md` | `docs/base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1_1.md` | keep archived release path | mirrored |
+| `RELEASE_BASE1_RECOVERY_USB_HARDWARE_READONLY_V1.md` | `docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_HARDWARE_READONLY_V1.md` | keep archived release path | mirrored |
+| `RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md` | `docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md` | keep archived release path | mirrored |
+| `RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md` | `docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md` | keep archived release path | mirrored |
+| `RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md` | `docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md` | keep archived release path | mirrored |
+| `docs/archive/checkpoints/DEVELOPMENT_CHECKPOINT_BASE1_RECOVERY_USB_READONLY_V1.md` | future `docs/base1/releases/` mirror | keep archived release path | pending review |
 
 ## Recovery USB docs
 

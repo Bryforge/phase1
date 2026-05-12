@@ -13,7 +13,7 @@ Base1 has public docs, root compatibility files, release/checkpoint mirrors, dry
 
 Do not broadly reorganize Base1 markdown until link checking is available through documentation, scripts, tests, or a CI-safe command.
 
-For now, `scripts/base1-doc-integrity.sh` is the minimum link/reference guard. It checks required files, key references, root compatibility paths, release mirrors, script syntax, dry-run wording, and non-claims.
+For now, `scripts/base1-doc-integrity.sh` is the minimum link/reference guard. It checks required files, key references, release archive paths, release mirrors, script syntax, dry-run wording, and non-claims.
 
 ## Required link surfaces
 

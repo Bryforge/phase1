@@ -83,4 +83,4 @@ Recovery USB emergency shell behavior must remain read-only until shell entry, e
 See also: [Recovery USB emergency shell command index](RECOVERY_USB_EMERGENCY_SHELL_COMMAND_INDEX.md).
 
 
-See also: [RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md](../RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md).
+See also: [RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md](../docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md).

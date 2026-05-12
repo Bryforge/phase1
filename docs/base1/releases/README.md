@@ -9,7 +9,7 @@ This directory collects Base1 release and checkpoint notes that used to live at 
 
 - [Release/checkpoint pre-move checks](PRE_MOVE_CHECKS.md)
 
-Use the pre-move checks before changing this group. Root checkpoint-note files remain compatibility paths and must not be removed during this phase.
+Use the pre-move checks before changing this group. Base1 release/checkpoint notes live under docs/base1/releases and must not be removed during this phase.
 
 ## Libreboot checkpoints
 

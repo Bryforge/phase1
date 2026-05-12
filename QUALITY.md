@@ -57,7 +57,7 @@ sh scripts/base1-link-check.sh
 sh scripts/base1-test-inventory-verify.sh
 ```
 
-It verifies the current Base1 documentation map, inventory, test inventory, migration table, script compatibility plan, link-check strategy, post-reorganization layout, root compatibility paths, organized release mirrors, real-device read-only docs, script syntax, local links, non-claims, and dry-run guardrails.
+It verifies the current Base1 documentation map, inventory, test inventory, migration table, script compatibility plan, link-check strategy, post-reorganization layout, release archive paths, organized release mirrors, real-device read-only docs, script syntax, local links, non-claims, and dry-run guardrails.
 
 ### Base1 reorganization readiness
 
@@ -194,7 +194,7 @@ The security crypto docs quality gate verifies:
 
 ## Base1 organization integrity
 
-Base1 documentation reorganization is preservation-first. Root checkpoint-note files remain compatibility paths while organized mirrors live under `docs/base1/releases/`.
+Base1 documentation reorganization is preservation-first. Base1 release/checkpoint notes live under docs/base1/releases while organized mirrors live under `docs/base1/releases/`.
 
 Before and after Base1 documentation organization work, run:
 
@@ -207,7 +207,7 @@ The Base1 docs quality gate verifies:
 - required Base1 docs are present
 - root checkpoint-note compatibility files are present
 - organized release mirrors are present
-- `docs/base1/ROOT_COMPATIBILITY_MAP.md` links old paths to organized mirrors
+- `docs/base1/RELEASE_ARCHIVE_MAP.md` links old paths to organized mirrors
 - inventory, test inventory, migration table, script compatibility plan, link-check strategy, and post-reorganization layout are present
 - real-device read-only docs remain present
 - Base1 shell scripts pass `sh -n`

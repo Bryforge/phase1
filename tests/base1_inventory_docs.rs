@@ -29,7 +29,7 @@ fn base1_inventory_preserves_key_paths() {
         "base1/SECURITY_MODEL.md",
         "base1/PHASE1_COMPATIBILITY.md",
         "docs/base1/DOCUMENTATION_MAP.md",
-        "docs/base1/ROOT_COMPATIBILITY_MAP.md",
+        "docs/base1/RELEASE_ARCHIVE_MAP.md",
         "docs/base1/REORGANIZATION_READINESS.md",
         "docs/base1/TEST_INVENTORY.md",
         "docs/os/BASE1_DRY_RUN_COMMANDS.md",

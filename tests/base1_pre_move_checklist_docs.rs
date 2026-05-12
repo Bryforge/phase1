@@ -11,7 +11,7 @@ fn pre_move_checklist_defines_required_before_move_items() {
         "docs/base1/TEST_INVENTORY.md",
         "docs/base1/MIGRATION_TABLE.md",
         "docs/base1/POST_REORGANIZATION_LAYOUT.md",
-        "docs/base1/ROOT_COMPATIBILITY_MAP.md",
+        "docs/base1/RELEASE_ARCHIVE_MAP.md",
         "docs/base1/SCRIPT_COMPATIBILITY_PLAN.md",
         "scripts/base1-link-check.sh",
         "sh scripts/quality-check.sh base1-docs",

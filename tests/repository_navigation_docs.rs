@@ -184,14 +184,17 @@ fn repository_navigation_guide_preserves_reorganization_rules_and_non_claims() {
 
     for rule in [
         "Repository reorganization should be preservation-first.",
-        "Keep existing public/root compatibility paths unless a future plan explicitly replaces them.",
+        "Keep existing public/release archive paths unless a future plan explicitly replaces them.",
         "Use [`REORGANIZATION_PLAN.md`](REORGANIZATION_PLAN.md) before broad restructuring.",
         "Prefer adding indexes and mirrors before moving files.",
         "Add navigation docs before broad restructuring.",
         "Add tests for new navigation and required links.",
         "Keep safety, non-claims, and validation paths visible.",
     ] {
-        assert!(nav.contains(rule), "missing reorganization rule {rule}: {nav}");
+        assert!(
+            nav.contains(rule),
+            "missing reorganization rule {rule}: {nav}"
+        );
     }
 
     assert!(nav.contains("does not move files"), "{nav}");

@@ -415,10 +415,10 @@ Every documentation PR should answer:
 
 ## Base1 public compatibility path
 
-- [`docs/base1/ROOT_COMPATIBILITY_MAP.md`](ROOT_COMPATIBILITY_MAP.md) — Public path for the Base1 root compatibility map.
+- [`docs/base1/RELEASE_ARCHIVE_MAP.md`](RELEASE_ARCHIVE_MAP.md) — Public path for the Base1 root compatibility map.
 
 ## Root compatibility map public path
 
-- [`ROOT_COMPATIBILITY_MAP.md`](ROOT_COMPATIBILITY_MAP.md) — Base1 root compatibility map.
-- `docs/base1/ROOT_COMPATIBILITY_MAP.md` — Public compatibility-map path.
-- [`docs/base1/ROOT_COMPATIBILITY_MAP.md`](base1/ROOT_COMPATIBILITY_MAP.md) — Repository-root public path for the Base1 root compatibility map.
+- [`RELEASE_ARCHIVE_MAP.md`](RELEASE_ARCHIVE_MAP.md) — Base1 root compatibility map.
+- `docs/base1/RELEASE_ARCHIVE_MAP.md` — Public compatibility-map path.
+- [`docs/base1/RELEASE_ARCHIVE_MAP.md`](base1/RELEASE_ARCHIVE_MAP.md) — Repository-root public path for the Base1 root compatibility map.

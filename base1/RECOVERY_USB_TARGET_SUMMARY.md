@@ -74,7 +74,7 @@ This summary does not claim:
 Recovery USB target selection must remain read-only until target identity, image provenance, checksum verification, emergency shell behavior, rollback metadata, storage layout, and actual Libreboot/X200-class boot behavior are verified.
 
 
-See also: [RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md](../RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md).
+See also: [RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md](../docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md).
 
 
 See also: [Recovery USB image provenance and checksum design](RECOVERY_USB_IMAGE_PROVENANCE.md).

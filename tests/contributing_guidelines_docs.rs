@@ -97,7 +97,7 @@ fn contributing_guidelines_define_security_crypto_base1_and_fyr_rules() {
         "docs/security/CRYPTO_ALGORITHM_TEMPLATE.md",
         "docs/security/CRYPTO_PROVIDER_TEMPLATE.md",
         "keep unknown profiles, scopes, algorithms, and providers fail-closed",
-        "keep root compatibility paths recoverable",
+        "keep release archive paths recoverable",
         "do not claim installer readiness, boot readiness, hardware validation, or daily-driver readiness without evidence",
         "Do not describe Fyr as production-ready",
     ] {

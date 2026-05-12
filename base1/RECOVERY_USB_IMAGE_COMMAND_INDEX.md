@@ -66,5 +66,5 @@ Every image-provenance document or command must preserve these rules:
 A future recovery USB writer can only follow after image provenance, checksum verification, target identity, emergency shell behavior, rollback metadata, storage layout, and actual Libreboot/X200-class boot behavior are verified.
 
 
-See also: [`RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md`](../RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md) — recovery USB image provenance read-only checkpoint release notes.
+See also: [`RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md`](../docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md) — recovery USB image provenance read-only checkpoint release notes.
 - [`docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md`](../docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md) — Recovery USB image read-only checkpoint release notes.

@@ -73,7 +73,7 @@ This summary does not claim:
 Recovery USB work must remain read-only until target-device selection, image provenance, checksum verification, emergency shell behavior, rollback metadata, storage layout, and actual Libreboot/X200-class boot behavior are verified.
 
 
-See also: [RELEASE_BASE1_RECOVERY_USB_HARDWARE_READONLY_V1.md](../RELEASE_BASE1_RECOVERY_USB_HARDWARE_READONLY_V1.md).
+See also: [RELEASE_BASE1_RECOVERY_USB_HARDWARE_READONLY_V1.md](../docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_HARDWARE_READONLY_V1.md).
 
 
 See also: [Recovery USB target-device selection design](RECOVERY_USB_TARGET_SELECTION.md).

@@ -7,7 +7,7 @@ Scope: Base1 documentation and script organization
 
 Base1 is not ready for a full reorganization yet.
 
-The repository is ready for safe incremental organization only: add indexes, add mirrors, update references, preserve root compatibility paths, and run integrity checks.
+The repository is ready for safe incremental organization only: add indexes, add mirrors, update references, preserve release archive paths, and run integrity checks.
 
 ## Ready now
 
@@ -30,7 +30,7 @@ The following safeguards are in place:
 - Proposed post-reorganization layout: `docs/base1/POST_REORGANIZATION_LAYOUT.md`
 - Pre-move checklist: `docs/base1/PRE_MOVE_CHECKLIST.md`
 - Release/checkpoint pre-move checks: `docs/base1/releases/PRE_MOVE_CHECKS.md`
-- Root compatibility map: `docs/base1/ROOT_COMPATIBILITY_MAP.md`
+- Root compatibility map: `docs/base1/RELEASE_ARCHIVE_MAP.md`
 - Release/checkpoint mirror index: `docs/base1/releases/README.md`
 - Integrity gate: `scripts/base1-doc-integrity.sh`
 - Quality integration: `sh scripts/quality-check.sh base1-docs`
@@ -118,4 +118,4 @@ This readiness checklist does not make Base1 installer-ready, hardware-validated
 
 ## Complete inventory requirement
 
-A complete inventory must be preserved before broad Base1 reorganization work proceeds. The inventory must keep root compatibility paths, organized mirrors, scripts, tests, release notes, validation reports, and recovery-oriented documents discoverable.
+A complete inventory must be preserved before broad Base1 reorganization work proceeds. The inventory must keep release archive paths, organized mirrors, scripts, tests, release notes, validation reports, and recovery-oriented documents discoverable.

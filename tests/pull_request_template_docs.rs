@@ -70,7 +70,7 @@ fn pull_request_template_preserves_compatibility_checklist() {
 
     for item in [
         "No compatibility paths were removed.",
-        "Base1 root compatibility paths are preserved when relevant.",
+        "Base1 release archive paths are preserved when relevant.",
         "Script/operator command paths remain stable or wrappers are documented.",
         "Migration or rollback guidance is documented when relevant.",
     ] {

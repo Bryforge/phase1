@@ -144,7 +144,7 @@ sh scripts/quality-check.sh security-crypto-docs
 
 1. Read [`base1/README.md`](base1/README.md).
 2. Read [`recovery/README.md`](recovery/README.md).
-3. Keep root compatibility paths recoverable.
+3. Keep release archive paths recoverable.
 4. Prefer read-only and dry-run workflows.
 5. Run:
 
@@ -196,7 +196,7 @@ Repository reorganization should be preservation-first.
 
 Rules:
 
-- Keep existing public/root compatibility paths unless a future plan explicitly replaces them.
+- Keep existing public/release archive paths unless a future plan explicitly replaces them.
 - Use [`REORGANIZATION_PLAN.md`](REORGANIZATION_PLAN.md) before broad restructuring.
 - Prefer adding indexes and mirrors before moving files.
 - Add navigation docs before broad restructuring.

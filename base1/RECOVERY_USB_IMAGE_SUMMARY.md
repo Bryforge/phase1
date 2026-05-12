@@ -82,7 +82,7 @@ Recovery USB image work must remain read-only until image provenance, checksum v
 See also: [Recovery USB image provenance command index](RECOVERY_USB_IMAGE_COMMAND_INDEX.md).
 
 
-See also: [RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md](../RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md).
+See also: [RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md](../docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md).
 
 
 See also: [Recovery USB emergency shell behavior design](RECOVERY_USB_EMERGENCY_SHELL.md).

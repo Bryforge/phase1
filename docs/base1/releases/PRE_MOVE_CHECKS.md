@@ -1,7 +1,7 @@
 # Base1 release/checkpoint pre-move checks
 
 Status: active group-specific pre-move checks
-Scope: Base1 release/checkpoint notes and root compatibility paths
+Scope: Base1 release/checkpoint notes and release archive paths
 
 ## Purpose
 
@@ -23,11 +23,11 @@ Organized mirrors live under:
 docs/base1/releases/
 ```
 
-No root release/checkpoint file should be removed during this phase.
+No archived release/checkpoint file should be removed during this phase.
 
 ## Required paths
 
-Root compatibility paths:
+Archived Base1 release paths:
 
 ```text
 RELEASE_BASE1_LIBREBOOT_READONLY_V1.md
@@ -81,7 +81,7 @@ Do not move or mirror this group when:
 
 - Root compatibility files are missing.
 - Organized mirror files are missing.
-- `docs/base1/ROOT_COMPATIBILITY_MAP.md` does not map root paths to mirror paths.
+- `docs/base1/RELEASE_ARCHIVE_MAP.md` does not map root paths to mirror paths.
 - `docs/base1/releases/README.md` does not index the organized notes.
 - Local link checking fails.
 - Test inventory verification fails.

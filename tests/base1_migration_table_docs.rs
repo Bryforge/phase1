@@ -26,7 +26,7 @@ fn migration_table_preserves_compatibility_decisions() {
         std::fs::read_to_string("docs/base1/MIGRATION_TABLE.md").expect("Base1 migration table");
 
     assert!(table.contains("Compatibility decision"), "{table}");
-    assert!(table.contains("keep root compatibility path"), "{table}");
+    assert!(table.contains("keep archived release path"), "{table}");
     assert!(table.contains("canonical"), "{table}");
     assert!(table.contains("mirrored"), "{table}");
     assert!(table.contains("pending review"), "{table}");

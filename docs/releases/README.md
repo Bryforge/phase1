@@ -57,7 +57,7 @@ sh scripts/quality-check.sh base1-docs
 
 ## Non-claims
 
-This index does not move release files by itself, remove root compatibility paths, publish a release, or prove release readiness.
+This index does not move release files by itself, remove release archive paths, publish a release, or prove release readiness.
 
 It creates an organized destination for future release documentation work.
 - [`docs/base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1_1.md`](../base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1_1.md) — Libreboot read-only checkpoint v1.1 patch release notes.

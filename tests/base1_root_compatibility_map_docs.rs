@@ -1,6 +1,6 @@
 #[test]
 fn root_compatibility_map_lists_root_and_mirror_paths() {
-    let doc = std::fs::read_to_string("docs/base1/ROOT_COMPATIBILITY_MAP.md")
+    let doc = std::fs::read_to_string("docs/base1/RELEASE_ARCHIVE_MAP.md")
         .expect("root compatibility map");
 
     assert!(doc.contains("Base1 root compatibility map"), "{doc}");
@@ -50,8 +50,8 @@ fn documentation_map_and_manual_link_root_compatibility_map() {
         std::fs::read_to_string("docs/base1/DOCUMENTATION_MAP.md").expect("documentation map");
     let manual = std::fs::read_to_string("docs/base1/README.md").expect("base1 manual");
 
-    assert!(map.contains("ROOT_COMPATIBILITY_MAP.md"), "{map}");
-    assert!(manual.contains("ROOT_COMPATIBILITY_MAP.md"), "{manual}");
+    assert!(map.contains("RELEASE_ARCHIVE_MAP.md"), "{map}");
+    assert!(manual.contains("RELEASE_ARCHIVE_MAP.md"), "{manual}");
     assert!(
         manual.contains("root-level Base1 checkpoint notes remain compatibility paths"),
         "{manual}"
@@ -65,7 +65,7 @@ fn integrity_gate_checks_root_compatibility_and_release_mirrors() {
 
     assert!(script.contains("check_root_compatibility_docs"), "{script}");
     assert!(
-        script.contains("docs/base1/ROOT_COMPATIBILITY_MAP.md"),
+        script.contains("docs/base1/RELEASE_ARCHIVE_MAP.md"),
         "{script}"
     );
     assert!(script.contains("docs/base1/releases/README.md"), "{script}");
