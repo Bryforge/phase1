@@ -25,6 +25,7 @@ fail() { printf 'b47-qemu-framebuffer-lab: %s\n' "$1" >&2; exit 1; }
 need() { command -v "$1" >/dev/null 2>&1 || fail "missing command: $1"; }
 copy_one() { src="$1"; dstroot="$2"; [ -e "$src" ] || return 0; dst="$dstroot$src"; mkdir -p "$(dirname "$dst")"; cp -aL "$src" "$dst" 2>/dev/null || cp -L "$src" "$dst" 2>/dev/null || true; }
 copy_libs() { bin="$1"; dstroot="$2"; command -v ldd >/dev/null 2>&1 || return 0; ldd "$bin" 2>/dev/null | while IFS= read -r line || [ -n "${line:-}" ]; do lib=""; case "$line" in *'=> /'*) lib="$(printf '%s\n' "$line" | awk '{print $3}')" ;; /*) lib="$(printf '%s\n' "$line" | awk '{print $1}')" ;; esac; [ -n "$lib" ] && [ -e "$lib" ] && copy_one "$lib" "$dstroot"; done; }
+copy_common_loaders() { dstroot="$1"; for loader in /lib64/ld-linux-x86-64.so.2 /lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 /lib/ld-linux.so.2 /lib/i386-linux-gnu/ld-linux.so.2; do [ -e "$loader" ] && copy_one "$loader" "$dstroot"; done; }
 
 find_font() {
   for pattern in \
@@ -62,38 +63,28 @@ except Exception as exc:
 w, h = 1024, 768
 img = Image.new("RGB", (w, h), (7, 13, 20))
 d = ImageDraw.Draw(img)
-
 font_big = ImageFont.truetype(font_path, 44)
 font_title = ImageFont.truetype(font_path, 28)
 font_body = ImageFont.truetype(font_path, 22)
 font_small = ImageFont.truetype(font_path, 18)
-
 ice = (76, 230, 255)
 blue = (30, 105, 255)
 red = (255, 40, 48)
 white = (230, 246, 255)
 dim = (120, 160, 170)
-
-# background grid/glow
 for y in range(0, h, 32):
     d.line((0, y, w, y), fill=(8, 24, 32))
 for x in range(0, w, 32):
     d.line((x, 0, x, h), fill=(8, 20, 30))
-
-# rounded card border
 x0, y0, x1, y1 = 70, 70, 954, 675
 try:
     d.rounded_rectangle((x0, y0, x1, y1), radius=28, outline=ice, width=4, fill=(10, 18, 28))
     d.rounded_rectangle((x0+14, y0+14, x1-14, y1-14), radius=20, outline=blue, width=2)
 except Exception:
     d.rectangle((x0, y0, x1, y1), outline=ice, width=4)
-
-# title / greeting
 hello = "こんにちは、ハッカー！"
 d.text((110, 105), "Phase1 // Framebuffer Boot Card", font=font_title, fill=ice)
 d.text((110, 155), hello, font=font_big, fill=red)
-
-# status lines
 lines = [
     ("version", "v6.0.0"),
     ("channel", "release"),
@@ -108,12 +99,9 @@ for k, v in lines:
     d.text((120, y), f"{k:<10}", font=font_body, fill=dim)
     d.text((270, y), v, font=font_body, fill=white if k != "unicode" else red)
     y += 38
-
-# rounded glyph test as pixels
 rounded = "╭─ Phase1 ─╮   ╰──────────╯"
 d.text((120, 545), rounded, font=font_body, fill=ice)
 d.text((120, 595), "B47 QEMU first. If this displays, move to X200 framebuffer path.", font=font_small, fill=dim)
-
 img.save(out, "PPM")
 PY
 
@@ -155,7 +143,6 @@ int main(int argc, char **argv) {
     if (!rgb) { perror("malloc"); return 5; }
     if (fread(rgb, 1, pixels, f) != pixels) { fprintf(stderr, "short ppm read\n"); return 6; }
     fclose(f);
-
     int fd = open(fb_path, O_RDWR);
     if (fd < 0) { perror("open fb"); return 7; }
     struct fb_var_screeninfo v;
@@ -165,13 +152,11 @@ int main(int argc, char **argv) {
     size_t screensz = (size_t)fix.line_length * (size_t)v.yres;
     uint8_t *fb = mmap(NULL, screensz, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
     if (fb == MAP_FAILED) { perror("mmap fb"); return 10; }
-
     memset(fb, 0, screensz);
     int offx = v.xres > (unsigned)iw ? ((int)v.xres - iw) / 2 : 0;
     int offy = v.yres > (unsigned)ih ? ((int)v.yres - ih) / 2 : 0;
     int draw_w = iw < (int)v.xres ? iw : (int)v.xres;
     int draw_h = ih < (int)v.yres ? ih : (int)v.yres;
-
     for (int y = 0; y < draw_h; y++) {
         for (int x = 0; x < draw_w; x++) {
             uint8_t r = rgb[(y*iw + x)*3+0];
@@ -195,7 +180,14 @@ int main(int argc, char **argv) {
 }
 C
 
-cc -O2 -Wall -o "$BLITTER" "$BLITTER_C"
+# Prefer static so initramfs execution cannot fail with misleading "not found"
+# caused by a missing dynamic loader. Fall back to dynamic + copied loader/libs.
+if cc -O2 -static -Wall -o "$BLITTER" "$BLITTER_C" 2>/dev/null; then
+  BLITTER_LINK=static
+else
+  cc -O2 -Wall -o "$BLITTER" "$BLITTER_C"
+  BLITTER_LINK=dynamic
+fi
 file "$BLITTER"
 
 rm -rf "$ROOTFS"
@@ -213,7 +205,10 @@ for app in sh ash mount umount mkdir cat echo ls dmesg uname sleep reboot powero
 cp "$CARD_PPM" "$ROOTFS/phase1/phase1-b47-card.ppm"
 cp "$BLITTER" "$ROOTFS/phase1/phase1_fb_blit"
 chmod 0755 "$ROOTFS/phase1/phase1_fb_blit"
-copy_libs "$BLITTER" "$ROOTFS" || true
+if [ "$BLITTER_LINK" = dynamic ]; then
+  copy_libs "$BLITTER" "$ROOTFS" || true
+  copy_common_loaders "$ROOTFS" || true
+fi
 
 cat > "$ROOTFS/init" <<'EOF'
 #!/bin/sh
@@ -227,12 +222,17 @@ mount -t devtmpfs devtmpfs /dev 2>/dev/null || mount -t tmpfs dev /dev 2>/dev/nu
 exec </dev/console >/dev/console 2>&1
 clear 2>/dev/null || true
 echo "Phase1 B47 framebuffer lab starting..."
+echo "Checking packaged renderer files..."
+ls -l /phase1 2>/dev/null || true
+echo "Framebuffer list:"
+cat /proc/fb 2>/dev/null || echo "no /proc/fb entries"
 echo "Attempting /dev/fb0 render of Japanese card."
 if /phase1/phase1_fb_blit /phase1/phase1-b47-card.ppm /dev/fb0; then
   echo "phase1_framebuffer_card_qemu_seen candidate"
   echo "If the QEMU window shows Japanese text, record phase1_japanese_pixels_qemu_seen."
 else
   echo "framebuffer blit failed; falling back to shell"
+  dmesg | grep -i fb 2>/dev/null || true
 fi
 echo "Type reboot or poweroff when done."
 /bin/sh
@@ -247,6 +247,7 @@ BASE1_B47_INITRD=$INITRD
 BASE1_B47_CARD=$CARD_PPM
 BASE1_B47_FONT=$FONT
 BASE1_B47_BLITTER=$BLITTER
+BASE1_B47_BLITTER_LINK=$BLITTER_LINK
 BASE1_B47_RESULT=prepared
 BASE1_B47_EXPECTED_QEMU_RESULT=phase1_framebuffer_card_qemu_seen
 BASE1_B47_JAPANESE_PIXELS=not_claimed
@@ -255,6 +256,7 @@ EOF
 printf 'DONE: B47 framebuffer lab prepared.\n'
 printf 'Initrd: %s\n' "$INITRD"
 printf 'Card  : %s\n' "$CARD_PPM"
+printf 'Blitter link: %s\n' "$BLITTER_LINK"
 printf 'Report: %s\n' "$REPORT"
 
 if [ "$MODE" = run ] || [ "$QEMU_RUN" = 1 ]; then
@@ -264,7 +266,7 @@ if [ "$MODE" = run ] || [ "$QEMU_RUN" = 1 ]; then
     -m 512M \
     -kernel "$KERNEL" \
     -initrd "$INITRD" \
-    -append "console=tty0 rdinit=/init video=1024x768-32 nomodeset" \
+    -append "console=tty0 rdinit=/init video=1024x768-32 nomodeset clocksource=hpet tsc=unstable" \
     -display gtk \
     -no-reboot
 fi
