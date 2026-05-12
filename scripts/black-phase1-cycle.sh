@@ -13,6 +13,7 @@
 #   - create a checkpoint;
 #   - prepare verified X200 test media;
 #   - apply the B47 framebuffer boot-card augmentation;
+#   - force the B47 framebuffer entry to first/default;
 #   - verify the B47 framebuffer GRUB entry by readback.
 #
 # Do not run this whole wrapper with sudo. Called scripts use sudo internally
@@ -68,6 +69,13 @@ else
   fail "missing scripts/x200-b47-framebuffer-boot-augment.sh"
 fi
 
+printf '\n===== FORCE B47 FRAMEBUFFER DEFAULT =====\n'
+if [ -f scripts/x200-b47-force-framebuffer-default.sh ]; then
+  sh scripts/x200-b47-force-framebuffer-default.sh "$USB" YES_WRITE_USB
+else
+  fail "missing scripts/x200-b47-force-framebuffer-default.sh"
+fi
+
 printf '\n===== VERIFY B47 FRAMEBUFFER ENTRY =====\n'
 PART="$(part1 "$USB")"
 MNT="$(mktemp -d)"
@@ -75,6 +83,9 @@ cleanup() { sudo umount "$MNT" 2>/dev/null || true; rmdir "$MNT" 2>/dev/null || 
 trap cleanup EXIT INT TERM
 sudo mount -o ro "$PART" "$MNT"
 [ -f "$MNT/boot/grub/grub.cfg" ] || fail "missing grub.cfg after B47 augment"
+first_menu="$(grep '^menuentry ' "$MNT/boot/grub/grub.cfg" | head -n 1 || true)"
+printf 'First menu entry: %s\n' "$first_menu"
+printf '%s\n' "$first_menu" | grep -q "$ENTRY" || fail "B47 framebuffer entry is not first/default"
 grep -q "$ENTRY" "$MNT/boot/grub/grub.cfg" || fail "B47 framebuffer entry missing after augment"
 grep -q 'phase1.framebuffer=1' "$MNT/boot/grub/grub.cfg" || fail "B47 framebuffer kernel flag missing"
 grep -q 'BASE1_B47_ENTRY=' "$MNT/phase1/evidence/b42-prep.env" || fail "B47 evidence missing from USB"
@@ -86,7 +97,7 @@ trap - EXIT INT TERM
 
 printf '\nDONE: black-phase1 full cycle completed.\n'
 printf 'RESULT: prepared_and_verified_for_next_test\n'
-printf 'Next X200 boot test entry:\n'
+printf 'Next X200 boot test entry/default:\n'
 printf '  %s\n' "$ENTRY"
 printf 'Normal fallback still available:\n'
 printf '  Start Phase1 Stable Safe Color UTF-8\n'
