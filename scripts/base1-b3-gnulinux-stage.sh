@@ -54,6 +54,9 @@ hardened profile:
   The GNU/Linux stage defaults to the hardened QEMU boot profile. This requests
   hardening-oriented kernel settings through the shared QEMU checker, but it is
   request-only and does not prove that the resulting system is hardened.
+  The requested profile may include module signature policy, lockdown posture,
+  allocator initialization hardening, and debugfs disablement flags. These are a
+  requested boot profile, not proof of enforcement.
 
 non-claims:
   This is emulator-only staging evidence. It does not make Base1 a GNU/Linux
