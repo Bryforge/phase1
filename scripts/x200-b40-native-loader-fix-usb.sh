@@ -2,20 +2,14 @@
 # Phase1 / Base1 X200 B40 native binary loader fix USB writer.
 #
 # Purpose:
-#   Fix the B39 native binary launch failure:
-#     /phase1/bin/phase1: not found
+#   Boot the native Phase1 console through the working B38 protocol and package
+#   the ELF loader/shared libraries required by the Rust binary.
 #
-# That message usually means the ELF interpreter or dynamic libraries are
-# missing inside the initramfs, not that the binary was missing.
-#
-# B40 keeps the working B38 boot protocol:
+# Working protocol:
 #   Libreboot GRUB -> normal linux -> normal initrd -> rdinit=/init
 #
-# Improvements over B39:
-#   - copies libraries with cp -L to dereference symlinks;
-#   - explicitly copies common glibc loader paths;
-#   - records loader diagnostics before launch;
-#   - falls back cleanly if native launch still fails.
+# B41 color update:
+#   The native console now boots with color enabled by default.
 
 set -eu
 
@@ -154,7 +148,6 @@ chmod 0755 "$ROOTFS/phase1/bin/phase1"
 copy_libs_for_binary "$PHASE1_BIN_PATH" "$ROOTFS"
 copy_common_loaders "$ROOTFS"
 
-# Copy minimal repo context.
 for path in README.md Cargo.toml phase1 start_phase1 FEATURE_STATUS.md PHASE1_NATIVE_LANGUAGE.md; do
   if [ -f "$path" ]; then
     cp "$path" "$ROOTFS/phase1/repo/$path"
@@ -170,12 +163,16 @@ cat > "$ROOTFS/init" <<'EOF'
 #!/bin/sh
 PATH=/phase1/bin:/bin:/sbin:/usr/bin:/usr/sbin
 export PATH
+export TERM=linux
+export COLORTERM=truecolor
 export PHASE1_HOME=/phase1/repo
 export PHASE1_SAFE_MODE=1
 export PHASE1_THEME=crimson
-export PHASE1_COLOR_MODE=mono
+export PHASE1_COLOR_MODE=auto
+export PHASE1_FORCE_COLOR=1
 export PHASE1_DEVICE_MODE=hardware
 export PHASE1_LAUNCH_COMMAND="phase1-native-boot"
+unset NO_COLOR
 
 mount -t proc proc /proc 2>/dev/null || true
 mount -t sysfs sysfs /sys 2>/dev/null || mount -t sysfs sys /sys 2>/dev/null || true
@@ -192,38 +189,35 @@ dmesg -n 1 2>/dev/null || true
 exec </dev/console >/dev/console 2>&1
 stty sane 2>/dev/null || true
 
-cat > /phase1/evidence/b40-loader-fix.env <<'ENV'
+cat > /phase1/evidence/b41-native-color.env <<'ENV'
+BASE1_B41_NATIVE_COLOR_RESULT=phase1_native_color_console_seen
 BASE1_B40_NATIVE_LOADER_FIX_RESULT=phase1_native_console_seen
 BASE1_B40_BOOT_PROTOCOL=normal_linux_normal_initrd_rdinit
 BASE1_B40_NATIVE_BINARY=/phase1/bin/phase1
-BASE1_B40_FALLBACK=busybox_phase1_shell
+BASE1_B41_TERM=linux
+BASE1_B41_COLORTERM=truecolor
+BASE1_B41_COLOR_MODE=auto
+BASE1_B41_FORCE_COLOR=1
 ENV
 
 clear 2>/dev/null || true
 cat <<'BANNER'
 phase1 6.0.0 ready
-Base1 B40 native binary loader fix
-result target: phase1_native_console_seen
+Base1 B41 native color console
+result target: phase1_native_color_console_seen
 
-Launching Phase1 native console...
+Launching Phase1 native console with color enabled...
 BANNER
 
-{
-  echo "--- loader diagnostic ---"
-  ls -l /phase1/bin/phase1 2>/dev/null || true
-  ls -l /lib64 /lib /lib/x86_64-linux-gnu 2>/dev/null || true
-  echo "--- end diagnostic ---"
-} >> /phase1/evidence/b40-loader-fix.env 2>/dev/null || true
-
 if [ -x /phase1/bin/phase1 ]; then
-  echo "BASE1_B40_NATIVE_BINARY_STARTED=1" >> /phase1/evidence/b40-loader-fix.env
+  echo "BASE1_B41_NATIVE_BINARY_STARTED=1" >> /phase1/evidence/b41-native-color.env
   /phase1/bin/phase1 2>&1
   rc=$?
-  echo "BASE1_B40_NATIVE_BINARY_EXIT_CODE=$rc" >> /phase1/evidence/b40-loader-fix.env
+  echo "BASE1_B41_NATIVE_BINARY_EXIT_CODE=$rc" >> /phase1/evidence/b41-native-color.env
   echo ""
   echo "Phase1 native binary returned with exit code: $rc"
 else
-  echo "BASE1_B40_NATIVE_BINARY_STARTED=0" >> /phase1/evidence/b40-loader-fix.env
+  echo "BASE1_B41_NATIVE_BINARY_STARTED=0" >> /phase1/evidence/b41-native-color.env
   echo "Phase1 native binary unavailable."
 fi
 
@@ -239,8 +233,8 @@ while true; do
   read cmd || cmd=shell
   case "$cmd" in
     help|h) echo "commands: help evidence status shell reboot poweroff" ;;
-    evidence|e) cat /phase1/evidence/b40-loader-fix.env ;;
-    status|s) uname -a; ls -la /phase1 /phase1/bin /phase1/evidence; echo "libs:"; ls -la /lib64 /lib/x86_64-linux-gnu 2>/dev/null || true ;;
+    evidence|e) cat /phase1/evidence/b41-native-color.env ;;
+    status|s) uname -a; ls -la /phase1 /phase1/bin /phase1/evidence; echo "term=$TERM colorterm=$COLORTERM color=$PHASE1_COLOR_MODE" ;;
     shell|sh) /bin/sh ;;
     reboot) echo b > /proc/sysrq-trigger 2>/dev/null || reboot -f ;;
     poweroff|halt) poweroff -f 2>/dev/null || halt -f ;;
@@ -254,7 +248,7 @@ chmod 0755 "$ROOTFS/init"
 ( cd "$ROOTFS" && find . | cpio -H newc -o 2>/dev/null | gzip -9 > "../phase1-b40-native-loader-fix-initramfs.img" )
 [ -s "$INITRD" ] || fail "failed to build initramfs: $INITRD"
 
-printf 'PHASE1 BASE1 B40 NATIVE BINARY LOADER FIX USB WRITER\n\n'
+printf 'PHASE1 BASE1 B41 NATIVE COLOR CONSOLE USB WRITER\n\n'
 printf 'profile      : %s\n' "$PROFILE"
 printf 'target disk  : %s\n' "$USB"
 printf 'kernel       : %s\n' "$KERNEL"
@@ -263,7 +257,7 @@ printf 'phase1 bin   : %s\n' "$PHASE1_BIN_PATH"
 printf 'splash       : %s\n' "$SPLASH_SRC"
 printf 'busybox      : %s\n\n' "$BUSYBOX_PATH"
 printf 'Kernel SHA256:\n'; sha256sum "$KERNEL"
-printf 'B40 initramfs SHA256:\n'; sha256sum "$INITRD"
+printf 'B41 initramfs SHA256:\n'; sha256sum "$INITRD"
 printf 'Phase1 binary SHA256:\n'; sha256sum "$PHASE1_BIN_PATH"
 printf 'Real splash SHA256:\n'; sha256sum "$SPLASH_SRC"
 printf '\nThis will erase the selected USB target.\n\n'
@@ -276,27 +270,27 @@ sudo partprobe "$USB" 2>/dev/null || true
 sync
 sleep 2
 [ -b "$PART1" ] || fail "partition did not appear: $PART1"
-sudo mkfs.vfat -F 32 -n PHASE1B40 "$PART1"
+sudo mkfs.vfat -F 32 -n PHASE1B41 "$PART1"
 sudo mount "$PART1" "$MNT"
 sudo mkdir -p "$MNT/boot/grub" "$MNT/grub" "$MNT/boot/phase1" "$MNT/phase1/assets" "$MNT/phase1/evidence"
 sudo cp "$KERNEL" "$MNT/boot/phase1/vmlinuz"
-sudo cp "$INITRD" "$MNT/boot/phase1/phase1-b40-native-loader-fix-initramfs.img"
+sudo cp "$INITRD" "$MNT/boot/phase1/phase1-b41-native-color-initramfs.img"
 sudo cp "$SPLASH_SRC" "$MNT/phase1/assets/phase1-splash.png"
 KERNEL_SIZE="$(stat -c %s "$KERNEL" 2>/dev/null || stat -f %z "$KERNEL")"
 INITRD_SIZE="$(stat -c %s "$INITRD" 2>/dev/null || stat -f %z "$INITRD")"
 PHASE1_SIZE="$(stat -c %s "$PHASE1_BIN_PATH" 2>/dev/null || stat -f %z "$PHASE1_BIN_PATH")"
-sudo tee "$MNT/phase1/evidence/b40-prep.env" >/dev/null <<EOF
-BASE1_B40_PROFILE=$PROFILE
-BASE1_B40_KERNEL=/boot/phase1/vmlinuz
-BASE1_B40_INITRD=/boot/phase1/phase1-b40-native-loader-fix-initramfs.img
-BASE1_B40_SPLASH=/phase1/assets/phase1-splash.png
-BASE1_B40_PHASE1_BINARY=/phase1/bin/phase1
-BASE1_B40_KERNEL_SIZE=$KERNEL_SIZE
-BASE1_B40_INITRD_SIZE=$INITRD_SIZE
-BASE1_B40_PHASE1_BINARY_SOURCE=$PHASE1_BIN_PATH
-BASE1_B40_PHASE1_BINARY_SIZE=$PHASE1_SIZE
-BASE1_B40_EXPECTED_RESULT=phase1_native_console_seen
-BASE1_B40_FALLBACK_RESULT=phase1_full_system_load_seen
+sudo tee "$MNT/phase1/evidence/b41-prep.env" >/dev/null <<EOF
+BASE1_B41_PROFILE=$PROFILE
+BASE1_B41_KERNEL=/boot/phase1/vmlinuz
+BASE1_B41_INITRD=/boot/phase1/phase1-b41-native-color-initramfs.img
+BASE1_B41_SPLASH=/phase1/assets/phase1-splash.png
+BASE1_B41_PHASE1_BINARY=/phase1/bin/phase1
+BASE1_B41_KERNEL_SIZE=$KERNEL_SIZE
+BASE1_B41_INITRD_SIZE=$INITRD_SIZE
+BASE1_B41_PHASE1_BINARY_SOURCE=$PHASE1_BIN_PATH
+BASE1_B41_PHASE1_BINARY_SIZE=$PHASE1_SIZE
+BASE1_B41_EXPECTED_RESULT=phase1_native_color_console_seen
+BASE1_B41_FALLBACK_RESULT=phase1_full_system_load_seen
 EOF
 
 sudo tee "$MNT/boot/grub/grub.cfg" >/dev/null <<'EOF'
@@ -308,7 +302,7 @@ set color_highlight=black/light-gray
 terminal_input console
 terminal_output console
 
-menuentry "B40 Real Phase1 Splash" {
+menuentry "B41 Real Phase1 Splash" {
     clear
     echo "Loading real Phase1 splash..."
     insmod all_video
@@ -319,7 +313,7 @@ menuentry "B40 Real Phase1 Splash" {
     terminal_output gfxterm
     if background_image /phase1/assets/phase1-splash.png; then
         echo "phase1 6.0.0 ready"
-        echo "B40 real Phase1 splash active"
+        echo "B41 real Phase1 splash active"
         sleep 3
     else
         terminal_output console
@@ -330,38 +324,38 @@ menuentry "B40 Real Phase1 Splash" {
     terminal_output console
 }
 
-menuentry "Start Native Phase1 Console" {
+menuentry "Start Native Phase1 Color Console" {
     clear
     echo "phase1 6.0.0 ready"
-    echo "B40 native binary loader fix"
+    echo "B41 native color console"
     linux /boot/phase1/vmlinuz console=tty0 rdinit=/init init=/init nomodeset quiet loglevel=0 panic=0
-    initrd /boot/phase1/phase1-b40-native-loader-fix-initramfs.img
+    initrd /boot/phase1/phase1-b41-native-color-initramfs.img
     boot
 }
 
-menuentry "Start Native Phase1 Console - verbose" {
+menuentry "Start Native Phase1 Color Console - verbose" {
     clear
     echo "phase1 6.0.0 ready"
-    echo "B40 verbose native binary loader fix"
+    echo "B41 verbose native color console"
     linux /boot/phase1/vmlinuz console=tty0 rdinit=/init init=/init nomodeset loglevel=7 panic=0
-    initrd /boot/phase1/phase1-b40-native-loader-fix-initramfs.img
+    initrd /boot/phase1/phase1-b41-native-color-initramfs.img
     boot
 }
 
-menuentry "B40 File check" {
+menuentry "B41 File check" {
     clear
-    echo "B40 file check"
+    echo "B41 file check"
     ls -lh /boot/phase1
     echo ""
-    cat /phase1/evidence/b40-prep.env
+    cat /phase1/evidence/b41-prep.env
     echo ""
     sleep --interruptible 999
 }
 
-menuentry "B40 GRUB fallback" {
+menuentry "B41 GRUB fallback" {
     clear
     echo "phase1 6.0.0 ready"
-    echo "B40 GRUB fallback console"
+    echo "B41 GRUB fallback console"
     sleep --interruptible 999
 }
 
@@ -378,15 +372,15 @@ rmdir "$MNT"
 trap - EXIT INT TERM
 
 cat > "$REPORT" <<EOF
-BASE1_B40_TARGET=$USB
-BASE1_B40_PARTITION=$PART1
-BASE1_B40_KERNEL=$KERNEL
-BASE1_B40_INITRD=$INITRD
-BASE1_B40_SPLASH=$SPLASH_SRC
-BASE1_B40_PHASE1_BINARY=$PHASE1_BIN_PATH
-BASE1_B40_RESULT=prepared
-BASE1_B40_EXPECTED_NEXT_RESULT=phase1_native_console_seen
-BASE1_B40_FALLBACK_RESULT=phase1_full_system_load_seen
+BASE1_B41_TARGET=$USB
+BASE1_B41_PARTITION=$PART1
+BASE1_B41_KERNEL=$KERNEL
+BASE1_B41_INITRD=$INITRD
+BASE1_B41_SPLASH=$SPLASH_SRC
+BASE1_B41_PHASE1_BINARY=$PHASE1_BIN_PATH
+BASE1_B41_RESULT=prepared
+BASE1_B41_EXPECTED_NEXT_RESULT=phase1_native_color_console_seen
+BASE1_B41_FALLBACK_RESULT=phase1_full_system_load_seen
 EOF
-printf '\nDONE: B40 native binary loader fix USB prepared on %s\n' "$USB"
-printf 'Boot path: Libreboot -> external USB GRUB. Default entry starts native Phase1.\n'
+printf '\nDONE: B41 native color console USB prepared on %s\n' "$USB"
+printf 'Boot path: Libreboot -> external USB GRUB. Default entry starts native color Phase1.\n'
