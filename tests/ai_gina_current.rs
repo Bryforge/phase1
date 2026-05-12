@@ -51,8 +51,10 @@ fn gina_and_ai_bridge_still_run_after_queue_cleanup() {
 
 #[test]
 fn gina_docs_preserve_provider_disabled_default() {
-    let doc = fs::read_to_string("AI_GINA.md").expect("read AI_GINA.md");
-    let roadmap = fs::read_to_string("AI_GINA_ROADMAP.md").expect("read AI_GINA_ROADMAP.md");
+    let doc = fs::read_to_string("junk/experiments/ai/AI_GINA.md")
+        .expect("read junk/experiments/ai/AI_GINA.md");
+    let roadmap = fs::read_to_string("junk/experiments/ai/AI_GINA_ROADMAP.md")
+        .expect("read junk/experiments/ai/AI_GINA_ROADMAP.md");
     assert!(doc.contains("offline by default"));
     assert!(doc.contains("no external provider calls"));
     assert!(doc.contains("assistant"));
