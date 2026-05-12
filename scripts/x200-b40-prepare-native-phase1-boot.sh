@@ -11,6 +11,10 @@
 # Usage:
 #   sh scripts/x200-b40-prepare-native-phase1-boot.sh /dev/sdb YES_WRITE_USB
 #
+# Do not run this whole script with sudo unless needed. It calls sudo only for
+# the USB-writing step. If it is launched with sudo anyway, it will also check
+# the original sudo user's ~/.cargo/bin path.
+#
 # Optional:
 #   BASE1_AUTO_INSTALL_PACKAGES=1   install missing cargo/rustc/busybox-static on apt systems
 #   BASE1_SKIP_PULL=1               skip git pull
@@ -21,15 +25,32 @@
 
 set -eu
 
-# Native rustup installs Cargo here. Add it early so non-login shells can find it.
-if [ -d "$HOME/.cargo/bin" ]; then
-  PATH="$HOME/.cargo/bin:$PATH"
-  export PATH
-fi
-if [ -f "$HOME/.cargo/env" ]; then
-  # shellcheck disable=SC1090
-  . "$HOME/.cargo/env" 2>/dev/null || true
-fi
+original_home() {
+  if [ -n "${SUDO_USER:-}" ] && [ "$SUDO_USER" != "root" ]; then
+    if command -v getent >/dev/null 2>&1; then
+      getent passwd "$SUDO_USER" | awk -F: '{print $6}'
+      return
+    fi
+    printf '/home/%s\n' "$SUDO_USER"
+    return
+  fi
+  printf '%s\n' "$HOME"
+}
+
+ORIGINAL_HOME="$(original_home)"
+
+# Native rustup installs Cargo here. Add both current HOME and original sudo
+# user's HOME so desktop terminals and accidental sudo invocation both work.
+for cargo_home in "$HOME" "$ORIGINAL_HOME"; do
+  if [ -d "$cargo_home/.cargo/bin" ]; then
+    PATH="$cargo_home/.cargo/bin:$PATH"
+    export PATH
+  fi
+  if [ -f "$cargo_home/.cargo/env" ]; then
+    # shellcheck disable=SC1090
+    . "$cargo_home/.cargo/env" 2>/dev/null || true
+  fi
+done
 
 USB="${1:-}"
 CONFIRM="${2:-}"
@@ -83,11 +104,11 @@ ensure_cargo_if_needed() {
     printf 'cargo: %s\n' "$(command -v cargo)"
     return 0
   fi
-  printf 'Cargo is missing from PATH. Checked native rustup path: %s/.cargo/bin\n' "$HOME"
+  printf 'Cargo is missing from PATH. Checked cargo homes: %s and %s\n' "$HOME" "$ORIGINAL_HOME"
   if apt_install_if_allowed "cargo rustc"; then
     command -v cargo >/dev/null 2>&1 && return 0
   fi
-  fail "missing command: cargo. Try: export PATH=\"$HOME/.cargo/bin:\$PATH\" or source ~/.cargo/env; or set BASE1_B40_PHASE1_BIN and BASE1_SKIP_BUILD=1"
+  fail "missing command: cargo. Try: export PATH=\"$ORIGINAL_HOME/.cargo/bin:\$PATH\" or source $ORIGINAL_HOME/.cargo/env; or set BASE1_B40_PHASE1_BIN and BASE1_SKIP_BUILD=1"
 }
 
 find_busybox() {
@@ -138,6 +159,7 @@ printf 'target usb : %s\n' "$USB"
 printf 'kernel     : %s\n' "$KERNEL"
 printf 'phase1 bin : %s\n' "$PHASE1_BIN"
 printf 'writer     : %s\n' "$B40_WRITER"
+printf 'user home  : %s\n' "$ORIGINAL_HOME"
 printf 'PATH       : %s\n' "$PATH"
 
 if [ "$SKIP_PULL" != "1" ]; then
