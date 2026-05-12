@@ -8,10 +8,6 @@
 #
 # Usage:
 #   sh scripts/x200-b44-unicode-font-augment.sh /dev/sdb YES_WRITE_USB
-#
-# Notes:
-#   Full Japanese rendering still depends on a renderer that can draw CJK fonts.
-#   This script packages everything available on the builder and records evidence.
 
 set -eu
 
@@ -31,11 +27,11 @@ fail() { printf 'x200-b44-unicode-font-augment: %s\n' "$1" >&2; exit 1; }
 need() { command -v "$1" >/dev/null 2>&1 || fail "missing command: $1"; }
 part1() { case "$1" in /dev/nvme[0-9]n[0-9]|/dev/mmcblk[0-9]) printf '%sp1\n' "$1" ;; /dev/sd[a-z]|/dev/vd[a-z]|/dev/hd[a-z]) printf '%s1\n' "$1" ;; *) fail "use a whole disk like /dev/sdb" ;; esac; }
 copy_one() { src="$1"; dstroot="$2"; [ -e "$src" ] || return 0; dst="$dstroot$src"; mkdir -p "$(dirname "$dst")"; cp -aL "$src" "$dst" 2>/dev/null || cp -L "$src" "$dst" 2>/dev/null || true; }
-copy_libs() { bin="$1"; dstroot="$2"; command -v ldd >/dev/null 2>&1 || return 0; ldd "$bin" 2>/dev/null | while IFS= read -r line || [ -n "$line" ]; do lib=""; case "$line" in *'=> /'*) lib="$(printf '%s\n' "$line" | awk '{print $3}')" ;; /*) lib="$(printf '%s\n' "$line" | awk '{print $1}')" ;; esac; [ -n "$lib" ] && [ -e "$lib" ] && copy_one "$lib" "$dstroot"; done; }
+copy_libs() { bin="$1"; dstroot="$2"; command -v ldd >/dev/null 2>&1 || return 0; ldd "$bin" 2>/dev/null | while IFS= read -r line || [ -n "${line:-}" ]; do lib=""; case "$line" in *'=> /'*) lib="$(printf '%s\n' "$line" | awk '{print $3}')" ;; /*) lib="$(printf '%s\n' "$line" | awk '{print $1}')" ;; esac; [ -n "$lib" ] && [ -e "$lib" ] && copy_one "$lib" "$dstroot"; done; }
 
 [ -n "$USB" ] || fail "usage: sh scripts/x200-b44-unicode-font-augment.sh /dev/sdb YES_WRITE_USB"
 [ "$CONFIRM" = "YES_WRITE_USB" ] || fail "missing YES_WRITE_USB confirmation"
-for c in sudo mount umount mkdir cp grep awk find cpio gzip gunzip tee sed sha256sum mktemp; do need "$c"; done
+for c in sudo mount umount mkdir cp grep awk find cpio gzip tee sed sha256sum mktemp findmnt; do need "$c"; done
 [ -b "$USB" ] || fail "not a block device: $USB"
 ROOT_SRC="$(findmnt -no SOURCE / 2>/dev/null || true)"
 case "$ROOT_SRC" in "$USB"|"$USB"[0-9]*|"$USB"p[0-9]*) fail "refusing root filesystem device: $ROOT_SRC" ;; esac
@@ -54,8 +50,10 @@ INITRD="$MNT/boot/phase1/$INITRD_NAME"
 
 rm -rf "$WORK"
 mkdir -p "$ROOTFS"
-cp "$INITRD" "$WORK/original.img.gz"
-( cd "$ROOTFS" && gzip -dc "$WORK/original.img.gz" | cpio -idmu 2>/dev/null )
+ORIGINAL="$WORK/original.img.gz"
+cp "$INITRD" "$ORIGINAL" || fail "could not copy initramfs from USB"
+[ -s "$ORIGINAL" ] || fail "copied initramfs is empty: $ORIGINAL"
+( cd "$ROOTFS" && gzip -dc "../original.img.gz" | cpio -idmu 2>/dev/null ) || fail "could not extract initramfs"
 
 font_count=0
 renderer=none
@@ -95,10 +93,9 @@ cat > "$ROOTFS/phase1/i18n/ja/boot-test.txt" <<'EOF'
 安全・非公開・強力
 EOF
 cat > "$ROOTFS/phase1/i18n/unicode-test.txt" <<'EOF'
-Unicode check: α β γ λ π Ω — ✓ ★ → ← ↑ ↓
-Box/rounded: ╭────╮ ╰────╯ ┌────┐ └────┘
+Unicode check: alpha beta gamma lambda pi omega -- check star arrows
+Rounded/box: rounded corners require glyph renderer support
 Japanese: フェーズ1 日本語 安全 非公開 強力
-Emoji may require color-font renderer: 🚀 🔥 ✅
 EOF
 
 cat > "$ROOTFS/phase1/evidence/b44-unicode-font.env" <<EOF
@@ -136,10 +133,9 @@ if ! grep -q 'B44 unicode font augmentation' "$ROOTFS/init"; then
   chmod 0755 "$ROOTFS/init"
 fi
 
-( cd "$ROOTFS" && find . | cpio -H newc -o 2>/dev/null | gzip -9 > "$WORK/$INITRD_NAME" )
-cp "$WORK/$INITRD_NAME" "$INITRD"
+( cd "$ROOTFS" && find . | cpio -H newc -o 2>/dev/null | gzip -9 > "../$INITRD_NAME" ) || fail "could not repack initramfs"
+cp "$WORK/$INITRD_NAME" "$INITRD" || fail "could not copy augmented initramfs back to USB"
 
-# Patch GRUB menu with Unicode lab and Japanese framebuffer entries if absent.
 CFG="$MNT/boot/grub/grub.cfg"
 if ! grep -q "$FONT_ENTRY" "$CFG"; then
   tmp="$CFG.b44"
@@ -181,6 +177,9 @@ BASE1_B44_FONT_ENTRY=$FONT_ENTRY
 BASE1_B44_CJK_ENTRY=$CJK_ENTRY
 EOF
 
+grep -q "$FONT_ENTRY" "$CFG" || fail "font lab entry was not written"
+grep -q "$CJK_ENTRY" "$CFG" || fail "CJK entry was not written"
+[ -f "$INITRD" ] || fail "augmented initramfs missing after write"
 sync
 sudo umount "$MNT"
 rmdir "$MNT"
