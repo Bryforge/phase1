@@ -1,15 +1,9 @@
 #!/usr/bin/env sh
 # Phase1 B43 polished boot preparation wrapper.
 #
-# This orchestration script applies local B43 policy, builds the native binary,
-# runs preflight, and delegates to the verified USB writer/verification path.
-#
-# IMPORTANT: do not run this whole script with sudo. It calls sudo internally
-# only when media writing is required. Running the whole script with sudo hides
-# the user's rustup/cargo environment and can create root-owned build logs.
-#
-# Usage on the x86_64 X200/final builder:
-#   sh scripts/x200-b43-prepare-polished-boot.sh /dev/sdb YES_WRITE_USB
+# Branch-aware version: updates the current branch or BASE1_TARGET_BRANCH
+# instead of forcing edge/stable. This keeps black-phase1 experiments from
+# diverging/failing during rapid cycles.
 
 set -eu
 
@@ -24,6 +18,7 @@ fi
 
 USB="${1:-}"
 CONFIRM="${2:-}"
+TARGET_BRANCH="${BASE1_TARGET_BRANCH:-$(git rev-parse --abbrev-ref HEAD 2>/dev/null || printf black-phase1)}"
 
 fail() { printf 'x200-b43-prepare-polished-boot: %s\n' "$1" >&2; exit 1; }
 section() { printf '\n===== %s =====\n' "$1"; }
@@ -65,8 +60,9 @@ section "REPAIR LOCAL BUILD OWNERSHIP"
 fix_ownership_if_needed
 
 section "UPDATE REPOSITORY"
-git fetch origin edge/stable
-git pull --ff-only origin edge/stable
+printf 'target branch: %s\n' "$TARGET_BRANCH"
+git fetch origin "$TARGET_BRANCH"
+git pull --ff-only origin "$TARGET_BRANCH"
 git log -1 --oneline
 
 section "APPLY B43 LOCAL UI POLICY"
@@ -93,7 +89,7 @@ sh scripts/x200-b43-system-preflight.sh "$USB"
 
 section "WRITE AND VERIFY B43/B42 USB"
 printf 'Delegating to verified media automation.\n'
-sh scripts/x200-b40-prepare-native-phase1-boot.sh "$USB" YES_WRITE_USB
+BASE1_TARGET_BRANCH="$TARGET_BRANCH" sh scripts/x200-b40-prepare-native-phase1-boot.sh "$USB" YES_WRITE_USB
 
 section "B43 POLISHED BOOT PREP COMPLETE"
 printf 'Expected default boot entry:\n'
