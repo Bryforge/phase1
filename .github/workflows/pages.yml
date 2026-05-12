@@ -39,7 +39,11 @@ jobs:
           mkdir -p _site/assets _site/wiki
           cp site/index.html site/styles.css site/button-fix.css site/site.js site/button-fix.js site/links.html site/status.html site/status.json site/status-badge.json site/robots.txt site/sitemap.xml .nojekyll _site/
           cp docs/community/CONTACT.md docs/project/WIKI_ROADMAP.md _site/
-          cp assets/phase1-banner.svg _site/assets/phase1-banner.svg
+          if [ -f assets/phase1-banner.svg ]; then
+            cp assets/phase1-banner.svg _site/assets/phase1-banner.svg
+          else
+            printf "optional phase1 banner asset not present; skipping banner copy\n"
+          fi
           if [ -f wiki/site/index.html ] && [ -f wiki/docs.css ] && [ -f wiki/docs.js ]; then
             cp wiki/site/index.html wiki/docs.css wiki/docs.js _site/wiki/
           else
