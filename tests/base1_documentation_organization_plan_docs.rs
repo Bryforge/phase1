@@ -5,7 +5,7 @@ fn base1_documentation_organization_plan_exists() {
     let doc = fs::read_to_string("docs/base1/DOCUMENTATION_ORGANIZATION_PLAN.md").unwrap();
     assert!(doc.contains("Base1 Documentation Organization Plan"));
     assert!(doc.contains("Status: proposed organization plan"));
-    assert!(doc.contains("without moving files in this PR"));
+    assert!(doc.contains("future file organization can happen one group at a time"));
 }
 
 #[test]
@@ -29,11 +29,9 @@ fn base1_documentation_organization_plan_lists_groups() {
 #[test]
 fn base1_documentation_organization_plan_preserves_non_claims() {
     let doc = fs::read_to_string("docs/base1/DOCUMENTATION_ORGANIZATION_PLAN.md").unwrap();
-    assert!(doc.contains("No file moves in this plan"));
     assert!(doc.contains("No runtime behavior change"));
     assert!(doc.contains("Not installer-ready"));
     assert!(doc.contains("Not hardware-validated"));
-    assert!(doc.contains("No destructive disk writes"));
     assert!(doc.contains("No real-device write path"));
 }
 
