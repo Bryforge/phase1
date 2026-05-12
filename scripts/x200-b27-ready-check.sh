@@ -70,10 +70,14 @@ if [ "$KERNEL_PRESENT" != yes ]; then note_fail "kernel-artifact"; fi
 if [ "$INITRD_PRESENT" != yes ]; then note_fail "initrd-artifact"; fi
 
 printf '\nprivacy check:\n'
-if grep -R "192\.168\." scripts docs profiles 2>/dev/null; then
+# Build the LAN pattern without embedding an actual private address substring in this file.
+LAN_PREFIX_A="192"
+LAN_PREFIX_B="168"
+LAN_PATTERN="$LAN_PREFIX_A[.]$LAN_PREFIX_B[.]"
+if grep -R "$LAN_PATTERN" scripts docs profiles 2>/dev/null; then
   note_fail "private-lan-ip-reference"
 else
-  printf 'ok: no 192.168.* references in scripts/docs/profiles\n'
+  printf 'ok: no private LAN address references in scripts/docs/profiles\n'
 fi
 
 printf '\nsyntax check:\n'
