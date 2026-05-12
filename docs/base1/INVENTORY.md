@@ -121,7 +121,7 @@ Additional checkpoint material:
 
 | Path | Group | Notes |
 | --- | --- | --- |
-| `DEVELOPMENT_CHECKPOINT_BASE1_RECOVERY_USB_READONLY_V1.md` | Checkpoint | Development checkpoint note retained at root. |
+| `docs/archive/checkpoints/DEVELOPMENT_CHECKPOINT_BASE1_RECOVERY_USB_READONLY_V1.md` | Checkpoint | Development checkpoint note retained at root. |
 
 ## Base1 scripts
 

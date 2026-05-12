@@ -600,3 +600,9 @@ Security and crypto usability rule:
 
 - Crypto policy documents approved cryptographic profiles by control point before any profile is connected to real protection decisions.
 - Phase1 keeps security usable: normal users keep safe defaults, while advanced operators can review explicit trust gates and evidence-backed policy docs.
+
+## Historical archive
+
+Older planning notes, development checkpoints, AI/Gina notes, AVIM notes, and legacy next-update files have been moved out of the repository root and preserved under [`docs/archive/README.md`](docs/archive/README.md).
+
+Use the current root entry points first: `README.md`, `FEATURE_STATUS.md`, `QUALITY.md`, `EDGE.md`, `REPO_CHANNELS.md`, and `docs/REPOSITORY_NAVIGATION.md`.

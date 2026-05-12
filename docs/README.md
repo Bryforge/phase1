@@ -94,3 +94,7 @@ New manual pages should include a status block near the top:
 ## Canonical safety language
 
 Use narrow, testable statements. Do not claim that Phase1 is secure, hardened, bootable, daily-driver ready, installer-ready, or recovery-complete unless the claim is backed by implementation, tests, release notes, and validation evidence.
+
+## Archive
+
+- [`archive/README.md`](archive/README.md) — preserved older root notes, historical checkpoints, and legacy update notes moved out of the repository root.

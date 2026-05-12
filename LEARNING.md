@@ -147,7 +147,7 @@ phase1-learn export
 
 ## Completed milestone
 
-The in-shell learning milestone is complete: `learn`, auto-observe, failure-prioritized suggestions, typo recovery, `learn explain`, `learn doctor`, and the local update helper are merged. See `DEVELOPMENT_CHECKPOINT_LEARN.md`.
+The in-shell learning milestone is complete: `learn`, auto-observe, failure-prioritized suggestions, typo recovery, `learn explain`, `learn doctor`, and the local update helper are merged. See `docs/archive/checkpoints/DEVELOPMENT_CHECKPOINT_LEARN.md`.
 
 ## Roadmap
 

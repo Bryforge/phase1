@@ -1,7 +1,9 @@
 #[test]
 fn recovery_usb_development_checkpoint_records_current_boundary() {
-    let doc = std::fs::read_to_string("DEVELOPMENT_CHECKPOINT_BASE1_RECOVERY_USB_READONLY_V1.md")
-        .expect("recovery usb development checkpoint");
+    let doc = std::fs::read_to_string(
+        "docs/archive/checkpoints/DEVELOPMENT_CHECKPOINT_BASE1_RECOVERY_USB_READONLY_V1.md",
+    )
+    .expect("recovery usb development checkpoint");
 
     assert!(
         doc.contains("Base1 recovery USB read-only development checkpoint v1"),

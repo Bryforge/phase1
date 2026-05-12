@@ -1,7 +1,8 @@
 #[test]
 fn edge_v6_checkpoint_records_current_boundary() {
-    let doc = std::fs::read_to_string("DEVELOPMENT_CHECKPOINT_EDGE_6_0_0.md")
-        .expect("edge v6 checkpoint");
+    let doc =
+        std::fs::read_to_string("docs/archive/checkpoints/DEVELOPMENT_CHECKPOINT_EDGE_6_0_0.md")
+            .expect("edge v6 checkpoint");
 
     assert!(doc.contains("Edge 6.0.0"), "{doc}");
     assert!(doc.contains("v6.0.0"), "{doc}");

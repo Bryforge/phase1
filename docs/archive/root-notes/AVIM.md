@@ -4,7 +4,7 @@
 
 The current edge build is designed to be easier on small machines and mobile terminals: it shows a visible pink cursor, uses color-coded modes, supports line and character-level editing, and exposes simple command completion help from inside the editor.
 
-The next pro-editor layer is tracked in [`AVIM_PRO.md`](AVIM_PRO.md). That document defines the planned `:status`, `:open`, `:w <file>`, `:files`, `N`, `redo`, `:template`, `:run`, `:diff`, and `:help pro` workflow so AVIM can become the full write-save-run-fix editor inside Phase1 while staying VFS-native and safe.
+The next pro-editor layer is tracked in [`docs/archive/root-notes/AVIM_PRO.md`](docs/archive/root-notes/AVIM_PRO.md). That document defines the planned `:status`, `:open`, `:w <file>`, `:files`, `N`, `redo`, `:template`, `:run`, `:diff`, and `:help pro` workflow so AVIM can become the full write-save-run-fix editor inside Phase1 while staying VFS-native and safe.
 
 ## Goals
 

@@ -65,7 +65,7 @@ Phase1 is a **terminal-first virtual OS console**, not a full bare-metal operati
 | Browser terminal demo | Implemented | Website demo is static and illustrative; it is not a live Phase1 shell. |
 | Release metadata checks | Implemented | Tests enforce stable, previous-stable, edge, and compatibility-base consistency. |
 | Quality score/check scripts | Implemented | Repository quality scripts validate docs, metadata, and shell syntax. |
-| Edge checkpoint docs | Implemented | `DEVELOPMENT_CHECKPOINT_EDGE_4_3_0_DEV.md` records the active edge boundary. |
+| Edge checkpoint docs | Implemented | `docs/archive/checkpoints/DEVELOPMENT_CHECKPOINT_EDGE_4_3_0_DEV.md` records the active edge boundary. |
 | Roadmap design docs | Implemented | Existing roadmap docs describe planned design direction. |
 | Explicit unimplemented-feature index | Implemented | This file is the current implementation/not-implemented matrix. |
 

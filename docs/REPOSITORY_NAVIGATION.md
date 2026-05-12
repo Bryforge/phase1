@@ -209,3 +209,7 @@ Rules:
 This navigation guide does not move files, launch support infrastructure, prove repository quality, or make Phase1, Base1, or Fyr production-ready.
 
 It provides a clearer path through the repository so users and contributors can work more efficiently.
+
+## Historical archive path
+
+Older planning notes, development checkpoints, AI/Gina notes, AVIM notes, and legacy next-update files are preserved under [`archive/README.md`](archive/README.md). Keep current user, contributor, security, quality, and Base1 paths in the active root/docs indexes.

@@ -6,7 +6,7 @@ const STABLE_VERSION: &str = "v5.0.0";
 const STABLE_PACKAGE_VERSION: &str = "5.0.0";
 const PREVIOUS_STABLE: &str = "v4.4.0";
 const COMPATIBILITY_BASE: &str = "v3.6.0";
-const EDGE_CHECKPOINT: &str = "DEVELOPMENT_CHECKPOINT_EDGE_6_0_0.md";
+const EDGE_CHECKPOINT: &str = "docs/archive/checkpoints/DEVELOPMENT_CHECKPOINT_EDGE_6_0_0.md";
 
 #[test]
 fn cargo_metadata_matches_current_track() {

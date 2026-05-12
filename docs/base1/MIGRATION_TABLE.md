@@ -53,7 +53,7 @@ It is preservation-first. The current path remains available unless explicit fut
 | `RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md` | `docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md` | keep root compatibility path | mirrored |
 | `RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md` | `docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md` | keep root compatibility path | mirrored |
 | `RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md` | `docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md` | keep root compatibility path | mirrored |
-| `DEVELOPMENT_CHECKPOINT_BASE1_RECOVERY_USB_READONLY_V1.md` | future `docs/base1/releases/` mirror | keep root compatibility path | pending review |
+| `docs/archive/checkpoints/DEVELOPMENT_CHECKPOINT_BASE1_RECOVERY_USB_READONLY_V1.md` | future `docs/base1/releases/` mirror | keep root compatibility path | pending review |
 
 ## Recovery USB docs
 

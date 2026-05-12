@@ -23,7 +23,7 @@ Core principles:
 ### Next implementation target
 
 ```text
-NEXT_UPDATE_v3.7.0.md
+docs/archive/legacy-release-notes/NEXT_UPDATE_v3.7.0.md
 ```
 
 Theme:
@@ -44,7 +44,7 @@ Primary targets:
 ### Follow-up implementation target
 
 ```text
-NEXT_UPDATE_v3.8.0.md
+docs/archive/legacy-release-notes/NEXT_UPDATE_v3.8.0.md
 ```
 
 Theme:
