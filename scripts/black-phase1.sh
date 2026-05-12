@@ -10,6 +10,9 @@
 #   sh scripts/black-phase1.sh push "message"
 #   sh scripts/black-phase1.sh x200-test /dev/sdb YES_WRITE_USB
 #   sh scripts/black-phase1.sh cycle /dev/sdb YES_WRITE_USB checkpoint-name
+#   sh scripts/black-phase1.sh qemu-preflight
+#   sh scripts/black-phase1.sh qemu-framebuffer build
+#   sh scripts/black-phase1.sh qemu-framebuffer run
 #   sh scripts/black-phase1.sh sync
 #   sh scripts/black-phase1.sh promote <commit-or-range> "message"
 #   sh scripts/black-phase1.sh help
@@ -46,6 +49,12 @@ Commands:
   cycle /dev/sdb YES_WRITE_USB checkpoint-name
       Full cycle: status, doctor, checkpoint, then verified X200 test media prep.
 
+  qemu-preflight
+      Check whether this host can build/run the B47 QEMU framebuffer renderer lab.
+
+  qemu-framebuffer build|run
+      Build or run the B47 QEMU framebuffer renderer lab.
+
   sync
       Rebase black-phase1 on latest origin/edge/stable and force-with-lease only black-phase1.
 
@@ -58,6 +67,9 @@ Examples:
   sh scripts/black-phase1.sh push "Try minimal CJK renderer path"
   sh scripts/black-phase1.sh x200-test /dev/sdb YES_WRITE_USB
   sh scripts/black-phase1.sh cycle /dev/sdb YES_WRITE_USB b45-minimal-cjk-test
+  sh scripts/black-phase1.sh qemu-preflight
+  sh scripts/black-phase1.sh qemu-framebuffer build
+  sh scripts/black-phase1.sh qemu-framebuffer run
 EOF
     ;;
   status)
@@ -77,6 +89,12 @@ EOF
     ;;
   cycle|full-cycle)
     run scripts/black-phase1-cycle.sh "$@"
+    ;;
+  qemu-preflight|fb-preflight|framebuffer-preflight)
+    run scripts/b47-qemu-framebuffer-preflight.sh "$@"
+    ;;
+  qemu-framebuffer|fb-lab|framebuffer-lab)
+    run scripts/b47-qemu-framebuffer-lab.sh "$@"
     ;;
   sync)
     run scripts/black-phase1-sync-from-edge.sh "$@"
