@@ -77,10 +77,19 @@ fn base1_local_boot_artifact_plan_prepare_writes_report() {
     assert!(report_path.exists(), "report should be written");
     let report = fs::read_to_string(report_path).expect("read report");
     assert_contains(&report, "BASE1_LOCAL_BOOT_ARTIFACT_MODE=prepare");
-    assert_contains(&report, "BASE1_LOCAL_BOOT_ARTIFACT_PROFILE=x200-supervisor-lite");
-    assert_contains(&report, "BASE1_LOCAL_BOOT_ARTIFACT_PATH=build/phase1-uefi.img");
+    assert_contains(
+        &report,
+        "BASE1_LOCAL_BOOT_ARTIFACT_PROFILE=x200-supervisor-lite",
+    );
+    assert_contains(
+        &report,
+        "BASE1_LOCAL_BOOT_ARTIFACT_PATH=build/phase1-uefi.img",
+    );
     assert_contains(&report, "BASE1_LOCAL_BOOT_ARTIFACT_LOCAL_ONLY=1");
-    assert_contains(&report, "BASE1_LOCAL_BOOT_ARTIFACT_RECOVERY_EVIDENCE_REQUIRED=1");
+    assert_contains(
+        &report,
+        "BASE1_LOCAL_BOOT_ARTIFACT_RECOVERY_EVIDENCE_REQUIRED=1",
+    );
     assert_contains(&report, "BASE1_LOCAL_BOOT_ARTIFACT_CLAIM=not_claimed");
 }
 
@@ -108,5 +117,8 @@ fn base1_local_boot_artifact_plan_rejects_unknown_profile_and_non_build_paths() 
         .arg("/tmp/phase1-uefi.img")
         .output()
         .expect("run bad artifact");
-    assert!(!bad_artifact.status.success(), "non-build artifact should fail");
+    assert!(
+        !bad_artifact.status.success(),
+        "non-build artifact should fail"
+    );
 }

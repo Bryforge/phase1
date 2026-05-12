@@ -1,7 +1,7 @@
 #[test]
 fn b3_gnulinux_stage_doc_defines_scope_and_purpose() {
-    let doc = std::fs::read_to_string("docs/os/B3_GNULINUX_STAGE.md")
-        .expect("B3 GNU/Linux stage doc");
+    let doc =
+        std::fs::read_to_string("docs/os/B3_GNULINUX_STAGE.md").expect("B3 GNU/Linux stage doc");
 
     for text in [
         "Base1 B3 GNU/Linux stage",
@@ -17,8 +17,8 @@ fn b3_gnulinux_stage_doc_defines_scope_and_purpose() {
 
 #[test]
 fn b3_gnulinux_stage_doc_lists_commands_and_detection() {
-    let doc = std::fs::read_to_string("docs/os/B3_GNULINUX_STAGE.md")
-        .expect("B3 GNU/Linux stage doc");
+    let doc =
+        std::fs::read_to_string("docs/os/B3_GNULINUX_STAGE.md").expect("B3 GNU/Linux stage doc");
 
     for text in [
         "sh scripts/base1-b3-gnulinux-stage.sh",
@@ -36,14 +36,17 @@ fn b3_gnulinux_stage_doc_lists_commands_and_detection() {
         "initrd.img-*",
         "initramfs-*",
     ] {
-        assert!(doc.contains(text), "missing command/detection text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing command/detection text {text}: {doc}"
+        );
     }
 }
 
 #[test]
 fn b3_gnulinux_stage_doc_lists_outputs_and_stack_relationship() {
-    let doc = std::fs::read_to_string("docs/os/B3_GNULINUX_STAGE.md")
-        .expect("B3 GNU/Linux stage doc");
+    let doc =
+        std::fs::read_to_string("docs/os/B3_GNULINUX_STAGE.md").expect("B3 GNU/Linux stage doc");
 
     for text in [
         "build/base1-b3-gnulinux-stage/",
@@ -58,14 +61,17 @@ fn b3_gnulinux_stage_doc_lists_outputs_and_stack_relationship() {
         "scripts/base1-emulator-preview.sh",
         "scripts/base1-qemu-boot-check.sh",
     ] {
-        assert!(doc.contains(text), "missing output/stack text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing output/stack text {text}: {doc}"
+        );
     }
 }
 
 #[test]
 fn b3_gnulinux_stage_doc_defines_evidence_model_and_safety_boundary() {
-    let doc = std::fs::read_to_string("docs/os/B3_GNULINUX_STAGE.md")
-        .expect("B3 GNU/Linux stage doc");
+    let doc =
+        std::fs::read_to_string("docs/os/B3_GNULINUX_STAGE.md").expect("B3 GNU/Linux stage doc");
 
     for text in [
         "`--prepare` proves only that a local GNU/Linux kernel/initrd pair was staged",
@@ -91,8 +97,8 @@ fn b3_gnulinux_stage_doc_defines_evidence_model_and_safety_boundary() {
 
 #[test]
 fn b3_gnulinux_stage_doc_links_related_docs_and_preserves_non_claims() {
-    let doc = std::fs::read_to_string("docs/os/B3_GNULINUX_STAGE.md")
-        .expect("B3 GNU/Linux stage doc");
+    let doc =
+        std::fs::read_to_string("docs/os/B3_GNULINUX_STAGE.md").expect("B3 GNU/Linux stage doc");
 
     for text in [
         "B3_KERNEL_INITRD_HANDOFF.md",
@@ -109,6 +115,9 @@ fn b3_gnulinux_stage_doc_links_related_docs_and_preserves_non_claims() {
         "release-candidate ready",
         "daily-driver ready",
     ] {
-        assert!(doc.contains(text), "missing link/non-claim text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing link/non-claim text {text}: {doc}"
+        );
     }
 }

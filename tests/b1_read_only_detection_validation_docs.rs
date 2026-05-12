@@ -3,12 +3,18 @@ fn b1_validation_report_defines_scope_and_command() {
     let report = std::fs::read_to_string("docs/os/B1_READ_ONLY_DETECTION_VALIDATION.md")
         .expect("B1 read-only detection validation report");
 
-    assert!(report.contains("Base1 B1 read-only detection validation"), "{report}");
+    assert!(
+        report.contains("Base1 B1 read-only detection validation"),
+        "{report}"
+    );
     assert!(
         report.contains("validation evidence and review checklist for `scripts/base1-x86_64-detect.sh --dry-run`"),
         "{report}"
     );
-    assert!(report.contains("sh scripts/base1-x86_64-detect.sh --dry-run"), "{report}");
+    assert!(
+        report.contains("sh scripts/base1-x86_64-detect.sh --dry-run"),
+        "{report}"
+    );
     assert!(
         report.contains("It does not claim boot readiness."),
         "{report}"
@@ -28,7 +34,10 @@ fn b1_validation_report_lists_test_commands() {
         "cargo test -p phase1 --test boot_readiness_race_plan_docs",
         "cargo test -p phase1 --test x86_64_boot_support_roadmap_docs",
     ] {
-        assert!(report.contains(command), "missing validation command {command}: {report}");
+        assert!(
+            report.contains(command),
+            "missing validation command {command}: {report}"
+        );
     }
 }
 
@@ -49,7 +58,10 @@ fn b1_validation_report_preserves_validation_status_table() {
         "CI/local test result",
         "Pending",
     ] {
-        assert!(report.contains(text), "missing validation status text {text}: {report}");
+        assert!(
+            report.contains(text),
+            "missing validation status text {text}: {report}"
+        );
     }
 }
 
@@ -70,7 +82,10 @@ fn b1_validation_report_preserves_source_review_checklist() {
         "reports unknown values instead of guessing",
         "exits non-zero when `--dry-run` is missing",
     ] {
-        assert!(report.contains(text), "missing source review text {text}: {report}");
+        assert!(
+            report.contains(text),
+            "missing source review text {text}: {report}"
+        );
     }
 }
 
@@ -94,7 +109,10 @@ fn b1_validation_report_preserves_output_review_checklist() {
         "unknown fields",
         "next read-only check",
     ] {
-        assert!(report.contains(text), "missing output review text {text}: {report}");
+        assert!(
+            report.contains(text),
+            "missing output review text {text}: {report}"
+        );
     }
 }
 
@@ -126,7 +144,10 @@ fn b1_validation_report_links_related_docs() {
         "B1_READ_ONLY_DETECTION_LIMITATIONS.md",
         "X86_64_BOOT_SUPPORT_ROADMAP.md",
     ] {
-        assert!(report.contains(link), "missing related doc link {link}: {report}");
+        assert!(
+            report.contains(link),
+            "missing related doc link {link}: {report}"
+        );
     }
 }
 

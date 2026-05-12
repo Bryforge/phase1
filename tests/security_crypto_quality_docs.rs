@@ -2,10 +2,7 @@
 fn quality_docs_describe_security_crypto_docs_gate() {
     let quality = std::fs::read_to_string("QUALITY.md").expect("QUALITY.md");
 
-    assert!(
-        quality.contains("Security crypto docs"),
-        "{quality}"
-    );
+    assert!(quality.contains("Security crypto docs"), "{quality}");
     assert!(
         quality.contains("sh scripts/quality-check.sh security-crypto-docs"),
         "{quality}"
@@ -28,10 +25,7 @@ fn quality_docs_list_security_crypto_required_script() {
         quality.contains("scripts/security-crypto-doc-integrity.sh"),
         "{quality}"
     );
-    assert!(
-        quality.contains("docs/security/CRYPTO_*"),
-        "{quality}"
-    );
+    assert!(quality.contains("docs/security/CRYPTO_*"), "{quality}");
     assert!(
         quality.contains("docs/security/crypto-profiles/"),
         "{quality}"
@@ -76,11 +70,15 @@ fn quality_docs_preserve_crypto_safety_baseline() {
         "{quality}"
     );
     assert!(
-        quality.contains("custom security-critical primitives are not accepted as production protection"),
+        quality.contains(
+            "custom security-critical primitives are not accepted as production protection"
+        ),
         "{quality}"
     );
     assert!(
-        quality.contains("cryptographic operator commands fail closed for unknown scopes and profiles"),
+        quality.contains(
+            "cryptographic operator commands fail closed for unknown scopes and profiles"
+        ),
         "{quality}"
     );
     assert!(

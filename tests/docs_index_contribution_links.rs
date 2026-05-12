@@ -9,7 +9,10 @@ fn docs_index_links_contribution_entry_points() {
         "developers/PR_CHECKLIST.md",
         "../.github/pull_request_template.md",
     ] {
-        assert!(doc.contains(link), "missing contribution link {link}: {doc}");
+        assert!(
+            doc.contains(link),
+            "missing contribution link {link}: {doc}"
+        );
     }
 }
 
@@ -41,6 +44,9 @@ fn docs_index_preserves_status_and_safety_language() {
         "Canonical safety language",
         "Use narrow, testable statements.",
     ] {
-        assert!(doc.contains(text), "missing status/safety text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing status/safety text {text}: {doc}"
+        );
     }
 }

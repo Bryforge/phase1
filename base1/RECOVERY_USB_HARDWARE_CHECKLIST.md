@@ -80,3 +80,4 @@ A recovery USB media builder can only follow after this checklist, the validatio
 
 
 See also: [Recovery USB hardware validation summary](RECOVERY_USB_HARDWARE_SUMMARY.md).
+- [`base1/RECOVERY_USB_HARDWARE_SUMMARY.md`](RECOVERY_USB_HARDWARE_SUMMARY.md) — Recovery USB hardware summary.

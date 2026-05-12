@@ -1,7 +1,7 @@
 #[test]
 fn pull_request_template_defines_summary_project_area_and_validation() {
-    let template = std::fs::read_to_string(".github/pull_request_template.md")
-        .expect("pull request template");
+    let template =
+        std::fs::read_to_string(".github/pull_request_template.md").expect("pull request template");
 
     assert!(template.contains("# Pull request"), "{template}");
     assert!(template.contains("## Summary"), "{template}");
@@ -17,14 +17,17 @@ fn pull_request_template_defines_summary_project_area_and_validation() {
         "sh scripts/quality-check.sh base1-reorg",
         "sh scripts/quality-check.sh security-crypto-docs",
     ] {
-        assert!(template.contains(command), "missing validation command {command}: {template}");
+        assert!(
+            template.contains(command),
+            "missing validation command {command}: {template}"
+        );
     }
 }
 
 #[test]
 fn pull_request_template_lists_project_areas() {
-    let template = std::fs::read_to_string(".github/pull_request_template.md")
-        .expect("pull request template");
+    let template =
+        std::fs::read_to_string(".github/pull_request_template.md").expect("pull request template");
 
     for area in [
         "Phase1",
@@ -37,14 +40,17 @@ fn pull_request_template_lists_project_areas() {
         "Documentation only",
         "Tests / quality gates",
     ] {
-        assert!(template.contains(area), "missing project area {area}: {template}");
+        assert!(
+            template.contains(area),
+            "missing project area {area}: {template}"
+        );
     }
 }
 
 #[test]
 fn pull_request_template_preserves_safety_checklist() {
-    let template = std::fs::read_to_string(".github/pull_request_template.md")
-        .expect("pull request template");
+    let template =
+        std::fs::read_to_string(".github/pull_request_template.md").expect("pull request template");
 
     for item in [
         "Safe defaults are preserved.",
@@ -59,8 +65,8 @@ fn pull_request_template_preserves_safety_checklist() {
 
 #[test]
 fn pull_request_template_preserves_compatibility_checklist() {
-    let template = std::fs::read_to_string(".github/pull_request_template.md")
-        .expect("pull request template");
+    let template =
+        std::fs::read_to_string(".github/pull_request_template.md").expect("pull request template");
 
     for item in [
         "No compatibility paths were removed.",
@@ -68,14 +74,17 @@ fn pull_request_template_preserves_compatibility_checklist() {
         "Script/operator command paths remain stable or wrappers are documented.",
         "Migration or rollback guidance is documented when relevant.",
     ] {
-        assert!(template.contains(item), "missing compatibility checklist item {item}: {template}");
+        assert!(
+            template.contains(item),
+            "missing compatibility checklist item {item}: {template}"
+        );
     }
 }
 
 #[test]
 fn pull_request_template_preserves_crypto_checklist() {
-    let template = std::fs::read_to_string(".github/pull_request_template.md")
-        .expect("pull request template");
+    let template =
+        std::fs::read_to_string(".github/pull_request_template.md").expect("pull request template");
 
     for item in [
         "No custom security-critical primitive is added for real protection.",
@@ -85,20 +94,22 @@ fn pull_request_template_preserves_crypto_checklist() {
         "Lab-only behavior is isolated from production control points.",
         "Non-claims are preserved.",
     ] {
-        assert!(template.contains(item), "missing crypto checklist item {item}: {template}");
+        assert!(
+            template.contains(item),
+            "missing crypto checklist item {item}: {template}"
+        );
     }
 }
 
 #[test]
 fn pull_request_template_links_contribution_quality_and_security_docs() {
-    let template = std::fs::read_to_string(".github/pull_request_template.md")
-        .expect("pull request template");
+    let template =
+        std::fs::read_to_string(".github/pull_request_template.md").expect("pull request template");
 
-    for doc in [
-        "CONTRIBUTING.md",
-        "QUALITY.md",
-        "SECURITY.md",
-    ] {
-        assert!(template.contains(doc), "missing related doc {doc}: {template}");
+    for doc in ["CONTRIBUTING.md", "QUALITY.md", "SECURITY.md"] {
+        assert!(
+            template.contains(doc),
+            "missing related doc {doc}: {template}"
+        );
     }
 }

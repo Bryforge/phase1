@@ -1,7 +1,7 @@
 #[test]
 fn website_docs_reference_current_public_asset_components() {
-    let website = std::fs::read_to_string("docs/website/README.md")
-        .expect("website documentation index");
+    let website =
+        std::fs::read_to_string("docs/website/README.md").expect("website documentation index");
 
     for asset in [
         "../../assets/phase1_base_fyr_banner1.png",
@@ -18,8 +18,8 @@ fn website_docs_reference_current_public_asset_components() {
 
 #[test]
 fn website_docs_mark_outdated_visual_assets_without_using_them_as_current() {
-    let website = std::fs::read_to_string("docs/website/README.md")
-        .expect("website documentation index");
+    let website =
+        std::fs::read_to_string("docs/website/README.md").expect("website documentation index");
 
     assert!(
         website.contains("Older references to `assets/phase1-splash.svg` are outdated"),
@@ -46,7 +46,10 @@ fn asset_index_and_readme_agree_on_current_public_assets() {
         "assets/fyr_symbol.png",
         "assets/fyr_word.png",
     ] {
-        assert!(assets.contains(asset), "asset index missing {asset}: {assets}");
+        assert!(
+            assets.contains(asset),
+            "asset index missing {asset}: {assets}"
+        );
         assert!(readme.contains(asset), "README missing {asset}: {readme}");
     }
 }

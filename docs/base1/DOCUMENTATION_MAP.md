@@ -120,3 +120,17 @@ It does not promote Base1 to installer-ready, hardware-validated, or daily-drive
 - Not daily-driver ready
 - No destructive disk writes
 - No real-device write path
+- [`base1/RECOVERY_USB_IMAGE_SUMMARY.md`](../../base1/RECOVERY_USB_IMAGE_SUMMARY.md) — Recovery USB image summary.
+- [`base1/RECOVERY_USB_TARGET_COMMAND_INDEX.md`](../../base1/RECOVERY_USB_TARGET_COMMAND_INDEX.md) — Recovery USB target command index.
+- [`base1/RECOVERY_USB_TARGET_SELECTION.md`](../../base1/RECOVERY_USB_TARGET_SELECTION.md) — Recovery USB target selection design.
+- [`docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md`](releases/RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md) — Recovery USB target read-only checkpoint release notes.
+
+## Base1 public compatibility path
+
+- [`docs/base1/ROOT_COMPATIBILITY_MAP.md`](ROOT_COMPATIBILITY_MAP.md) — Public path for the Base1 root compatibility map.
+
+## Root compatibility map public path
+
+- [`ROOT_COMPATIBILITY_MAP.md`](ROOT_COMPATIBILITY_MAP.md) — Base1 root compatibility map.
+- `docs/base1/ROOT_COMPATIBILITY_MAP.md` — Public compatibility-map path.
+- [`docs/base1/ROOT_COMPATIBILITY_MAP.md`](ROOT_COMPATIBILITY_MAP.md) — Repository-root public path for the Base1 root compatibility map.

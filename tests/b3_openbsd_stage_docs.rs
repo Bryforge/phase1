@@ -1,7 +1,6 @@
 #[test]
 fn b3_openbsd_stage_doc_defines_scope_and_purpose() {
-    let doc = std::fs::read_to_string("docs/os/B3_OPENBSD_STAGE.md")
-        .expect("B3 OpenBSD stage doc");
+    let doc = std::fs::read_to_string("docs/os/B3_OPENBSD_STAGE.md").expect("B3 OpenBSD stage doc");
 
     for text in [
         "Base1 B3 OpenBSD stage",
@@ -11,14 +10,16 @@ fn b3_openbsd_stage_doc_defines_scope_and_purpose() {
         "local OpenBSD ISO/image -> guarded QEMU serial check -> future B3 validation report",
         "staging scaffold only",
     ] {
-        assert!(doc.contains(text), "missing scope/purpose text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing scope/purpose text {text}: {doc}"
+        );
     }
 }
 
 #[test]
 fn b3_openbsd_stage_doc_lists_commands_and_marker() {
-    let doc = std::fs::read_to_string("docs/os/B3_OPENBSD_STAGE.md")
-        .expect("B3 OpenBSD stage doc");
+    let doc = std::fs::read_to_string("docs/os/B3_OPENBSD_STAGE.md").expect("B3 OpenBSD stage doc");
 
     for text in [
         "sh scripts/base1-b3-openbsd-stage.sh",
@@ -30,14 +31,16 @@ fn b3_openbsd_stage_doc_lists_commands_and_marker() {
         "--expect \"OpenBSD/amd64\"",
         "OpenBSD",
     ] {
-        assert!(doc.contains(text), "missing command/marker text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing command/marker text {text}: {doc}"
+        );
     }
 }
 
 #[test]
 fn b3_openbsd_stage_doc_lists_outputs_and_evidence_model() {
-    let doc = std::fs::read_to_string("docs/os/B3_OPENBSD_STAGE.md")
-        .expect("B3 OpenBSD stage doc");
+    let doc = std::fs::read_to_string("docs/os/B3_OPENBSD_STAGE.md").expect("B3 OpenBSD stage doc");
 
     for text in [
         "build/base1-b3-openbsd-stage/",
@@ -56,8 +59,7 @@ fn b3_openbsd_stage_doc_lists_outputs_and_evidence_model() {
 
 #[test]
 fn b3_openbsd_stage_doc_preserves_safety_boundary_and_non_claims() {
-    let doc = std::fs::read_to_string("docs/os/B3_OPENBSD_STAGE.md")
-        .expect("B3 OpenBSD stage doc");
+    let doc = std::fs::read_to_string("docs/os/B3_OPENBSD_STAGE.md").expect("B3 OpenBSD stage doc");
 
     for text in [
         "download OpenBSD",
@@ -76,14 +78,16 @@ fn b3_openbsd_stage_doc_preserves_safety_boundary_and_non_claims() {
         "bootable on physical hardware",
         "release-candidate ready",
     ] {
-        assert!(doc.contains(text), "missing safety/non-claim text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing safety/non-claim text {text}: {doc}"
+        );
     }
 }
 
 #[test]
 fn b3_openbsd_stage_doc_links_related_docs() {
-    let doc = std::fs::read_to_string("docs/os/B3_OPENBSD_STAGE.md")
-        .expect("B3 OpenBSD stage doc");
+    let doc = std::fs::read_to_string("docs/os/B3_OPENBSD_STAGE.md").expect("B3 OpenBSD stage doc");
 
     for link in [
         "B3_VM_BOOT_VALIDATION_PLAN.md",

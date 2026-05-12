@@ -3,10 +3,7 @@ fn script_compatibility_plan_defines_stable_operator_paths() {
     let plan = std::fs::read_to_string("docs/base1/SCRIPT_COMPATIBILITY_PLAN.md")
         .expect("Base1 script compatibility plan");
 
-    assert!(
-        plan.contains("Base1 script compatibility plan"),
-        "{plan}"
-    );
+    assert!(plan.contains("Base1 script compatibility plan"), "{plan}");
     assert!(
         plan.contains("Current script paths remain the stable operator interface"),
         "{plan}"
@@ -22,7 +19,9 @@ fn script_compatibility_plan_requires_wrappers_before_moves() {
         .expect("Base1 script compatibility plan");
 
     assert!(
-        plan.contains("Do not move Base1 scripts until compatibility wrappers are planned and tested."),
+        plan.contains(
+            "Do not move Base1 scripts until compatibility wrappers are planned and tested."
+        ),
         "{plan}"
     );
     assert!(
@@ -56,7 +55,10 @@ fn script_compatibility_plan_lists_future_candidate_groups() {
         "scripts/base1/real-device/",
         "scripts/base1/quality/",
     ] {
-        assert!(plan.contains(group), "missing candidate group {group}: {plan}");
+        assert!(
+            plan.contains(group),
+            "missing candidate group {group}: {plan}"
+        );
     }
 }
 
@@ -82,7 +84,10 @@ fn script_compatibility_plan_preserves_non_claims() {
         .expect("Base1 script compatibility plan");
 
     assert!(plan.contains("does not move scripts"), "{plan}");
-    assert!(plan.contains("does not make Base1 installer-ready"), "{plan}");
+    assert!(
+        plan.contains("does not make Base1 installer-ready"),
+        "{plan}"
+    );
     assert!(plan.contains("hardware-validated"), "{plan}");
     assert!(plan.contains("daily-driver ready"), "{plan}");
 }

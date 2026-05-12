@@ -80,7 +80,10 @@ fn base1_supervisor_policy_bus_status_writes_x200_report() {
     assert!(report_path.exists(), "report should be written");
     let report = fs::read_to_string(report_path).expect("read report");
     assert_contains(&report, "BASE1_SUPERVISOR_POLICY_COMMAND=status");
-    assert_contains(&report, "BASE1_SUPERVISOR_POLICY_PROFILE=x200-supervisor-lite");
+    assert_contains(
+        &report,
+        "BASE1_SUPERVISOR_POLICY_PROFILE=x200-supervisor-lite",
+    );
     assert_contains(&report, "BASE1_SUPERVISOR_POLICY_DECISION=allow");
     assert_contains(&report, "BASE1_SUPERVISOR_POLICY_CLAIM=not_claimed");
 }
@@ -96,7 +99,10 @@ fn base1_supervisor_policy_bus_denies_x200_concurrent_mode() {
         .arg("supervisor-concurrent")
         .output()
         .expect("run x200 concurrent denial");
-    assert!(output.status.success(), "policy denial is still a planned result");
+    assert!(
+        output.status.success(),
+        "policy denial is still a planned result"
+    );
     let stdout = String::from_utf8_lossy(&output.stdout);
     assert_contains(&stdout, "decision      : deny");
     assert_contains(&stdout, "profile-upgrade-required");

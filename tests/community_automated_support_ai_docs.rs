@@ -12,8 +12,18 @@ fn automated_support_ai_roadmap_defines_goal_and_scope() {
         "{roadmap}"
     );
 
-    for area in ["Phase1", "Base1", "Fyr", "Security", "Crypto policy", "Community"] {
-        assert!(roadmap.contains(area), "missing support AI area {area}: {roadmap}");
+    for area in [
+        "Phase1",
+        "Base1",
+        "Fyr",
+        "Security",
+        "Crypto policy",
+        "Community",
+    ] {
+        assert!(
+            roadmap.contains(area),
+            "missing support AI area {area}: {roadmap}"
+        );
     }
 }
 
@@ -33,7 +43,10 @@ fn automated_support_ai_roadmap_preserves_security_and_privacy_rules() {
         "unrevised screenshots",
         "never ask a user to paste secrets",
     ] {
-        assert!(roadmap.contains(text), "missing security/privacy rule {text}: {roadmap}");
+        assert!(
+            roadmap.contains(text),
+            "missing security/privacy rule {text}: {roadmap}"
+        );
     }
 }
 
@@ -68,7 +81,10 @@ fn automated_support_ai_roadmap_defines_phased_capabilities() {
         "maintainer assistant",
         "forum integration",
     ] {
-        assert!(roadmap.contains(phase), "missing support AI phase {phase}: {roadmap}");
+        assert!(
+            roadmap.contains(phase),
+            "missing support AI phase {phase}: {roadmap}"
+        );
     }
 }
 
@@ -85,7 +101,10 @@ fn automated_support_ai_roadmap_prefers_read_only_diagnostics() {
         "sh scripts/quality-check.sh base1-docs",
         "sh scripts/quality-check.sh security-crypto-docs",
     ] {
-        assert!(roadmap.contains(command), "missing read-only diagnostic command {command}: {roadmap}");
+        assert!(
+            roadmap.contains(command),
+            "missing read-only diagnostic command {command}: {roadmap}"
+        );
     }
 }
 
@@ -107,14 +126,16 @@ fn automated_support_ai_roadmap_defines_escalation_and_issue_routing() {
         "documentation issue for docs gaps",
         "crypto/security-policy proposal for cryptographic policy planning",
     ] {
-        assert!(roadmap.contains(text), "missing escalation/routing text {text}: {roadmap}");
+        assert!(
+            roadmap.contains(text),
+            "missing escalation/routing text {text}: {roadmap}"
+        );
     }
 }
 
 #[test]
 fn automated_support_ai_roadmap_is_linked_from_community_index() {
-    let index = std::fs::read_to_string("docs/community/README.md")
-        .expect("community index");
+    let index = std::fs::read_to_string("docs/community/README.md").expect("community index");
 
     assert!(index.contains("AUTOMATED_SUPPORT_AI_ROADMAP.md"), "{index}");
     assert!(
@@ -132,8 +153,14 @@ fn automated_support_ai_roadmap_preserves_non_claims() {
     let roadmap = std::fs::read_to_string("docs/community/AUTOMATED_SUPPORT_AI_ROADMAP.md")
         .expect("automated support AI roadmap");
 
-    assert!(roadmap.contains("does not create or deploy an automated support AI by itself"), "{roadmap}");
-    assert!(roadmap.contains("does not replace maintainers"), "{roadmap}");
+    assert!(
+        roadmap.contains("does not create or deploy an automated support AI by itself"),
+        "{roadmap}"
+    );
+    assert!(
+        roadmap.contains("does not replace maintainers"),
+        "{roadmap}"
+    );
     assert!(roadmap.contains("GitHub issues"), "{roadmap}");
     assert!(roadmap.contains("`SECURITY.md`"), "{roadmap}");
     assert!(roadmap.contains("official documentation"), "{roadmap}");

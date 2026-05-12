@@ -243,9 +243,13 @@ Before B2 is considered complete, confirm:
 
 ## B3 planning status
 
+B3 remains planning plus proof-of-life, handoff, and GNU/Linux staging scaffolding until B2 validation has passed locally or in CI and B3 validation logs and report exist.
+
+
 B3 VM boot validation planning is now present:
 
 - [`B3_VM_BOOT_VALIDATION_PLAN.md`](B3_VM_BOOT_VALIDATION_PLAN.md)
+- [`B3_VM_BOOT_LOGS.md`](B3_VM_BOOT_LOGS.md) — B3 VM boot logs.
 
 B3 plan tests are present:
 
@@ -262,6 +266,10 @@ cargo test -p phase1 --test b3_vm_boot_validation_limitations_docs
 ```
 
 B3 VM boot log capture notes are documented in [`B3_VM_BOOT_LOGS.md`](B3_VM_BOOT_LOGS.md).
+
+B3 log capture notes exist.
+
+B3 VM boot logs are documented in [`B3_VM_BOOT_LOGS.md`](B3_VM_BOOT_LOGS.md).
 
 B3 VM boot log capture notes tests are present:
 

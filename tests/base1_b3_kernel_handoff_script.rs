@@ -5,7 +5,10 @@ const SCRIPT: &str = "scripts/base1-b3-kernel-handoff.sh";
 #[test]
 fn base1_b3_kernel_handoff_script_exists_and_has_valid_shell_syntax() {
     let metadata = std::fs::metadata(SCRIPT).expect("B3 kernel handoff script exists");
-    assert!(metadata.len() > 0, "B3 kernel handoff script should not be empty");
+    assert!(
+        metadata.len() > 0,
+        "B3 kernel handoff script should not be empty"
+    );
 
     let output = Command::new("sh")
         .arg("-n")
@@ -66,7 +69,10 @@ fn base1_b3_kernel_handoff_requires_inputs_and_rejects_unknown_arguments() {
         .arg(SCRIPT)
         .output()
         .expect("run B3 kernel handoff without args");
-    assert!(!no_args.status.success(), "script should require kernel/initrd");
+    assert!(
+        !no_args.status.success(),
+        "script should require kernel/initrd"
+    );
     let no_args_stderr = String::from_utf8_lossy(&no_args.stderr);
     assert!(
         no_args_stderr.contains("--kernel is required for B3 kernel handoff"),
@@ -78,9 +84,15 @@ fn base1_b3_kernel_handoff_requires_inputs_and_rejects_unknown_arguments() {
         .arg("--unknown")
         .output()
         .expect("run B3 kernel handoff with unknown option");
-    assert!(!unknown.status.success(), "script should reject unknown args");
+    assert!(
+        !unknown.status.success(),
+        "script should reject unknown args"
+    );
     let unknown_stderr = String::from_utf8_lossy(&unknown.stderr);
-    assert!(unknown_stderr.contains("unknown option: --unknown"), "stderr was: {unknown_stderr}");
+    assert!(
+        unknown_stderr.contains("unknown option: --unknown"),
+        "stderr was: {unknown_stderr}"
+    );
 }
 
 #[test]
@@ -96,9 +108,15 @@ fn base1_b3_kernel_handoff_rejects_unknown_boot_profile() {
         .output()
         .expect("run B3 kernel handoff with invalid boot profile");
 
-    assert!(!output.status.success(), "script should reject invalid boot profile before staging");
+    assert!(
+        !output.status.success(),
+        "script should reject invalid boot profile before staging"
+    );
     let stderr = String::from_utf8_lossy(&output.stderr);
-    assert!(stderr.contains("unsupported boot profile: unsafe"), "stderr was: {stderr}");
+    assert!(
+        stderr.contains("unsupported boot profile: unsafe"),
+        "stderr was: {stderr}"
+    );
 }
 
 #[test]
@@ -123,7 +141,10 @@ fn base1_b3_kernel_handoff_uses_existing_emulator_stack_and_guarded_check() {
         "build/base1-b3-kernel-handoff",
         "staging/boot/vmlinuz + staging/boot/initrd.img",
     ] {
-        assert!(script.contains(text), "missing handoff orchestration text {text}: {script}");
+        assert!(
+            script.contains(text),
+            "missing handoff orchestration text {text}: {script}"
+        );
     }
 }
 

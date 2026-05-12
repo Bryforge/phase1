@@ -5,7 +5,10 @@ const SCRIPT: &str = "scripts/base1-b3-vm-validate.sh";
 #[test]
 fn base1_b3_vm_validate_script_exists_and_has_valid_shell_syntax() {
     let metadata = std::fs::metadata(SCRIPT).expect("B3 VM validate script exists");
-    assert!(metadata.len() > 0, "B3 VM validate script should not be empty");
+    assert!(
+        metadata.len() > 0,
+        "B3 VM validate script should not be empty"
+    );
 
     let script = std::fs::read_to_string(SCRIPT).expect("B3 VM validate source");
     for text in [
@@ -15,7 +18,10 @@ fn base1_b3_vm_validate_script_exists_and_has_valid_shell_syntax() {
         "BASE1_PROFILE_ALLOWED_DELIVERY_MODES",
         "BASE1_PROFILE_NON_CLAIM_HYPERVISOR",
     ] {
-        assert!(script.contains(text), "missing profile loading text {text}: {script}");
+        assert!(
+            script.contains(text),
+            "missing profile loading text {text}: {script}"
+        );
     }
 
     let output = Command::new("sh")
@@ -79,9 +85,15 @@ fn base1_b3_vm_validate_rejects_unknown_profile_unknown_args_and_non_build_paths
         .arg("--unknown")
         .output()
         .expect("run B3 VM validate with unknown arg");
-    assert!(!unknown.status.success(), "script should reject unknown args");
+    assert!(
+        !unknown.status.success(),
+        "script should reject unknown args"
+    );
     let unknown_stderr = String::from_utf8_lossy(&unknown.stderr);
-    assert!(unknown_stderr.contains("unknown option: --unknown"), "stderr was: {unknown_stderr}");
+    assert!(
+        unknown_stderr.contains("unknown option: --unknown"),
+        "stderr was: {unknown_stderr}"
+    );
 
     let bad_profile = Command::new("sh")
         .arg(SCRIPT)
@@ -90,7 +102,10 @@ fn base1_b3_vm_validate_rejects_unknown_profile_unknown_args_and_non_build_paths
         .arg("physical-machine")
         .output()
         .expect("run B3 VM validate with unsupported profile");
-    assert!(!bad_profile.status.success(), "script should reject missing profile file");
+    assert!(
+        !bad_profile.status.success(),
+        "script should reject missing profile file"
+    );
     let bad_profile_stderr = String::from_utf8_lossy(&bad_profile.stderr);
     assert!(
         bad_profile_stderr.contains("profile file not found: profiles/base1/physical-machine.env"),
@@ -104,7 +119,10 @@ fn base1_b3_vm_validate_rejects_unknown_profile_unknown_args_and_non_build_paths
         .arg("/tmp/b3-validation-scaffold.env")
         .output()
         .expect("run B3 VM validate with bad report path");
-    assert!(!bad_report.status.success(), "non-build report path should fail");
+    assert!(
+        !bad_report.status.success(),
+        "non-build report path should fail"
+    );
 }
 
 #[test]
@@ -139,7 +157,10 @@ fn base1_b3_vm_validate_uses_expected_evidence_paths_profile_fields_and_report_f
         "BASE1_B3_OPENBSD_SUMMARY_PRESENT=",
         "BASE1_B3_VALIDATION_CLAIM=not_claimed",
     ] {
-        assert!(script.contains(text), "missing evidence/report text {text}: {script}");
+        assert!(
+            script.contains(text),
+            "missing evidence/report text {text}: {script}"
+        );
     }
 }
 
@@ -226,6 +247,9 @@ fn base1_b3_vm_validate_preserves_build_paths_and_non_claims() {
         "BASE1_B3_NON_CLAIM_RELEASE_CANDIDATE=1",
         "BASE1_B3_NON_CLAIM_DAILY_DRIVER=1",
     ] {
-        assert!(script.contains(text), "missing boundary/non-claim text {text}: {script}");
+        assert!(
+            script.contains(text),
+            "missing boundary/non-claim text {text}: {script}"
+        );
     }
 }

@@ -231,7 +231,7 @@ Rules:
 - keep organized mirrors linked;
 - run `base1-docs` before and after organization work;
 - do not remove checkpoint/release files without explicit future approval;
-- do not claim installer readiness, boot readiness, hardware validation, hardened status, or daily-driver readiness without evidence;
+- do not claim installer readiness, boot readiness, hardware validation, or daily-driver readiness without evidence;
 - keep scripts read-only or dry-run unless a future validated path explicitly allows mutation.
 
 Focused gates:

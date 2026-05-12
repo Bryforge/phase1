@@ -83,8 +83,14 @@ fn base1_supervisor_control_plane_status_writes_report_for_x200_profile() {
 
     let report = fs::read_to_string(report_path).expect("read report");
     assert_contains(&report, "BASE1_SUPERVISOR_CONTROL_COMMAND=status");
-    assert_contains(&report, "BASE1_SUPERVISOR_CONTROL_PROFILE=x200-supervisor-lite");
-    assert_contains(&report, "BASE1_SUPERVISOR_CONTROL_PROFILE_CLASS=low-resource");
+    assert_contains(
+        &report,
+        "BASE1_SUPERVISOR_CONTROL_PROFILE=x200-supervisor-lite",
+    );
+    assert_contains(
+        &report,
+        "BASE1_SUPERVISOR_CONTROL_PROFILE_CLASS=low-resource",
+    );
     assert_contains(&report, "BASE1_SUPERVISOR_CONTROL_MAX_CONCURRENCY=1");
     assert_contains(&report, "BASE1_SUPERVISOR_CONTROL_CLAIM=not_claimed");
 }
@@ -149,7 +155,10 @@ fn base1_supervisor_control_plane_blocks_x200_concurrent_launch_preview_by_polic
         .output()
         .expect("run x200 blocked launch-preview");
 
-    assert!(!output.status.success(), "x200 supervisor-concurrent launch-preview should be policy-blocked");
+    assert!(
+        !output.status.success(),
+        "x200 supervisor-concurrent launch-preview should be policy-blocked"
+    );
     let stdout = String::from_utf8_lossy(&output.stdout);
     let stderr = String::from_utf8_lossy(&output.stderr);
     let combined = format!("{stdout}{stderr}");
@@ -172,10 +181,17 @@ fn base1_supervisor_control_plane_records_policy_decision_for_status_report() {
         .expect("run policy-gated status");
 
     assert!(output.status.success(), "status should pass");
-    let report_path = Path::new("build/base1-supervisor-control-plane-test-status/supervisor-control-plane.env");
+    let report_path =
+        Path::new("build/base1-supervisor-control-plane-test-status/supervisor-control-plane.env");
     assert!(report_path.exists(), "report should be written");
     let report = fs::read_to_string(report_path).expect("read report");
     assert_contains(&report, "BASE1_SUPERVISOR_CONTROL_POLICY_DECISION=allow");
-    assert_contains(&report, "BASE1_SUPERVISOR_CONTROL_POLICY_REASON=profile allows read-only planning command");
-    assert_contains(&report, "BASE1_SUPERVISOR_CONTROL_REQUESTED_MODE=direct-first");
+    assert_contains(
+        &report,
+        "BASE1_SUPERVISOR_CONTROL_POLICY_REASON=profile allows read-only planning command",
+    );
+    assert_contains(
+        &report,
+        "BASE1_SUPERVISOR_CONTROL_REQUESTED_MODE=direct-first",
+    );
 }

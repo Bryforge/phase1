@@ -3,8 +3,14 @@ fn high_security_profile_defines_purpose_and_operator() {
     let profile = std::fs::read_to_string("docs/security/crypto-profiles/HIGH_SECURITY.md")
         .expect("high-security crypto profile");
 
-    assert!(profile.contains("High-security cryptographic profile"), "{profile}");
-    assert!(profile.contains("planned stricter cryptographic profile"), "{profile}");
+    assert!(
+        profile.contains("High-security cryptographic profile"),
+        "{profile}"
+    );
+    assert!(
+        profile.contains("planned stricter cryptographic profile"),
+        "{profile}"
+    );
 
     for operator in [
         "Advanced operators",
@@ -12,7 +18,10 @@ fn high_security_profile_defines_purpose_and_operator() {
         "Base1 recovery and image-provenance operators",
         "Maintainers preparing signed releases",
     ] {
-        assert!(profile.contains(operator), "missing intended operator {operator}: {profile}");
+        assert!(
+            profile.contains(operator),
+            "missing intended operator {operator}: {profile}"
+        );
     }
 }
 
@@ -43,14 +52,20 @@ fn high_security_profile_requires_registry_template_and_eligible_statuses() {
         .expect("high-security crypto profile");
 
     assert!(profile.contains("../CRYPTO_REGISTRY.md"), "{profile}");
-    assert!(profile.contains("../CRYPTO_ALGORITHM_TEMPLATE.md"), "{profile}");
+    assert!(
+        profile.contains("../CRYPTO_ALGORITHM_TEMPLATE.md"),
+        "{profile}"
+    );
 
     for status in [
         "test-vector-covered",
         "profile-eligible",
         "default-eligible",
     ] {
-        assert!(profile.contains(status), "missing required status {status}: {profile}");
+        assert!(
+            profile.contains(status),
+            "missing required status {status}: {profile}"
+        );
     }
 }
 
@@ -69,7 +84,10 @@ fn high_security_profile_rejects_unsafe_or_ambiguous_entries() {
         "silent downgrade behavior",
         "operational recovery path is undocumented",
     ] {
-        assert!(profile.contains(rejected), "missing rejection {rejected}: {profile}");
+        assert!(
+            profile.contains(rejected),
+            "missing rejection {rejected}: {profile}"
+        );
     }
 }
 
@@ -88,7 +106,10 @@ fn high_security_profile_guards_downgrades_and_audit() {
         "active profile",
         "verification status",
     ] {
-        assert!(profile.contains(text), "missing downgrade/audit text {text}: {profile}");
+        assert!(
+            profile.contains(text),
+            "missing downgrade/audit text {text}: {profile}"
+        );
     }
 }
 
@@ -106,7 +127,10 @@ fn high_security_profile_defines_base1_requirements() {
         "operator recovery if keys or signatures fail",
         "boot security and hardware validation",
     ] {
-        assert!(profile.contains(text), "missing Base1 requirement {text}: {profile}");
+        assert!(
+            profile.contains(text),
+            "missing Base1 requirement {text}: {profile}"
+        );
     }
 }
 
@@ -124,7 +148,10 @@ fn high_security_profile_preserves_non_claims() {
     let profile = std::fs::read_to_string("docs/security/crypto-profiles/HIGH_SECURITY.md")
         .expect("high-security crypto profile");
 
-    assert!(profile.contains("does not make Phase1 or Base1 cryptographically complete"), "{profile}");
+    assert!(
+        profile.contains("does not make Phase1 or Base1 cryptographically complete"),
+        "{profile}"
+    );
     assert!(profile.contains("audited"), "{profile}");
     assert!(profile.contains("certified"), "{profile}");
     assert!(profile.contains("quantum-safe"), "{profile}");

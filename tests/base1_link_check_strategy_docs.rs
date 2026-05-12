@@ -15,7 +15,10 @@ fn link_check_strategy_defines_required_surfaces() {
         "root-level Base1 release/checkpoint notes",
         "README links pointing into Base1 docs",
     ] {
-        assert!(doc.contains(surface), "missing link surface {surface}: {doc}");
+        assert!(
+            doc.contains(surface),
+            "missing link surface {surface}: {doc}"
+        );
     }
 }
 
@@ -34,7 +37,10 @@ fn link_check_strategy_preserves_compatibility_paths() {
         "base1/RECOVERY_USB_DESIGN.md",
         "docs/base1/README.md",
     ] {
-        assert!(doc.contains(text), "missing compatibility text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing compatibility text {text}: {doc}"
+        );
     }
 }
 
@@ -62,8 +68,8 @@ fn link_check_strategy_is_linked_from_indexes_and_integrity_gate() {
     let manual = std::fs::read_to_string("docs/base1/README.md").expect("Base1 manual");
     let map = std::fs::read_to_string("docs/base1/DOCUMENTATION_MAP.md")
         .expect("Base1 documentation map");
-    let integrity = std::fs::read_to_string("scripts/base1-doc-integrity.sh")
-        .expect("Base1 integrity gate");
+    let integrity =
+        std::fs::read_to_string("scripts/base1-doc-integrity.sh").expect("Base1 integrity gate");
 
     for doc in [&manual, &map, &integrity] {
         assert!(doc.contains("LINK_CHECK_STRATEGY.md"), "{doc}");

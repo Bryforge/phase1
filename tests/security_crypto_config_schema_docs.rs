@@ -7,7 +7,10 @@ fn crypto_config_schema_defines_default_safe_posture() {
         schema.contains("Phase1 crypto policy configuration schema"),
         "{schema}"
     );
-    assert!(schema.contains("default_profile = \"safe-default\""), "{schema}");
+    assert!(
+        schema.contains("default_profile = \"safe-default\""),
+        "{schema}"
+    );
     assert!(
         schema.contains("If no crypto configuration exists, Phase1 should behave as though `safe-default` is active"),
         "{schema}"
@@ -30,7 +33,10 @@ fn crypto_config_schema_lists_allowed_profiles_and_scopes() {
         "post-quantum-preview",
         "lab-only",
     ] {
-        assert!(schema.contains(profile), "missing profile {profile}: {schema}");
+        assert!(
+            schema.contains(profile),
+            "missing profile {profile}: {schema}"
+        );
     }
 
     for scope in [
@@ -97,17 +103,21 @@ fn crypto_config_schema_includes_safe_and_rejected_examples() {
         .expect("crypto config schema");
 
     assert!(schema.contains("Example safe configuration"), "{schema}");
-    assert!(schema.contains("Example rejected configuration"), "{schema}");
     assert!(
-        schema.contains("This should be rejected because `lab-only` must not protect production storage."),
+        schema.contains("Example rejected configuration"),
+        "{schema}"
+    );
+    assert!(
+        schema.contains(
+            "This should be rejected because `lab-only` must not protect production storage."
+        ),
         "{schema}"
     );
 }
 
 #[test]
 fn crypto_config_schema_is_linked_from_security_index_roadmap_and_integrity_gate() {
-    let index = std::fs::read_to_string("docs/security/README.md")
-        .expect("security docs index");
+    let index = std::fs::read_to_string("docs/security/README.md").expect("security docs index");
     let roadmap = std::fs::read_to_string("docs/security/CRYPTO_POLICY_ROADMAP.md")
         .expect("crypto policy roadmap");
     let gate = std::fs::read_to_string("scripts/security-crypto-doc-integrity.sh")
@@ -123,7 +133,10 @@ fn crypto_config_schema_preserves_non_claims() {
     let schema = std::fs::read_to_string("docs/security/CRYPTO_CONFIG_SCHEMA.md")
         .expect("crypto config schema");
 
-    assert!(schema.contains("does not make Phase1 or Base1 cryptographically complete"), "{schema}");
+    assert!(
+        schema.contains("does not make Phase1 or Base1 cryptographically complete"),
+        "{schema}"
+    );
     assert!(schema.contains("audited"), "{schema}");
     assert!(schema.contains("certified"), "{schema}");
     assert!(schema.contains("quantum-safe"), "{schema}");

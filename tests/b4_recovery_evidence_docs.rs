@@ -1,8 +1,7 @@
 use std::fs;
 
 fn read_doc() -> String {
-    fs::read_to_string("docs/os/B4_RECOVERY_EVIDENCE.md")
-        .expect("read B4 recovery evidence doc")
+    fs::read_to_string("docs/os/B4_RECOVERY_EVIDENCE.md").expect("read B4 recovery evidence doc")
 }
 
 fn assert_contains(haystack: &str, needle: &str) {

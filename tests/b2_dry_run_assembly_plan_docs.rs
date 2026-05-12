@@ -9,7 +9,9 @@ fn b2_dry_run_assembly_plan_defines_scope_and_command() {
         "{plan}"
     );
     assert!(
-        plan.contains("sh scripts/base1-b2-assembly-dry-run.sh --dry-run --profile x86_64-vm-validation"),
+        plan.contains(
+            "sh scripts/base1-b2-assembly-dry-run.sh --dry-run --profile x86_64-vm-validation"
+        ),
         "{plan}"
     );
     assert!(
@@ -77,7 +79,10 @@ fn b2_dry_run_assembly_plan_defines_profiles() {
         "x86_64-vm-validation",
         "x86_64-recovery-usb",
     ] {
-        assert!(plan.contains(profile), "missing B2 profile {profile}: {plan}");
+        assert!(
+            plan.contains(profile),
+            "missing B2 profile {profile}: {plan}"
+        );
     }
 
     assert!(
@@ -124,7 +129,10 @@ fn b2_dry_run_assembly_plan_preserves_non_mutation_rules() {
         "mark hardware as validated",
         "claim a bootable release candidate",
     ] {
-        assert!(plan.contains(text), "missing B2 non-mutation rule {text}: {plan}");
+        assert!(
+            plan.contains(text),
+            "missing B2 non-mutation rule {text}: {plan}"
+        );
     }
 }
 
@@ -145,7 +153,10 @@ fn b2_dry_run_assembly_plan_links_required_integration_points() {
         "BASE1_DRY_RUN_COMMANDS.md",
         "BASE1_ROLLBACK_METADATA.md",
     ] {
-        assert!(plan.contains(link), "missing B2 integration link {link}: {plan}");
+        assert!(
+            plan.contains(link),
+            "missing B2 integration link {link}: {plan}"
+        );
     }
 }
 
@@ -167,14 +178,17 @@ fn b2_dry_run_assembly_plan_defines_test_expectations_and_completion() {
         "B2 validation report exists",
         "README and OS roadmap reflect the B2 boundary",
     ] {
-        assert!(plan.contains(text), "missing B2 test/completion text {text}: {plan}");
+        assert!(
+            plan.contains(text),
+            "missing B2 test/completion text {text}: {plan}"
+        );
     }
 }
 
 #[test]
 fn b2_dry_run_assembly_plan_is_linked_from_status_and_race_and_roadmap() {
-    let status = std::fs::read_to_string("docs/os/BOOT_READINESS_STATUS.md")
-        .expect("boot readiness status");
+    let status =
+        std::fs::read_to_string("docs/os/BOOT_READINESS_STATUS.md").expect("boot readiness status");
     let race = std::fs::read_to_string("docs/os/BOOT_READINESS_RACE_PLAN.md")
         .expect("boot readiness race plan");
     let roadmap = std::fs::read_to_string("docs/os/ROADMAP.md").expect("OS roadmap");

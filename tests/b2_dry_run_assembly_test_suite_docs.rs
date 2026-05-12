@@ -3,13 +3,18 @@ fn b2_test_suite_defines_scope_and_primary_command() {
     let doc = std::fs::read_to_string("docs/os/B2_DRY_RUN_ASSEMBLY_TEST_SUITE.md")
         .expect("B2 dry-run assembly test suite bundle");
 
-    assert!(doc.contains("Base1 B2 dry-run assembly test suite"), "{doc}");
+    assert!(
+        doc.contains("Base1 B2 dry-run assembly test suite"),
+        "{doc}"
+    );
     assert!(
         doc.contains("focused B2 test commands for dry-run assembly planning"),
         "{doc}"
     );
     assert!(
-        doc.contains("sh scripts/base1-b2-assembly-dry-run.sh --dry-run --profile x86_64-vm-validation"),
+        doc.contains(
+            "sh scripts/base1-b2-assembly-dry-run.sh --dry-run --profile x86_64-vm-validation"
+        ),
         "{doc}"
     );
     assert!(
@@ -53,7 +58,10 @@ fn b2_test_suite_lists_focused_b2_tests() {
         "cargo test -p phase1 --test x86_64_boot_support_roadmap_docs",
         "cargo test -p phase1 --test readme_navigation_reorganization_links",
     ] {
-        assert!(doc.contains(command), "missing focused B2 test command {command}: {doc}");
+        assert!(
+            doc.contains(command),
+            "missing focused B2 test command {command}: {doc}"
+        );
     }
 }
 
@@ -66,7 +74,10 @@ fn b2_test_suite_lists_optional_broader_checks() {
         "sh scripts/quality-check.sh quick",
         "sh scripts/quality-check.sh base1-docs",
     ] {
-        assert!(doc.contains(command), "missing optional broader check {command}: {doc}");
+        assert!(
+            doc.contains(command),
+            "missing optional broader check {command}: {doc}"
+        );
     }
 }
 

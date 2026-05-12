@@ -3,8 +3,14 @@ fn compatibility_profile_defines_purpose_and_operator() {
     let profile = std::fs::read_to_string("docs/security/crypto-profiles/COMPATIBILITY.md")
         .expect("compatibility crypto profile");
 
-    assert!(profile.contains("Compatibility cryptographic profile"), "{profile}");
-    assert!(profile.contains("planned interoperability profile"), "{profile}");
+    assert!(
+        profile.contains("Compatibility cryptographic profile"),
+        "{profile}"
+    );
+    assert!(
+        profile.contains("planned interoperability profile"),
+        "{profile}"
+    );
 
     for operator in [
         "Maintainers working with older data or external systems",
@@ -12,7 +18,10 @@ fn compatibility_profile_defines_purpose_and_operator() {
         "Migration operators moving data from old formats into safer profiles",
         "Developers testing interoperability behavior",
     ] {
-        assert!(profile.contains(operator), "missing intended operator {operator}: {profile}");
+        assert!(
+            profile.contains(operator),
+            "missing intended operator {operator}: {profile}"
+        );
     }
 }
 
@@ -46,14 +55,16 @@ fn compatibility_profile_requires_registry_template_and_statuses() {
         .expect("compatibility crypto profile");
 
     assert!(profile.contains("../CRYPTO_REGISTRY.md"), "{profile}");
-    assert!(profile.contains("../CRYPTO_ALGORITHM_TEMPLATE.md"), "{profile}");
+    assert!(
+        profile.contains("../CRYPTO_ALGORITHM_TEMPLATE.md"),
+        "{profile}"
+    );
 
-    for status in [
-        "documented",
-        "compatibility-only",
-        "test-vector-covered",
-    ] {
-        assert!(profile.contains(status), "missing required status {status}: {profile}");
+    for status in ["documented", "compatibility-only", "test-vector-covered"] {
+        assert!(
+            profile.contains(status),
+            "missing required status {status}: {profile}"
+        );
     }
 }
 
@@ -70,7 +81,10 @@ fn compatibility_profile_requires_explicit_warning_and_consent() {
         "migration guidance is documented",
         "This profile must require explicit selection.",
     ] {
-        assert!(profile.contains(text), "missing warning/consent text {text}: {profile}");
+        assert!(
+            profile.contains(text),
+            "missing warning/consent text {text}: {profile}"
+        );
     }
 }
 
@@ -87,7 +101,10 @@ fn compatibility_profile_rejects_unsafe_entries_and_new_weak_data() {
         "silent downgrade behavior",
         "creating new long-term data with weaker choices",
     ] {
-        assert!(profile.contains(rejected), "missing rejection {rejected}: {profile}");
+        assert!(
+            profile.contains(rejected),
+            "missing rejection {rejected}: {profile}"
+        );
     }
 }
 
@@ -106,7 +123,10 @@ fn compatibility_profile_defines_warning_audit_and_migration_behavior() {
         "migration target profile",
         "failure recovery",
     ] {
-        assert!(profile.contains(text), "missing warning/audit/migration text {text}: {profile}");
+        assert!(
+            profile.contains(text),
+            "missing warning/audit/migration text {text}: {profile}"
+        );
     }
 }
 
@@ -124,7 +144,10 @@ fn compatibility_profile_preserves_non_claims() {
     let profile = std::fs::read_to_string("docs/security/crypto-profiles/COMPATIBILITY.md")
         .expect("compatibility crypto profile");
 
-    assert!(profile.contains("does not make Phase1 or Base1 cryptographically complete"), "{profile}");
+    assert!(
+        profile.contains("does not make Phase1 or Base1 cryptographically complete"),
+        "{profile}"
+    );
     assert!(profile.contains("audited"), "{profile}");
     assert!(profile.contains("certified"), "{profile}");
     assert!(profile.contains("quantum-safe"), "{profile}");

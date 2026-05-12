@@ -42,3 +42,4 @@ Every Base1 dry-run command must:
 No dry-run command may become mutating until the matching design doc, script test, recovery path, rollback plan, hardware target checks, and final destructive-action confirmation are all present.
 
 For network lockdown specifically, promotion also requires a local recovery route that survives broken networking and an operator warning that remote access can be lost.
+- [`base1/RECOVERY_USB_TARGET_SELECTION.md`](../../base1/RECOVERY_USB_TARGET_SELECTION.md) — Recovery USB target selection design.

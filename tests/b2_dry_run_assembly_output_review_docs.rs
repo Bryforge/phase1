@@ -3,13 +3,18 @@ fn b2_output_review_defines_scope_and_command() {
     let review = std::fs::read_to_string("docs/os/B2_DRY_RUN_ASSEMBLY_OUTPUT_REVIEW.md")
         .expect("B2 dry-run assembly output review");
 
-    assert!(review.contains("Base1 B2 dry-run assembly output review"), "{review}");
+    assert!(
+        review.contains("Base1 B2 dry-run assembly output review"),
+        "{review}"
+    );
     assert!(
         review.contains("secret-redaction and safe-output review for `scripts/base1-b2-assembly-dry-run.sh --dry-run --profile <profile>`"),
         "{review}"
     );
     assert!(
-        review.contains("sh scripts/base1-b2-assembly-dry-run.sh --dry-run --profile x86_64-vm-validation"),
+        review.contains(
+            "sh scripts/base1-b2-assembly-dry-run.sh --dry-run --profile x86_64-vm-validation"
+        ),
         "{review}"
     );
 }
@@ -38,7 +43,10 @@ fn b2_output_review_lists_safe_output_fields() {
         "explicit known limitations",
         "next validation step",
     ] {
-        assert!(review.contains(text), "missing safe output field {text}: {review}");
+        assert!(
+            review.contains(text),
+            "missing safe output field {text}: {review}"
+        );
     }
 }
 
@@ -64,7 +72,10 @@ fn b2_output_review_lists_forbidden_output() {
         "package-manager install commands",
         "network request contents",
     ] {
-        assert!(review.contains(text), "missing forbidden output text {text}: {review}");
+        assert!(
+            review.contains(text),
+            "missing forbidden output text {text}: {review}"
+        );
     }
 }
 
@@ -107,7 +118,10 @@ fn b2_output_review_preserves_review_checklist() {
         "output keeps B2 claims bounded to dry-run preview only",
         "script/test suite passes in CI or local validation",
     ] {
-        assert!(review.contains(text), "missing output review checklist text {text}: {review}");
+        assert!(
+            review.contains(text),
+            "missing output review checklist text {text}: {review}"
+        );
     }
 }
 
@@ -122,7 +136,10 @@ fn b2_output_review_links_related_docs() {
         "B2_DRY_RUN_ASSEMBLY_LIMITATIONS.md",
         "B2_DRY_RUN_ASSEMBLY_VALIDATION.md",
     ] {
-        assert!(review.contains(link), "missing related doc link {link}: {review}");
+        assert!(
+            review.contains(link),
+            "missing related doc link {link}: {review}"
+        );
     }
 }
 

@@ -42,7 +42,10 @@ fn b3_vm_boot_logs_list_planned_log_categories() {
         "failure mode notes if the VM does not boot",
         "known limitations",
     ] {
-        assert!(doc.contains(text), "missing planned log category {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing planned log category {text}: {doc}"
+        );
     }
 }
 
@@ -64,7 +67,10 @@ fn b3_vm_boot_logs_preserve_safe_log_handling_rules() {
         "personal account identifiers",
         "secret-bearing kernel command-line values",
     ] {
-        assert!(doc.contains(text), "missing safe log handling text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing safe log handling text {text}: {doc}"
+        );
     }
 }
 
@@ -100,7 +106,10 @@ fn b3_vm_boot_logs_preserve_review_checklist() {
         "limitations are documented",
         "non-claims are preserved",
     ] {
-        assert!(doc.contains(text), "missing review checklist text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing review checklist text {text}: {doc}"
+        );
     }
 }
 

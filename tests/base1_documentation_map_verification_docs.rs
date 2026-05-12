@@ -9,7 +9,10 @@ fn documentation_map_lists_verification_commands() {
         "sh scripts/base1-test-inventory-verify.sh",
         "sh scripts/base1-reorganization-verify.sh",
     ] {
-        assert!(map.contains(command), "missing verification command {command}: {map}");
+        assert!(
+            map.contains(command),
+            "missing verification command {command}: {map}"
+        );
     }
 }
 
@@ -41,7 +44,10 @@ fn documentation_map_links_release_pre_move_checks() {
 
     assert!(map.contains("Release/checkpoint pre-move checks"), "{map}");
     assert!(map.contains("releases/PRE_MOVE_CHECKS.md"), "{map}");
-    assert!(map.contains("Root checkpoint-note files remain compatibility paths"), "{map}");
+    assert!(
+        map.contains("Root checkpoint-note files remain compatibility paths"),
+        "{map}"
+    );
 }
 
 #[test]

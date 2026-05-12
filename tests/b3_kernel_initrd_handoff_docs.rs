@@ -53,7 +53,10 @@ fn b3_kernel_initrd_handoff_doc_lists_outputs_and_stack_scripts() {
         "scripts/base1-emulator-preview.sh",
         "scripts/base1-qemu-boot-check.sh",
     ] {
-        assert!(doc.contains(text), "missing output/stack text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing output/stack text {text}: {doc}"
+        );
     }
 }
 
@@ -71,7 +74,10 @@ fn b3_kernel_initrd_handoff_doc_defines_evidence_model_and_inputs() {
         "Those files must already be available and safe to run in QEMU.",
         "does not build, fetch, sign, verify, or trust them by itself",
     ] {
-        assert!(doc.contains(text), "missing evidence/input text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing evidence/input text {text}: {doc}"
+        );
     }
 }
 
@@ -99,7 +105,10 @@ fn b3_kernel_initrd_handoff_doc_preserves_troubleshooting_and_non_claims() {
         "does not make Base1 bootable on physical hardware",
         "release-candidate ready",
     ] {
-        assert!(doc.contains(text), "missing troubleshooting/non-claim text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing troubleshooting/non-claim text {text}: {doc}"
+        );
     }
 }
 

@@ -21,7 +21,10 @@ fn base1_test_inventory_script_lists_expected_patterns() {
         "tests/quality_base1_*.rs",
         "tests/*base1*.rs",
     ] {
-        assert!(script.contains(pattern), "missing pattern {pattern}: {script}");
+        assert!(
+            script.contains(pattern),
+            "missing pattern {pattern}: {script}"
+        );
     }
 }
 
@@ -38,10 +41,10 @@ fn base1_test_inventory_script_reports_counts() {
 
 #[test]
 fn base1_test_inventory_is_documented_and_integrity_checked() {
-    let inventory = std::fs::read_to_string("docs/base1/TEST_INVENTORY.md")
-        .expect("Base1 test inventory docs");
-    let integrity = std::fs::read_to_string("scripts/base1-doc-integrity.sh")
-        .expect("Base1 integrity gate");
+    let inventory =
+        std::fs::read_to_string("docs/base1/TEST_INVENTORY.md").expect("Base1 test inventory docs");
+    let integrity =
+        std::fs::read_to_string("scripts/base1-doc-integrity.sh").expect("Base1 integrity gate");
 
     assert!(
         inventory.contains("sh scripts/base1-test-inventory.sh"),

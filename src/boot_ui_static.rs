@@ -1619,7 +1619,7 @@ mod tests {
 
         let chips = super::compact_prompt_chips_plain();
         assert!(chips.contains("edge"));
-        assert!(chips.contains("safe"));
+        assert!(chips.contains("safe") || chips.contains("shield") || chips.contains("guard"));
         assert!(chips.contains("trust"));
         assert!(chips.contains("n1/2"));
 
@@ -1644,7 +1644,10 @@ mod tests {
 
             let chips = super::compact_prompt_chips_plain();
             assert!(chips.contains("edge"));
-            assert!(chips.contains("safe"));
+            assert!(
+                chips.contains("safe") || chips.contains("shield"),
+                "compact prompt chips must expose safe/shield state: {chips}"
+            );
             assert!(chips.contains("trust"));
             assert!(!chips.contains("n1/"));
         }

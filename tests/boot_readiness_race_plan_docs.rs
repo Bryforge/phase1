@@ -8,10 +8,7 @@ fn boot_readiness_race_plan_defines_goal_and_boundary() {
         plan.contains("fastest safe path toward boot readiness"),
         "{plan}"
     );
-    assert!(
-        plan.contains("speed without unsafe claims"),
-        "{plan}"
-    );
+    assert!(plan.contains("speed without unsafe claims"), "{plan}");
     assert!(
         plan.contains("Phase1 is still a terminal-first virtual OS console"),
         "{plan}"
@@ -40,7 +37,10 @@ fn boot_readiness_race_plan_defines_readiness_ladder() {
         "Release candidate",
         "Do not skip levels when strengthening claims.",
     ] {
-        assert!(plan.contains(level), "missing boot readiness level {level}: {plan}");
+        assert!(
+            plan.contains(level),
+            "missing boot readiness level {level}: {plan}"
+        );
     }
 }
 
@@ -61,7 +61,10 @@ fn boot_readiness_race_plan_defines_fast_sprints() {
         "Sprint 9: hardware validation",
         "Sprint 10: release-candidate evidence",
     ] {
-        assert!(plan.contains(sprint), "missing boot readiness sprint {sprint}: {plan}");
+        assert!(
+            plan.contains(sprint),
+            "missing boot readiness sprint {sprint}: {plan}"
+        );
     }
 }
 
@@ -92,7 +95,10 @@ fn boot_readiness_race_plan_lists_required_artifacts() {
         "../../base1/HARDWARE_TARGETS.md",
         "../../base1/LIBREBOOT_PROFILE.md",
     ] {
-        assert!(plan.contains(artifact), "missing boot artifact {artifact}: {plan}");
+        assert!(
+            plan.contains(artifact),
+            "missing boot artifact {artifact}: {plan}"
+        );
     }
 }
 
@@ -109,7 +115,10 @@ fn boot_readiness_race_plan_documents_b1_script_and_tests() {
         "Initial script: `scripts/base1-x86_64-detect.sh`.",
         "Initial tests: `tests/base1_x86_64_detect_script.rs`.",
     ] {
-        assert!(plan.contains(text), "missing B1 script/test text {text}: {plan}");
+        assert!(
+            plan.contains(text),
+            "missing B1 script/test text {text}: {plan}"
+        );
     }
 }
 
@@ -170,7 +179,10 @@ fn boot_readiness_race_plan_preserves_checklist_and_safety_rules() {
         "Recovery before installer claims.",
         "Evidence before hardening claims.",
     ] {
-        assert!(plan.contains(text), "missing checklist/safety text {text}: {plan}");
+        assert!(
+            plan.contains(text),
+            "missing checklist/safety text {text}: {plan}"
+        );
     }
 }
 
@@ -200,6 +212,9 @@ fn boot_readiness_race_plan_preserves_non_claims() {
         "hardware-validated",
         "daily-driver ready",
     ] {
-        assert!(plan.contains(text), "missing boot readiness non-claim {text}: {plan}");
+        assert!(
+            plan.contains(text),
+            "missing boot readiness non-claim {text}: {plan}"
+        );
     }
 }

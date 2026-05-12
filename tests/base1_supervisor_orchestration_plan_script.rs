@@ -3,7 +3,8 @@ use std::process::Command;
 #[test]
 fn base1_supervisor_orchestration_plan_script_exists_and_has_valid_shell_syntax() {
     let script = "scripts/base1-supervisor-orchestration-plan.sh";
-    let contents = std::fs::read_to_string(script).expect("supervisor orchestration planner script");
+    let contents =
+        std::fs::read_to_string(script).expect("supervisor orchestration planner script");
 
     for text in [
         "Base1 supervisor orchestration planner",
@@ -26,7 +27,10 @@ fn base1_supervisor_orchestration_plan_script_exists_and_has_valid_shell_syntax(
         "claim hypervisor readiness",
         "validate hardware",
     ] {
-        assert!(contents.contains(text), "missing script text {text}: {contents}");
+        assert!(
+            contents.contains(text),
+            "missing script text {text}: {contents}"
+        );
     }
 
     let status = Command::new("sh")
@@ -61,7 +65,10 @@ fn base1_supervisor_orchestration_plan_defaults_to_x200_safe_shape() {
         "no hypervisor claim",
         "no hardware validation",
     ] {
-        assert!(stdout.contains(text), "missing dry-run text {text}: {stdout}");
+        assert!(
+            stdout.contains(text),
+            "missing dry-run text {text}: {stdout}"
+        );
     }
 }
 
@@ -103,7 +110,10 @@ fn base1_supervisor_orchestration_plan_prepare_writes_report() {
         "BASE1_SUPERVISOR_NON_CLAIM_HYPERVISOR=1",
         "BASE1_SUPERVISOR_NON_CLAIM_HARDWARE=1",
     ] {
-        assert!(report.contains(text), "missing report text {text}: {report}");
+        assert!(
+            report.contains(text),
+            "missing report text {text}: {report}"
+        );
     }
 }
 
@@ -128,7 +138,10 @@ fn base1_supervisor_orchestration_plan_supports_vm_concurrent_profile_shape() {
         "BASE1_SUPERVISOR_POLICY_BUS=planned",
         "BASE1_SUPERVISOR_EVIDENCE_BUS=planned",
     ] {
-        assert!(stdout.contains(text), "missing vm profile text {text}: {stdout}");
+        assert!(
+            stdout.contains(text),
+            "missing vm profile text {text}: {stdout}"
+        );
     }
 }
 

@@ -3,7 +3,10 @@ fn b3_limitations_note_defines_scope_and_command() {
     let doc = std::fs::read_to_string("docs/os/B3_VM_BOOT_VALIDATION_LIMITATIONS.md")
         .expect("B3 VM boot validation limitations note");
 
-    assert!(doc.contains("Base1 B3 VM boot validation limitations"), "{doc}");
+    assert!(
+        doc.contains("Base1 B3 VM boot validation limitations"),
+        "{doc}"
+    );
     assert!(
         doc.contains("known limits for the future B3 VM boot validation path"),
         "{doc}"
@@ -54,7 +57,10 @@ fn b3_limitations_note_lists_what_b3_cannot_prove() {
         "support for all x86_64 systems",
         "support for secure boot, measured boot, TPM, or lockdown modes",
     ] {
-        assert!(doc.contains(text), "missing cannot-prove text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing cannot-prove text {text}: {doc}"
+        );
     }
 }
 
@@ -71,7 +77,10 @@ fn b3_limitations_note_preserves_required_behavior() {
         "keep limitations visible",
         "preserve non-claims",
     ] {
-        assert!(doc.contains(text), "missing required behavior text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing required behavior text {text}: {doc}"
+        );
     }
 }
 

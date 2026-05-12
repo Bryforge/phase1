@@ -34,7 +34,10 @@ fn b1_read_only_detection_plan_lists_required_output() {
         "unknown or unsupported state warnings",
         "next recommended read-only check",
     ] {
-        assert!(plan.contains(text), "missing required output text {text}: {plan}");
+        assert!(
+            plan.contains(text),
+            "missing required output text {text}: {plan}"
+        );
     }
 }
 
@@ -55,7 +58,10 @@ fn b1_read_only_detection_plan_defines_detection_categories() {
         "Read only; redact sensitive tokens if any appear.",
         "Report hints only; do not modify boot entries.",
     ] {
-        assert!(plan.contains(text), "missing detection category text {text}: {plan}");
+        assert!(
+            plan.contains(text),
+            "missing detection category text {text}: {plan}"
+        );
     }
 }
 
@@ -73,7 +79,10 @@ fn b1_read_only_detection_plan_preserves_fail_closed_behavior() {
         "a command would write to disk, firmware, boot loader configuration, or partitions",
         "which read-only check can be run next",
     ] {
-        assert!(plan.contains(text), "missing fail-closed text {text}: {plan}");
+        assert!(
+            plan.contains(text),
+            "missing fail-closed text {text}: {plan}"
+        );
     }
 }
 
@@ -97,7 +106,10 @@ fn b1_read_only_detection_plan_preserves_redaction_and_non_mutation_rules() {
         "install packages",
         "require network access",
     ] {
-        assert!(plan.contains(text), "missing redaction/non-mutation text {text}: {plan}");
+        assert!(
+            plan.contains(text),
+            "missing redaction/non-mutation text {text}: {plan}"
+        );
     }
 }
 
@@ -115,14 +127,17 @@ fn b1_read_only_detection_plan_defines_test_expectations() {
         "docs link this plan",
         "non-claims are preserved",
     ] {
-        assert!(plan.contains(text), "missing test expectation {text}: {plan}");
+        assert!(
+            plan.contains(text),
+            "missing test expectation {text}: {plan}"
+        );
     }
 }
 
 #[test]
 fn b1_read_only_detection_plan_is_linked_from_required_docs() {
-    let status = std::fs::read_to_string("docs/os/BOOT_READINESS_STATUS.md")
-        .expect("boot readiness status");
+    let status =
+        std::fs::read_to_string("docs/os/BOOT_READINESS_STATUS.md").expect("boot readiness status");
     let roadmap = std::fs::read_to_string("docs/os/ROADMAP.md").expect("OS roadmap");
     let race = std::fs::read_to_string("docs/os/BOOT_READINESS_RACE_PLAN.md")
         .expect("boot readiness race plan");

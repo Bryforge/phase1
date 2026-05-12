@@ -13,7 +13,10 @@ fn issue_template_config_disables_blank_issues_and_links_support_paths() {
         "Quality gates",
         "Community and support roadmap",
     ] {
-        assert!(config.contains(text), "missing config contact link {text}: {config}");
+        assert!(
+            config.contains(text),
+            "missing config contact link {text}: {config}"
+        );
     }
 }
 
@@ -34,7 +37,10 @@ fn bug_report_template_collects_reproduction_context() {
         "Redacted logs or screenshots",
         "Safety check",
     ] {
-        assert!(template.contains(text), "missing bug template text {text}: {template}");
+        assert!(
+            template.contains(text),
+            "missing bug template text {text}: {template}"
+        );
     }
 }
 
@@ -70,7 +76,10 @@ fn feature_request_template_captures_scope_risk_and_validation() {
         "Suggested validation",
         "Related docs, issues, or context",
     ] {
-        assert!(template.contains(text), "missing feature template text {text}: {template}");
+        assert!(
+            template.contains(text),
+            "missing feature template text {text}: {template}"
+        );
     }
 }
 
@@ -106,7 +115,10 @@ fn support_request_template_collects_help_context() {
         "Support urgency",
         "Safety check",
     ] {
-        assert!(template.contains(text), "missing support template text {text}: {template}");
+        assert!(
+            template.contains(text),
+            "missing support template text {text}: {template}"
+        );
     }
 }
 
@@ -141,7 +153,10 @@ fn documentation_issue_template_collects_docs_context() {
         "User impact",
         "Claim and safety check",
     ] {
-        assert!(template.contains(text), "missing documentation template text {text}: {template}");
+        assert!(
+            template.contains(text),
+            "missing documentation template text {text}: {template}"
+        );
     }
 }
 
@@ -181,7 +196,10 @@ fn issue_templates_cover_project_areas() {
             "Community",
             "Documentation",
         ] {
-            assert!(template.contains(area), "missing project area {area} in {path}: {template}");
+            assert!(
+                template.contains(area),
+                "missing project area {area} in {path}: {template}"
+            );
         }
     }
 }

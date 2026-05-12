@@ -115,3 +115,7 @@ sh scripts/quality-check.sh base1-reorganization
 ## Non-claims
 
 This readiness checklist does not make Base1 installer-ready, hardware-validated, or daily-driver ready. It only defines when repository organization is safe enough to proceed more broadly.
+
+## Complete inventory requirement
+
+A complete inventory must be preserved before broad Base1 reorganization work proceeds. The inventory must keep root compatibility paths, organized mirrors, scripts, tests, release notes, validation reports, and recovery-oriented documents discoverable.

@@ -149,3 +149,92 @@ This file is still a seed inventory. The next step is to compare the reporter ou
 ## Non-claims
 
 This inventory does not make Base1 installer-ready, hardware-validated, or daily-driver ready. It only improves repository organization safety.
+
+## Reporter parity test path index
+
+The following test paths are mirrored from `scripts/base1-test-inventory.sh` so the read-only inventory verifier can detect stale documentation coverage.
+
+- `tests/base1_b2_assembly_dry_run_script.rs`
+- `tests/base1_b2_test_suite_check_script.rs`
+- `tests/base1_b3_gnulinux_stage_script.rs`
+- `tests/base1_b3_kernel_handoff_script.rs`
+- `tests/base1_b3_log_bundle_review_script.rs`
+- `tests/base1_b3_openbsd_stage_script.rs`
+- `tests/base1_b3_uefi_proof_script.rs`
+- `tests/base1_b3_vm_validate_script.rs`
+- `tests/base1_b4_recovery_validate_script.rs`
+- `tests/base1_b6_hardware_boot_evidence_script.rs`
+- `tests/base1_boot_preview_script.rs`
+- `tests/base1_delivery_mode_plan_script.rs`
+- `tests/base1_docs_evidence_chain_report_docs.rs`
+- `tests/base1_documentation_map_docs.rs`
+- `tests/base1_documentation_map_verification_docs.rs`
+- `tests/base1_documentation_organization_plan_docs.rs`
+- `tests/base1_dry_run_command_index_docs.rs`
+- `tests/base1_dual_path_delivery_docs.rs`
+- `tests/base1_emulator_doctor_script.rs`
+- `tests/base1_emulator_preview_script.rs`
+- `tests/base1_installer_dry_run_docs.rs`
+- `tests/base1_installer_dry_run_script.rs`
+- `tests/base1_installer_recovery_docs.rs`
+- `tests/base1_libreboot_index_script.rs`
+- `tests/base1_local_boot_artifact_plan_script.rs`
+- `tests/base1_preview_checks_docs.rs`
+- `tests/base1_preview_gate_script.rs`
+- `tests/base1_preview_inputs_script.rs`
+- `tests/base1_preview_provenance_script.rs`
+- `tests/base1_preview_stack_runbook_docs.rs`
+- `tests/base1_preview_stack_script.rs`
+- `tests/base1_preview_stack_validation_report_docs.rs`
+- `tests/base1_preview_verify_script.rs`
+- `tests/base1_profile_check_script.rs`
+- `tests/base1_public_surface_link_coverage.rs`
+- `tests/base1_qemu_boot_check_script.rs`
+- `tests/base1_qemu_phase1_marker_report_docs.rs`
+- `tests/base1_qemu_real_phase1_binary_report_docs.rs`
+- `tests/base1_qemu_visual_boot_preview_script.rs`
+- `tests/base1_readiness_matrix_docs.rs`
+- `tests/base1_real_device_readonly_bundle_report_docs.rs`
+- `tests/base1_real_device_readonly_checklist_docs.rs`
+- `tests/base1_real_device_readonly_doctor_index_docs.rs`
+- `tests/base1_real_device_readonly_doctor_script.rs`
+- `tests/base1_real_device_readonly_evidence_capture_report_docs.rs`
+- `tests/base1_real_device_readonly_index_docs.rs`
+- `tests/base1_real_device_readonly_preview_script.rs`
+- `tests/base1_real_device_readonly_report_script.rs`
+- `tests/base1_real_device_readonly_report_template_docs.rs`
+- `tests/base1_real_device_readonly_runbook_docs.rs`
+- `tests/base1_real_device_readonly_status_summary_docs.rs`
+- `tests/base1_real_device_readonly_validation_bundle.rs`
+- `tests/base1_real_device_readonly_validation_docs.rs`
+- `tests/base1_real_phase1_initrd_builder_report_docs.rs`
+- `tests/base1_real_phase1_initrd_preview_script.rs`
+- `tests/base1_recovery_command_docs.rs`
+- `tests/base1_recovery_dry_run_script.rs`
+- `tests/base1_recovery_usb_checkpoint_docs.rs`
+- `tests/base1_recovery_usb_design_docs.rs`
+- `tests/base1_recovery_usb_dry_run_script.rs`
+- `tests/base1_recovery_usb_index_script.rs`
+- `tests/base1_recovery_usb_target_selection_docs.rs`
+- `tests/base1_recovery_usb_validation_bundle.rs`
+- `tests/base1_recovery_usb_validation_report_docs.rs`
+- `tests/base1_rollback_metadata_docs.rs`
+- `tests/base1_rollback_metadata_dry_run_script.rs`
+- `tests/base1_storage_layout_checker_docs.rs`
+- `tests/base1_storage_layout_dry_run_script.rs`
+- `tests/base1_supervisor_artifact_flow_docs.rs`
+- `tests/base1_supervisor_control_plane_docs.rs`
+- `tests/base1_supervisor_control_plane_script.rs`
+- `tests/base1_supervisor_orchestration_docs.rs`
+- `tests/base1_supervisor_orchestration_plan_script.rs`
+- `tests/base1_supervisor_policy_bus_docs.rs`
+- `tests/base1_supervisor_policy_bus_script.rs`
+- `tests/base1_supervisor_profiles_docs.rs`
+- `tests/base1_supervisor_storage_tier_docs.rs`
+- `tests/base1_supervisor_storage_tier_plan_script.rs`
+- `tests/base1_validation_report_template_docs.rs`
+- `tests/base1_validation_reports_index_docs.rs`
+- `tests/base1_validation_runbook_docs.rs`
+- `tests/base1_x86_64_detect_script.rs`
+
+This section is documentation-only. It does not make Base1 bootable, installer-ready, recovery-complete, hardware-validated, hardened, VM-validated, release-candidate ready, or daily-driver ready.

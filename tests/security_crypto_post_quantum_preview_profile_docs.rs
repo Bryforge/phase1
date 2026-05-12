@@ -3,7 +3,10 @@ fn post_quantum_preview_profile_defines_purpose_and_operator() {
     let profile = std::fs::read_to_string("docs/security/crypto-profiles/POST_QUANTUM_PREVIEW.md")
         .expect("post-quantum-preview crypto profile");
 
-    assert!(profile.contains("Post-quantum-preview cryptographic profile"), "{profile}");
+    assert!(
+        profile.contains("Post-quantum-preview cryptographic profile"),
+        "{profile}"
+    );
     assert!(profile.contains("planned preview profile"), "{profile}");
 
     for operator in [
@@ -12,7 +15,10 @@ fn post_quantum_preview_profile_defines_purpose_and_operator() {
         "Maintainers preparing long-term compatibility plans",
         "Researchers and developers testing PQC-capable workflows",
     ] {
-        assert!(profile.contains(operator), "missing intended operator {operator}: {profile}");
+        assert!(
+            profile.contains(operator),
+            "missing intended operator {operator}: {profile}"
+        );
     }
 }
 
@@ -43,14 +49,16 @@ fn post_quantum_preview_profile_requires_registry_template_and_statuses() {
         .expect("post-quantum-preview crypto profile");
 
     assert!(profile.contains("../CRYPTO_REGISTRY.md"), "{profile}");
-    assert!(profile.contains("../CRYPTO_ALGORITHM_TEMPLATE.md"), "{profile}");
+    assert!(
+        profile.contains("../CRYPTO_ALGORITHM_TEMPLATE.md"),
+        "{profile}"
+    );
 
-    for status in [
-        "documented",
-        "test-vector-covered",
-        "profile-eligible",
-    ] {
-        assert!(profile.contains(status), "missing required status {status}: {profile}");
+    for status in ["documented", "test-vector-covered", "profile-eligible"] {
+        assert!(
+            profile.contains(status),
+            "missing required status {status}: {profile}"
+        );
     }
 }
 
@@ -67,7 +75,10 @@ fn post_quantum_preview_profile_requires_preview_warnings() {
         "safer default recommendation",
         "new data, keys, signatures, or evidence",
     ] {
-        assert!(profile.contains(text), "missing preview warning {text}: {profile}");
+        assert!(
+            profile.contains(text),
+            "missing preview warning {text}: {profile}"
+        );
     }
 }
 
@@ -85,7 +96,10 @@ fn post_quantum_preview_profile_rejects_unsafe_claims_and_silent_migration() {
         "silent migration of existing keys, signatures, or encrypted data",
         "critical Base1 paths without recovery documentation",
     ] {
-        assert!(profile.contains(rejected), "missing rejection {rejected}: {profile}");
+        assert!(
+            profile.contains(rejected),
+            "missing rejection {rejected}: {profile}"
+        );
     }
 }
 
@@ -104,7 +118,10 @@ fn post_quantum_preview_profile_defines_base1_preview_requirements() {
         "operator recovery if a verifier cannot validate the selected scheme",
         "quantum safety, boot security, and hardware validation",
     ] {
-        assert!(profile.contains(text), "missing Base1 PQC requirement {text}: {profile}");
+        assert!(
+            profile.contains(text),
+            "missing Base1 PQC requirement {text}: {profile}"
+        );
     }
 }
 
@@ -122,7 +139,10 @@ fn post_quantum_preview_profile_preserves_non_claims() {
     let profile = std::fs::read_to_string("docs/security/crypto-profiles/POST_QUANTUM_PREVIEW.md")
         .expect("post-quantum-preview crypto profile");
 
-    assert!(profile.contains("does not make Phase1 or Base1 cryptographically complete"), "{profile}");
+    assert!(
+        profile.contains("does not make Phase1 or Base1 cryptographically complete"),
+        "{profile}"
+    );
     assert!(profile.contains("audited"), "{profile}");
     assert!(profile.contains("certified"), "{profile}");
     assert!(profile.contains("quantum-safe"), "{profile}");

@@ -54,7 +54,10 @@ fn release_pre_move_checks_require_release_note_tests() {
         "base1_link_check_script",
         "quality_base1_docs_gate",
     ] {
-        assert!(doc.contains(test), "missing required release test {test}: {doc}");
+        assert!(
+            doc.contains(test),
+            "missing required release test {test}: {doc}"
+        );
     }
 }
 
@@ -79,13 +82,16 @@ fn release_pre_move_checks_block_unsafe_release_moves() {
 
 #[test]
 fn release_pre_move_checks_are_linked_and_integrity_checked() {
-    let releases = std::fs::read_to_string("docs/base1/releases/README.md")
-        .expect("Base1 releases index");
-    let integrity = std::fs::read_to_string("scripts/base1-doc-integrity.sh")
-        .expect("Base1 integrity gate");
+    let releases =
+        std::fs::read_to_string("docs/base1/releases/README.md").expect("Base1 releases index");
+    let integrity =
+        std::fs::read_to_string("scripts/base1-doc-integrity.sh").expect("Base1 integrity gate");
 
     assert!(releases.contains("PRE_MOVE_CHECKS.md"), "{releases}");
-    assert!(integrity.contains("docs/base1/releases/PRE_MOVE_CHECKS.md"), "{integrity}");
+    assert!(
+        integrity.contains("docs/base1/releases/PRE_MOVE_CHECKS.md"),
+        "{integrity}"
+    );
     assert!(
         integrity.contains("No root release/checkpoint file should be removed"),
         "{integrity}"

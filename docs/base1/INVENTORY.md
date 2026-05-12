@@ -36,6 +36,7 @@ It groups known Base1 material without removing anything. It is not yet a comple
 | --- | --- | --- |
 | `docs/base1/README.md` | Manual | Base1 recovery and OS foundation manual index. |
 | `docs/base1/DOCUMENTATION_MAP.md` | Organization | Current canonical navigation map. |
+| `docs/base1/TEST_INVENTORY.md` | Organization | Base1 test inventory and grouped test coverage map. |
 | `docs/base1/DOCUMENTATION_ORGANIZATION_PLAN.md` | Organization | Preservation-first organization plan. |
 | `docs/base1/ROOT_COMPATIBILITY_MAP.md` | Organization | Root path to organized mirror map. |
 | `docs/base1/REORGANIZATION_READINESS.md` | Organization | Full-reorganization readiness criteria. |

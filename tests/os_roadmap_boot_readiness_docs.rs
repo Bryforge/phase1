@@ -2,7 +2,10 @@
 fn os_roadmap_defines_os_track_and_boundaries() {
     let roadmap = std::fs::read_to_string("docs/os/ROADMAP.md").expect("OS roadmap");
 
-    assert!(roadmap.contains("Phase1 operating-system track"), "{roadmap}");
+    assert!(
+        roadmap.contains("Phase1 operating-system track"),
+        "{roadmap}"
+    );
     assert!(
         roadmap.contains("does not mean the current Phase1 Rust console is already a kernel"),
         "{roadmap}"
@@ -36,7 +39,10 @@ fn os_roadmap_links_b1_documents_and_commands() {
         "sh scripts/base1-x86_64-detect.sh --dry-run",
         "cargo test -p phase1 --test base1_x86_64_detect_script",
     ] {
-        assert!(roadmap.contains(text), "missing B1 roadmap text {text}: {roadmap}");
+        assert!(
+            roadmap.contains(text),
+            "missing B1 roadmap text {text}: {roadmap}"
+        );
     }
 }
 
@@ -52,7 +58,10 @@ fn os_roadmap_links_b2_review_set_and_commands() {
         "B2_DRY_RUN_ASSEMBLY_TEST_SUITE.md",
         "sh scripts/base1-b2-assembly-dry-run.sh --dry-run --profile x86_64-vm-validation",
     ] {
-        assert!(roadmap.contains(text), "missing B2 review/command text {text}: {roadmap}");
+        assert!(
+            roadmap.contains(text),
+            "missing B2 review/command text {text}: {roadmap}"
+        );
     }
 }
 
@@ -68,7 +77,10 @@ fn os_roadmap_lists_focused_b2_tests() {
         "cargo test -p phase1 --test b2_dry_run_assembly_output_review_docs",
         "cargo test -p phase1 --test b2_dry_run_assembly_test_suite_docs",
     ] {
-        assert!(roadmap.contains(command), "missing focused B2 test {command}: {roadmap}");
+        assert!(
+            roadmap.contains(command),
+            "missing focused B2 test {command}: {roadmap}"
+        );
     }
 }
 
@@ -107,7 +119,10 @@ fn os_roadmap_updates_first_engineering_slices_for_b2_review_work() {
         "Add B2 limitations, validation, output review, and test-suite docs.",
         "Add the [`Base1 x86_64 boot support roadmap`](X86_64_BOOT_SUPPORT_ROADMAP.md).",
     ] {
-        assert!(roadmap.contains(text), "missing first engineering slice {text}: {roadmap}");
+        assert!(
+            roadmap.contains(text),
+            "missing first engineering slice {text}: {roadmap}"
+        );
     }
 }
 
@@ -123,6 +138,9 @@ fn os_roadmap_preserves_non_claims() {
         "recovery-complete system",
         "daily-driver replacement",
     ] {
-        assert!(roadmap.contains(text), "missing non-claim text {text}: {roadmap}");
+        assert!(
+            roadmap.contains(text),
+            "missing non-claim text {text}: {roadmap}"
+        );
     }
 }

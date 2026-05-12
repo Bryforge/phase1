@@ -398,11 +398,40 @@ Start here:
 - [`docs/os/X86_64_BOOT_SUPPORT_ROADMAP.md`](docs/os/X86_64_BOOT_SUPPORT_ROADMAP.md) — x86_64 boot support and boot-parameter roadmap
 - [`docs/os/BASE1_IMAGE_BUILDER.md`](docs/os/BASE1_IMAGE_BUILDER.md) — Base1 image-builder design
 - [`docs/os/INSTALLER_RECOVERY.md`](docs/os/INSTALLER_RECOVERY.md) — Base1 installer and recovery design
+- [`docs/os/BASE1_INSTALLER_DRY_RUN.md`](docs/os/BASE1_INSTALLER_DRY_RUN.md) — Base1 installer dry-run design.
+- [`docs/os/BASE1_RECOVERY_COMMAND.md`](docs/os/BASE1_RECOVERY_COMMAND.md) — Base1 recovery command design.
+- [`docs/os/BASE1_ROLLBACK_METADATA.md`](docs/os/BASE1_ROLLBACK_METADATA.md) — Base1 rollback metadata design.
+- [`base1/RECOVERY_USB_DESIGN.md`](base1/RECOVERY_USB_DESIGN.md) — Recovery USB design.
+- [`base1/RECOVERY_USB_COMMAND_INDEX.md`](base1/RECOVERY_USB_COMMAND_INDEX.md) — Recovery USB command index.
+- [`base1/RECOVERY_USB_TARGET_COMMAND_INDEX.md`](base1/RECOVERY_USB_TARGET_COMMAND_INDEX.md) — Recovery USB target command index.
+- [`base1/RECOVERY_USB_TARGET_SELECTION.md`](base1/RECOVERY_USB_TARGET_SELECTION.md) — Recovery USB target selection design.
+- [`docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md`](docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md) — Recovery USB target read-only checkpoint release notes.
+- [`base1/RECOVERY_USB_IMAGE_COMMAND_INDEX.md`](base1/RECOVERY_USB_IMAGE_COMMAND_INDEX.md) — Recovery USB image command index.
+- [`base1/RECOVERY_USB_IMAGE_PROVENANCE.md`](base1/RECOVERY_USB_IMAGE_PROVENANCE.md) — Recovery USB image provenance.
+- [`base1/RECOVERY_USB_IMAGE_SUMMARY.md`](base1/RECOVERY_USB_IMAGE_SUMMARY.md) — Recovery USB image summary.
+- [`docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md`](docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md) — Recovery USB image read-only checkpoint release notes.
+- [`base1/RECOVERY_USB_EMERGENCY_SHELL.md`](base1/RECOVERY_USB_EMERGENCY_SHELL.md) — Recovery USB emergency shell design.
+- [`base1/RECOVERY_USB_EMERGENCY_SHELL_COMMAND_INDEX.md`](base1/RECOVERY_USB_EMERGENCY_SHELL_COMMAND_INDEX.md) — Recovery USB emergency shell command index.
+- [`docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md`](docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md) — Recovery USB emergency shell read-only checkpoint release notes.
+- [`base1/RECOVERY_USB_EMERGENCY_SHELL_SUMMARY.md`](base1/RECOVERY_USB_EMERGENCY_SHELL_SUMMARY.md) — Recovery USB emergency shell summary.
+- [`base1/RECOVERY_USB_HARDWARE_CHECKLIST.md`](base1/RECOVERY_USB_HARDWARE_CHECKLIST.md) — Recovery USB hardware checklist.
+- [`base1/RECOVERY_USB_HARDWARE_SUMMARY.md`](base1/RECOVERY_USB_HARDWARE_SUMMARY.md) — Recovery USB hardware summary.
+- [`docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_HARDWARE_READONLY_V1.md`](docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_HARDWARE_READONLY_V1.md) — Recovery USB hardware read-only checkpoint release notes.
 - [`docs/os/BASE1_DRY_RUN_COMMANDS.md`](docs/os/BASE1_DRY_RUN_COMMANDS.md) — Base1 dry-run command index
 - [`base1/README.md`](base1/README.md) — Base1 overview
 - [`base1/SECURITY_MODEL.md`](base1/SECURITY_MODEL.md) — security model and boundary
 - [`base1/HARDWARE_TARGETS.md`](base1/HARDWARE_TARGETS.md) — Raspberry Pi, X200, and generic target matrix
 - [`base1/LIBREBOOT_PROFILE.md`](base1/LIBREBOOT_PROFILE.md) — Libreboot profile for X200-class operator laptops
+- [`base1/LIBREBOOT_COMMAND_INDEX.md`](base1/LIBREBOOT_COMMAND_INDEX.md) — Libreboot command index.
+- [`base1/LIBREBOOT_DOCS_SUMMARY.md`](base1/LIBREBOOT_DOCS_SUMMARY.md) — Libreboot docs summary.
+- [`base1/LIBREBOOT_GRUB_RECOVERY.md`](base1/LIBREBOOT_GRUB_RECOVERY.md) — Libreboot GRUB recovery notes.
+- [`base1/LIBREBOOT_MILESTONE.md`](base1/LIBREBOOT_MILESTONE.md) — Libreboot milestone checkpoint.
+- [`base1/LIBREBOOT_OPERATOR_CHECKLIST.md`](base1/LIBREBOOT_OPERATOR_CHECKLIST.md) — Libreboot operator checklist.
+- [`base1/LIBREBOOT_PREFLIGHT.md`](base1/LIBREBOOT_PREFLIGHT.md) — Libreboot preflight notes.
+- [`base1/LIBREBOOT_QUICKSTART.md`](base1/LIBREBOOT_QUICKSTART.md) — Libreboot quickstart.
+- [`base1/LIBREBOOT_VALIDATION_REPORT.md`](base1/LIBREBOOT_VALIDATION_REPORT.md) — Libreboot validation report.
+- [`docs/base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1.md`](docs/base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1.md) — Libreboot read-only checkpoint v1 release notes.
+- [`docs/base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1_1.md`](docs/base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1_1.md) — Libreboot read-only checkpoint v1.1 release notes.
 
 First safe checks are read-only or dry-run oriented:
 
@@ -538,3 +567,36 @@ Fyr is the Phase1 native language track.
 - Language spec: [`PHASE1_NATIVE_LANGUAGE.md`](PHASE1_NATIVE_LANGUAGE.md)
 - Roadmap: [`docs/fyr/ROADMAP.md`](docs/fyr/ROADMAP.md)
 - Quick run: `fyr run hello_hacker.fyr`
+
+## Additional Base1 public surfaces
+
+- [`base1/NETWORK_LOCKDOWN_DRY_RUN.md`](base1/NETWORK_LOCKDOWN_DRY_RUN.md) — Base1 network lockdown dry-run.
+- [`base1/PHASE1_COMPATIBILITY.md`](base1/PHASE1_COMPATIBILITY.md) — Phase1 compatibility contract.
+- [`base1/ROADMAP.md`](base1/ROADMAP.md) — Base1 roadmap.
+- [`base1/RECOVERY_USB_TARGET_SUMMARY.md`](base1/RECOVERY_USB_TARGET_SUMMARY.md) — Recovery USB target summary.
+- [`base1/RECOVERY_USB_VALIDATION_REPORT.md`](base1/RECOVERY_USB_VALIDATION_REPORT.md) — Recovery USB validation report.
+- [`docs/os/B4_RECOVERY_EVIDENCE.md`](docs/os/B4_RECOVERY_EVIDENCE.md) — B4 recovery evidence.
+- [`docs/os/B4_RECOVERY_VALIDATION.md`](docs/os/B4_RECOVERY_VALIDATION.md) — B4 recovery validation.
+- [`docs/os/BASE1_DUAL_PATH_DELIVERY.md`](docs/os/BASE1_DUAL_PATH_DELIVERY.md) — Base1 dual-path delivery.
+- [`docs/os/BASE1_STORAGE_LAYOUT_CHECKER.md`](docs/os/BASE1_STORAGE_LAYOUT_CHECKER.md) — Base1 storage layout checker design.
+- [`docs/os/BASE1_SUPERVISOR_ARTIFACT_FLOW.md`](docs/os/BASE1_SUPERVISOR_ARTIFACT_FLOW.md) — Base1 supervisor artifact flow.
+- [`docs/os/BASE1_SUPERVISOR_CONTROL_PLANE.md`](docs/os/BASE1_SUPERVISOR_CONTROL_PLANE.md) — Base1 supervisor control plane.
+- [`docs/os/BASE1_SUPERVISOR_ORCHESTRATION.md`](docs/os/BASE1_SUPERVISOR_ORCHESTRATION.md) — Base1 supervisor orchestration.
+- [`docs/os/BASE1_SUPERVISOR_POLICY_BUS.md`](docs/os/BASE1_SUPERVISOR_POLICY_BUS.md) — Base1 supervisor policy bus.
+- [`docs/os/BASE1_SUPERVISOR_PROFILES.md`](docs/os/BASE1_SUPERVISOR_PROFILES.md) — Base1 supervisor profiles.
+- [`docs/os/BASE1_SUPERVISOR_STORAGE_TIER.md`](docs/os/BASE1_SUPERVISOR_STORAGE_TIER.md) — Base1 supervisor storage tier.
+
+## Security and crypto policy
+
+- [`SECURITY.md`](SECURITY.md) — Security reporting, safe defaults, host trust gates, and vulnerability-handling guidance.
+- [`docs/security/README.md`](docs/security/README.md) — Security documentation index.
+- [`docs/security/TRUST_MODEL.md`](docs/security/TRUST_MODEL.md) — Trust model, safe defaults, and security/usability principle.
+- [`docs/security/CRYPTO_POLICY_ROADMAP.md`](docs/security/CRYPTO_POLICY_ROADMAP.md) — Crypto policy roadmap and evidence-bound crypto goals.
+
+Phase1 treats security and usability as a shared goal: safe defaults should be understandable, reviewable, and hard to bypass accidentally.
+Crypto policy remains documentation-first until implementation, tests, provider review, and validation evidence exist.
+
+Security and crypto usability rule:
+
+- Crypto policy documents approved cryptographic profiles by control point before any profile is connected to real protection decisions.
+- Phase1 keeps security usable: normal users keep safe defaults, while advanced operators can review explicit trust gates and evidence-backed policy docs.

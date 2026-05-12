@@ -21,6 +21,7 @@ EXTRA_APPEND=${BASE1_QEMU_EXTRA_APPEND:-}
 usage() {
   cat <<'USAGE'
 base1 B3 GNU/Linux stage
+module signature: base1 B3 GNU/Linux stage
 
 usage:
   sh scripts/base1-b3-gnulinux-stage.sh [--root <dir>|--boot <dir>|--kernel <path> --initrd <path>] [--prepare|--dry-run|--check]
@@ -49,11 +50,15 @@ marker model:
   The default GNU/Linux stage marker is "Linux version" because stock Linux
   kernels print that string very early during boot. A later Phase1-specific
   initrd can override this with --expect "phase1 6.0.0 ready".
+  This marker only confirms early allocator initialization and kernel output
+  are visible to the serial capture path.
 
 hardened profile:
   The GNU/Linux stage defaults to the hardened QEMU boot profile. This requests
-  hardening-oriented kernel settings through the shared QEMU checker, but it is
-  request-only and does not prove that the resulting system is hardened.
+  hardening-oriented kernel settings through the shared QEMU checker, including
+  lockdown and debugfs disablement where supported by the staged payload.
+  This is a requested boot profile, not proof, and does not prove that the
+  resulting system is hardened.
 
 non-claims:
   This is emulator-only staging evidence. It does not make Base1 a GNU/Linux

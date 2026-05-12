@@ -42,8 +42,7 @@ fn security_policy_links_crypto_policy_goal() {
 
 #[test]
 fn trust_model_defines_security_and_usability_principle() {
-    let trust = std::fs::read_to_string("docs/security/TRUST_MODEL.md")
-        .expect("trust model");
+    let trust = std::fs::read_to_string("docs/security/TRUST_MODEL.md").expect("trust model");
 
     assert!(
         trust.contains("Security and usability principle"),
@@ -65,8 +64,7 @@ fn trust_model_defines_security_and_usability_principle() {
 
 #[test]
 fn security_review_checklist_includes_usability_review() {
-    let trust = std::fs::read_to_string("docs/security/TRUST_MODEL.md")
-        .expect("trust model");
+    let trust = std::fs::read_to_string("docs/security/TRUST_MODEL.md").expect("trust model");
 
     assert!(
         trust.contains("Security controls preserve practical usability or explain why restriction is necessary."),
@@ -78,7 +76,10 @@ fn security_review_checklist_includes_usability_review() {
 fn main_readme_links_security_crypto_policy() {
     let readme = std::fs::read_to_string("README.md").expect("README.md");
 
-    assert!(readme.contains("docs/security/CRYPTO_POLICY_ROADMAP.md"), "{readme}");
+    assert!(
+        readme.contains("docs/security/CRYPTO_POLICY_ROADMAP.md"),
+        "{readme}"
+    );
     assert!(
         readme.contains("approved cryptographic profiles by control point"),
         "{readme}"

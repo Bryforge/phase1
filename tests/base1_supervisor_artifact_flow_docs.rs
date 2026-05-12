@@ -15,7 +15,10 @@ fn base1_supervisor_artifact_flow_defines_scope_and_purpose() {
     assert_contains(&doc, "Base1 supervisor artifact-flow contract");
     assert_contains(&doc, "artifact identity, staging, validation");
     assert_contains(&doc, "direct-first and supervisor-lite compatible");
-    assert_contains(&doc, "profile, policy, storage-tier, and evidence vocabulary");
+    assert_contains(
+        &doc,
+        "profile, policy, storage-tier, and evidence vocabulary",
+    );
 }
 
 #[test]

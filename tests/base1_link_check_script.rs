@@ -1,9 +1,12 @@
 #[test]
 fn base1_link_check_script_is_read_only_and_local_only() {
-    let script = std::fs::read_to_string("scripts/base1-link-check.sh")
-        .expect("Base1 link-check script");
+    let script =
+        std::fs::read_to_string("scripts/base1-link-check.sh").expect("Base1 link-check script");
 
-    assert!(script.contains("Base1 local Markdown link checker"), "{script}");
+    assert!(
+        script.contains("Base1 local Markdown link checker"),
+        "{script}"
+    );
     assert!(script.contains("mode: read-only"), "{script}");
     assert!(script.contains("external-links: skipped"), "{script}");
     assert!(script.contains("anchors: file-only check"), "{script}");
@@ -12,8 +15,8 @@ fn base1_link_check_script_is_read_only_and_local_only() {
 
 #[test]
 fn base1_link_check_script_checks_required_surfaces() {
-    let script = std::fs::read_to_string("scripts/base1-link-check.sh")
-        .expect("Base1 link-check script");
+    let script =
+        std::fs::read_to_string("scripts/base1-link-check.sh").expect("Base1 link-check script");
 
     for pattern in [
         "README.md",
@@ -26,14 +29,17 @@ fn base1_link_check_script_checks_required_surfaces() {
         "RELEASE_BASE1_*.md",
         "DEVELOPMENT_CHECKPOINT_BASE1_*.md",
     ] {
-        assert!(script.contains(pattern), "missing checked surface {pattern}: {script}");
+        assert!(
+            script.contains(pattern),
+            "missing checked surface {pattern}: {script}"
+        );
     }
 }
 
 #[test]
 fn base1_link_check_script_reports_missing_targets() {
-    let script = std::fs::read_to_string("scripts/base1-link-check.sh")
-        .expect("Base1 link-check script");
+    let script =
+        std::fs::read_to_string("scripts/base1-link-check.sh").expect("Base1 link-check script");
 
     assert!(script.contains("missing local link target"), "{script}");
     assert!(script.contains("missing-targets"), "{script}");
@@ -42,8 +48,8 @@ fn base1_link_check_script_reports_missing_targets() {
 
 #[test]
 fn base1_link_check_script_skips_external_and_anchor_links() {
-    let script = std::fs::read_to_string("scripts/base1-link-check.sh")
-        .expect("Base1 link-check script");
+    let script =
+        std::fs::read_to_string("scripts/base1-link-check.sh").expect("Base1 link-check script");
 
     for skipped in [
         "http://*",
@@ -55,14 +61,17 @@ fn base1_link_check_script_skips_external_and_anchor_links() {
         "javascript:*",
         "'#'*",
     ] {
-        assert!(script.contains(skipped), "missing skipped pattern {skipped}: {script}");
+        assert!(
+            script.contains(skipped),
+            "missing skipped pattern {skipped}: {script}"
+        );
     }
 }
 
 #[test]
 fn quality_gate_runs_base1_link_checker() {
-    let quality = std::fs::read_to_string("scripts/quality-check.sh")
-        .expect("quality-check script");
+    let quality =
+        std::fs::read_to_string("scripts/quality-check.sh").expect("quality-check script");
 
     assert!(
         quality.contains("run sh scripts/base1-doc-integrity.sh"),

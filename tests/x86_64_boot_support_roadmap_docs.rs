@@ -3,9 +3,13 @@ fn x86_64_boot_support_roadmap_defines_scope_and_safety_boundary() {
     let roadmap = std::fs::read_to_string("docs/os/X86_64_BOOT_SUPPORT_ROADMAP.md")
         .expect("x86_64 boot support roadmap");
 
-    assert!(roadmap.contains("Base1 x86_64 boot support roadmap"), "{roadmap}");
     assert!(
-        roadmap.contains("automatic x86_64 support, boot parameter discovery, firmware mode handling"),
+        roadmap.contains("Base1 x86_64 boot support roadmap"),
+        "{roadmap}"
+    );
+    assert!(
+        roadmap
+            .contains("automatic x86_64 support, boot parameter discovery, firmware mode handling"),
         "{roadmap}"
     );
     assert!(
@@ -35,7 +39,10 @@ fn x86_64_boot_support_roadmap_defines_target_systems_and_boot_modes() {
         "Virtual machine",
         "Recovery USB",
     ] {
-        assert!(roadmap.contains(text), "missing target/boot-mode text {text}: {roadmap}");
+        assert!(
+            roadmap.contains(text),
+            "missing target/boot-mode text {text}: {roadmap}"
+        );
     }
 }
 
@@ -60,7 +67,10 @@ fn x86_64_boot_support_roadmap_lists_detection_goals() {
         "TPM presence where applicable",
         "Unknown or unsupported states should fail closed",
     ] {
-        assert!(roadmap.contains(text), "missing detection goal {text}: {roadmap}");
+        assert!(
+            roadmap.contains(text),
+            "missing detection goal {text}: {roadmap}"
+        );
     }
 }
 
@@ -85,7 +95,10 @@ fn x86_64_boot_support_roadmap_preserves_boot_parameter_inventory() {
         "Security posture",
         "Debugging",
     ] {
-        assert!(roadmap.contains(text), "missing boot parameter inventory text {text}: {roadmap}");
+        assert!(
+            roadmap.contains(text),
+            "missing boot parameter inventory text {text}: {roadmap}"
+        );
     }
 }
 
@@ -101,7 +114,10 @@ fn x86_64_boot_support_roadmap_defines_boot_profiles() {
         "x86_64-vm-validation",
         "x86_64-recovery-usb",
     ] {
-        assert!(roadmap.contains(profile), "missing boot profile {profile}: {roadmap}");
+        assert!(
+            roadmap.contains(profile),
+            "missing boot profile {profile}: {roadmap}"
+        );
     }
 }
 
@@ -126,7 +142,10 @@ fn x86_64_boot_support_roadmap_documents_b1_script_and_tests() {
         "recovery availability hints;",
         "`writes: no`.",
     ] {
-        assert!(roadmap.contains(text), "missing B1 script/test text {text}: {roadmap}");
+        assert!(
+            roadmap.contains(text),
+            "missing B1 script/test text {text}: {roadmap}"
+        );
     }
 }
 
@@ -153,7 +172,10 @@ fn x86_64_boot_support_roadmap_documents_b2_script_and_tests() {
         "rollback preview;",
         "validation bundle preview;",
     ] {
-        assert!(roadmap.contains(text), "missing B2 script/test text {text}: {roadmap}");
+        assert!(
+            roadmap.contains(text),
+            "missing B2 script/test text {text}: {roadmap}"
+        );
     }
 }
 
@@ -175,7 +197,10 @@ fn x86_64_boot_support_roadmap_preserves_hardening_and_safety_rules() {
         "No hardware support claim without validation report.",
         "No secure boot, measured boot, TPM, or lockdown claim without evidence.",
     ] {
-        assert!(roadmap.contains(text), "missing hardening/safety text {text}: {roadmap}");
+        assert!(
+            roadmap.contains(text),
+            "missing hardening/safety text {text}: {roadmap}"
+        );
     }
 }
 
@@ -201,7 +226,10 @@ fn x86_64_boot_support_roadmap_links_required_docs() {
         "../../base1/LIBREBOOT_PROFILE.md",
         "../security/TRUST_MODEL.md",
     ] {
-        assert!(roadmap.contains(link), "missing related doc link {link}: {roadmap}");
+        assert!(
+            roadmap.contains(link),
+            "missing related doc link {link}: {roadmap}"
+        );
     }
 }
 
@@ -221,6 +249,9 @@ fn x86_64_boot_support_roadmap_preserves_non_claims() {
         "hardware validation",
         "daily-driver readiness",
     ] {
-        assert!(roadmap.contains(text), "missing non-claim text {text}: {roadmap}");
+        assert!(
+            roadmap.contains(text),
+            "missing non-claim text {text}: {roadmap}"
+        );
     }
 }

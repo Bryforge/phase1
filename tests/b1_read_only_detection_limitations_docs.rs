@@ -3,13 +3,22 @@ fn b1_limitations_note_defines_scope_and_command() {
     let doc = std::fs::read_to_string("docs/os/B1_READ_ONLY_DETECTION_LIMITATIONS.md")
         .expect("B1 read-only detection limitations note");
 
-    assert!(doc.contains("Base1 B1 read-only detection limitations"), "{doc}");
+    assert!(
+        doc.contains("Base1 B1 read-only detection limitations"),
+        "{doc}"
+    );
     assert!(
         doc.contains("known limitations for `scripts/base1-x86_64-detect.sh --dry-run`"),
         "{doc}"
     );
-    assert!(doc.contains("sh scripts/base1-x86_64-detect.sh --dry-run"), "{doc}");
-    assert!(doc.contains("gathers hints only and writes nothing"), "{doc}");
+    assert!(
+        doc.contains("sh scripts/base1-x86_64-detect.sh --dry-run"),
+        "{doc}"
+    );
+    assert!(
+        doc.contains("gathers hints only and writes nothing"),
+        "{doc}"
+    );
 }
 
 #[test]
@@ -51,7 +60,10 @@ fn b1_limitations_note_lists_what_b1_cannot_prove() {
         "that the system is hardened",
         "that the system is daily-driver ready",
     ] {
-        assert!(doc.contains(text), "missing cannot-prove text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing cannot-prove text {text}: {doc}"
+        );
     }
 }
 
@@ -72,7 +84,10 @@ fn b1_limitations_note_preserves_known_limitations_table() {
         "Directory hints do not prove active boot-loader configuration.",
         "Non-Linux hosts may produce more unknown values.",
     ] {
-        assert!(doc.contains(text), "missing known limitation text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing known limitation text {text}: {doc}"
+        );
     }
 }
 
@@ -91,7 +106,10 @@ fn b1_limitations_note_preserves_required_non_mutating_behavior() {
         "avoid writing to `/boot`, `/etc`, EFI variables, initramfs files, or partitions",
         "keep unknown states visible",
     ] {
-        assert!(doc.contains(text), "missing required behavior text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing required behavior text {text}: {doc}"
+        );
     }
 }
 
@@ -108,7 +126,10 @@ fn b1_limitations_note_defines_b1_completion_requirements() {
         "limitations documented in this file",
         "README or roadmap visibility for the B1 boundary",
     ] {
-        assert!(doc.contains(text), "missing completion requirement {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing completion requirement {text}: {doc}"
+        );
     }
 }
 
@@ -121,7 +142,10 @@ fn b1_limitations_note_is_linked_from_status_tracker() {
         status.contains("B1_READ_ONLY_DETECTION_LIMITATIONS.md"),
         "{status}"
     );
-    assert!(status.contains("B1 known limitations are documented."), "{status}");
+    assert!(
+        status.contains("B1 known limitations are documented."),
+        "{status}"
+    );
 }
 
 #[test]

@@ -81,7 +81,10 @@ fn base1_b6_hardware_boot_evidence_records_not_attempted_report() {
     assert!(report_path.exists(), "report should be written");
     let report = fs::read_to_string(report_path).expect("read report");
     assert_contains(&report, "BASE1_B6_HARDWARE_BOOT_MODE=record");
-    assert_contains(&report, "BASE1_B6_HARDWARE_BOOT_PROFILE=x200-supervisor-lite");
+    assert_contains(
+        &report,
+        "BASE1_B6_HARDWARE_BOOT_PROFILE=x200-supervisor-lite",
+    );
     assert_contains(&report, "BASE1_B6_HARDWARE_BOOT_MACHINE=Chases-MacBook-Air");
     assert_contains(&report, "BASE1_B6_HARDWARE_BOOT_RESULT=not_attempted");
     assert_contains(&report, "BASE1_B6_HARDWARE_BOOT_CLAIM=not_claimed");
@@ -127,5 +130,8 @@ fn base1_b6_hardware_boot_evidence_rejects_bad_inputs() {
         .arg("test-machine")
         .output()
         .expect("run bad artifact");
-    assert!(!bad_artifact.status.success(), "non-build artifact should fail");
+    assert!(
+        !bad_artifact.status.success(),
+        "non-build artifact should fail"
+    );
 }

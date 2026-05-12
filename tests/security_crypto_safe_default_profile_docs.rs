@@ -3,8 +3,14 @@ fn safe_default_profile_defines_purpose_and_operator() {
     let profile = std::fs::read_to_string("docs/security/crypto-profiles/SAFE_DEFAULT.md")
         .expect("safe-default crypto profile");
 
-    assert!(profile.contains("Safe-default cryptographic profile"), "{profile}");
-    assert!(profile.contains("planned default cryptographic profile"), "{profile}");
+    assert!(
+        profile.contains("Safe-default cryptographic profile"),
+        "{profile}"
+    );
+    assert!(
+        profile.contains("planned default cryptographic profile"),
+        "{profile}"
+    );
     assert!(profile.contains("Normal operators"), "{profile}");
     assert!(profile.contains("First-time users"), "{profile}");
     assert!(profile.contains("Local development users"), "{profile}");
@@ -23,7 +29,10 @@ fn safe_default_profile_lists_control_points() {
         "logs/evidence",
         "fyr/packages",
     ] {
-        assert!(profile.contains(control_point), "missing control point {control_point}: {profile}");
+        assert!(
+            profile.contains(control_point),
+            "missing control point {control_point}: {profile}"
+        );
     }
 }
 
@@ -33,14 +42,16 @@ fn safe_default_profile_requires_registry_and_template() {
         .expect("safe-default crypto profile");
 
     assert!(profile.contains("../CRYPTO_REGISTRY.md"), "{profile}");
-    assert!(profile.contains("../CRYPTO_ALGORITHM_TEMPLATE.md"), "{profile}");
+    assert!(
+        profile.contains("../CRYPTO_ALGORITHM_TEMPLATE.md"),
+        "{profile}"
+    );
 
-    for status in [
-        "documented",
-        "test-vector-covered",
-        "default-eligible",
-    ] {
-        assert!(profile.contains(status), "missing required status {status}: {profile}");
+    for status in ["documented", "test-vector-covered", "default-eligible"] {
+        assert!(
+            profile.contains(status),
+            "missing required status {status}: {profile}"
+        );
     }
 }
 
@@ -57,7 +68,10 @@ fn safe_default_profile_rejects_unsafe_entries() {
         "lab-only entries",
         "algorithms without test-vector coverage",
     ] {
-        assert!(profile.contains(rejected), "missing rejection {rejected}: {profile}");
+        assert!(
+            profile.contains(rejected),
+            "missing rejection {rejected}: {profile}"
+        );
     }
 }
 
@@ -76,7 +90,10 @@ fn safe_default_profile_guards_downgrades_and_audit() {
         "affected control point",
         "downgrade or compatibility exception",
     ] {
-        assert!(profile.contains(text), "missing downgrade/audit text {text}: {profile}");
+        assert!(
+            profile.contains(text),
+            "missing downgrade/audit text {text}: {profile}"
+        );
     }
 }
 
@@ -94,7 +111,10 @@ fn safe_default_profile_preserves_non_claims() {
     let profile = std::fs::read_to_string("docs/security/crypto-profiles/SAFE_DEFAULT.md")
         .expect("safe-default crypto profile");
 
-    assert!(profile.contains("does not make Phase1 or Base1 cryptographically complete"), "{profile}");
+    assert!(
+        profile.contains("does not make Phase1 or Base1 cryptographically complete"),
+        "{profile}"
+    );
     assert!(profile.contains("audited"), "{profile}");
     assert!(profile.contains("certified"), "{profile}");
     assert!(profile.contains("quantum-safe"), "{profile}");

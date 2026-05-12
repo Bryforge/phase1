@@ -1,13 +1,12 @@
 #[test]
 fn reorganization_plan_defines_minimalist_target_structure() {
-    let plan = std::fs::read_to_string("docs/REORGANIZATION_PLAN.md")
-        .expect("reorganization plan");
+    let plan = std::fs::read_to_string("docs/REORGANIZATION_PLAN.md").expect("reorganization plan");
 
-    assert!(plan.contains("Phase1 repository reorganization plan"), "{plan}");
     assert!(
-        plan.contains("minimalist visible structure"),
+        plan.contains("Phase1 repository reorganization plan"),
         "{plan}"
     );
+    assert!(plan.contains("minimalist visible structure"), "{plan}");
 
     for path in [
         ".github/",
@@ -28,8 +27,7 @@ fn reorganization_plan_defines_minimalist_target_structure() {
 
 #[test]
 fn reorganization_plan_preserves_create_a_place_policy() {
-    let plan = std::fs::read_to_string("docs/REORGANIZATION_PLAN.md")
-        .expect("reorganization plan");
+    let plan = std::fs::read_to_string("docs/REORGANIZATION_PLAN.md").expect("reorganization plan");
 
     assert!(plan.contains("Create-a-place checklist"), "{plan}");
 
@@ -45,19 +43,23 @@ fn reorganization_plan_preserves_create_a_place_policy() {
         "compatibility path;",
         "GitHub automation.",
     ] {
-        assert!(plan.contains(category), "missing destination category {category}: {plan}");
+        assert!(
+            plan.contains(category),
+            "missing destination category {category}: {plan}"
+        );
     }
 
     assert!(
-        plan.contains("If none fits, create an index or destination folder first, then move later."),
+        plan.contains(
+            "If none fits, create an index or destination folder first, then move later."
+        ),
         "{plan}"
     );
 }
 
 #[test]
 fn reorganization_plan_preserves_first_rules() {
-    let plan = std::fs::read_to_string("docs/REORGANIZATION_PLAN.md")
-        .expect("reorganization plan");
+    let plan = std::fs::read_to_string("docs/REORGANIZATION_PLAN.md").expect("reorganization plan");
 
     for rule in [
         "Do not delete or move public/root compatibility files until all of these exist:",
@@ -69,14 +71,16 @@ fn reorganization_plan_preserves_first_rules() {
         "maintainer approval.",
         "When in doubt, add an index before moving a file.",
     ] {
-        assert!(plan.contains(rule), "missing preserve-first rule {rule}: {plan}");
+        assert!(
+            plan.contains(rule),
+            "missing preserve-first rule {rule}: {plan}"
+        );
     }
 }
 
 #[test]
 fn reorganization_plan_defines_destination_map_and_root_policy() {
-    let plan = std::fs::read_to_string("docs/REORGANIZATION_PLAN.md")
-        .expect("reorganization plan");
+    let plan = std::fs::read_to_string("docs/REORGANIZATION_PLAN.md").expect("reorganization plan");
 
     for text in [
         "Proposed destination map",
@@ -95,14 +99,16 @@ fn reorganization_plan_defines_destination_map_and_root_policy() {
         "Root-level policy",
         "Root should stay readable and small.",
     ] {
-        assert!(plan.contains(text), "missing destination/root policy text {text}: {plan}");
+        assert!(
+            plan.contains(text),
+            "missing destination/root policy text {text}: {plan}"
+        );
     }
 }
 
 #[test]
 fn reorganization_plan_defines_special_handling_for_base1_and_crypto() {
-    let plan = std::fs::read_to_string("docs/REORGANIZATION_PLAN.md")
-        .expect("reorganization plan");
+    let plan = std::fs::read_to_string("docs/REORGANIZATION_PLAN.md").expect("reorganization plan");
 
     for text in [
         "Base1 compatibility policy",
@@ -121,8 +127,7 @@ fn reorganization_plan_defines_special_handling_for_base1_and_crypto() {
 
 #[test]
 fn reorganization_plan_defines_phases_move_map_and_rollback() {
-    let plan = std::fs::read_to_string("docs/REORGANIZATION_PLAN.md")
-        .expect("reorganization plan");
+    let plan = std::fs::read_to_string("docs/REORGANIZATION_PLAN.md").expect("reorganization plan");
 
     for text in [
         "Phase 1: navigation and indexes",
@@ -139,7 +144,10 @@ fn reorganization_plan_defines_phases_move_map_and_rollback() {
         "Rollback rule",
         "Every reorganization PR should be reversible.",
     ] {
-        assert!(plan.contains(text), "missing phase/move/rollback text {text}: {plan}");
+        assert!(
+            plan.contains(text),
+            "missing phase/move/rollback text {text}: {plan}"
+        );
     }
 }
 
@@ -156,11 +164,13 @@ fn reorganization_plan_is_linked_from_docs_index_and_navigation() {
 
 #[test]
 fn reorganization_plan_preserves_non_claims() {
-    let plan = std::fs::read_to_string("docs/REORGANIZATION_PLAN.md")
-        .expect("reorganization plan");
+    let plan = std::fs::read_to_string("docs/REORGANIZATION_PLAN.md").expect("reorganization plan");
 
     assert!(plan.contains("does not move files by itself"), "{plan}");
     assert!(plan.contains("prove repository quality"), "{plan}");
     assert!(plan.contains("remove compatibility obligations"), "{plan}");
-    assert!(plan.contains("make Phase1, Base1, or Fyr production-ready"), "{plan}");
+    assert!(
+        plan.contains("make Phase1, Base1, or Fyr production-ready"),
+        "{plan}"
+    );
 }

@@ -81,3 +81,4 @@ See also: [Recovery USB image provenance and checksum design](RECOVERY_USB_IMAGE
 
 
 See also: [Recovery USB image provenance summary](RECOVERY_USB_IMAGE_SUMMARY.md).
+- [`docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md`](../docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md) — Recovery USB target read-only checkpoint release notes.
