@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phase1 Project Status</title>
+<style>
+body{margin:0;background:#05080d;color:#e7f7ff;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;line-height:1.55}main{max-width:1050px;margin:auto;padding:36px 18px}.card{border:1px solid #1b3548;border-radius:18px;background:#0b1420;padding:20px;margin:14px 0}h1{font-size:clamp(2rem,8vw,4.5rem);margin:0}.muted{color:#8fb2c2}.pct{font-size:clamp(3rem,12vw,7rem);color:#39ff88;font-weight:900}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}.bar{height:16px;border-radius:999px;background:#07111a;border:1px solid #1b3548;overflow:hidden}.bar span{display:block;height:100%;width:var(--p);background:linear-gradient(90deg,#00d8ff,#39ff88)}a{color:#00d8ff}
+</style>
+</head>
+<body>
+<main>
+<section class="card"><h1>Phase1 status</h1><p id="summary" class="muted">Loading public status marker...</p><div class="pct" id="overall">--%</div><div class="bar"><span id="overallBar" style="--p:0%"></span></div><p class="muted">Overall estimated roadmap completion</p></section>
+<section class="card"><strong>Boundary:</strong> <span id="boundary">Percentages are planning estimates.</span></section>
+<section id="projects" class="grid"></section>
+<p class="muted">Source: <a href="status.json">status.json</a> · Badge: <a href="status-badge.json">status-badge.json</a></p>
+</main>
+<script>
+function text(v){return v==null?'':String(v)}
+function card(p){const pct=Number(p.estimated_completion_percent||0);const el=document.createElement('article');el.className='card';el.innerHTML='<h2></h2><strong></strong><div class="bar"><span></span></div><p class="muted state"></p><p class="muted next"></p>';el.querySelector('h2').textContent=text(p.name);el.querySelector('strong').textContent=pct+'%';el.querySelector('span').style.setProperty('--p',pct+'%');el.querySelector('.state').textContent=text(p.state);el.querySelector('.next').textContent='Next: '+text(p.next_milestone);return el}
+fetch('status.json',{cache:'no-store'}).then(r=>r.json()).then(s=>{const pct=Number(s.overall_estimated_completion_percent||0);overall.textContent=pct+'%';overallBar.style.setProperty('--p',pct+'%');summary.textContent=(s.public_state||'active')+' · '+(s.branch||'edge/stable')+' · updated '+(s.last_updated_utc||'unknown');boundary.textContent=s.important_boundary||'Percentages are planning estimates.';projects.replaceChildren(...(s.projects||[]).map(card))}).catch(e=>{summary.textContent='Could not load status.json: '+e})
+</script>
+</body>
+</html>
