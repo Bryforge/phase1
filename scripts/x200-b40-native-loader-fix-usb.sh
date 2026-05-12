@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# Phase1 / Base1 X200 B40 native binary loader fix USB writer.
+# Phase1 / Base1 X200 B40/B41/B42 native binary loader fix USB writer.
 #
 # Purpose:
 #   Boot the native Phase1 console through the working B38 protocol and package
@@ -8,8 +8,11 @@
 # Working protocol:
 #   Libreboot GRUB -> normal linux -> normal initrd -> rdinit=/init
 #
-# B41 color update:
-#   The native console now boots with color enabled by default.
+# B41:
+#   Native color console enabled.
+#
+# B42:
+#   Japanese UTF-8 environment and verification text are packaged.
 
 set -eu
 
@@ -131,7 +134,7 @@ trap cleanup EXIT INT TERM
 
 mkdir -p "$OUT_DIR"
 rm -rf "$ROOTFS"
-mkdir -p "$ROOTFS/bin" "$ROOTFS/sbin" "$ROOTFS/dev" "$ROOTFS/proc" "$ROOTFS/sys" "$ROOTFS/run" "$ROOTFS/tmp" "$ROOTFS/etc" "$ROOTFS/lib" "$ROOTFS/lib64" "$ROOTFS/usr/lib" "$ROOTFS/usr/lib64" "$ROOTFS/phase1/bin" "$ROOTFS/phase1/repo" "$ROOTFS/phase1/evidence" "$ROOTFS/phase1/state" "$ROOTFS/phase1/workspace" "$ROOTFS/phase1/assets" "$ROOTFS/phase1/help"
+mkdir -p "$ROOTFS/bin" "$ROOTFS/sbin" "$ROOTFS/dev" "$ROOTFS/proc" "$ROOTFS/sys" "$ROOTFS/run" "$ROOTFS/tmp" "$ROOTFS/etc" "$ROOTFS/lib" "$ROOTFS/lib64" "$ROOTFS/usr/lib" "$ROOTFS/usr/lib64" "$ROOTFS/phase1/bin" "$ROOTFS/phase1/repo" "$ROOTFS/phase1/evidence" "$ROOTFS/phase1/state" "$ROOTFS/phase1/workspace" "$ROOTFS/phase1/assets" "$ROOTFS/phase1/help" "$ROOTFS/phase1/i18n/ja"
 
 cp -L "$BUSYBOX_PATH" "$ROOTFS/bin/busybox"
 chmod 0755 "$ROOTFS/bin/busybox"
@@ -147,6 +150,23 @@ cp -L "$PHASE1_BIN_PATH" "$ROOTFS/phase1/bin/phase1"
 chmod 0755 "$ROOTFS/phase1/bin/phase1"
 copy_libs_for_binary "$PHASE1_BIN_PATH" "$ROOTFS"
 copy_common_loaders "$ROOTFS"
+
+cat > "$ROOTFS/phase1/i18n/ja/boot-test.txt" <<'EOF'
+フェーズ1 起動完了
+日本語 UTF-8 テスト
+安全・非公開・強力
+EOF
+
+cat > "$ROOTFS/phase1/evidence/b42-japanese-utf8.env" <<'EOF'
+BASE1_B42_JAPANESE_UTF8_RESULT=phase1_japanese_utf8_ready
+BASE1_B42_LANG=C.UTF-8
+BASE1_B42_LANGUAGE=ja:en
+BASE1_B42_PHASE1_LANGUAGE=ja
+BASE1_B42_UTF8=1
+BASE1_B42_UNICODE=1
+BASE1_B42_JAPANESE_SUPPORT=1
+BASE1_B42_TEST_FILE=/phase1/i18n/ja/boot-test.txt
+EOF
 
 for path in README.md Cargo.toml phase1 start_phase1 FEATURE_STATUS.md PHASE1_NATIVE_LANGUAGE.md; do
   if [ -f "$path" ]; then
@@ -165,11 +185,20 @@ PATH=/phase1/bin:/bin:/sbin:/usr/bin:/usr/sbin
 export PATH
 export TERM=linux
 export COLORTERM=truecolor
+export LANG=C.UTF-8
+export LC_ALL=C.UTF-8
+export LC_CTYPE=C.UTF-8
+export LANGUAGE=ja:en
 export PHASE1_HOME=/phase1/repo
 export PHASE1_SAFE_MODE=1
 export PHASE1_THEME=crimson
 export PHASE1_COLOR_MODE=auto
 export PHASE1_FORCE_COLOR=1
+export PHASE1_LANGUAGE=ja
+export PHASE1_I18N=1
+export PHASE1_UTF8=1
+export PHASE1_UNICODE=1
+export PHASE1_JAPANESE_SUPPORT=1
 export PHASE1_DEVICE_MODE=hardware
 export PHASE1_LAUNCH_COMMAND="phase1-native-boot"
 unset NO_COLOR
@@ -182,7 +211,7 @@ mount -t devtmpfs devtmpfs /dev 2>/dev/null || mount -t tmpfs dev /dev 2>/dev/nu
 [ -c /dev/tty0 ] || mknod /dev/tty0 c 4 0 2>/dev/null || true
 mount -t tmpfs tmpfs /run 2>/dev/null || true
 mount -t tmpfs tmpfs /tmp 2>/dev/null || true
-mkdir -p /phase1/evidence /phase1/state /phase1/workspace /phase1/help /phase1/bin /phase1/repo
+mkdir -p /phase1/evidence /phase1/state /phase1/workspace /phase1/help /phase1/bin /phase1/repo /phase1/i18n/ja
 
 echo 0 > /proc/sys/kernel/printk 2>/dev/null || true
 dmesg -n 1 2>/dev/null || true
@@ -200,24 +229,36 @@ BASE1_B41_COLOR_MODE=auto
 BASE1_B41_FORCE_COLOR=1
 ENV
 
+cat > /phase1/evidence/b42-runtime-utf8.env <<'ENV'
+BASE1_B42_JAPANESE_UTF8_RESULT=phase1_japanese_utf8_ready
+BASE1_B42_LANG=C.UTF-8
+BASE1_B42_LANGUAGE=ja:en
+BASE1_B42_PHASE1_LANGUAGE=ja
+BASE1_B42_UTF8=1
+BASE1_B42_UNICODE=1
+BASE1_B42_JAPANESE_SUPPORT=1
+BASE1_B42_TEST_FILE=/phase1/i18n/ja/boot-test.txt
+ENV
+
 clear 2>/dev/null || true
 cat <<'BANNER'
 phase1 6.0.0 ready
-Base1 B41 native color console
+Base1 B42 native color + Japanese UTF-8 console
 result target: phase1_native_color_console_seen
+utf8 target  : phase1_japanese_utf8_ready
 
-Launching Phase1 native console with color enabled...
+Launching Phase1 native console with color and Japanese UTF-8 enabled...
 BANNER
 
 if [ -x /phase1/bin/phase1 ]; then
-  echo "BASE1_B41_NATIVE_BINARY_STARTED=1" >> /phase1/evidence/b41-native-color.env
+  echo "BASE1_B42_NATIVE_BINARY_STARTED=1" >> /phase1/evidence/b42-runtime-utf8.env
   /phase1/bin/phase1 2>&1
   rc=$?
-  echo "BASE1_B41_NATIVE_BINARY_EXIT_CODE=$rc" >> /phase1/evidence/b41-native-color.env
+  echo "BASE1_B42_NATIVE_BINARY_EXIT_CODE=$rc" >> /phase1/evidence/b42-runtime-utf8.env
   echo ""
   echo "Phase1 native binary returned with exit code: $rc"
 else
-  echo "BASE1_B41_NATIVE_BINARY_STARTED=0" >> /phase1/evidence/b41-native-color.env
+  echo "BASE1_B42_NATIVE_BINARY_STARTED=0" >> /phase1/evidence/b42-runtime-utf8.env
   echo "Phase1 native binary unavailable."
 fi
 
@@ -225,16 +266,17 @@ cat <<'FALLBACK'
 
 phase1 fallback shell active
 result: phase1_full_system_load_seen
-Type: help, evidence, status, shell, reboot, poweroff
+Type: help, evidence, ja-test, status, shell, reboot, poweroff
 FALLBACK
 
 while true; do
   printf '\nphase1-fallback> '
   read cmd || cmd=shell
   case "$cmd" in
-    help|h) echo "commands: help evidence status shell reboot poweroff" ;;
-    evidence|e) cat /phase1/evidence/b41-native-color.env ;;
-    status|s) uname -a; ls -la /phase1 /phase1/bin /phase1/evidence; echo "term=$TERM colorterm=$COLORTERM color=$PHASE1_COLOR_MODE" ;;
+    help|h) echo "commands: help evidence ja-test status shell reboot poweroff" ;;
+    evidence|e) cat /phase1/evidence/b41-native-color.env; cat /phase1/evidence/b42-runtime-utf8.env ;;
+    ja-test|japanese|utf8) cat /phase1/i18n/ja/boot-test.txt ;;
+    status|s) uname -a; echo "term=$TERM colorterm=$COLORTERM color=$PHASE1_COLOR_MODE lang=$LANG language=$LANGUAGE phase1_language=$PHASE1_LANGUAGE" ;;
     shell|sh) /bin/sh ;;
     reboot) echo b > /proc/sysrq-trigger 2>/dev/null || reboot -f ;;
     poweroff|halt) poweroff -f 2>/dev/null || halt -f ;;
@@ -248,7 +290,7 @@ chmod 0755 "$ROOTFS/init"
 ( cd "$ROOTFS" && find . | cpio -H newc -o 2>/dev/null | gzip -9 > "../phase1-b40-native-loader-fix-initramfs.img" )
 [ -s "$INITRD" ] || fail "failed to build initramfs: $INITRD"
 
-printf 'PHASE1 BASE1 B41 NATIVE COLOR CONSOLE USB WRITER\n\n'
+printf 'PHASE1 BASE1 B42 NATIVE COLOR + JAPANESE UTF-8 USB WRITER\n\n'
 printf 'profile      : %s\n' "$PROFILE"
 printf 'target disk  : %s\n' "$USB"
 printf 'kernel       : %s\n' "$KERNEL"
@@ -257,7 +299,7 @@ printf 'phase1 bin   : %s\n' "$PHASE1_BIN_PATH"
 printf 'splash       : %s\n' "$SPLASH_SRC"
 printf 'busybox      : %s\n\n' "$BUSYBOX_PATH"
 printf 'Kernel SHA256:\n'; sha256sum "$KERNEL"
-printf 'B41 initramfs SHA256:\n'; sha256sum "$INITRD"
+printf 'B42 initramfs SHA256:\n'; sha256sum "$INITRD"
 printf 'Phase1 binary SHA256:\n'; sha256sum "$PHASE1_BIN_PATH"
 printf 'Real splash SHA256:\n'; sha256sum "$SPLASH_SRC"
 printf '\nThis will erase the selected USB target.\n\n'
@@ -270,27 +312,28 @@ sudo partprobe "$USB" 2>/dev/null || true
 sync
 sleep 2
 [ -b "$PART1" ] || fail "partition did not appear: $PART1"
-sudo mkfs.vfat -F 32 -n PHASE1B41 "$PART1"
+sudo mkfs.vfat -F 32 -n PHASE1B42 "$PART1"
 sudo mount "$PART1" "$MNT"
 sudo mkdir -p "$MNT/boot/grub" "$MNT/grub" "$MNT/boot/phase1" "$MNT/phase1/assets" "$MNT/phase1/evidence"
 sudo cp "$KERNEL" "$MNT/boot/phase1/vmlinuz"
-sudo cp "$INITRD" "$MNT/boot/phase1/phase1-b41-native-color-initramfs.img"
+sudo cp "$INITRD" "$MNT/boot/phase1/phase1-b42-native-color-utf8-initramfs.img"
 sudo cp "$SPLASH_SRC" "$MNT/phase1/assets/phase1-splash.png"
 KERNEL_SIZE="$(stat -c %s "$KERNEL" 2>/dev/null || stat -f %z "$KERNEL")"
 INITRD_SIZE="$(stat -c %s "$INITRD" 2>/dev/null || stat -f %z "$INITRD")"
 PHASE1_SIZE="$(stat -c %s "$PHASE1_BIN_PATH" 2>/dev/null || stat -f %z "$PHASE1_BIN_PATH")"
-sudo tee "$MNT/phase1/evidence/b41-prep.env" >/dev/null <<EOF
-BASE1_B41_PROFILE=$PROFILE
-BASE1_B41_KERNEL=/boot/phase1/vmlinuz
-BASE1_B41_INITRD=/boot/phase1/phase1-b41-native-color-initramfs.img
-BASE1_B41_SPLASH=/phase1/assets/phase1-splash.png
-BASE1_B41_PHASE1_BINARY=/phase1/bin/phase1
-BASE1_B41_KERNEL_SIZE=$KERNEL_SIZE
-BASE1_B41_INITRD_SIZE=$INITRD_SIZE
-BASE1_B41_PHASE1_BINARY_SOURCE=$PHASE1_BIN_PATH
-BASE1_B41_PHASE1_BINARY_SIZE=$PHASE1_SIZE
-BASE1_B41_EXPECTED_RESULT=phase1_native_color_console_seen
-BASE1_B41_FALLBACK_RESULT=phase1_full_system_load_seen
+sudo tee "$MNT/phase1/evidence/b42-prep.env" >/dev/null <<EOF
+BASE1_B42_PROFILE=$PROFILE
+BASE1_B42_KERNEL=/boot/phase1/vmlinuz
+BASE1_B42_INITRD=/boot/phase1/phase1-b42-native-color-utf8-initramfs.img
+BASE1_B42_SPLASH=/phase1/assets/phase1-splash.png
+BASE1_B42_PHASE1_BINARY=/phase1/bin/phase1
+BASE1_B42_KERNEL_SIZE=$KERNEL_SIZE
+BASE1_B42_INITRD_SIZE=$INITRD_SIZE
+BASE1_B42_PHASE1_BINARY_SOURCE=$PHASE1_BIN_PATH
+BASE1_B42_PHASE1_BINARY_SIZE=$PHASE1_SIZE
+BASE1_B42_EXPECTED_RESULT=phase1_native_color_console_seen
+BASE1_B42_UTF8_RESULT=phase1_japanese_utf8_ready
+BASE1_B42_FALLBACK_RESULT=phase1_full_system_load_seen
 EOF
 
 sudo tee "$MNT/boot/grub/grub.cfg" >/dev/null <<'EOF'
@@ -302,7 +345,7 @@ set color_highlight=black/light-gray
 terminal_input console
 terminal_output console
 
-menuentry "B41 Real Phase1 Splash" {
+menuentry "B42 Real Phase1 Splash" {
     clear
     echo "Loading real Phase1 splash..."
     insmod all_video
@@ -313,7 +356,7 @@ menuentry "B41 Real Phase1 Splash" {
     terminal_output gfxterm
     if background_image /phase1/assets/phase1-splash.png; then
         echo "phase1 6.0.0 ready"
-        echo "B41 real Phase1 splash active"
+        echo "B42 real Phase1 splash active"
         sleep 3
     else
         terminal_output console
@@ -324,38 +367,38 @@ menuentry "B41 Real Phase1 Splash" {
     terminal_output console
 }
 
-menuentry "Start Native Phase1 Color Console" {
+menuentry "Start Native Phase1 Color UTF-8 Console" {
     clear
     echo "phase1 6.0.0 ready"
-    echo "B41 native color console"
+    echo "B42 native color + Japanese UTF-8 console"
     linux /boot/phase1/vmlinuz console=tty0 rdinit=/init init=/init nomodeset quiet loglevel=0 panic=0
-    initrd /boot/phase1/phase1-b41-native-color-initramfs.img
+    initrd /boot/phase1/phase1-b42-native-color-utf8-initramfs.img
     boot
 }
 
-menuentry "Start Native Phase1 Color Console - verbose" {
+menuentry "Start Native Phase1 Color UTF-8 Console - verbose" {
     clear
     echo "phase1 6.0.0 ready"
-    echo "B41 verbose native color console"
+    echo "B42 verbose native color + Japanese UTF-8 console"
     linux /boot/phase1/vmlinuz console=tty0 rdinit=/init init=/init nomodeset loglevel=7 panic=0
-    initrd /boot/phase1/phase1-b41-native-color-initramfs.img
+    initrd /boot/phase1/phase1-b42-native-color-utf8-initramfs.img
     boot
 }
 
-menuentry "B41 File check" {
+menuentry "B42 File check" {
     clear
-    echo "B41 file check"
+    echo "B42 file check"
     ls -lh /boot/phase1
     echo ""
-    cat /phase1/evidence/b41-prep.env
+    cat /phase1/evidence/b42-prep.env
     echo ""
     sleep --interruptible 999
 }
 
-menuentry "B41 GRUB fallback" {
+menuentry "B42 GRUB fallback" {
     clear
     echo "phase1 6.0.0 ready"
-    echo "B41 GRUB fallback console"
+    echo "B42 GRUB fallback console"
     sleep --interruptible 999
 }
 
@@ -372,15 +415,16 @@ rmdir "$MNT"
 trap - EXIT INT TERM
 
 cat > "$REPORT" <<EOF
-BASE1_B41_TARGET=$USB
-BASE1_B41_PARTITION=$PART1
-BASE1_B41_KERNEL=$KERNEL
-BASE1_B41_INITRD=$INITRD
-BASE1_B41_SPLASH=$SPLASH_SRC
-BASE1_B41_PHASE1_BINARY=$PHASE1_BIN_PATH
-BASE1_B41_RESULT=prepared
-BASE1_B41_EXPECTED_NEXT_RESULT=phase1_native_color_console_seen
-BASE1_B41_FALLBACK_RESULT=phase1_full_system_load_seen
+BASE1_B42_TARGET=$USB
+BASE1_B42_PARTITION=$PART1
+BASE1_B42_KERNEL=$KERNEL
+BASE1_B42_INITRD=$INITRD
+BASE1_B42_SPLASH=$SPLASH_SRC
+BASE1_B42_PHASE1_BINARY=$PHASE1_BIN_PATH
+BASE1_B42_RESULT=prepared
+BASE1_B42_EXPECTED_NEXT_RESULT=phase1_native_color_console_seen
+BASE1_B42_UTF8_NEXT_RESULT=phase1_japanese_utf8_ready
+BASE1_B42_FALLBACK_RESULT=phase1_full_system_load_seen
 EOF
-printf '\nDONE: B41 native color console USB prepared on %s\n' "$USB"
-printf 'Boot path: Libreboot -> external USB GRUB. Default entry starts native color Phase1.\n'
+printf '\nDONE: B42 native color + Japanese UTF-8 USB prepared on %s\n' "$USB"
+printf 'Boot path: Libreboot -> external USB GRUB. Default entry starts native color UTF-8 Phase1.\n'
