@@ -1,253 +1,138 @@
 #!/usr/bin/env sh
-# Phase1 / Base1 X200 B40 native Phase1 boot automation.
+# Phase1 X200 boot automation, backward-compatible filename.
 #
-# Automates the current X200 native Phase1 boot preparation path:
-#   1. update repo;
-#   2. ensure/stage Linux-libre baseline kernel artifact;
-#   3. build or use the Phase1 Rust binary;
-#   4. check BusyBox/static runtime requirement;
-#   5. write the B40 native-loader-fix USB using the proven B38 protocol.
+# Current target: B42 stable-safe native color UTF-8 boot.
+# This script now uses the B42 writer, verifies the written USB, and fails if
+# the old B40/B41 menu is still present.
 #
 # Usage:
 #   sh scripts/x200-b40-prepare-native-phase1-boot.sh /dev/sdb YES_WRITE_USB
-#
-# Do not run this whole script with sudo unless needed. It calls sudo only for
-# the USB-writing step. If it is launched with sudo anyway, it will also check
-# the original sudo user's ~/.cargo/bin path.
-#
-# Optional:
-#   BASE1_AUTO_INSTALL_PACKAGES=1   install missing cargo/rustc/busybox-static on apt systems
-#   BASE1_SKIP_PULL=1               skip git pull
-#   BASE1_SKIP_BUILD=1              skip cargo build --release
-#   BASE1_B40_PHASE1_BIN=/path/bin  use explicit Phase1 binary
-#   BASE1_B40_KERNEL=/path/vmlinuz  use explicit kernel
-#   BASE1_B40_BUSYBOX=/path/busybox use explicit busybox
 
 set -eu
 
-original_home() {
-  if [ -n "${SUDO_USER:-}" ] && [ "$SUDO_USER" != "root" ]; then
-    if command -v getent >/dev/null 2>&1; then
-      getent passwd "$SUDO_USER" | awk -F: '{print $6}'
-      return
-    fi
-    printf '/home/%s\n' "$SUDO_USER"
-    return
-  fi
-  printf '%s\n' "$HOME"
-}
-
-ORIGINAL_HOME="$(original_home)"
-
-# Native rustup installs Cargo here. Add both current HOME and original sudo
-# user's HOME so desktop terminals and accidental sudo invocation both work.
-for cargo_home in "$HOME" "$ORIGINAL_HOME"; do
-  if [ -d "$cargo_home/.cargo/bin" ]; then
-    PATH="$cargo_home/.cargo/bin:$PATH"
-    export PATH
-  fi
-  if [ -f "$cargo_home/.cargo/env" ]; then
-    # shellcheck disable=SC1090
-    . "$cargo_home/.cargo/env" 2>/dev/null || true
-  fi
-done
+if [ -d "$HOME/.cargo/bin" ]; then PATH="$HOME/.cargo/bin:$PATH"; export PATH; fi
+if [ -f "$HOME/.cargo/env" ]; then . "$HOME/.cargo/env" 2>/dev/null || true; fi
+if [ -n "${SUDO_USER:-}" ] && [ "$SUDO_USER" != root ]; then
+  SUDO_HOME="$(getent passwd "$SUDO_USER" 2>/dev/null | awk -F: '{print $6}')"
+  [ -n "$SUDO_HOME" ] || SUDO_HOME="/home/$SUDO_USER"
+  if [ -d "$SUDO_HOME/.cargo/bin" ]; then PATH="$SUDO_HOME/.cargo/bin:$PATH"; export PATH; fi
+  if [ -f "$SUDO_HOME/.cargo/env" ]; then . "$SUDO_HOME/.cargo/env" 2>/dev/null || true; fi
+fi
 
 USB="${1:-}"
 CONFIRM="${2:-}"
-AUTO_INSTALL="${BASE1_AUTO_INSTALL_PACKAGES:-0}"
-SKIP_PULL="${BASE1_SKIP_PULL:-0}"
-SKIP_BUILD="${BASE1_SKIP_BUILD:-0}"
-KERNEL="${BASE1_B40_KERNEL:-build/linux/alpine-netboot/vmlinuz}"
-SPLASH="${BASE1_B40_SPLASH:-assets/phase1-splash.png}"
-PHASE1_BIN="${BASE1_B40_PHASE1_BIN:-target/release/phase1}"
-B40_WRITER="scripts/x200-b40-native-loader-fix-usb.sh"
-STAGER="scripts/x200-b23-stage-host-gnulinux.sh"
-REPORT_DIR="build/base1-b40-native-loader-fix"
-REPORT="$REPORT_DIR/b40-prepare-native-phase1-boot.env"
+WRITER="scripts/x200-b42-native-stable-safe-color-utf8-usb.sh"
+KERNEL="${BASE1_B42_KERNEL:-build/linux/alpine-netboot/vmlinuz}"
+SPLASH="${BASE1_B42_SPLASH:-assets/phase1-splash.png}"
+PHASE1_BIN="${BASE1_B42_PHASE1_BIN:-target/release/phase1}"
+BUSYBOX="${BASE1_B42_BUSYBOX:-}"
+REPORT_DIR="build/base1-b42-native-stable-safe-color-utf8"
+REPORT="$REPORT_DIR/b42-automation-diagnostics.env"
+MAIN_ENTRY="Start Phase1 Stable Safe Color UTF-8"
+ASCII_ENTRY="Start Phase1 ASCII Safe Fallback"
+INITRD_NAME="phase1-b42-native-stable-safe-color-utf8.img"
 
-fail() { printf 'x200-b40-prepare-native-phase1-boot: %s\n' "$1" >&2; exit 1; }
-need_cmd() { command -v "$1" >/dev/null 2>&1 || fail "missing command: $1"; }
+fail() { printf 'phase1-b42-automation: %s\n' "$1" >&2; exit 1; }
 section() { printf '\n%s\n' "$1"; }
+need() { command -v "$1" >/dev/null 2>&1 || fail "missing command: $1"; }
 
-usage() {
-  cat <<'EOF'
-Usage:
-  sh scripts/x200-b40-prepare-native-phase1-boot.sh /dev/sdb YES_WRITE_USB
-
-Optional environment:
-  BASE1_AUTO_INSTALL_PACKAGES=1   install missing cargo/rustc/busybox-static on apt systems
-  BASE1_SKIP_PULL=1               skip git pull
-  BASE1_SKIP_BUILD=1              skip cargo build --release
-  BASE1_B40_PHASE1_BIN=/path/bin  use explicit Phase1 binary
-  BASE1_B40_KERNEL=/path/vmlinuz  use explicit kernel
-  BASE1_B40_BUSYBOX=/path/busybox use explicit busybox
-EOF
-}
-
-apt_install_if_allowed() {
-  packages="$1"
-  if [ "$AUTO_INSTALL" != "1" ]; then
-    return 1
-  fi
-  command -v apt-get >/dev/null 2>&1 || return 1
-  printf 'Installing packages with apt: %s\n' "$packages"
-  sudo apt-get update
-  # shellcheck disable=SC2086
-  sudo apt-get install -y $packages
-}
-
-ensure_rustup_default_if_needed() {
-  if [ "$SKIP_BUILD" = "1" ]; then
-    return 0
-  fi
-  if command -v cargo >/dev/null 2>&1 && cargo --version >/dev/null 2>&1; then
-    return 0
-  fi
-  if command -v rustup >/dev/null 2>&1; then
-    printf 'Cargo exists but no default Rust toolchain is configured. Setting rustup default stable...\n'
-    rustup default stable
-    cargo --version >/dev/null 2>&1 && return 0
-  fi
-  return 1
-}
-
-ensure_cargo_if_needed() {
-  if [ "$SKIP_BUILD" = "1" ]; then
-    return 0
-  fi
-  if command -v cargo >/dev/null 2>&1; then
-    if ensure_rustup_default_if_needed; then
-      printf 'cargo: %s\n' "$(command -v cargo)"
-      cargo --version || true
-      return 0
-    fi
-  fi
-  printf 'Cargo is missing from PATH or has no working default toolchain. Checked cargo homes: %s and %s\n' "$HOME" "$ORIGINAL_HOME"
-  if apt_install_if_allowed "cargo rustc"; then
-    command -v cargo >/dev/null 2>&1 && return 0
-  fi
-  fail "missing working cargo. Try: rustup default stable; or export PATH=\"$ORIGINAL_HOME/.cargo/bin:\$PATH\"; or set BASE1_B40_PHASE1_BIN and BASE1_SKIP_BUILD=1"
+part1() {
+  case "$1" in
+    /dev/nvme[0-9]n[0-9]|/dev/mmcblk[0-9]) printf '%sp1\n' "$1" ;;
+    /dev/sd[a-z]|/dev/vd[a-z]|/dev/hd[a-z]) printf '%s1\n' "$1" ;;
+    *) fail "use a whole disk like /dev/sdb" ;;
+  esac
 }
 
 find_busybox() {
-  if [ -n "${BASE1_B40_BUSYBOX:-}" ]; then
-    printf '%s\n' "$BASE1_B40_BUSYBOX"
-    return
-  fi
-  for candidate in /bin/busybox /usr/bin/busybox /bin/busybox.static /usr/bin/busybox.static; do
-    if [ -x "$candidate" ]; then
-      printf '%s\n' "$candidate"
-      return
-    fi
+  if [ -n "$BUSYBOX" ]; then printf '%s\n' "$BUSYBOX"; return; fi
+  for p in /bin/busybox /usr/bin/busybox /bin/busybox.static /usr/bin/busybox.static; do
+    [ -x "$p" ] && { printf '%s\n' "$p"; return; }
   done
   printf '\n'
 }
 
-busybox_is_static() {
-  bb="$1"
-  if command -v ldd >/dev/null 2>&1; then
-    if ldd "$bb" 2>&1 | grep -qi 'not a dynamic executable\|statically linked'; then
-      return 0
-    fi
-    return 1
-  fi
-  if command -v file >/dev/null 2>&1 && file "$bb" | grep -qi 'statically linked'; then
-    return 0
-  fi
-  return 0
-}
-
-install_busybox_static_if_allowed() {
-  apt_install_if_allowed "busybox-static"
-}
-
-[ -n "$USB" ] || { usage; fail "missing USB block device"; }
-[ "$CONFIRM" = "YES_WRITE_USB" ] || { usage; fail "missing YES_WRITE_USB confirmation"; }
-[ -d .git ] || fail "run this from the phase1 repository root"
-[ -f "$B40_WRITER" ] || fail "missing $B40_WRITER; run git pull first"
-
-for cmd in sh git sudo grep awk sha256sum ls; do
-  need_cmd "$cmd"
-done
-
+[ -n "$USB" ] || fail "usage: sh scripts/x200-b40-prepare-native-phase1-boot.sh /dev/sdb YES_WRITE_USB"
+[ "$CONFIRM" = YES_WRITE_USB ] || fail "missing YES_WRITE_USB confirmation"
+[ -d .git ] || fail "run from the phase1 repository root"
+for c in sh git sudo grep awk sha256sum cargo mount umount mktemp; do need "$c"; done
 mkdir -p "$REPORT_DIR"
 
-printf 'PHASE1 B40 NATIVE BOOT AUTOMATION\n\n'
-printf 'target usb : %s\n' "$USB"
-printf 'kernel     : %s\n' "$KERNEL"
-printf 'phase1 bin : %s\n' "$PHASE1_BIN"
-printf 'writer     : %s\n' "$B40_WRITER"
-printf 'user home  : %s\n' "$ORIGINAL_HOME"
-printf 'PATH       : %s\n' "$PATH"
+section "--- updating repository ---"
+git fetch origin edge/stable
+git pull --ff-only origin edge/stable
 
-if [ "$SKIP_PULL" != "1" ]; then
-  section "--- updating repository ---"
-  git pull --ff-only origin edge/stable
-else
-  section "--- repository update skipped ---"
-fi
+section "--- checking current B42 writer ---"
+[ -f "$WRITER" ] || fail "missing $WRITER"
+grep -q "$MAIN_ENTRY" "$WRITER" || fail "writer missing main B42 entry: $MAIN_ENTRY"
+grep -q "$ASCII_ENTRY" "$WRITER" || fail "writer missing ASCII fallback entry: $ASCII_ENTRY"
+grep -q 'BASE1_B42_ASCII_DEFAULT=0' "$WRITER" || fail "writer missing ASCII default=0 evidence"
+grep -q 'BASE1_B42_SAFE_DEFAULT=1' "$WRITER" || fail "writer missing safe default=1 evidence"
 
-section "--- checking splash asset ---"
-[ -f "$SPLASH" ] || fail "missing splash asset: $SPLASH"
-sha256sum "$SPLASH"
+git log -1 --oneline -- "$WRITER" || true
 
-section "--- checking/staging kernel artifact ---"
-if [ ! -f "$KERNEL" ]; then
-  [ -f "$STAGER" ] || fail "kernel missing and stager missing: $STAGER"
-  printf 'Kernel missing. Staging host GNU/Linux kernel/initrd artifacts...\n'
-  sh "$STAGER"
-fi
-[ -f "$KERNEL" ] || fail "kernel still missing after staging: $KERNEL"
-sha256sum "$KERNEL"
-
-section "--- building/checking Phase1 release binary ---"
-ensure_cargo_if_needed
-if [ "$SKIP_BUILD" != "1" ]; then
-  cargo build --release
-else
-  printf 'cargo build skipped by BASE1_SKIP_BUILD=1\n'
-fi
-[ -x "$PHASE1_BIN" ] || fail "missing executable Phase1 binary: $PHASE1_BIN. Build with cargo or set BASE1_B40_PHASE1_BIN=/path/to/phase1"
+section "--- building native Phase1 binary ---"
+rustup default stable >/dev/null 2>&1 || true
+cargo build --release
+[ -x "$PHASE1_BIN" ] || fail "missing built binary: $PHASE1_BIN"
 sha256sum "$PHASE1_BIN"
 
-section "--- checking BusyBox runtime ---"
+section "--- checking kernel, splash, busybox ---"
+[ -f "$KERNEL" ] || sh scripts/x200-b23-stage-host-gnulinux.sh
+[ -f "$KERNEL" ] || fail "missing kernel: $KERNEL"
+[ -f "$SPLASH" ] || fail "missing splash: $SPLASH"
 BUSYBOX_PATH="$(find_busybox)"
-if [ -z "$BUSYBOX_PATH" ] || ! busybox_is_static "$BUSYBOX_PATH"; then
-  printf 'Static BusyBox missing or dynamic.\n'
-  if install_busybox_static_if_allowed; then
-    BUSYBOX_PATH="$(find_busybox)"
-  fi
-fi
-[ -n "$BUSYBOX_PATH" ] || fail "missing BusyBox; run: sudo apt install -y busybox-static"
-busybox_is_static "$BUSYBOX_PATH" || fail "BusyBox appears dynamic; run: sudo apt install -y busybox-static"
-printf 'busybox: %s\n' "$BUSYBOX_PATH"
-sha256sum "$BUSYBOX_PATH" 2>/dev/null || true
+[ -n "$BUSYBOX_PATH" ] || fail "missing busybox-static"
+sha256sum "$KERNEL" "$SPLASH" "$BUSYBOX_PATH" 2>/dev/null || true
 
-section "--- writing B40 native Phase1 USB ---"
+section "--- writing B42 USB ---"
 sudo env \
-  BASE1_B40_PHASE1_BIN="$PWD/$PHASE1_BIN" \
-  BASE1_B40_KERNEL="$PWD/$KERNEL" \
-  BASE1_B40_SPLASH="$PWD/$SPLASH" \
-  BASE1_B40_BUSYBOX="$BUSYBOX_PATH" \
-  sh "$B40_WRITER" "$USB" YES_WRITE_USB
+  BASE1_B42_PHASE1_BIN="$PWD/$PHASE1_BIN" \
+  BASE1_B42_KERNEL="$PWD/$KERNEL" \
+  BASE1_B42_SPLASH="$PWD/$SPLASH" \
+  BASE1_B42_BUSYBOX="$BUSYBOX_PATH" \
+  sh "$WRITER" "$USB" YES_WRITE_USB
+
+section "--- verifying USB after write ---"
+PART="$(part1 "$USB")"
+MNT="$(mktemp -d)"
+sudo mount -o ro "$PART" "$MNT"
+trap 'sudo umount "$MNT" 2>/dev/null || true; rmdir "$MNT" 2>/dev/null || true' EXIT INT TERM
+[ -f "$MNT/boot/grub/grub.cfg" ] || fail "USB missing grub.cfg"
+[ -f "$MNT/boot/phase1/vmlinuz" ] || fail "USB missing vmlinuz"
+[ -f "$MNT/boot/phase1/$INITRD_NAME" ] || fail "USB missing $INITRD_NAME"
+[ -f "$MNT/phase1/assets/phase1-splash.png" ] || fail "USB missing real splash"
+[ -f "$MNT/phase1/evidence/b42-prep.env" ] || fail "USB missing b42-prep.env"
+grep -q "$MAIN_ENTRY" "$MNT/boot/grub/grub.cfg" || fail "USB missing main B42 entry"
+grep -q "$ASCII_ENTRY" "$MNT/boot/grub/grub.cfg" || fail "USB missing ASCII fallback entry"
+grep -q 'phase1.ascii=0' "$MNT/boot/grub/grub.cfg" || fail "USB default entry does not pass phase1.ascii=0"
+grep -q 'phase1.ascii=1' "$MNT/boot/grub/grub.cfg" || fail "USB fallback entry does not pass phase1.ascii=1"
+grep -q 'BASE1_B42_ASCII_DEFAULT=0' "$MNT/phase1/evidence/b42-prep.env" || fail "USB evidence does not show ascii default off"
+
+echo "USB menu entries:"
+grep '^menuentry ' "$MNT/boot/grub/grub.cfg" || true
+
+echo "USB evidence:"
+cat "$MNT/phase1/evidence/b42-prep.env"
+sudo umount "$MNT"
+rmdir "$MNT"
+trap - EXIT INT TERM
 
 cat > "$REPORT" <<EOF
-BASE1_B40_PREP_TARGET=$USB
-BASE1_B40_PREP_KERNEL=$KERNEL
-BASE1_B40_PREP_PHASE1_BIN=$PHASE1_BIN
-BASE1_B40_PREP_SPLASH=$SPLASH
-BASE1_B40_PREP_BUSYBOX=$BUSYBOX_PATH
-BASE1_B40_PREP_WRITER=$B40_WRITER
-BASE1_B40_PREP_RESULT=prepared
-BASE1_B40_PREP_EXPECTED_RESULT=phase1_native_console_seen
-BASE1_B40_PREP_FALLBACK_RESULT=phase1_full_system_load_seen
+BASE1_B42_AUTOMATION_TARGET=$USB
+BASE1_B42_AUTOMATION_PARTITION=$PART
+BASE1_B42_AUTOMATION_WRITER=$WRITER
+BASE1_B42_AUTOMATION_MAIN_ENTRY=$MAIN_ENTRY
+BASE1_B42_AUTOMATION_ASCII_ENTRY=$ASCII_ENTRY
+BASE1_B42_AUTOMATION_ASCII_DEFAULT=0
+BASE1_B42_AUTOMATION_ASCII_FALLBACK=1
+BASE1_B42_AUTOMATION_RESULT=prepared_and_verified
+BASE1_B42_AUTOMATION_EXPECTED_RESULT=phase1_native_color_console_seen
+BASE1_B42_AUTOMATION_UTF8_RESULT=phase1_japanese_utf8_ready
+BASE1_B42_AUTOMATION_STABLE_RESULT=phase1_stable_safe_defaults_seen
 EOF
 
-printf '\nDONE: B40 native Phase1 USB prepared.\n'
-printf 'Boot path:\n'
-printf '  Libreboot external USB GRUB -> Start Native Phase1 Console\n\n'
-printf 'Success target:\n'
-printf '  phase1_native_console_seen\n\n'
-printf 'Fallback target if the native binary still returns:\n'
-printf '  phase1_full_system_load_seen\n\n'
+printf '\nDONE: B42 USB prepared and verified.\n'
+printf 'Default boot: %s\n' "$MAIN_ENTRY"
+printf 'Fallback only: %s\n' "$ASCII_ENTRY"
 printf 'Report: %s\n' "$REPORT"
