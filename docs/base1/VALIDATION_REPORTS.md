@@ -36,3 +36,7 @@ Reports must preserve conservative wording. Do not claim boot readiness, install
 ## Non-claims
 
 This archive is an index and evidence destination only. It does not make Base1 bootable, installer-ready, recovery-complete, hardened, hardware-validated, VM-validated, release-candidate ready, or daily-driver ready.
+
+## Public surface validation — 2026-05-12
+
+- [`validation/BASE1_PUBLIC_SURFACE_VALIDATION_2026_05_12.md`](validation/BASE1_PUBLIC_SURFACE_VALIDATION_2026_05_12.md) — Base1 public-surface, docs-integrity, link-check, test-inventory, security/crypto, quality, Rust, audit, and deny validation report.
