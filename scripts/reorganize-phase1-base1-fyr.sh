@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# Phase1 / Base1 / Fyr massive repository reorganization helper.
+# Phase1 / Base1 / Fyr repository reorganization helper.
 #
 # Default mode is dry-run.
 #
@@ -7,9 +7,9 @@
 #   sh scripts/reorganize-phase1-base1-fyr.sh --dry-run
 #   sh scripts/reorganize-phase1-base1-fyr.sh --apply
 #
-# This is intentionally conservative. It creates the new structure and moves
-# obvious aged/backup/root-facing files first. It does not move Cargo src/ or
-# .github in the first pass.
+# This first pass is intentionally conservative. It creates the new structure
+# and moves only obvious backup/root-facing/historical files. It does not move
+# Cargo src/, tests/, .github/, or the root phase1 launcher in this pass.
 
 set -eu
 
@@ -32,18 +32,11 @@ mkdir -p "$PLAN_DIR"
 : > "$PLAN"
 : > "$REPORT"
 
-run() {
-  printf '%s\n' "$*" >> "$PLAN"
-  if [ "$APPLY" -eq 1 ]; then
-    "$@"
-  else
-    printf '[dry-run] %s\n' "$*"
-  fi
-}
+log_plan() { printf '%s\n' "$*" >> "$PLAN"; }
 
 mkdir_logged() {
   dir="$1"
-  printf 'mkdir -p %s\n' "$dir" >> "$PLAN"
+  log_plan "mkdir -p $dir"
   if [ "$APPLY" -eq 1 ]; then mkdir -p "$dir"; else printf '[dry-run] mkdir -p %s\n' "$dir"; fi
 }
 
@@ -52,7 +45,7 @@ move_if_exists() {
   dst="$2"
   [ -e "$src" ] || return 0
   mkdir_logged "$(dirname "$dst")"
-  printf 'git mv %s %s\n' "$src" "$dst" >> "$PLAN"
+  log_plan "git mv $src $dst"
   if [ "$APPLY" -eq 1 ]; then
     git mv "$src" "$dst"
   else
@@ -60,16 +53,73 @@ move_if_exists() {
   fi
 }
 
-write_file() {
+write_doc() {
   path="$1"
-  content="$2"
+  kind="$2"
   mkdir_logged "$(dirname "$path")"
-  printf 'write %s\n' "$path" >> "$PLAN"
-  if [ "$APPLY" -eq 1 ]; then
-    if [ ! -f "$path" ]; then printf '%s\n' "$content" > "$path"; fi
-  else
+  log_plan "write $path ($kind)"
+  if [ "$APPLY" -eq 0 ]; then
     printf '[dry-run] write %s\n' "$path"
+    return 0
   fi
+  [ -f "$path" ] && return 0
+  case "$kind" in
+    junk-readme)
+      cat > "$path" <<'EOF'
+# Junk / preservation area
+
+This directory preserves aged, duplicate, unclear, generated, or historical files that should not drive the active Phase1/Base1/Fyr workflow.
+
+Files here are not deleted. They can be revived later with a clear reason.
+EOF
+      ;;
+    phase1-readme)
+      cat > "$path" <<'EOF'
+# Phase1
+
+Phase1 is the operator/runtime system: shell, UI, renderer, local tools, and user-facing environment.
+
+Active Rust implementation currently remains in the root `src/` tree until a separate Rust module migration plan is approved.
+EOF
+      ;;
+    base1-readme)
+      cat > "$path" <<'EOF'
+# Base1
+
+Base1 is the boot, hardware, recovery, and runtime foundation for Phase1.
+
+X200, QEMU, USB media, framebuffer boot, recovery, and hardware evidence belong here.
+EOF
+      ;;
+    fyr-readme)
+      cat > "$path" <<'EOF'
+# Fyr
+
+Fyr is the Phase1-native language track.
+
+It is preserved during the cleanup and resumes after Base1 and Phase1 are coherent.
+EOF
+      ;;
+    scripts-readme)
+      cat > "$path" <<'EOF'
+# Scripts
+
+Use `scripts/phase1-base1.sh` as the active front door during the Phase1/Base1 focus period.
+
+Historical scripts are being sorted into active, project-specific, or junk preservation paths.
+EOF
+      ;;
+    active-os-path)
+      cat > "$path" <<'EOF'
+# Active Phase1/Base1 path
+
+The active path is tracked in `TRACKER.md` and `docs/os/PHASE1_BASE1_UNIFICATION_PLAN.md`.
+
+Historical B-series files remain preserved while the repository is reorganized.
+EOF
+      ;;
+    *) fail "unknown write_doc kind: $kind" ;;
+  esac
 }
 
 printf 'Phase1/Base1/Fyr reorganization\n'
@@ -88,27 +138,11 @@ for dir in \
   mkdir_logged "$dir"
 done
 
-write_file "junk/README.md" "# Junk / preservation area
-
-This directory preserves aged, duplicate, unclear, generated, or historical files that should not drive the active Phase1/Base1/Fyr workflow.
-
-Files here are not deleted. They can be revived later with a clear reason."
-
-write_file "phase1/README.md" "# Phase1
-
-Phase1 is the operator/runtime system: shell, UI, renderer, local tools, and user-facing environment. Active implementation currently still lives in root `src/` until the Rust module migration is planned."
-
-write_file "base1/README.md" "# Base1
-
-Base1 is the boot, hardware, recovery, and runtime foundation for Phase1. X200, QEMU, USB media, and framebuffer boot work belong here."
-
-write_file "fyr/README.md" "# Fyr
-
-Fyr is the Phase1-native language track. It is preserved during the cleanup and resumes after Base1 and Phase1 are coherent."
-
-write_file "scripts/README.md" "# Scripts
-
-Use `scripts/phase1-base1.sh` as the active front door during the Phase1/Base1 focus period. Historical scripts are being sorted into active, project-specific, or junk preservation paths."
+write_doc "junk/README.md" junk-readme
+write_doc "phase1/README.md" phase1-readme
+write_doc "base1/README.md" base1-readme
+write_doc "fyr/README.md" fyr-readme
+write_doc "scripts/README.md" scripts-readme
 
 # Root generated backups / obvious local patch backups.
 for f in ./*.bak ./*.old ./*.old1 ./*.old2; do
@@ -134,7 +168,7 @@ move_if_exists "CONTRIBUTING.md" "shared/docs/CONTRIBUTING.md"
 
 # Keep LICENSE, Cargo.toml, Cargo.lock, README.md, TRACKER.md, FOCUS.md, phase1 launcher, .github, src, tests in place for first pass.
 
-# Script sorting: only move obvious historical B-series variants to junk, keep active router and current helpers in scripts/ for now.
+# Script sorting: move older B-series script experiments to junk, keep active/current helpers in scripts/ for now.
 for f in scripts/x200-b0*.sh scripts/x200-b1*.sh scripts/x200-b2*.sh scripts/base1-b1*.sh scripts/base1-b2*.sh; do
   [ -e "$f" ] || continue
   base="$(basename "$f")"
@@ -145,13 +179,8 @@ for f in scripts/x200-b0*.sh scripts/x200-b1*.sh scripts/x200-b2*.sh scripts/bas
 done
 
 # Docs OS historical B-series are preserved in place for now; create active index marker.
-write_file "docs/os/ACTIVE_PHASE1_BASE1_PATH.md" "# Active Phase1/Base1 path
+write_doc "docs/os/ACTIVE_PHASE1_BASE1_PATH.md" active-os-path
 
-The active path is tracked in `TRACKER.md` and `docs/os/PHASE1_BASE1_UNIFICATION_PLAN.md`.
-
-Historical B-series files remain preserved while the repository is reorganized."
-
-# Report.
 cat > "$REPORT" <<EOF
 PHASE1_REORG_MODE=$MODE
 PHASE1_REORG_APPLY=$APPLY
