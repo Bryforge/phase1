@@ -129,25 +129,44 @@ BASE1_B47_JAPANESE_PIXELS_QEMU=seen
 BASE1_B47_FRAMEBUFFER_CARD_X200=not_claimed
 BASE1_B47_JAPANESE_PIXELS_X200=not_claimed
 BASE1_B47_BLITTER_LINK=$BLITTER_LINK
+BASE1_B47_CMDLINE_DETECTION=/proc/cmdline
 EOF
-if ! grep -q 'B47 X200 framebuffer card' "$ROOTFS/init"; then
-  tmp="$ROOTFS/init.b47"
+
+# Replace any previous B47 block so the logic is not stale.
+if grep -q 'B47 X200 framebuffer card BEGIN' "$ROOTFS/init"; then
   awk '
-    /^exec <\/dev\/console/ && !done {
-      print "# B47 X200 framebuffer card";
-      print "if echo \" $CMDLINE \" | grep -q \" phase1.framebuffer=1 \"; then";
-      print "  echo \"B47: attempting Phase1 framebuffer boot card on /dev/fb0\"";
-      print "  cat /proc/fb 2>/dev/null || true";
-      print "  /phase1/phase1_fb_blit /phase1/phase1-b47-x200-card.ppm /dev/fb0 && echo \"phase1_framebuffer_card_x200_seen candidate\" || echo \"B47 framebuffer card failed; terminal fallback remains available\"";
-      print "  echo \"If Japanese pixels display on X200, record phase1_japanese_pixels_x200_seen.\"";
-      print "fi";
-      done=1;
-    }
-    { print }
-  ' "$ROOTFS/init" > "$tmp"
-  mv "$tmp" "$ROOTFS/init"
-  chmod 0755 "$ROOTFS/init"
+    /# B47 X200 framebuffer card BEGIN/ { skip=1; next }
+    /# B47 X200 framebuffer card END/ { skip=0; next }
+    !skip { print }
+  ' "$ROOTFS/init" > "$ROOTFS/init.clean"
+  mv "$ROOTFS/init.clean" "$ROOTFS/init"
 fi
+
+tmp="$ROOTFS/init.b47"
+awk '
+  /^exec <\/dev\/console/ && !done {
+    print "# B47 X200 framebuffer card BEGIN";
+    print "CMDLINE=\"$(cat /proc/cmdline 2>/dev/null || true)\"";
+    print "if echo \" $CMDLINE \" | grep -q \" phase1.framebuffer=1 \"; then";
+    print "  echo \"B47_FRAMEBUFFER_PATH_ACTIVE\"";
+    print "  echo \"B47: attempting Phase1 framebuffer boot card on /dev/fb0\"";
+    print "  cat /proc/fb 2>/dev/null || true";
+    print "  if /phase1/phase1_fb_blit /phase1/phase1-b47-x200-card.ppm /dev/fb0; then";
+    print "    echo \"phase1_framebuffer_card_x200_seen candidate\"";
+    print "  else";
+    print "    echo \"B47 framebuffer card failed; terminal fallback remains available\"";
+    print "    dmesg | grep -i fb 2>/dev/null || true";
+    print "  fi";
+    print "  echo \"If Japanese pixels display on X200, record phase1_japanese_pixels_x200_seen.\"";
+    print "fi";
+    print "# B47 X200 framebuffer card END";
+    done=1;
+  }
+  { print }
+' "$ROOTFS/init" > "$tmp"
+mv "$tmp" "$ROOTFS/init"
+chmod 0755 "$ROOTFS/init"
+
 ( cd "$ROOTFS" && find . | cpio -H newc -o 2>/dev/null | gzip -9 > "../$INITRD_NAME" ) || fail "could not repack initramfs"
 sudo cp "$WORK/$INITRD_NAME" "$INITRD"
 CFG="$MNT/boot/grub/grub.cfg"
@@ -176,9 +195,19 @@ BASE1_B47_JAPANESE_PIXELS_QEMU=seen
 BASE1_B47_FRAMEBUFFER_CARD_X200=not_claimed
 BASE1_B47_JAPANESE_PIXELS_X200=not_claimed
 BASE1_B47_ENTRY=$ENTRY
+BASE1_B47_CMDLINE_DETECTION=/proc/cmdline
 EOF
 sudo sh -c "cat '$WORK/b47-prep-append.env' >> '$MNT/phase1/evidence/b42-prep.env'"
 grep -q "$ENTRY" "$CFG" || fail "B47 framebuffer entry was not written"
+# Verify the initramfs content itself, not only grub.cfg.
+VERIFY_ROOT="$WORK/verify-rootfs"
+rm -rf "$VERIFY_ROOT"
+mkdir -p "$VERIFY_ROOT"
+( cd "$VERIFY_ROOT" && gzip -dc "$INITRD" | cpio -idmu 2>/dev/null ) || fail "could not verify extract augmented initramfs"
+grep -q 'B47_FRAMEBUFFER_PATH_ACTIVE' "$VERIFY_ROOT/init" || fail "B47 init marker missing after repack"
+grep -q 'cat /proc/cmdline' "$VERIFY_ROOT/init" || fail "B47 init does not read /proc/cmdline"
+[ -x "$VERIFY_ROOT/phase1/phase1_fb_blit" ] || fail "B47 blitter missing after repack"
+[ -f "$VERIFY_ROOT/phase1/phase1-b47-x200-card.ppm" ] || fail "B47 card missing after repack"
 sync
 sudo umount "$MNT"
 rmdir "$MNT"
@@ -191,8 +220,10 @@ BASE1_B47_BLITTER_LINK=$BLITTER_LINK
 BASE1_B47_RESULT=augmented
 BASE1_B47_FRAMEBUFFER_CARD_X200=not_claimed
 BASE1_B47_JAPANESE_PIXELS_X200=not_claimed
+BASE1_B47_INIT_CMDLINE_DETECTION=/proc/cmdline
 EOF
 printf 'DONE: B47 X200 framebuffer boot entry added.\n'
 printf 'Entry: %s\n' "$ENTRY"
 printf 'Blitter link: %s\n' "$BLITTER_LINK"
+printf 'Init marker verified: B47_FRAMEBUFFER_PATH_ACTIVE\n'
 printf 'Report: %s\n' "$REPORT"
