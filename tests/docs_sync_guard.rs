@@ -22,7 +22,7 @@ fn generated_docs_preserve_stable_base_and_edge_path() {
         "EDGE_STABLE_CHECKPOINT.md",
         "FEATURE_STATUS.md",
         "EDGE.md",
-        "WIKI_ROADMAP.md",
+        "docs/project/WIKI_ROADMAP.md",
         "docs/wiki/Repository-Model.md",
         "docs/wiki/Current-Status.md",
     ];

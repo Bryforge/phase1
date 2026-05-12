@@ -23,7 +23,7 @@ Use p1up, p1run, and p1full. No zip patch workflow should be required for normal
 
 ## Roadmap maintenance rule
 
-Future feature PRs must update roadmap and planned implementation docs when they complete roadmap items, change project direction, or add planned work. Review LEARNING.md, WIKI_ROADMAP.md, docs/website/NEXT_ROADMAP_IMPLEMENTATION.md, EDGE.md, and CHANGELOG.md for each milestone. If no roadmap update is needed, the PR body must say why.
+Future feature PRs must update roadmap and planned implementation docs when they complete roadmap items, change project direction, or add planned work. Review LEARNING.md, docs/project/WIKI_ROADMAP.md, docs/website/NEXT_ROADMAP_IMPLEMENTATION.md, EDGE.md, and CHANGELOG.md for each milestone. If no roadmap update is needed, the PR body must say why.
 
 ## Next planned learning work
 

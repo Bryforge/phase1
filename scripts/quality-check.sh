@@ -29,7 +29,7 @@ check_required_files() {
         SECURITY_REVIEW.md \
         UPDATE_PROTOCOL.md \
         QUALITY.md \
-        QUALITY_SCORECARD.md \
+        docs/quality/QUALITY_SCORECARD.md \
         Cargo.toml \
         src/main.rs \
         .github/workflows/rust-ci.yml

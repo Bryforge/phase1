@@ -15,7 +15,8 @@ fn dev_dock_exposes_self_hosted_workflow_commands() {
 
 #[test]
 fn dev_dock_docs_explain_inside_phase1_workflow() {
-    let docs = fs::read_to_string("DEV_DOCK.md").expect("DEV_DOCK.md exists");
+    let docs = fs::read_to_string("docs/developers/DEV_DOCK.md")
+        .expect("docs/developers/DEV_DOCK.md exists");
     assert!(docs.contains("dev docs"));
     assert!(docs.contains("dev cycle"));
     assert!(docs.contains("dev checkpoint"));

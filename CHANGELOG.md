@@ -37,7 +37,7 @@ Release focus: roadmap foundation, release readiness, and demo-quality operator 
 - `dash` / `dashboard` command with compact and full operator dashboard output.
 - `capabilities` / `caps` command for command capability and guard visibility.
 - Registry-backed alias normalization for built-in commands.
-- Roadmap design index in `ROADMAP_DESIGNS.md`.
+- Roadmap design index in `docs/project/ROADMAP_DESIGNS.md`.
 - Roadmap design documents under `docs/roadmap/`.
 - End-to-end smoke coverage for roadmap aliases, capabilities, dashboard output, network fallbacks, and command behavior.
 - `RELEASE_NOTES_v3.6.0.md`.

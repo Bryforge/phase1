@@ -24,7 +24,7 @@ add_missing() {
 award_docs() {
     points=0
     found=0
-    for file in README.md SECURITY.md SECURITY_REVIEW.md UPDATE_PROTOCOL.md QUALITY.md QUALITY_SCORECARD.md; do
+    for file in README.md SECURITY.md SECURITY_REVIEW.md UPDATE_PROTOCOL.md QUALITY.md docs/quality/QUALITY_SCORECARD.md; do
         if has_file "$file"; then
             found=$((found + 1))
         else

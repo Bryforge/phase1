@@ -133,7 +133,8 @@ fn terminal_selftest_and_validation_script_pass() {
 
 #[test]
 fn terminal_docs_point_to_simple_phase1_command_and_source_launcher() {
-    let terminal_doc = fs::read_to_string("TERMINAL.md").expect("read TERMINAL.md");
+    let terminal_doc =
+        fs::read_to_string("docs/operators/TERMINAL.md").expect("read docs/operators/TERMINAL.md");
     let readme = fs::read_to_string("terminal/README.md").expect("read terminal README");
     let root_readme = fs::read_to_string("README.md").expect("read README.md");
     assert!(terminal_doc.contains("./phase1"));

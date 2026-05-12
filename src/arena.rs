@@ -448,12 +448,12 @@ fn game_help() -> String {
 
 fn game_workspace() -> String {
     format!(
-        "phase1 game workspace\nactive game : {GAME_TITLE}\nversion     : {GAME_VERSION}\ncommand     : arena start\ndev docs    : GAME_DEV.md\nrunner      : sh scripts/test-game.sh\nscope       : game-only module, game integration tests, and WASI-lite launcher wiring\n"
+        "phase1 game workspace\nactive game : {GAME_TITLE}\nversion     : {GAME_VERSION}\ncommand     : arena start\ndev docs    : docs/developers/GAME_DEV.md\nrunner      : sh scripts/test-game.sh\nscope       : game-only module, game integration tests, and WASI-lite launcher wiring\n"
     )
 }
 
 fn game_files() -> String {
-    "phase1 game files\n- src/arena.rs\n- tests/game.rs\n- GAME_DEV.md\n- scripts/test-game.sh\n- src/wasm.rs integration\n- src/registry.rs command metadata\n".to_string()
+    "phase1 game files\n- src/arena.rs\n- tests/game.rs\n- docs/developers/GAME_DEV.md\n- scripts/test-game.sh\n- src/wasm.rs integration\n- src/registry.rs command metadata\n".to_string()
 }
 
 fn game_roadmap() -> String {
@@ -497,6 +497,6 @@ mod tests {
         let out = game(&["files".to_string()]);
         assert!(out.contains("src/arena.rs"));
         assert!(out.contains("tests/game.rs"));
-        assert!(out.contains("GAME_DEV.md"));
+        assert!(out.contains("docs/developers/GAME_DEV.md"));
     }
 }

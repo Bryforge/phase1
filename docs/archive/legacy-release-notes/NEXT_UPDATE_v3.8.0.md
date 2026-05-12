@@ -182,7 +182,7 @@ Update:
 - `README.md`
 - `SECURITY.md`
 - `SECURITY_REVIEW.md`
-- `ROADMAP_DESIGNS.md`
+- `docs/project/ROADMAP_DESIGNS.md`
 - `docs/roadmap/structured-pipelines.md`
 - `RELEASE_NOTES_v3.8.0.md`
 

@@ -2,7 +2,7 @@ use std::fs;
 
 #[test]
 fn roadmap_points_to_next_design_implementation_docs() {
-    let roadmap = read("WIKI_ROADMAP.md");
+    let roadmap = read("docs/project/WIKI_ROADMAP.md");
     assert_contains_all(
         &roadmap,
         &[
@@ -56,7 +56,7 @@ fn project_and_company_pages_stay_distinct() {
 #[test]
 fn direction_plan_preserves_static_security_posture() {
     for path in [
-        "WIKI_ROADMAP.md",
+        "docs/project/WIKI_ROADMAP.md",
         "docs/website/NEXT_ROADMAP_IMPLEMENTATION.md",
         "docs/website/PROJECT_AND_COMPANY_PAGES.md",
     ] {

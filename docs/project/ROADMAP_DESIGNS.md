@@ -65,7 +65,7 @@ Primary targets:
 ### Developer workspace implementation target
 
 ```text
-STORAGE_GIT_RUST.md
+docs/runtime/STORAGE_GIT_RUST.md
 ```
 
 Theme:
@@ -163,7 +163,7 @@ Targets:
 
 Design file: `docs/roadmap/language-runtime-support.md`
 
-User-facing workflow: `STORAGE_GIT_RUST.md`
+User-facing workflow: `docs/runtime/STORAGE_GIT_RUST.md`
 
 Targets:
 

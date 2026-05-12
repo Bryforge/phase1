@@ -141,7 +141,7 @@ SECURITY.md
 SECURITY_REVIEW.md
 UPDATE_PROTOCOL.md
 QUALITY.md
-QUALITY_SCORECARD.md
+docs/quality/QUALITY_SCORECARD.md
 ```
 
 Quality-critical scripts:
@@ -247,9 +247,9 @@ Every PR should answer:
 | Host-facing helpers | `src/bin/phase1-storage.rs`, `scripts/` |
 | Base1 | `base1/`, `docs/base1/`, `docs/os/BASE1_*`, `scripts/base1-*` |
 | Security crypto docs | `docs/security/CRYPTO_*`, `docs/security/crypto-profiles/`, `scripts/security-crypto-doc-integrity.sh` |
-| Website/wiki | `index.html`, `docs/wiki/`, `WIKI_ROADMAP.md` |
+| Website/wiki | `index.html`, `docs/wiki/`, `docs/project/WIKI_ROADMAP.md` |
 | Release/update | `UPDATE_PROTOCOL.md`, `CHANGELOG.md`, `Cargo.toml` |
-| Quality system | `QUALITY.md`, `QUALITY_SCORECARD.md`, `scripts/quality-*`, `scripts/base1-doc-integrity.sh`, `scripts/base1-link-check.sh`, `scripts/base1-test-inventory*.sh`, `scripts/base1-reorganization-verify.sh`, `scripts/security-crypto-doc-integrity.sh`, `.github/workflows/quality.yml` |
+| Quality system | `QUALITY.md`, `docs/quality/QUALITY_SCORECARD.md`, `scripts/quality-*`, `scripts/base1-doc-integrity.sh`, `scripts/base1-link-check.sh`, `scripts/base1-test-inventory*.sh`, `scripts/base1-reorganization-verify.sh`, `scripts/security-crypto-doc-integrity.sh`, `.github/workflows/quality.yml` |
 
 ## Safety baseline
 

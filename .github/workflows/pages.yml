@@ -11,8 +11,8 @@ on:
       - "site.js"
       - "button-fix.js"
       - "links.html"
-      - "CONTACT.md"
-      - "WIKI_ROADMAP.md"
+      - "docs/community/CONTACT.md"
+      - "docs/project/WIKI_ROADMAP.md"
       - "robots.txt"
       - "sitemap.xml"
       - "wiki/**"
@@ -43,7 +43,7 @@ jobs:
         run: |
           rm -rf _site
           mkdir -p _site/assets _site/wiki
-          cp index.html styles.css button-fix.css site.js button-fix.js links.html CONTACT.md WIKI_ROADMAP.md robots.txt sitemap.xml .nojekyll _site/
+          cp index.html styles.css button-fix.css site.js button-fix.js links.html docs/community/CONTACT.md docs/project/WIKI_ROADMAP.md robots.txt sitemap.xml .nojekyll _site/
           cp assets/phase1-banner.svg _site/assets/phase1-banner.svg
           cp wiki/index.html wiki/docs.css wiki/docs.js _site/wiki/
 

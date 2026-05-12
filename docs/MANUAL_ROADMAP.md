@@ -105,7 +105,7 @@ docs/
     BOOT_AND_MODES.md
     COMMAND_REFERENCE.md
     VFS_AND_SYSTEM_MODEL.md
-    STORAGE_GIT_RUST.md
+    docs/runtime/STORAGE_GIT_RUST.md
     NESTED_PHASE1.md
     OPS_LOGS.md
     TROUBLESHOOTING.md

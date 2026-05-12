@@ -240,7 +240,7 @@ The product page clarifies what phase1 is before the company page expands Bryfor
 
 ## Development checkpoint rule
 
-Feature milestones must update roadmap and planned implementation docs when they complete planned work or change direction. Review LEARNING.md, WIKI_ROADMAP.md, docs/website/NEXT_ROADMAP_IMPLEMENTATION.md, EDGE.md, and CHANGELOG.md. If no roadmap update is needed, say why in the PR body.
+Feature milestones must update roadmap and planned implementation docs when they complete planned work or change direction. Review LEARNING.md, docs/project/WIKI_ROADMAP.md, docs/website/NEXT_ROADMAP_IMPLEMENTATION.md, EDGE.md, and CHANGELOG.md. If no roadmap update is needed, say why in the PR body.
 
 <!-- phase1:auto:repo-model:start -->
 ## Phase1 repository model

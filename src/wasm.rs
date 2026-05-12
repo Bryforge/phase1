@@ -202,7 +202,7 @@ fn arena_inspect() -> String {
     out.push_str("wasi   : sandboxed, no host shell, no host network\n");
     out.push_str("cap    : none\n");
     out.push_str("play   : arena start\n");
-    out.push_str("dev    : GAME_DEV.md and scripts/test-game.sh\n");
+    out.push_str("dev    : docs/developers/GAME_DEV.md and scripts/test-game.sh\n");
     out
 }
 
@@ -383,7 +383,7 @@ mod tests {
         let dir = temp_plugins();
         let out = execute_plugin(&dir, "game", &["status".to_string()]);
         assert!(out.contains("phase1 game workspace"));
-        assert!(out.contains("GAME_DEV.md"));
+        assert!(out.contains("docs/developers/GAME_DEV.md"));
         let _ = fs::remove_dir_all(dir);
     }
 }

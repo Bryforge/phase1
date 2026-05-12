@@ -49,3 +49,6 @@ build/linux/
 build/openbsd/
 
 build/*
+phase1.log*
+
+# Phase1 runtime logs

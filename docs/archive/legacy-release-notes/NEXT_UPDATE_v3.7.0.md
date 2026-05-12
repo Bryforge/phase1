@@ -191,7 +191,7 @@ Update:
 - `README.md`
 - `SECURITY.md`
 - `SECURITY_REVIEW.md`
-- `ROADMAP_DESIGNS.md`
+- `docs/project/ROADMAP_DESIGNS.md`
 - `docs/roadmap/operator-shell.md`
 - `docs/roadmap/security-capabilities.md`
 - `RELEASE_NOTES_v3.7.0.md`

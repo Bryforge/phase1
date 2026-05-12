@@ -5,7 +5,7 @@ use std::process::Command;
 fn quality_docs_exist() {
     for path in [
         "QUALITY.md",
-        "QUALITY_SCORECARD.md",
+        "docs/quality/QUALITY_SCORECARD.md",
         "README.md",
         "SECURITY.md",
         "SECURITY_REVIEW.md",

@@ -63,7 +63,7 @@ fn phase1_arena_workspace_commands_are_visible() {
         "asset safety marker missing:\n{output}"
     );
     assert!(
-        output.contains("GAME_DEV.md"),
+        output.contains("docs/developers/GAME_DEV.md"),
         "game dev doc missing:\n{output}"
     );
     assert!(
