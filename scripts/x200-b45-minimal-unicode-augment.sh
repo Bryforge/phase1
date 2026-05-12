@@ -112,11 +112,11 @@ if ! grep -q 'B45 minimal Unicode test' "$ROOTFS/init"; then
 fi
 
 ( cd "$ROOTFS" && find . | cpio -H newc -o 2>/dev/null | gzip -9 > "../$INITRD_NAME" ) || fail "could not repack initramfs"
-cp "$WORK/$INITRD_NAME" "$INITRD"
+sudo cp "$WORK/$INITRD_NAME" "$INITRD"
 
 CFG="$MNT/boot/grub/grub.cfg"
 if ! grep -q "$ENTRY" "$CFG"; then
-  tmp="$CFG.b45"
+  TMP_LOCAL="$WORK/grub.cfg.b45"
   awk -v initrd="$INITRD_NAME" -v entry="$ENTRY" '
     /menuentry "Start Phase1 ASCII Safe Fallback"/ && !done {
       print "menuentry \"" entry "\" {";
@@ -131,16 +131,17 @@ if ! grep -q "$ENTRY" "$CFG"; then
       done=1;
     }
     { print }
-  ' "$CFG" > "$tmp"
-  sudo mv "$tmp" "$CFG"
+  ' "$CFG" > "$TMP_LOCAL"
+  sudo cp "$TMP_LOCAL" "$CFG"
 fi
 
-cat >> "$MNT/phase1/evidence/b42-prep.env" <<EOF
+cat > "$WORK/b45-prep-append.env" <<EOF
 BASE1_B45_MINIMAL_FONT=$FONT
 BASE1_B45_MINIMAL_RENDERER=$RENDERER
 BASE1_B45_TEST_ENTRY=$ENTRY
 BASE1_B45_JAPANESE_GLYPH_RENDERING=not_claimed
 EOF
+sudo sh -c "cat '$WORK/b45-prep-append.env' >> '$MNT/phase1/evidence/b42-prep.env'"
 
 grep -q "$ENTRY" "$CFG" || fail "minimal Unicode entry was not written"
 sync
