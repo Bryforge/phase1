@@ -11,7 +11,9 @@
 #   - run status;
 #   - run doctor;
 #   - create a checkpoint;
-#   - prepare verified X200 test media.
+#   - prepare verified X200 test media;
+#   - apply the B47 framebuffer boot-card augmentation;
+#   - verify the B47 framebuffer GRUB entry by readback.
 #
 # Do not run this whole wrapper with sudo. Called scripts use sudo internally
 # when media writing is required.
@@ -22,8 +24,11 @@ USB="${1:-}"
 CONFIRM="${2:-}"
 CHECKPOINT_NAME="${3:-pre-test}"
 BRANCH="black-phase1"
+ENTRY="Start Phase1 Framebuffer Boot Card"
 
 fail() { printf 'black-phase1-cycle: %s\n' "$1" >&2; exit 1; }
+part1() { case "$1" in /dev/nvme[0-9]n[0-9]|/dev/mmcblk[0-9]) printf '%sp1\n' "$1" ;; /dev/sd[a-z]|/dev/vd[a-z]|/dev/hd[a-z]) printf '%s1\n' "$1" ;; *) fail "use a whole disk like /dev/sdb" ;; esac; }
+
 [ -n "$USB" ] || fail "usage: sh scripts/black-phase1-cycle.sh /dev/sdb YES_WRITE_USB checkpoint-name"
 [ "$CONFIRM" = "YES_WRITE_USB" ] || fail "missing YES_WRITE_USB confirmation"
 [ -d .git ] || fail "run from phase1 repository root"
@@ -56,6 +61,33 @@ sh scripts/black-phase1-doctor.sh "$USB"
 sh scripts/black-phase1-checkpoint.sh "$CHECKPOINT_NAME"
 sh scripts/black-phase1-x200-test.sh "$USB" YES_WRITE_USB
 
+printf '\n===== APPLY B47 FRAMEBUFFER BOOT ENTRY =====\n'
+if [ -f scripts/x200-b47-framebuffer-boot-augment.sh ]; then
+  sh scripts/x200-b47-framebuffer-boot-augment.sh "$USB" YES_WRITE_USB
+else
+  fail "missing scripts/x200-b47-framebuffer-boot-augment.sh"
+fi
+
+printf '\n===== VERIFY B47 FRAMEBUFFER ENTRY =====\n'
+PART="$(part1 "$USB")"
+MNT="$(mktemp -d)"
+cleanup() { sudo umount "$MNT" 2>/dev/null || true; rmdir "$MNT" 2>/dev/null || true; }
+trap cleanup EXIT INT TERM
+sudo mount -o ro "$PART" "$MNT"
+[ -f "$MNT/boot/grub/grub.cfg" ] || fail "missing grub.cfg after B47 augment"
+grep -q "$ENTRY" "$MNT/boot/grub/grub.cfg" || fail "B47 framebuffer entry missing after augment"
+grep -q 'phase1.framebuffer=1' "$MNT/boot/grub/grub.cfg" || fail "B47 framebuffer kernel flag missing"
+grep -q 'BASE1_B47_ENTRY=' "$MNT/phase1/evidence/b42-prep.env" || fail "B47 evidence missing from USB"
+printf 'Verified GRUB entry: %s\n' "$ENTRY"
+printf 'B47 evidence:\n'
+grep 'BASE1_B47_' "$MNT/phase1/evidence/b42-prep.env" || true
+cleanup
+trap - EXIT INT TERM
+
 printf '\nDONE: black-phase1 full cycle completed.\n'
-printf 'Reboot only if the media prep printed:\n'
-printf '  RESULT: prepared_and_verified_for_next_test\n'
+printf 'RESULT: prepared_and_verified_for_next_test\n'
+printf 'Next X200 boot test entry:\n'
+printf '  %s\n' "$ENTRY"
+printf 'Normal fallback still available:\n'
+printf '  Start Phase1 Stable Safe Color UTF-8\n'
+printf '  Start Phase1 ASCII Safe Fallback\n'
