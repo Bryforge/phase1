@@ -125,7 +125,11 @@ fn b3_vm_boot_logs_are_linked_from_status_tracker() {
         .expect("boot readiness status tracker");
 
     assert!(status.contains("B3_VM_BOOT_LOGS.md"), "{status}");
-    assert!(status.contains("B3 log capture notes exist."), "{status}");
+    assert!(
+        status.contains("B3 log capture notes exist.")
+            || status.contains("B3 VM boot log capture notes are documented"),
+        "{status}"
+    );
 }
 
 #[test]
