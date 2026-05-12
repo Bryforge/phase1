@@ -138,9 +138,9 @@ Quality-critical docs:
 ```text
 README.md
 SECURITY.md
-SECURITY_REVIEW.md
+docs/security/SECURITY_REVIEW.md
 docs/releases/UPDATE_PROTOCOL.md
-QUALITY.md
+docs/quality/QUALITY.md
 docs/quality/QUALITY_SCORECARD.md
 ```
 
@@ -249,7 +249,7 @@ Every PR should answer:
 | Security crypto docs | `docs/security/CRYPTO_*`, `docs/security/crypto-profiles/`, `scripts/security-crypto-doc-integrity.sh` |
 | Website/wiki | `site/index.html`, `docs/wiki/`, `docs/project/WIKI_ROADMAP.md` |
 | Release/update | `docs/releases/UPDATE_PROTOCOL.md`, `docs/releases/CHANGELOG.md`, `Cargo.toml` |
-| Quality system | `QUALITY.md`, `docs/quality/QUALITY_SCORECARD.md`, `scripts/quality-*`, `scripts/base1-doc-integrity.sh`, `scripts/base1-link-check.sh`, `scripts/base1-test-inventory*.sh`, `scripts/base1-reorganization-verify.sh`, `scripts/security-crypto-doc-integrity.sh`, `.github/workflows/quality.yml` |
+| Quality system | `docs/quality/QUALITY.md`, `docs/quality/QUALITY_SCORECARD.md`, `scripts/quality-*`, `scripts/base1-doc-integrity.sh`, `scripts/base1-link-check.sh`, `scripts/base1-test-inventory*.sh`, `scripts/base1-reorganization-verify.sh`, `scripts/security-crypto-doc-integrity.sh`, `.github/workflows/quality.yml` |
 
 ## Safety baseline
 

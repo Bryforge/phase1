@@ -75,5 +75,5 @@ List known limitations, risks, or follow-up work.
 ## Related docs
 
 - `CONTRIBUTING.md`
-- `QUALITY.md`
+- `docs/quality/QUALITY.md`
 - `SECURITY.md`

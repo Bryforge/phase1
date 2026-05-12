@@ -190,7 +190,7 @@ Update:
 
 - `README.md`
 - `SECURITY.md`
-- `SECURITY_REVIEW.md`
+- `docs/security/SECURITY_REVIEW.md`
 - `docs/project/ROADMAP_DESIGNS.md`
 - `docs/roadmap/operator-shell.md`
 - `docs/roadmap/security-capabilities.md`

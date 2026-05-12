@@ -10,7 +10,7 @@ contact_links:
     url: https://github.com/Bryforge/phase1/blob/edge/stable/CONTRIBUTING.md
     about: Review contribution rules, validation gates, safety rules, and PR expectations before contributing.
   - name: Quality gates
-    url: https://github.com/Bryforge/phase1/blob/edge/stable/QUALITY.md
+    url: https://github.com/Bryforge/phase1/blob/edge/stable/docs/quality/QUALITY.md
     about: See required validation commands and quality gates for Phase1, Base1, Fyr, and security crypto docs.
   - name: Community and support roadmap
     url: https://github.com/Bryforge/phase1/tree/edge/stable/docs/community

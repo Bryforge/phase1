@@ -60,7 +60,7 @@ When in doubt, add an index before moving a file.
 | Public entry point | `README.md` |
 | Contribution rules | `CONTRIBUTING.md` |
 | Security policy | `SECURITY.md` |
-| Quality system | `QUALITY.md` and `docs/quality/QUALITY_SCORECARD.md` |
+| Quality system | `docs/quality/QUALITY.md` and `docs/quality/QUALITY_SCORECARD.md` |
 | License | `LICENSE` |
 | Feature status | `docs/project/FEATURE_STATUS.md` |
 | Release notes | `docs/releases/` with root compatibility files when needed |
@@ -109,7 +109,7 @@ Preferred root-level files:
 README.md
 CONTRIBUTING.md
 SECURITY.md
-QUALITY.md
+docs/quality/QUALITY.md
 docs/quality/QUALITY_SCORECARD.md
 docs/project/FEATURE_STATUS.md
 docs/releases/CHANGELOG.md

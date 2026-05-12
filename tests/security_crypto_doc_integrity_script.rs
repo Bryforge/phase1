@@ -18,7 +18,7 @@ fn security_crypto_doc_integrity_gate_checks_required_docs() {
 
     for path in [
         "SECURITY.md",
-        "SECURITY_REVIEW.md",
+        "docs/security/SECURITY_REVIEW.md",
         "README.md",
         "docs/security/README.md",
         "docs/security/TRUST_MODEL.md",

@@ -35,9 +35,9 @@ Phase1 values useful engineering over hype. Good contributions improve clarity, 
 Read the relevant docs first:
 
 - [`README.md`](README.md)
-- [`QUALITY.md`](QUALITY.md)
+- [`docs/quality/QUALITY.md`](docs/quality/QUALITY.md)
 - [`SECURITY.md`](SECURITY.md)
-- [`SECURITY_REVIEW.md`](SECURITY_REVIEW.md)
+- [`docs/security/SECURITY_REVIEW.md`](docs/security/SECURITY_REVIEW.md)
 - [`docs/README.md`](docs/README.md)
 - [`docs/security/README.md`](docs/security/README.md)
 - [`docs/base1/README.md`](docs/base1/README.md)

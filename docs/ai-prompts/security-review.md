@@ -12,7 +12,7 @@ Files to inspect first:
 - src/history.rs
 - src/registry.rs
 - SECURITY.md
-- SECURITY_REVIEW.md
+- docs/security/SECURITY_REVIEW.md
 - docs/CHATGPT_PROJECT_MANAGEMENT.md
 
 Review focus:

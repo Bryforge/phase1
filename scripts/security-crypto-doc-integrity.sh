@@ -34,7 +34,7 @@ check_contains() {
 check_files() {
   for file in \
     SECURITY.md \
-    SECURITY_REVIEW.md \
+    docs/security/SECURITY_REVIEW.md \
     README.md \
     docs/security/README.md \
     docs/security/TRUST_MODEL.md \
@@ -62,7 +62,7 @@ check_links_and_goals() {
   check_contains SECURITY.md 'Cryptographic policy goal'
   check_contains SECURITY.md 'docs/security/CRYPTO_POLICY_ROADMAP.md'
   check_contains README.md 'docs/security/CRYPTO_POLICY_ROADMAP.md'
-  check_contains SECURITY_REVIEW.md 'Security and usability goal'
+  check_contains docs/security/SECURITY_REVIEW.md 'Security and usability goal'
   check_contains docs/security/TRUST_MODEL.md 'Security and usability principle'
   check_contains docs/security/README.md 'CRYPTO_POLICY_ROADMAP.md'
   check_contains docs/security/README.md 'CRYPTO_REGISTRY.md'

@@ -38,7 +38,7 @@ jobs:
         run: |
           set -euo pipefail
           pattern='ghp_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{80,}|-----BEGIN (RSA |OPENSSH |EC |DSA )?PRIVATE KEY-----|AKIA[0-9A-Z]{16}|xox[baprs]-[A-Za-z0-9-]{20,}'
-          if git grep -n -I -E "$pattern" -- . ':!SECURITY.md' ':!SECURITY_REVIEW.md'; then
+          if git grep -n -I -E "$pattern" -- . ':!SECURITY.md' ':!docs/security/SECURITY_REVIEW.md'; then
             echo "High-confidence secret pattern found. Rotate the credential and remove it before release."
             exit 1
           fi

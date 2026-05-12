@@ -26,9 +26,9 @@ check_required_files() {
     for file in \
         README.md \
         SECURITY.md \
-        SECURITY_REVIEW.md \
+        docs/security/SECURITY_REVIEW.md \
         docs/releases/UPDATE_PROTOCOL.md \
-        QUALITY.md \
+        docs/quality/QUALITY.md \
         docs/quality/QUALITY_SCORECARD.md \
         Cargo.toml \
         src/main.rs \

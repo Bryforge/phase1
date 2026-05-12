@@ -24,7 +24,7 @@ add_missing() {
 award_docs() {
     points=0
     found=0
-    for file in README.md SECURITY.md SECURITY_REVIEW.md docs/releases/UPDATE_PROTOCOL.md QUALITY.md docs/quality/QUALITY_SCORECARD.md; do
+    for file in README.md SECURITY.md docs/security/SECURITY_REVIEW.md docs/releases/UPDATE_PROTOCOL.md docs/quality/QUALITY.md docs/quality/QUALITY_SCORECARD.md; do
         if has_file "$file"; then
             found=$((found + 1))
         else
@@ -80,7 +80,7 @@ award_ci() {
 
 award_safety() {
     points=0
-    for file in SECURITY.md SECURITY_REVIEW.md src/policy.rs src/ops_log.rs; do
+    for file in SECURITY.md docs/security/SECURITY_REVIEW.md src/policy.rs src/ops_log.rs; do
         if has_file "$file"; then
             points=$((points + 3))
         else

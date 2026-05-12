@@ -24,7 +24,7 @@
   ·
   <a href="docs/project/PHASE1_NATIVE_LANGUAGE.md">Fyr language</a>
   ·
-  <a href="QUALITY.md">Quality</a>
+  <a href="docs/quality/QUALITY.md">Quality</a>
   ·
   <a href="CONTRIBUTING.md">Contributing</a>
   ·
@@ -605,4 +605,4 @@ Security and crypto usability rule:
 
 Older planning notes, development checkpoints, AI/Gina notes, AVIM notes, and legacy next-update files have been moved out of the repository root and preserved under [`docs/archive/README.md`](docs/archive/README.md).
 
-Use the current root entry points first: `README.md`, `docs/project/FEATURE_STATUS.md`, `QUALITY.md`, `docs/repo/EDGE.md`, `docs/repo/REPO_CHANNELS.md`, and `docs/REPOSITORY_NAVIGATION.md`.
+Use the current root entry points first: `README.md`, `docs/project/FEATURE_STATUS.md`, `docs/quality/QUALITY.md`, `docs/repo/EDGE.md`, `docs/repo/REPO_CHANNELS.md`, and `docs/REPOSITORY_NAVIGATION.md`.

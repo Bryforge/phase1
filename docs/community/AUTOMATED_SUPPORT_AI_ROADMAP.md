@@ -146,7 +146,7 @@ The support AI should ground answers in repository docs, including:
 - [`../../README.md`](../../README.md)
 - [`../../CONTRIBUTING.md`](../../CONTRIBUTING.md)
 - [`../../SECURITY.md`](../../SECURITY.md)
-- [`../../QUALITY.md`](../../QUALITY.md)
+- [`../../docs/quality/QUALITY.md`](../../docs/quality/QUALITY.md)
 - [`../README.md`](../README.md)
 - [`../security/README.md`](../security/README.md)
 - [`../community/README.md`](README.md)

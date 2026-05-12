@@ -20,7 +20,7 @@ Start with [`MANUAL_ROADMAP.md`](MANUAL_ROADMAP.md) for the full book, manual, a
 - [`REORGANIZATION_PLAN.md`](REORGANIZATION_PLAN.md) — minimalist target structure, destination map, move policy, and rollback rules.
 - [`../README.md`](../README.md) — public project entry point and quick start.
 - [`../CONTRIBUTING.md`](../CONTRIBUTING.md) — repository-wide contribution guidelines.
-- [`../QUALITY.md`](../QUALITY.md) — quality gates and validation commands.
+- [`../docs/quality/QUALITY.md`](../docs/quality/QUALITY.md) — quality gates and validation commands.
 - [`../SECURITY.md`](../SECURITY.md) — security model and reporting guidance.
 
 ## Reader paths

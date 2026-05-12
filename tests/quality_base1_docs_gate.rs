@@ -34,7 +34,8 @@ fn quality_check_exposes_base1_reorganization_gate() {
 
 #[test]
 fn quality_docs_describe_current_base1_docs_gate() {
-    let quality = std::fs::read_to_string("QUALITY.md").expect("QUALITY.md");
+    let quality =
+        std::fs::read_to_string("docs/quality/QUALITY.md").expect("docs/quality/QUALITY.md");
 
     assert!(
         quality.contains("sh scripts/quality-check.sh base1-docs"),
@@ -76,7 +77,8 @@ fn quality_docs_describe_current_base1_docs_gate() {
 
 #[test]
 fn quality_docs_describe_base1_reorganization_gate() {
-    let quality = std::fs::read_to_string("QUALITY.md").expect("QUALITY.md");
+    let quality =
+        std::fs::read_to_string("docs/quality/QUALITY.md").expect("docs/quality/QUALITY.md");
 
     assert!(
         quality.contains("sh scripts/quality-check.sh base1-reorg"),
@@ -98,7 +100,8 @@ fn quality_docs_describe_base1_reorganization_gate() {
 
 #[test]
 fn quality_required_scripts_include_base1_docs_gate_tools() {
-    let quality = std::fs::read_to_string("QUALITY.md").expect("QUALITY.md");
+    let quality =
+        std::fs::read_to_string("docs/quality/QUALITY.md").expect("docs/quality/QUALITY.md");
 
     for script in [
         "scripts/base1-doc-integrity.sh",

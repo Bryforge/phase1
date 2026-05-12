@@ -21,7 +21,7 @@ The archive is preservation-first. Moving a file here does not delete it, rewrit
 
 - `../README.md`
 - `../docs/project/FEATURE_STATUS.md`
-- `../QUALITY.md`
+- `../docs/quality/QUALITY.md`
 - `../docs/repo/EDGE.md`
 - `../docs/repo/REPO_CHANNELS.md`
 - `../docs/REPOSITORY_NAVIGATION.md`

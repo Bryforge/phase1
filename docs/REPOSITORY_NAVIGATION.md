@@ -34,7 +34,7 @@ Phase1 now covers several connected workstreams:
 | Report a docs issue | [`../.github/ISSUE_TEMPLATE/documentation_issue.yml`](../.github/ISSUE_TEMPLATE/documentation_issue.yml) |
 | Review security posture | [`security/README.md`](security/README.md) |
 | Review crypto policy | [`security/CRYPTO_POLICY_ROADMAP.md`](security/CRYPTO_POLICY_ROADMAP.md) |
-| Review quality gates | [`../QUALITY.md`](../QUALITY.md) |
+| Review quality gates | [`../docs/quality/QUALITY.md`](../docs/quality/QUALITY.md) |
 | Review Base1 | [`base1/README.md`](base1/README.md) |
 | Review Fyr | [`fyr/README.md`](fyr/README.md) |
 | Review community plans | [`community/README.md`](community/README.md) |
@@ -50,7 +50,7 @@ Phase1 now covers several connected workstreams:
 | `README.md` | Public project entry point, quick start, status, Base1 overview, contribution link. |
 | `CONTRIBUTING.md` | Repository-wide contribution rules and validation expectations. |
 | `SECURITY.md` | Security model, trust gates, crypto policy goal, and reporting guidance. |
-| `QUALITY.md` | Quality gates, validation commands, score model, and ownership areas. |
+| `docs/quality/QUALITY.md` | Quality gates, validation commands, score model, and ownership areas. |
 | `docs/project/FEATURE_STATUS.md` | Implemented, experimental, restricted, and roadmap feature matrix. |
 | `docs/project/PHASE1_NATIVE_LANGUAGE.md` | Fyr language specification and entry point. |
 | `.github/` | Pull request template, issue templates, workflows, and automation. |

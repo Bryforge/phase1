@@ -106,7 +106,7 @@ fn pull_request_template_links_contribution_quality_and_security_docs() {
     let template =
         std::fs::read_to_string(".github/pull_request_template.md").expect("pull request template");
 
-    for doc in ["CONTRIBUTING.md", "QUALITY.md", "SECURITY.md"] {
+    for doc in ["CONTRIBUTING.md", "docs/quality/QUALITY.md", "SECURITY.md"] {
         assert!(
             template.contains(doc),
             "missing related doc {doc}: {template}"

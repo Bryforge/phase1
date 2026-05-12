@@ -1,6 +1,7 @@
 #[test]
 fn quality_docs_describe_security_crypto_docs_gate() {
-    let quality = std::fs::read_to_string("QUALITY.md").expect("QUALITY.md");
+    let quality =
+        std::fs::read_to_string("docs/quality/QUALITY.md").expect("docs/quality/QUALITY.md");
 
     assert!(quality.contains("Security crypto docs"), "{quality}");
     assert!(
@@ -19,7 +20,8 @@ fn quality_docs_describe_security_crypto_docs_gate() {
 
 #[test]
 fn quality_docs_list_security_crypto_required_script() {
-    let quality = std::fs::read_to_string("QUALITY.md").expect("QUALITY.md");
+    let quality =
+        std::fs::read_to_string("docs/quality/QUALITY.md").expect("docs/quality/QUALITY.md");
 
     assert!(
         quality.contains("scripts/security-crypto-doc-integrity.sh"),
@@ -34,7 +36,8 @@ fn quality_docs_list_security_crypto_required_script() {
 
 #[test]
 fn quality_docs_define_security_crypto_gate_scope() {
-    let quality = std::fs::read_to_string("QUALITY.md").expect("QUALITY.md");
+    let quality =
+        std::fs::read_to_string("docs/quality/QUALITY.md").expect("docs/quality/QUALITY.md");
 
     for text in [
         "Cryptographic policy work is documentation-first until implementation, tests, review, and validation exist.",
@@ -63,7 +66,8 @@ fn quality_docs_define_security_crypto_gate_scope() {
 
 #[test]
 fn quality_docs_preserve_crypto_safety_baseline() {
-    let quality = std::fs::read_to_string("QUALITY.md").expect("QUALITY.md");
+    let quality =
+        std::fs::read_to_string("docs/quality/QUALITY.md").expect("docs/quality/QUALITY.md");
 
     assert!(
         quality.contains("cryptographic policy work remains documentation-first until implementation, tests, review, and validation exist"),

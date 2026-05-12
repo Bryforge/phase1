@@ -4,11 +4,11 @@ use std::process::Command;
 #[test]
 fn quality_docs_exist() {
     for path in [
-        "QUALITY.md",
+        "docs/quality/QUALITY.md",
         "docs/quality/QUALITY_SCORECARD.md",
         "README.md",
         "SECURITY.md",
-        "SECURITY_REVIEW.md",
+        "docs/security/SECURITY_REVIEW.md",
         "docs/releases/UPDATE_PROTOCOL.md",
     ] {
         assert!(

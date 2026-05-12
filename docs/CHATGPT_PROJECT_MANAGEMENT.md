@@ -45,7 +45,7 @@ cargo check --workspace --all-targets
 cargo test --workspace --all-targets
 ```
 
-For security or host-tool changes, also inspect `src/policy.rs`, `SECURITY.md`, and `SECURITY_REVIEW.md`.
+For security or host-tool changes, also inspect `src/policy.rs`, `SECURITY.md`, and `docs/security/SECURITY_REVIEW.md`.
 
 ### Review
 
