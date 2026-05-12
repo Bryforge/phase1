@@ -1,21 +1,9 @@
 #!/usr/bin/env sh
 # Phase1 B45 next-test preparation orchestrator.
 #
-# Purpose:
-#   Prepare the USB for the next physical X200 boot test with no guessing:
-#   - update repository;
-#   - apply B43 UI policy patch;
-#   - build native Phase1;
-#   - run B43 preflight;
-#   - write/verify the stable safe color UTF-8 USB;
-#   - apply B45 minimal Unicode/Japanese augmentation;
-#   - mount the USB read-only and verify the final menu/evidence.
-#
-# Usage on the X200/final x86_64 builder:
-#   sh scripts/x200-b45-prepare-next-test.sh /dev/sdb YES_WRITE_USB
-#
-# Do not run this whole script with sudo. It calls sudo internally only when
-# media writing/mounting is required.
+# Branch-aware version for black-phase1: it updates the current branch instead
+# of forcing edge/stable. This prevents divergent-branch failures during rapid
+# experiments.
 
 set -eu
 
@@ -24,6 +12,7 @@ if [ -f "$HOME/.cargo/env" ]; then . "$HOME/.cargo/env" 2>/dev/null || true; fi
 
 USB="${1:-}"
 CONFIRM="${2:-}"
+TARGET_BRANCH="${BASE1_TARGET_BRANCH:-$(git rev-parse --abbrev-ref HEAD 2>/dev/null || printf black-phase1)}"
 OUT_DIR="${BASE1_B45_PREP_OUT:-build/base1-b45-next-test-prep}"
 REPORT="$OUT_DIR/b45-next-test-prep.env"
 VERIFY_LOG="$OUT_DIR/b45-final-usb-verify.log"
@@ -57,9 +46,7 @@ root_device_check() {
 [ -n "$USB" ] || fail "usage: sh scripts/x200-b45-prepare-next-test.sh /dev/sdb YES_WRITE_USB"
 [ "$CONFIRM" = "YES_WRITE_USB" ] || fail "missing YES_WRITE_USB confirmation"
 [ -d .git ] || fail "run from phase1 repository root"
-if [ "$(id -u)" = "0" ]; then
-  fail "do not run this wrapper with sudo; run as normal user"
-fi
+if [ "$(id -u)" = "0" ]; then fail "do not run this wrapper with sudo; run as normal user"; fi
 for c in git sh cargo file sudo findmnt mount umount mktemp grep awk tee tail; do need "$c"; done
 mkdir -p "$OUT_DIR"
 : > "$VERIFY_LOG"
@@ -68,8 +55,9 @@ section "REPAIR LOCAL OWNERSHIP"
 repair_ownership
 
 section "UPDATE REPOSITORY"
-git fetch origin edge/stable
-git pull --ff-only origin edge/stable
+printf 'target branch: %s\n' "$TARGET_BRANCH"
+git fetch origin "$TARGET_BRANCH"
+git pull --ff-only origin "$TARGET_BRANCH"
 git log -1 --oneline
 root_device_check
 
@@ -90,7 +78,7 @@ sh scripts/x200-b43-system-preflight.sh "$USB"
 
 section "WRITE BASE USB"
 [ -f scripts/x200-b43-prepare-polished-boot.sh ] || fail "missing B43 polished boot wrapper"
-sh scripts/x200-b43-prepare-polished-boot.sh "$USB" YES_WRITE_USB
+BASE1_TARGET_BRANCH="$TARGET_BRANCH" sh scripts/x200-b43-prepare-polished-boot.sh "$USB" YES_WRITE_USB
 
 section "APPLY B45 MINIMAL UNICODE AUGMENTATION"
 [ -f scripts/x200-b45-minimal-unicode-augment.sh ] || fail "missing B45 minimal Unicode augment script"
@@ -132,6 +120,7 @@ tail -n 120 "$VERIFY_LOG" || true
 
 cat > "$REPORT" <<EOF
 BASE1_B45_NEXT_TEST_TARGET=$USB
+BASE1_B45_NEXT_TEST_BRANCH=$TARGET_BRANCH
 BASE1_B45_NEXT_TEST_PARTITION=$PART
 BASE1_B45_NEXT_TEST_MAIN_ENTRY=$MAIN_ENTRY
 BASE1_B45_NEXT_TEST_MINIMAL_ENTRY=$MIN_ENTRY
