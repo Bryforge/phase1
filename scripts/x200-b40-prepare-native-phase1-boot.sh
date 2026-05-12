@@ -2,13 +2,13 @@
 # Phase1 X200 boot automation, backward-compatible filename.
 #
 # Current target: B42 stable-safe native color UTF-8 boot.
-# This script now uses the B42 writer, verifies the written USB, and fails if
-# the old B40/B41 menu is still present.
+# This script calls the B42 writer, captures a full writer log, and verifies
+# the USB after writing so failures cannot look like silent success.
 #
 # Usage:
 #   sh scripts/x200-b40-prepare-native-phase1-boot.sh /dev/sdb YES_WRITE_USB
 
-set -eu
+set -u
 
 if [ -d "$HOME/.cargo/bin" ]; then PATH="$HOME/.cargo/bin:$PATH"; export PATH; fi
 if [ -f "$HOME/.cargo/env" ]; then . "$HOME/.cargo/env" 2>/dev/null || true; fi
@@ -28,6 +28,8 @@ PHASE1_BIN="${BASE1_B42_PHASE1_BIN:-target/release/phase1}"
 BUSYBOX="${BASE1_B42_BUSYBOX:-}"
 REPORT_DIR="build/base1-b42-native-stable-safe-color-utf8"
 REPORT="$REPORT_DIR/b42-automation-diagnostics.env"
+WRITER_LOG="$REPORT_DIR/b42-writer-run.log"
+VERIFY_LOG="$REPORT_DIR/b42-usb-verify.log"
 MAIN_ENTRY="Start Phase1 Stable Safe Color UTF-8"
 ASCII_ENTRY="Start Phase1 ASCII Safe Fallback"
 INITRD_NAME="phase1-b42-native-stable-safe-color-utf8.img"
@@ -40,7 +42,7 @@ part1() {
   case "$1" in
     /dev/nvme[0-9]n[0-9]|/dev/mmcblk[0-9]) printf '%sp1\n' "$1" ;;
     /dev/sd[a-z]|/dev/vd[a-z]|/dev/hd[a-z]) printf '%s1\n' "$1" ;;
-    *) fail "use a whole disk like /dev/sdb" ;;
+    *) fail "use a whole disk like /dev/sdb, not $1" ;;
   esac
 }
 
@@ -52,76 +54,118 @@ find_busybox() {
   printf '\n'
 }
 
+show_log_tail() {
+  log="$1"
+  printf '\n--- tail: %s ---\n' "$log"
+  if [ -f "$log" ]; then
+    tail -n 120 "$log"
+  else
+    printf 'log not found\n'
+  fi
+  printf -- '--- end tail ---\n'
+}
+
 [ -n "$USB" ] || fail "usage: sh scripts/x200-b40-prepare-native-phase1-boot.sh /dev/sdb YES_WRITE_USB"
 [ "$CONFIRM" = YES_WRITE_USB ] || fail "missing YES_WRITE_USB confirmation"
 [ -d .git ] || fail "run from the phase1 repository root"
-for c in sh git sudo grep awk sha256sum cargo mount umount mktemp; do need "$c"; done
+for c in sh git sudo grep awk sha256sum cargo mount umount mktemp tail; do need "$c"; done
 mkdir -p "$REPORT_DIR"
+: > "$WRITER_LOG"
+: > "$VERIFY_LOG"
 
 section "--- updating repository ---"
 git fetch origin edge/stable
 git pull --ff-only origin edge/stable
 
-section "--- checking current B42 writer ---"
+section "--- automation target ---"
+printf 'target usb : %s\n' "$USB"
+printf 'writer     : %s\n' "$WRITER"
+printf 'writer log : %s\n' "$WRITER_LOG"
+printf 'verify log : %s\n' "$VERIFY_LOG"
+git log -1 --oneline || true
+git log -1 --oneline -- "$WRITER" || true
+
+section "--- checking B42 writer content ---"
 [ -f "$WRITER" ] || fail "missing $WRITER"
+sh -n "$WRITER" || fail "writer has shell syntax error"
 grep -q "$MAIN_ENTRY" "$WRITER" || fail "writer missing main B42 entry: $MAIN_ENTRY"
 grep -q "$ASCII_ENTRY" "$WRITER" || fail "writer missing ASCII fallback entry: $ASCII_ENTRY"
 grep -q 'BASE1_B42_ASCII_DEFAULT=0' "$WRITER" || fail "writer missing ASCII default=0 evidence"
 grep -q 'BASE1_B42_SAFE_DEFAULT=1' "$WRITER" || fail "writer missing safe default=1 evidence"
-
-git log -1 --oneline -- "$WRITER" || true
+printf 'B42 writer content: pass\n'
 
 section "--- building native Phase1 binary ---"
 rustup default stable >/dev/null 2>&1 || true
-cargo build --release
+cargo build --release || fail "cargo build failed"
 [ -x "$PHASE1_BIN" ] || fail "missing built binary: $PHASE1_BIN"
 sha256sum "$PHASE1_BIN"
 
 section "--- checking kernel, splash, busybox ---"
-[ -f "$KERNEL" ] || sh scripts/x200-b23-stage-host-gnulinux.sh
+if [ ! -f "$KERNEL" ]; then
+  [ -f scripts/x200-b23-stage-host-gnulinux.sh ] || fail "missing kernel and staging script"
+  sh scripts/x200-b23-stage-host-gnulinux.sh || fail "kernel staging failed"
+fi
 [ -f "$KERNEL" ] || fail "missing kernel: $KERNEL"
 [ -f "$SPLASH" ] || fail "missing splash: $SPLASH"
 BUSYBOX_PATH="$(find_busybox)"
 [ -n "$BUSYBOX_PATH" ] || fail "missing busybox-static"
 sha256sum "$KERNEL" "$SPLASH" "$BUSYBOX_PATH" 2>/dev/null || true
 
-section "--- writing B42 USB ---"
+section "--- running B42 writer with full diagnostics ---"
+printf 'About to run writer. If this fails, the log will be printed.\n'
+WRITER_ABS="$PWD/$WRITER"
+KERNEL_ABS="$PWD/$KERNEL"
+SPLASH_ABS="$PWD/$SPLASH"
+PHASE1_BIN_ABS="$PWD/$PHASE1_BIN"
+set +e
 sudo env \
-  BASE1_B42_PHASE1_BIN="$PWD/$PHASE1_BIN" \
-  BASE1_B42_KERNEL="$PWD/$KERNEL" \
-  BASE1_B42_SPLASH="$PWD/$SPLASH" \
+  BASE1_B42_PHASE1_BIN="$PHASE1_BIN_ABS" \
+  BASE1_B42_KERNEL="$KERNEL_ABS" \
+  BASE1_B42_SPLASH="$SPLASH_ABS" \
   BASE1_B42_BUSYBOX="$BUSYBOX_PATH" \
-  sh "$WRITER" "$USB" YES_WRITE_USB
+  sh -x "$WRITER_ABS" "$USB" YES_WRITE_USB > "$WRITER_LOG" 2>&1
+WRITER_RC=$?
+set -e
+show_log_tail "$WRITER_LOG"
+[ "$WRITER_RC" -eq 0 ] || fail "B42 writer failed with exit code $WRITER_RC. Full log: $WRITER_LOG"
+grep -q 'DONE: B42 stable safe color UTF-8 USB prepared' "$WRITER_LOG" || fail "writer exited 0 but did not print DONE marker. Full log: $WRITER_LOG"
 
 section "--- verifying USB after write ---"
 PART="$(part1 "$USB")"
 MNT="$(mktemp -d)"
-sudo mount -o ro "$PART" "$MNT"
-trap 'sudo umount "$MNT" 2>/dev/null || true; rmdir "$MNT" 2>/dev/null || true' EXIT INT TERM
-[ -f "$MNT/boot/grub/grub.cfg" ] || fail "USB missing grub.cfg"
-[ -f "$MNT/boot/phase1/vmlinuz" ] || fail "USB missing vmlinuz"
-[ -f "$MNT/boot/phase1/$INITRD_NAME" ] || fail "USB missing $INITRD_NAME"
-[ -f "$MNT/phase1/assets/phase1-splash.png" ] || fail "USB missing real splash"
-[ -f "$MNT/phase1/evidence/b42-prep.env" ] || fail "USB missing b42-prep.env"
-grep -q "$MAIN_ENTRY" "$MNT/boot/grub/grub.cfg" || fail "USB missing main B42 entry"
-grep -q "$ASCII_ENTRY" "$MNT/boot/grub/grub.cfg" || fail "USB missing ASCII fallback entry"
-grep -q 'phase1.ascii=0' "$MNT/boot/grub/grub.cfg" || fail "USB default entry does not pass phase1.ascii=0"
-grep -q 'phase1.ascii=1' "$MNT/boot/grub/grub.cfg" || fail "USB fallback entry does not pass phase1.ascii=1"
-grep -q 'BASE1_B42_ASCII_DEFAULT=0' "$MNT/phase1/evidence/b42-prep.env" || fail "USB evidence does not show ascii default off"
-
-echo "USB menu entries:"
-grep '^menuentry ' "$MNT/boot/grub/grub.cfg" || true
-
-echo "USB evidence:"
-cat "$MNT/phase1/evidence/b42-prep.env"
-sudo umount "$MNT"
-rmdir "$MNT"
-trap - EXIT INT TERM
+set +e
+{
+  echo "partition=$PART"
+  sudo mount -o ro "$PART" "$MNT" || exit 10
+  echo "mounted=$MNT"
+  test -f "$MNT/boot/grub/grub.cfg" || exit 11
+  test -f "$MNT/boot/phase1/vmlinuz" || exit 12
+  test -f "$MNT/boot/phase1/$INITRD_NAME" || exit 13
+  test -f "$MNT/phase1/assets/phase1-splash.png" || exit 14
+  test -f "$MNT/phase1/evidence/b42-prep.env" || exit 15
+  grep -q "$MAIN_ENTRY" "$MNT/boot/grub/grub.cfg" || exit 16
+  grep -q "$ASCII_ENTRY" "$MNT/boot/grub/grub.cfg" || exit 17
+  grep -q 'phase1.ascii=0' "$MNT/boot/grub/grub.cfg" || exit 18
+  grep -q 'phase1.ascii=1' "$MNT/boot/grub/grub.cfg" || exit 19
+  grep -q 'BASE1_B42_ASCII_DEFAULT=0' "$MNT/phase1/evidence/b42-prep.env" || exit 20
+  echo "USB menu entries:"
+  grep '^menuentry ' "$MNT/boot/grub/grub.cfg" || true
+  echo "USB evidence:"
+  cat "$MNT/phase1/evidence/b42-prep.env"
+  sudo umount "$MNT" || exit 21
+} > "$VERIFY_LOG" 2>&1
+VERIFY_RC=$?
+rmdir "$MNT" 2>/dev/null || true
+set -e
+show_log_tail "$VERIFY_LOG"
+[ "$VERIFY_RC" -eq 0 ] || fail "USB verification failed with exit code $VERIFY_RC. Full log: $VERIFY_LOG"
 
 cat > "$REPORT" <<EOF
 BASE1_B42_AUTOMATION_TARGET=$USB
 BASE1_B42_AUTOMATION_PARTITION=$PART
 BASE1_B42_AUTOMATION_WRITER=$WRITER
+BASE1_B42_AUTOMATION_WRITER_LOG=$WRITER_LOG
+BASE1_B42_AUTOMATION_VERIFY_LOG=$VERIFY_LOG
 BASE1_B42_AUTOMATION_MAIN_ENTRY=$MAIN_ENTRY
 BASE1_B42_AUTOMATION_ASCII_ENTRY=$ASCII_ENTRY
 BASE1_B42_AUTOMATION_ASCII_DEFAULT=0
