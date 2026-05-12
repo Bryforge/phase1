@@ -1,37 +1,27 @@
 #!/usr/bin/env sh
 # Phase1 / Base1 X200 B40 native Phase1 boot automation.
 #
-# Purpose:
-#   Automate the full current X200 native Phase1 boot preparation path:
-#
-#     1. update repo;
-#     2. ensure/stage Linux-libre baseline kernel artifact;
-#     3. build or use the Phase1 Rust binary;
-#     4. check BusyBox/static runtime requirement;
-#     5. write the B40 native-loader-fix USB using the proven B38 protocol.
-#
-# Working boot protocol:
-#   Libreboot GRUB -> normal linux -> normal initrd -> rdinit=/init
+# Automates the current X200 native Phase1 boot preparation path:
+#   1. update repo;
+#   2. ensure/stage Linux-libre baseline kernel artifact;
+#   3. build or use the Phase1 Rust binary;
+#   4. check BusyBox/static runtime requirement;
+#   5. write the B40 native-loader-fix USB using the proven B38 protocol.
 #
 # Usage:
 #   sh scripts/x200-b40-prepare-native-phase1-boot.sh /dev/sdb YES_WRITE_USB
 #
-# Optional environment:
+# Optional:
 #   BASE1_AUTO_INSTALL_PACKAGES=1   install missing cargo/rustc/busybox-static on apt systems
 #   BASE1_SKIP_PULL=1               skip git pull
 #   BASE1_SKIP_BUILD=1              skip cargo build --release
 #   BASE1_B40_PHASE1_BIN=/path/bin  use explicit Phase1 binary
 #   BASE1_B40_KERNEL=/path/vmlinuz  use explicit kernel
 #   BASE1_B40_BUSYBOX=/path/busybox use explicit busybox
-#
-# Safety:
-#   This delegates the final write to x200-b40-native-loader-fix-usb.sh, which
-#   refuses to run without YES_WRITE_USB and refuses /dev/sda.
 
 set -eu
 
-# Native rustup installs Cargo here. Add it early so non-login shells launched
-# from desktop terminals can still find cargo/rustc.
+# Native rustup installs Cargo here. Add it early so non-login shells can find it.
 if [ -d "$HOME/.cargo/bin" ]; then
   PATH="$HOME/.cargo/bin:$PATH"
   export PATH
@@ -56,6 +46,7 @@ REPORT="$REPORT_DIR/b40-prepare-native-phase1-boot.env"
 
 fail() { printf 'x200-b40-prepare-native-phase1-boot: %s\n' "$1" >&2; exit 1; }
 need_cmd() { command -v "$1" >/dev/null 2>&1 || fail "missing command: $1"; }
+section() { printf '\n%s\n' "$1"; }
 
 usage() {
   cat <<'EOF'
@@ -70,6 +61,33 @@ Optional environment:
   BASE1_B40_KERNEL=/path/vmlinuz  use explicit kernel
   BASE1_B40_BUSYBOX=/path/busybox use explicit busybox
 EOF
+}
+
+apt_install_if_allowed() {
+  packages="$1"
+  if [ "$AUTO_INSTALL" != "1" ]; then
+    return 1
+  fi
+  command -v apt-get >/dev/null 2>&1 || return 1
+  printf 'Installing packages with apt: %s\n' "$packages"
+  sudo apt-get update
+  # shellcheck disable=SC2086
+  sudo apt-get install -y $packages
+}
+
+ensure_cargo_if_needed() {
+  if [ "$SKIP_BUILD" = "1" ]; then
+    return 0
+  fi
+  if command -v cargo >/dev/null 2>&1; then
+    printf 'cargo: %s\n' "$(command -v cargo)"
+    return 0
+  fi
+  printf 'Cargo is missing from PATH. Checked native rustup path: %s/.cargo/bin\n' "$HOME"
+  if apt_install_if_allowed "cargo rustc"; then
+    command -v cargo >/dev/null 2>&1 && return 0
+  fi
+  fail "missing command: cargo. Try: export PATH=\"$HOME/.cargo/bin:\$PATH\" or source ~/.cargo/env; or set BASE1_B40_PHASE1_BIN and BASE1_SKIP_BUILD=1"
 }
 
 find_busybox() {
@@ -100,33 +118,6 @@ busybox_is_static() {
   return 0
 }
 
-apt_install_if_allowed() {
-  packages="$1"
-  if [ "$AUTO_INSTALL" != "1" ]; then
-    return 1
-  fi
-  command -v apt-get >/dev/null 2>&1 || return 1
-  printf 'Installing packages with apt: %s\n' "$packages"
-  sudo apt-get update
-  # shellcheck disable=SC2086
-  sudo apt-get install -y $packages
-}
-
-ensure_cargo_if_needed() {
-  if [ "$SKIP_BUILD" = "1" ]; then
-    return 0
-  fi
-  if command -v cargo >/dev/null 2>&1; then
-    printf 'cargo: %s\n' "$(command -v cargo)"
-    return 0
-  fi
-  printf 'Cargo is missing from PATH. Checked native rustup path: %s/.cargo/bin\n' "$HOME"
-  if apt_install_if_allowed "cargo rustc"; then
-    command -v cargo >/dev/null 2>&1 && return 0
-  fi
-  fail "missing command: cargo. Try: export PATH=\"$HOME/.cargo/bin:\$PATH\"  or run: source ~/.cargo/env  (or provide BASE1_B40_PHASE1_BIN and BASE1_SKIP_BUILD=1)"
-}
-
 install_busybox_static_if_allowed() {
   apt_install_if_allowed "busybox-static"
 }
@@ -147,20 +138,20 @@ printf 'target usb : %s\n' "$USB"
 printf 'kernel     : %s\n' "$KERNEL"
 printf 'phase1 bin : %s\n' "$PHASE1_BIN"
 printf 'writer     : %s\n' "$B40_WRITER"
-printf 'PATH       : %s\n\n' "$PATH"
+printf 'PATH       : %s\n' "$PATH"
 
 if [ "$SKIP_PULL" != "1" ]; then
-  printf '--- updating repository ---\n'
+  section "--- updating repository ---"
   git pull --ff-only origin edge/stable
 else
-  printf '--- repository update skipped ---\n'
+  section "--- repository update skipped ---"
 fi
 
-printf '\n--- checking splash asset ---\n'
+section "--- checking splash asset ---"
 [ -f "$SPLASH" ] || fail "missing splash asset: $SPLASH"
 sha256sum "$SPLASH"
 
-printf '\n--- checking/staging kernel artifact ---\n'
+section "--- checking/staging kernel artifact ---"
 if [ ! -f "$KERNEL" ]; then
   [ -f "$STAGER" ] || fail "kernel missing and stager missing: $STAGER"
   printf 'Kernel missing. Staging host GNU/Linux kernel/initrd artifacts...\n'
@@ -169,7 +160,7 @@ fi
 [ -f "$KERNEL" ] || fail "kernel still missing after staging: $KERNEL"
 sha256sum "$KERNEL"
 
-printf '\n--- building/checking Phase1 release binary ---\n'
+section "--- building/checking Phase1 release binary ---"
 ensure_cargo_if_needed
 if [ "$SKIP_BUILD" != "1" ]; then
   cargo build --release
@@ -179,7 +170,7 @@ fi
 [ -x "$PHASE1_BIN" ] || fail "missing executable Phase1 binary: $PHASE1_BIN. Build with cargo or set BASE1_B40_PHASE1_BIN=/path/to/phase1"
 sha256sum "$PHASE1_BIN"
 
-printf '\n--- checking BusyBox runtime ---\n'
+section "--- checking BusyBox runtime ---"
 BUSYBOX_PATH="$(find_busybox)"
 if [ -z "$BUSYBOX_PATH" ] || ! busybox_is_static "$BUSYBOX_PATH"; then
   printf 'Static BusyBox missing or dynamic.\n'
@@ -192,7 +183,7 @@ busybox_is_static "$BUSYBOX_PATH" || fail "BusyBox appears dynamic; run: sudo ap
 printf 'busybox: %s\n' "$BUSYBOX_PATH"
 sha256sum "$BUSYBOX_PATH" 2>/dev/null || true
 
-printf '\n--- writing B40 native Phase1 USB ---\n'
+section "--- writing B40 native Phase1 USB ---"
 sudo env \
   BASE1_B40_PHASE1_BIN="$PWD/$PHASE1_BIN" \
   BASE1_B40_KERNEL="$PWD/$KERNEL" \
