@@ -6,7 +6,7 @@
 #
 #     1. update repo;
 #     2. ensure/stage Linux-libre baseline kernel artifact;
-#     3. build the Phase1 Rust binary;
+#     3. build or use the Phase1 Rust binary;
 #     4. check BusyBox/static runtime requirement;
 #     5. write the B40 native-loader-fix USB using the proven B38 protocol.
 #
@@ -17,7 +17,7 @@
 #   sh scripts/x200-b40-prepare-native-phase1-boot.sh /dev/sdb YES_WRITE_USB
 #
 # Optional environment:
-#   BASE1_AUTO_INSTALL_PACKAGES=1   install missing busybox-static on apt systems
+#   BASE1_AUTO_INSTALL_PACKAGES=1   install missing cargo/rustc/busybox-static on apt systems
 #   BASE1_SKIP_PULL=1               skip git pull
 #   BASE1_SKIP_BUILD=1              skip cargo build --release
 #   BASE1_B40_PHASE1_BIN=/path/bin  use explicit Phase1 binary
@@ -52,7 +52,7 @@ Usage:
   sh scripts/x200-b40-prepare-native-phase1-boot.sh /dev/sdb YES_WRITE_USB
 
 Optional environment:
-  BASE1_AUTO_INSTALL_PACKAGES=1   install missing busybox-static on apt systems
+  BASE1_AUTO_INSTALL_PACKAGES=1   install missing cargo/rustc/busybox-static on apt systems
   BASE1_SKIP_PULL=1               skip git pull
   BASE1_SKIP_BUILD=1              skip cargo build --release
   BASE1_B40_PHASE1_BIN=/path/bin  use explicit Phase1 binary
@@ -89,14 +89,34 @@ busybox_is_static() {
   return 0
 }
 
-install_busybox_static_if_allowed() {
+apt_install_if_allowed() {
+  packages="$1"
   if [ "$AUTO_INSTALL" != "1" ]; then
     return 1
   fi
   command -v apt-get >/dev/null 2>&1 || return 1
-  printf 'Installing busybox-static with apt...\n'
+  printf 'Installing packages with apt: %s\n' "$packages"
   sudo apt-get update
-  sudo apt-get install -y busybox-static
+  # shellcheck disable=SC2086
+  sudo apt-get install -y $packages
+}
+
+ensure_cargo_if_needed() {
+  if [ "$SKIP_BUILD" = "1" ]; then
+    return 0
+  fi
+  if command -v cargo >/dev/null 2>&1; then
+    return 0
+  fi
+  printf 'Cargo is missing.\n'
+  if apt_install_if_allowed "cargo rustc"; then
+    command -v cargo >/dev/null 2>&1 && return 0
+  fi
+  fail "missing command: cargo. Run: sudo apt install -y cargo rustc  (or set BASE1_AUTO_INSTALL_PACKAGES=1, or provide BASE1_B40_PHASE1_BIN and BASE1_SKIP_BUILD=1)"
+}
+
+install_busybox_static_if_allowed() {
+  apt_install_if_allowed "busybox-static"
 }
 
 [ -n "$USB" ] || { usage; fail "missing USB block device"; }
@@ -104,7 +124,7 @@ install_busybox_static_if_allowed() {
 [ -d .git ] || fail "run this from the phase1 repository root"
 [ -f "$B40_WRITER" ] || fail "missing $B40_WRITER; run git pull first"
 
-for cmd in sh git sudo cargo grep awk sha256sum ls; do
+for cmd in sh git sudo grep awk sha256sum ls; do
   need_cmd "$cmd"
 done
 
@@ -136,13 +156,14 @@ fi
 [ -f "$KERNEL" ] || fail "kernel still missing after staging: $KERNEL"
 sha256sum "$KERNEL"
 
-printf '\n--- building Phase1 release binary ---\n'
+printf '\n--- building/checking Phase1 release binary ---\n'
+ensure_cargo_if_needed
 if [ "$SKIP_BUILD" != "1" ]; then
   cargo build --release
 else
   printf 'cargo build skipped by BASE1_SKIP_BUILD=1\n'
 fi
-[ -x "$PHASE1_BIN" ] || fail "missing executable Phase1 binary: $PHASE1_BIN"
+[ -x "$PHASE1_BIN" ] || fail "missing executable Phase1 binary: $PHASE1_BIN. Build with cargo or set BASE1_B40_PHASE1_BIN=/path/to/phase1"
 sha256sum "$PHASE1_BIN"
 
 printf '\n--- checking BusyBox runtime ---\n'
