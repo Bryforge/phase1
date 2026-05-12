@@ -10,6 +10,10 @@
 # Purpose:
 #   Move the remaining root-facing project notes, release docs, website files,
 #   and loose legacy material into logical folders or junk preservation.
+#
+# Preservation rule:
+#   If the destination already exists, do not overwrite it. Move the source to
+#   junk/root-duplicates/ with its original path encoded in the filename.
 
 set -eu
 
@@ -18,6 +22,7 @@ APPLY=0
 PLAN_DIR="build/reorganization"
 PLAN="$PLAN_DIR/root-cleanup-phase2-plan.txt"
 REPORT="$PLAN_DIR/root-cleanup-phase2-report.env"
+DUP_DIR="junk/root-duplicates"
 
 case "$MODE" in
   --dry-run|dry-run) APPLY=0 ;;
@@ -38,10 +43,23 @@ mkdir_logged() {
   log_plan "mkdir -p $dir"
   if [ "$APPLY" -eq 1 ]; then mkdir -p "$dir"; else printf '[dry-run] mkdir -p %s\n' "$dir"; fi
 }
+encoded_path() { printf '%s' "$1" | tr '/' '__'; }
 move_if_exists() {
   src="$1"
   dst="$2"
   [ -e "$src" ] || return 0
+  if [ -e "$dst" ]; then
+    dup="$DUP_DIR/$(encoded_path "$src")"
+    mkdir_logged "$(dirname "$dup")"
+    log_plan "destination exists: $dst; preserving $src at $dup"
+    log_plan "git mv $src $dup"
+    if [ "$APPLY" -eq 1 ]; then
+      git mv "$src" "$dup"
+    else
+      printf '[dry-run] destination exists: %s; git mv %s %s\n' "$dst" "$src" "$dup"
+    fi
+    return 0
+  fi
   mkdir_logged "$(dirname "$dst")"
   log_plan "git mv $src $dst"
   if [ "$APPLY" -eq 1 ]; then git mv "$src" "$dst"; else printf '[dry-run] git mv %s %s\n' "$src" "$dst"; fi
@@ -132,6 +150,7 @@ PHASE1_ROOT_CLEANUP_MODE=$MODE
 PHASE1_ROOT_CLEANUP_APPLY=$APPLY
 PHASE1_ROOT_CLEANUP_PLAN=$PLAN
 PHASE1_ROOT_CLEANUP_RESULT=$([ "$APPLY" -eq 1 ] && printf applied || printf dry_run)
+PHASE1_ROOT_DUPLICATES=$DUP_DIR
 EOF
 
 printf '\nRoot cleanup phase 2 %s complete.\n' "$([ "$APPLY" -eq 1 ] && printf applied || printf dry-run)"
