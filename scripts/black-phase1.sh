@@ -9,6 +9,7 @@
 #   sh scripts/black-phase1.sh doctor [/dev/sdb]
 #   sh scripts/black-phase1.sh push "message"
 #   sh scripts/black-phase1.sh x200-test /dev/sdb YES_WRITE_USB
+#   sh scripts/black-phase1.sh cycle /dev/sdb YES_WRITE_USB checkpoint-name
 #   sh scripts/black-phase1.sh sync
 #   sh scripts/black-phase1.sh promote <commit-or-range> "message"
 #   sh scripts/black-phase1.sh help
@@ -42,6 +43,9 @@ Commands:
   x200-test /dev/sdb YES_WRITE_USB
       X200 rapid pull/build/preflight/prepare verified test USB.
 
+  cycle /dev/sdb YES_WRITE_USB checkpoint-name
+      Full cycle: status, doctor, checkpoint, then verified X200 test media prep.
+
   sync
       Rebase black-phase1 on latest origin/edge/stable and force-with-lease only black-phase1.
 
@@ -53,6 +57,7 @@ Examples:
   sh scripts/black-phase1.sh bootstrap /dev/sdb
   sh scripts/black-phase1.sh push "Try minimal CJK renderer path"
   sh scripts/black-phase1.sh x200-test /dev/sdb YES_WRITE_USB
+  sh scripts/black-phase1.sh cycle /dev/sdb YES_WRITE_USB b45-minimal-cjk-test
 EOF
     ;;
   status)
@@ -69,6 +74,9 @@ EOF
     ;;
   x200-test|test)
     run scripts/black-phase1-x200-test.sh "$@"
+    ;;
+  cycle|full-cycle)
+    run scripts/black-phase1-cycle.sh "$@"
     ;;
   sync)
     run scripts/black-phase1-sync-from-edge.sh "$@"
