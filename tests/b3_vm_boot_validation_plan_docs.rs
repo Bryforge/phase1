@@ -157,7 +157,8 @@ fn b3_vm_boot_validation_plan_is_linked_from_status_tracker() {
     assert!(status.contains("B3 kernel/initrd handoff script is present"), "{status}");
     assert!(status.contains("B3 GNU/Linux stage script is present"), "{status}");
     assert!(
-        status.contains("B3 remains planning plus proof-of-life, handoff, and GNU/Linux staging scaffolding until B2 validation has passed locally or in CI and B3 validation logs and report exist."),
+        status.contains("B3 remains planning plus proof-of-life, handoff, and GNU/Linux staging scaffolding until B2 validation has passed locally or in CI and B3 validation logs and report exist.")
+            || status.contains("B3 remains planning plus proof-of-life, handoff, GNU/Linux staging, OpenBSD staging, and validation-report scaffolding until a reviewed B3 log bundle/report exists."),
         "{status}"
     );
 }
