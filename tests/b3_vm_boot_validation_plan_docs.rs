@@ -5,7 +5,9 @@ fn b3_vm_boot_validation_plan_defines_scope_and_entry_gate() {
 
     assert!(plan.contains("Base1 B3 VM boot validation plan"), "{plan}");
     assert!(
-        plan.contains("evidence needed before Base1 can claim VM boot validation for a named profile"),
+        plan.contains(
+            "evidence needed before Base1 can claim VM boot validation for a named profile"
+        ),
         "{plan}"
     );
     assert!(
@@ -30,7 +32,10 @@ fn b3_vm_boot_validation_plan_defines_initial_profile_and_command_shape() {
         "The first command surface should be dry-run only.",
         "Any real VM run should come later with a separate validation report and captured logs.",
     ] {
-        assert!(plan.contains(text), "missing B3 command/profile text {text}: {plan}");
+        assert!(
+            plan.contains(text),
+            "missing B3 command/profile text {text}: {plan}"
+        );
     }
 }
 
@@ -65,7 +70,10 @@ fn b3_vm_boot_validation_plan_documents_current_scaffold_commands() {
         "build/base1-b3-gnulinux-stage/reports/qemu-boot.log",
         "B3_GNULINUX_STAGE.md",
     ] {
-        assert!(plan.contains(text), "missing B3 scaffold command/output text {text}: {plan}");
+        assert!(
+            plan.contains(text),
+            "missing B3 scaffold command/output text {text}: {plan}"
+        );
     }
 }
 
@@ -87,7 +95,10 @@ fn b3_vm_boot_validation_plan_lists_required_evidence() {
         "known limitations",
         "explicit non-claims",
     ] {
-        assert!(plan.contains(text), "missing B3 evidence text {text}: {plan}");
+        assert!(
+            plan.contains(text),
+            "missing B3 evidence text {text}: {plan}"
+        );
     }
 }
 
@@ -122,7 +133,10 @@ fn b3_vm_boot_validation_plan_preserves_checklists() {
         "Passing GNU/Linux stage evidence has been copied into a validation report.",
         "Passing handoff evidence has been copied into a validation report.",
     ] {
-        assert!(plan.contains(text), "missing B3 checklist text {text}: {plan}");
+        assert!(
+            plan.contains(text),
+            "missing B3 checklist text {text}: {plan}"
+        );
     }
 }
 
@@ -142,7 +156,10 @@ fn b3_vm_boot_validation_plan_links_related_docs() {
         "B3_KERNEL_INITRD_HANDOFF.md",
         "B3_GNULINUX_STAGE.md",
     ] {
-        assert!(plan.contains(link), "missing B3 related doc link {link}: {plan}");
+        assert!(
+            plan.contains(link),
+            "missing B3 related doc link {link}: {plan}"
+        );
     }
 }
 
@@ -152,10 +169,22 @@ fn b3_vm_boot_validation_plan_is_linked_from_status_tracker() {
         .expect("boot readiness status tracker");
 
     assert!(status.contains("B3_VM_BOOT_VALIDATION_PLAN.md"), "{status}");
-    assert!(status.contains("B3 VM boot validation planning is now present"), "{status}");
-    assert!(status.contains("B3 UEFI proof-of-life script is present"), "{status}");
-    assert!(status.contains("B3 kernel/initrd handoff script is present"), "{status}");
-    assert!(status.contains("B3 GNU/Linux stage script is present"), "{status}");
+    assert!(
+        status.contains("B3 VM boot validation planning is now present"),
+        "{status}"
+    );
+    assert!(
+        status.contains("B3 UEFI proof-of-life script is present"),
+        "{status}"
+    );
+    assert!(
+        status.contains("B3 kernel/initrd handoff script is present"),
+        "{status}"
+    );
+    assert!(
+        status.contains("B3 GNU/Linux stage script is present"),
+        "{status}"
+    );
     assert!(
         status.contains("B3 remains planning plus proof-of-life, handoff, and GNU/Linux staging scaffolding until B2 validation has passed locally or in CI and B3 validation logs and report exist."),
         "{status}"

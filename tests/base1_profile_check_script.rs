@@ -10,14 +10,20 @@ fn base1_profile_check_script_exists_and_has_valid_shell_syntax() {
     assert!(contents.contains("x200-supervisor-lite"), "{contents}");
     assert!(contents.contains("x86_64-vm-validation"), "{contents}");
     assert!(contents.contains("workstation-supervisor"), "{contents}");
-    assert!(contents.contains("BASE1_PROFILE_NON_CLAIM_HYPERVISOR"), "{contents}");
+    assert!(
+        contents.contains("BASE1_PROFILE_NON_CLAIM_HYPERVISOR"),
+        "{contents}"
+    );
 
     let status = Command::new("sh")
         .arg("-n")
         .arg(script)
         .status()
         .expect("run sh -n");
-    assert!(status.success(), "profile checker should have valid shell syntax");
+    assert!(
+        status.success(),
+        "profile checker should have valid shell syntax"
+    );
 }
 
 #[test]
@@ -84,7 +90,10 @@ fn base1_profile_check_all_profiles_pass_and_write_report() {
         "no boot-ready claim",
         "no hypervisor claim",
     ] {
-        assert!(stdout.contains(text), "missing stdout text {text}: {stdout}");
+        assert!(
+            stdout.contains(text),
+            "missing stdout text {text}: {stdout}"
+        );
     }
 
     let report = std::fs::read_to_string(format!("{out_dir}/profile-check.env"))
@@ -103,7 +112,10 @@ fn base1_profile_check_all_profiles_pass_and_write_report() {
         "BASE1_PROFILE_CHECK_NON_CLAIM_HARDWARE=1",
         "BASE1_PROFILE_CHECK_NON_CLAIM_DAILY_DRIVER=1",
     ] {
-        assert!(report.contains(text), "missing report text {text}: {report}");
+        assert!(
+            report.contains(text),
+            "missing report text {text}: {report}"
+        );
     }
 }
 
@@ -126,16 +138,31 @@ fn base1_profile_check_single_x200_profile_passes() {
         "checked_profiles: 1",
         "result: pass",
     ] {
-        assert!(stdout.contains(text), "missing x200 check text {text}: {stdout}");
+        assert!(
+            stdout.contains(text),
+            "missing x200 check text {text}: {stdout}"
+        );
     }
 }
 
 #[test]
 fn base1_profile_files_preserve_expected_claim_boundaries_and_resource_profiles() {
     for (path, expected_name, expected_mode) in [
-        ("profiles/base1/x200-supervisor-lite.env", "BASE1_PROFILE_NAME=x200-supervisor-lite", "BASE1_PROFILE_DEFAULT_DELIVERY_MODE=direct-first"),
-        ("profiles/base1/x86_64-vm-validation.env", "BASE1_PROFILE_NAME=x86_64-vm-validation", "BASE1_PROFILE_DEFAULT_DELIVERY_MODE=supervisor-lite"),
-        ("profiles/base1/workstation-supervisor.env", "BASE1_PROFILE_NAME=workstation-supervisor", "BASE1_PROFILE_DEFAULT_DELIVERY_MODE=workstation-supervisor"),
+        (
+            "profiles/base1/x200-supervisor-lite.env",
+            "BASE1_PROFILE_NAME=x200-supervisor-lite",
+            "BASE1_PROFILE_DEFAULT_DELIVERY_MODE=direct-first",
+        ),
+        (
+            "profiles/base1/x86_64-vm-validation.env",
+            "BASE1_PROFILE_NAME=x86_64-vm-validation",
+            "BASE1_PROFILE_DEFAULT_DELIVERY_MODE=supervisor-lite",
+        ),
+        (
+            "profiles/base1/workstation-supervisor.env",
+            "BASE1_PROFILE_NAME=workstation-supervisor",
+            "BASE1_PROFILE_DEFAULT_DELIVERY_MODE=workstation-supervisor",
+        ),
     ] {
         let profile = std::fs::read_to_string(path).expect("profile file");
 
@@ -151,7 +178,10 @@ fn base1_profile_files_preserve_expected_claim_boundaries_and_resource_profiles(
             "BASE1_PROFILE_NON_CLAIM_HARDWARE=1",
             "BASE1_PROFILE_NON_CLAIM_DAILY_DRIVER=1",
         ] {
-            assert!(profile.contains(text), "missing profile text {text} in {path}: {profile}");
+            assert!(
+                profile.contains(text),
+                "missing profile text {text} in {path}: {profile}"
+            );
         }
     }
 }

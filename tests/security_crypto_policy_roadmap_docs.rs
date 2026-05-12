@@ -3,7 +3,10 @@ fn crypto_policy_roadmap_defines_operator_selectable_profiles() {
     let roadmap = std::fs::read_to_string("docs/security/CRYPTO_POLICY_ROADMAP.md")
         .expect("crypto policy roadmap");
 
-    assert!(roadmap.contains("Phase1 cryptographic policy roadmap"), "{roadmap}");
+    assert!(
+        roadmap.contains("Phase1 cryptographic policy roadmap"),
+        "{roadmap}"
+    );
     assert!(
         roadmap.contains("as secure as possible while maintaining practical usability"),
         "{roadmap}"
@@ -16,7 +19,10 @@ fn crypto_policy_roadmap_defines_operator_selectable_profiles() {
         "post-quantum-preview",
         "lab-only",
     ] {
-        assert!(roadmap.contains(profile), "missing crypto profile {profile}: {roadmap}");
+        assert!(
+            roadmap.contains(profile),
+            "missing crypto profile {profile}: {roadmap}"
+        );
     }
 }
 
@@ -34,7 +40,10 @@ fn crypto_policy_roadmap_defines_points_of_control() {
         "Logs/evidence",
         "Fyr/packages",
     ] {
-        assert!(roadmap.contains(control), "missing control point {control}: {roadmap}");
+        assert!(
+            roadmap.contains(control),
+            "missing control point {control}: {roadmap}"
+        );
     }
 }
 
@@ -44,7 +53,9 @@ fn crypto_policy_roadmap_rejects_custom_security_primitives() {
         .expect("crypto policy roadmap");
 
     assert!(
-        roadmap.contains("Phase1 should not invent new cryptographic primitives for security-critical use."),
+        roadmap.contains(
+            "Phase1 should not invent new cryptographic primitives for security-critical use."
+        ),
         "{roadmap}"
     );
     assert!(
@@ -77,7 +88,10 @@ fn crypto_policy_roadmap_documents_registry_and_algorithm_requirements() {
         "Security notes",
         "Usability notes",
     ] {
-        assert!(roadmap.contains(text), "missing registry/doc requirement {text}: {roadmap}");
+        assert!(
+            roadmap.contains(text),
+            "missing registry/doc requirement {text}: {roadmap}"
+        );
     }
 }
 
@@ -154,7 +168,10 @@ fn crypto_algorithm_template_defines_required_sections() {
         "Review checklist",
         "Non-claims",
     ] {
-        assert!(template.contains(text), "missing template section {text}: {template}");
+        assert!(
+            template.contains(text),
+            "missing template section {text}: {template}"
+        );
     }
 }
 
@@ -172,7 +189,10 @@ fn crypto_algorithm_template_preserves_safety_requirements() {
         "Migration/rotation guidance is documented.",
         "Non-claims are preserved.",
     ] {
-        assert!(template.contains(text), "missing template safety requirement {text}: {template}");
+        assert!(
+            template.contains(text),
+            "missing template safety requirement {text}: {template}"
+        );
     }
 }
 
@@ -181,7 +201,10 @@ fn crypto_policy_roadmap_preserves_non_claims() {
     let roadmap = std::fs::read_to_string("docs/security/CRYPTO_POLICY_ROADMAP.md")
         .expect("crypto policy roadmap");
 
-    assert!(roadmap.contains("does not make Phase1 or Base1 cryptographically complete"), "{roadmap}");
+    assert!(
+        roadmap.contains("does not make Phase1 or Base1 cryptographically complete"),
+        "{roadmap}"
+    );
     assert!(roadmap.contains("audited"), "{roadmap}");
     assert!(roadmap.contains("quantum-safe"), "{roadmap}");
     assert!(roadmap.contains("hardware-validated"), "{roadmap}");
@@ -190,8 +213,7 @@ fn crypto_policy_roadmap_preserves_non_claims() {
 
 #[test]
 fn security_index_links_crypto_policy_surface() {
-    let index = std::fs::read_to_string("docs/security/README.md")
-        .expect("security docs index");
+    let index = std::fs::read_to_string("docs/security/README.md").expect("security docs index");
 
     for text in [
         "CRYPTO_POLICY_ROADMAP.md",

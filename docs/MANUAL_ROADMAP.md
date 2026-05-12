@@ -355,7 +355,7 @@ The first test should verify that:
 Add one top-level README link:
 
 ```md
-[Codex](docs/MANUAL_ROADMAP.md)
+[Codex](MANUAL_ROADMAP.md)
 ```
 
 Add or update the docs section so users can find:
@@ -412,3 +412,13 @@ Every documentation PR should answer:
 8. **Hardware/recovery appendix release**: publish hardware pages only after validation reports exist.
 9. **Book export**: convert the stable manual to PDF/ePub after the repo docs have stabilized.
 10. **Ongoing governance**: make docs claim review part of every release checklist.
+
+## Base1 public compatibility path
+
+- [`docs/base1/ROOT_COMPATIBILITY_MAP.md`](ROOT_COMPATIBILITY_MAP.md) — Public path for the Base1 root compatibility map.
+
+## Root compatibility map public path
+
+- [`ROOT_COMPATIBILITY_MAP.md`](ROOT_COMPATIBILITY_MAP.md) — Base1 root compatibility map.
+- `docs/base1/ROOT_COMPATIBILITY_MAP.md` — Public compatibility-map path.
+- [`docs/base1/ROOT_COMPATIBILITY_MAP.md`](base1/ROOT_COMPATIBILITY_MAP.md) — Repository-root public path for the Base1 root compatibility map.

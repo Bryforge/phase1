@@ -9,8 +9,7 @@ usage() {
 usage: sh scripts/base1-qemu-visual-boot-preview.sh --build [--run] [--fullscreen]
 
 Builds a local UEFI FAT image that displays assets/phase1_word.png as a small,
-centered, padded boot splash through GRUB inside QEMU. This is visual boot
-preview only.
+centered, padded boot splash through GRUB inside QEMU. This is visual boot preview only.
 
 Options:
   --build       Build the local preview image under build/.

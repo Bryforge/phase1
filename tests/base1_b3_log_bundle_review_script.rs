@@ -5,7 +5,10 @@ fn base1_b3_log_bundle_review_script_exists_and_has_valid_shell_syntax() {
     let script = "scripts/base1-b3-log-bundle-review.sh";
     let contents = std::fs::read_to_string(script).expect("B3 log bundle review script");
 
-    assert!(contents.contains("Base1 B3 log bundle review scaffold"), "{contents}");
+    assert!(
+        contents.contains("Base1 B3 log bundle review scaffold"),
+        "{contents}"
+    );
     assert!(contents.contains("set -eu"), "{contents}");
     assert!(contents.contains("require_build_out_dir"), "{contents}");
     assert!(contents.contains("build/*"), "{contents}");
@@ -16,7 +19,10 @@ fn base1_b3_log_bundle_review_script_exists_and_has_valid_shell_syntax() {
         .status()
         .expect("run sh -n on B3 log bundle review script");
 
-    assert!(status.success(), "B3 log bundle review script should have valid shell syntax");
+    assert!(
+        status.success(),
+        "B3 log bundle review script should have valid shell syntax"
+    );
 }
 
 #[test]
@@ -86,7 +92,10 @@ fn base1_b3_log_bundle_review_dry_run_prints_paths_and_can_write_report() {
         "result: dry-run",
         "no B3 claim",
     ] {
-        assert!(stdout.contains(text), "missing dry-run stdout text {text}: {stdout}");
+        assert!(
+            stdout.contains(text),
+            "missing dry-run stdout text {text}: {stdout}"
+        );
     }
 
     let report = std::fs::read_to_string(format!("{out_dir}/b3-log-bundle-review.env"))
@@ -106,7 +115,10 @@ fn base1_b3_log_bundle_review_dry_run_prints_paths_and_can_write_report() {
         "BASE1_B3_NON_CLAIM_RELEASE_CANDIDATE=1",
         "BASE1_B3_NON_CLAIM_DAILY_DRIVER=1",
     ] {
-        assert!(report.contains(text), "missing report text {text}: {report}");
+        assert!(
+            report.contains(text),
+            "missing report text {text}: {report}"
+        );
     }
 }
 
@@ -154,6 +166,9 @@ fn base1_b3_log_bundle_review_preserves_boundaries_and_expected_markers() {
         "printf '\\nresult: %s\\n' \"$result\"",
         "BASE1_B3_LOG_REVIEW_RESULT=$result",
     ] {
-        assert!(contents.contains(text), "missing boundary/marker text {text}: {contents}");
+        assert!(
+            contents.contains(text),
+            "missing boundary/marker text {text}: {contents}"
+        );
     }
 }

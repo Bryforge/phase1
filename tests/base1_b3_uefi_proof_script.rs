@@ -5,7 +5,10 @@ const SCRIPT: &str = "scripts/base1-b3-uefi-proof.sh";
 #[test]
 fn base1_b3_uefi_proof_script_exists_and_has_valid_shell_syntax() {
     let metadata = std::fs::metadata(SCRIPT).expect("B3 UEFI proof script exists");
-    assert!(metadata.len() > 0, "B3 UEFI proof script should not be empty");
+    assert!(
+        metadata.len() > 0,
+        "B3 UEFI proof script should not be empty"
+    );
 
     let output = Command::new("sh")
         .arg("-n")
@@ -68,7 +71,10 @@ fn base1_b3_uefi_proof_requires_action_and_rejects_unknown_arguments() {
         .arg(SCRIPT)
         .output()
         .expect("run B3 UEFI proof without action");
-    assert!(!no_action.status.success(), "script should require an action");
+    assert!(
+        !no_action.status.success(),
+        "script should require an action"
+    );
     let no_action_stderr = String::from_utf8_lossy(&no_action.stderr);
     assert!(
         no_action_stderr.contains("choose --build, --run, --check, or a combination"),
@@ -80,7 +86,10 @@ fn base1_b3_uefi_proof_requires_action_and_rejects_unknown_arguments() {
         .arg("--unknown")
         .output()
         .expect("run B3 UEFI proof with unknown argument");
-    assert!(!unknown.status.success(), "script should reject unknown arguments");
+    assert!(
+        !unknown.status.success(),
+        "script should reject unknown arguments"
+    );
     let unknown_stderr = String::from_utf8_lossy(&unknown.stderr);
     assert!(
         unknown_stderr.contains("unknown argument: --unknown"),
@@ -112,7 +121,10 @@ fn base1_b3_uefi_proof_uses_expected_artifacts_and_splash_fitting() {
         "edk2-x86_64-code.fd",
         "qemu-system-x86_64",
     ] {
-        assert!(script.contains(text), "missing expected artifact/tool text {text}: {script}");
+        assert!(
+            script.contains(text),
+            "missing expected artifact/tool text {text}: {script}"
+        );
     }
 }
 
@@ -142,7 +154,10 @@ fn base1_b3_uefi_proof_searches_root_before_loading_font_and_keeps_menu_overlay(
         "BASE1_B3_UEFI_PROOF_RESULT=$result",
         "BASE1_B3_UEFI_PROOF_SERIAL_LOG=reports/b3-serial.log",
     ] {
-        assert!(script.contains(text), "missing readable menu proof text {text}: {script}");
+        assert!(
+            script.contains(text),
+            "missing readable menu proof text {text}: {script}"
+        );
     }
 
     let search_font_pos = script
@@ -191,6 +206,9 @@ fn base1_b3_uefi_proof_preserves_non_claims_and_safe_launch_shape() {
         "-device usb-storage,drive=phase1usb,bootindex=1",
         "-net none",
     ] {
-        assert!(script.contains(required), "missing required safety text {required}: {script}");
+        assert!(
+            script.contains(required),
+            "missing required safety text {required}: {script}"
+        );
     }
 }

@@ -1,4 +1,5 @@
-const LIBREBOOT_V1_1_RELEASE_NOTES: &str = "docs/base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1_1.md";
+const LIBREBOOT_V1_1_RELEASE_NOTES: &str =
+    "docs/base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1_1.md";
 
 #[test]
 fn libreboot_patch_release_notes_record_v1_1_checkpoint() {

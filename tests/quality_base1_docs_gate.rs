@@ -1,7 +1,6 @@
 #[test]
 fn quality_check_runs_full_base1_docs_gate_in_quick_gate() {
-    let script = std::fs::read_to_string("scripts/quality-check.sh")
-        .expect("quality-check script");
+    let script = std::fs::read_to_string("scripts/quality-check.sh").expect("quality-check script");
 
     assert!(script.contains("check_base1_docs()"), "{script}");
     assert!(
@@ -22,13 +21,9 @@ fn quality_check_runs_full_base1_docs_gate_in_quick_gate() {
 
 #[test]
 fn quality_check_exposes_base1_reorganization_gate() {
-    let script = std::fs::read_to_string("scripts/quality-check.sh")
-        .expect("quality-check script");
+    let script = std::fs::read_to_string("scripts/quality-check.sh").expect("quality-check script");
 
-    assert!(
-        script.contains("check_base1_reorganization()"),
-        "{script}"
-    );
+    assert!(script.contains("check_base1_reorganization()"), "{script}");
     assert!(
         script.contains("run sh scripts/base1-reorganization-verify.sh"),
         "{script}"
@@ -112,7 +107,10 @@ fn quality_required_scripts_include_base1_docs_gate_tools() {
         "scripts/base1-test-inventory-verify.sh",
         "scripts/base1-reorganization-verify.sh",
     ] {
-        assert!(quality.contains(script), "missing quality script {script}: {quality}");
+        assert!(
+            quality.contains(script),
+            "missing quality script {script}: {quality}"
+        );
     }
 
     assert!(quality.contains("Base1 integrity"), "{quality}");

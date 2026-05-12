@@ -16,7 +16,10 @@ fn progress_checkpoint_disclosure_defines_plain_language_state() {
         "daily-driver system",
         "evidence-bound boot-readiness scaffolding",
     ] {
-        assert!(doc.contains(text), "missing plain-language state text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing plain-language state text {text}: {doc}"
+        );
     }
 }
 
@@ -42,7 +45,10 @@ fn progress_checkpoint_disclosure_records_current_readiness_and_evidence() {
         "OpenBSD serial marker",
         "docs/os/B3_OPENBSD_SERIAL_LIMITATION.md",
     ] {
-        assert!(doc.contains(text), "missing readiness/evidence text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing readiness/evidence text {text}: {doc}"
+        );
     }
 }
 
@@ -66,7 +72,10 @@ fn progress_checkpoint_disclosure_lists_evidence_commands() {
         "--profile x86_64-vm-validation",
         "--write-report",
     ] {
-        assert!(doc.contains(text), "missing evidence command text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing evidence command text {text}: {doc}"
+        );
     }
 }
 
@@ -92,7 +101,10 @@ fn progress_checkpoint_disclosure_distinguishes_proven_from_not_proven() {
         "an installer works",
         "physical hardware works",
     ] {
-        assert!(doc.contains(text), "missing proven/not-proven text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing proven/not-proven text {text}: {doc}"
+        );
     }
 }
 
@@ -117,7 +129,10 @@ fn progress_checkpoint_disclosure_preserves_limitations_and_remaining_blockers()
         "Phase1 launch result recorded",
         "non-claims preserved",
     ] {
-        assert!(doc.contains(text), "missing limitation/blocker text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing limitation/blocker text {text}: {doc}"
+        );
     }
 }
 

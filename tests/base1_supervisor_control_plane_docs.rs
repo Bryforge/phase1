@@ -15,7 +15,10 @@ fn base1_supervisor_control_plane_defines_scope_and_purpose() {
     assert_contains(&doc, "# Base1 supervisor control-plane contract");
     assert_contains(&doc, "Status: planning scaffold");
     assert_contains(&doc, "Scope: command surface, policy gates, artifact flow, evidence flow, recovery hooks, and non-claim boundaries");
-    assert_contains(&doc, "coordinate staged kernels, evidence capture, storage tiers, and recovery hooks");
+    assert_contains(
+        &doc,
+        "coordinate staged kernels, evidence capture, storage tiers, and recovery hooks",
+    );
     assert_contains(&doc, "without slowing the direct-first path");
 }
 
@@ -39,7 +42,10 @@ fn base1_supervisor_control_plane_lists_command_surface() {
 #[test]
 fn base1_supervisor_control_plane_preserves_policy_gates() {
     let doc = read_doc();
-    assert_contains(&doc, "The control plane must load the selected Base1 profile before doing any work.");
+    assert_contains(
+        &doc,
+        "The control plane must load the selected Base1 profile before doing any work.",
+    );
     assert_contains(&doc, "allowed delivery modes");
     assert_contains(&doc, "maximum staged-kernel concurrency");
     assert_contains(&doc, "target RAM budget");

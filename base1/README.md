@@ -126,3 +126,34 @@ Base1 is at foundation stage. The current files establish the secure architectur
 - Add offline-mode profile validation.
 - Add recovery media and reset workflow.
 - Add Base1 integration tests in CI.
+- [`base1/RECOVERY_USB_TARGET_SELECTION.md`](RECOVERY_USB_TARGET_SELECTION.md) — Recovery USB target selection design.
+
+## Base1 public surface index
+
+- [`HARDWARE_TARGETS.md`](HARDWARE_TARGETS.md) — Hardware target matrix.
+- [`LIBREBOOT_COMMAND_INDEX.md`](LIBREBOOT_COMMAND_INDEX.md) — Libreboot command index.
+- [`LIBREBOOT_DOCS_SUMMARY.md`](LIBREBOOT_DOCS_SUMMARY.md) — Libreboot docs summary.
+- [`LIBREBOOT_GRUB_RECOVERY.md`](LIBREBOOT_GRUB_RECOVERY.md) — Libreboot GRUB recovery notes.
+- [`LIBREBOOT_MILESTONE.md`](LIBREBOOT_MILESTONE.md) — Libreboot milestone checkpoint.
+- [`LIBREBOOT_OPERATOR_CHECKLIST.md`](LIBREBOOT_OPERATOR_CHECKLIST.md) — Libreboot operator checklist.
+- [`LIBREBOOT_PREFLIGHT.md`](LIBREBOOT_PREFLIGHT.md) — Libreboot preflight notes.
+- [`LIBREBOOT_PROFILE.md`](LIBREBOOT_PROFILE.md) — Libreboot profile.
+- [`LIBREBOOT_QUICKSTART.md`](LIBREBOOT_QUICKSTART.md) — Libreboot quickstart.
+- [`LIBREBOOT_VALIDATION_REPORT.md`](LIBREBOOT_VALIDATION_REPORT.md) — Libreboot validation report.
+- [`NETWORK_LOCKDOWN_DRY_RUN.md`](NETWORK_LOCKDOWN_DRY_RUN.md) — Network lockdown dry-run.
+- [`PHASE1_COMPATIBILITY.md`](PHASE1_COMPATIBILITY.md) — Phase1 compatibility contract.
+- [`RECOVERY_USB_COMMAND_INDEX.md`](RECOVERY_USB_COMMAND_INDEX.md) — Recovery USB command index.
+- [`RECOVERY_USB_DESIGN.md`](RECOVERY_USB_DESIGN.md) — Recovery USB design.
+- [`RECOVERY_USB_EMERGENCY_SHELL.md`](RECOVERY_USB_EMERGENCY_SHELL.md) — Recovery USB emergency shell design.
+- [`RECOVERY_USB_EMERGENCY_SHELL_COMMAND_INDEX.md`](RECOVERY_USB_EMERGENCY_SHELL_COMMAND_INDEX.md) — Recovery USB emergency shell command index.
+- [`RECOVERY_USB_EMERGENCY_SHELL_SUMMARY.md`](RECOVERY_USB_EMERGENCY_SHELL_SUMMARY.md) — Recovery USB emergency shell summary.
+- [`RECOVERY_USB_HARDWARE_CHECKLIST.md`](RECOVERY_USB_HARDWARE_CHECKLIST.md) — Recovery USB hardware checklist.
+- [`RECOVERY_USB_HARDWARE_SUMMARY.md`](RECOVERY_USB_HARDWARE_SUMMARY.md) — Recovery USB hardware summary.
+- [`RECOVERY_USB_IMAGE_COMMAND_INDEX.md`](RECOVERY_USB_IMAGE_COMMAND_INDEX.md) — Recovery USB image command index.
+- [`RECOVERY_USB_IMAGE_PROVENANCE.md`](RECOVERY_USB_IMAGE_PROVENANCE.md) — Recovery USB image provenance.
+- [`RECOVERY_USB_IMAGE_SUMMARY.md`](RECOVERY_USB_IMAGE_SUMMARY.md) — Recovery USB image summary.
+- [`RECOVERY_USB_TARGET_COMMAND_INDEX.md`](RECOVERY_USB_TARGET_COMMAND_INDEX.md) — Recovery USB target command index.
+- [`RECOVERY_USB_TARGET_SUMMARY.md`](RECOVERY_USB_TARGET_SUMMARY.md) — Recovery USB target summary.
+- [`RECOVERY_USB_VALIDATION_REPORT.md`](RECOVERY_USB_VALIDATION_REPORT.md) — Recovery USB validation report.
+- [`ROADMAP.md`](ROADMAP.md) — Base1 roadmap.
+- [`SECURITY_MODEL.md`](SECURITY_MODEL.md) — Base1 security model.

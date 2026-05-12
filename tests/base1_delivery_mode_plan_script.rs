@@ -5,12 +5,21 @@ fn base1_delivery_mode_plan_script_exists_and_has_valid_shell_syntax() {
     let script = "scripts/base1-delivery-mode-plan.sh";
     let contents = std::fs::read_to_string(script).expect("delivery mode planner script");
 
-    assert!(contents.contains("Base1 dual-path delivery mode planner"), "{contents}");
+    assert!(
+        contents.contains("Base1 dual-path delivery mode planner"),
+        "{contents}"
+    );
     assert!(contents.contains("set -eu"), "{contents}");
     assert!(contents.contains("require_build_out_dir"), "{contents}");
-    assert!(contents.contains("PROFILE_FILE=\"$PROFILE_DIR/$PROFILE.env\""), "{contents}");
+    assert!(
+        contents.contains("PROFILE_FILE=\"$PROFILE_DIR/$PROFILE.env\""),
+        "{contents}"
+    );
     assert!(contents.contains(". \"$PROFILE_FILE\""), "{contents}");
-    assert!(contents.contains("BASE1_PROFILE_ALLOWED_DELIVERY_MODES"), "{contents}");
+    assert!(
+        contents.contains("BASE1_PROFILE_ALLOWED_DELIVERY_MODES"),
+        "{contents}"
+    );
     assert!(contents.contains("direct-first"), "{contents}");
     assert!(contents.contains("supervisor-lite"), "{contents}");
     assert!(contents.contains("supervisor-concurrent"), "{contents}");
@@ -22,7 +31,10 @@ fn base1_delivery_mode_plan_script_exists_and_has_valid_shell_syntax() {
         .status()
         .expect("run sh -n on delivery mode planner");
 
-    assert!(status.success(), "delivery mode planner should have valid shell syntax");
+    assert!(
+        status.success(),
+        "delivery mode planner should have valid shell syntax"
+    );
 }
 
 #[test]
@@ -97,7 +109,10 @@ fn base1_delivery_mode_plan_dry_run_defaults_to_profile_default_x200_direct_firs
         "no boot-ready claim",
         "no hypervisor claim",
     ] {
-        assert!(stdout.contains(text), "missing default dry-run text {text}: {stdout}");
+        assert!(
+            stdout.contains(text),
+            "missing default dry-run text {text}: {stdout}"
+        );
     }
 }
 
@@ -154,7 +169,10 @@ fn base1_delivery_mode_plan_prepare_writes_report_from_profile_contract() {
         "BASE1_DELIVERY_NON_CLAIM_RELEASE_CANDIDATE=1",
         "BASE1_DELIVERY_NON_CLAIM_DAILY_DRIVER=1",
     ] {
-        assert!(report.contains(text), "missing report text {text}: {report}");
+        assert!(
+            report.contains(text),
+            "missing report text {text}: {report}"
+        );
     }
 }
 
@@ -184,7 +202,10 @@ fn base1_delivery_mode_plan_supports_concurrent_when_profile_allows_it() {
         "no hypervisor claim",
         "no hardware validation",
     ] {
-        assert!(stdout.contains(text), "missing concurrent dry-run text {text}: {stdout}");
+        assert!(
+            stdout.contains(text),
+            "missing concurrent dry-run text {text}: {stdout}"
+        );
     }
 }
 
@@ -200,9 +221,17 @@ fn base1_delivery_mode_plan_rejects_mode_disallowed_by_profile() {
         .output()
         .expect("run disallowed mode");
 
-    assert!(!output.status.success(), "x200 profile should reject supervisor-concurrent");
+    assert!(
+        !output.status.success(),
+        "x200 profile should reject supervisor-concurrent"
+    );
     let stderr = String::from_utf8(output.stderr).expect("utf8 stderr");
-    assert!(stderr.contains("delivery mode supervisor-concurrent is not allowed by profile x200-supervisor-lite"), "{stderr}");
+    assert!(
+        stderr.contains(
+            "delivery mode supervisor-concurrent is not allowed by profile x200-supervisor-lite"
+        ),
+        "{stderr}"
+    );
 }
 
 #[test]
@@ -264,6 +293,9 @@ fn base1_delivery_mode_plan_preserves_boundaries_and_best_of_both_worlds() {
         "BASE1_DELIVERY_CLAIM=not_claimed",
         "BASE1_DELIVERY_NON_CLAIM_HYPERVISOR=1",
     ] {
-        assert!(contents.contains(text), "missing boundary/best-of-both-worlds text {text}: {contents}");
+        assert!(
+            contents.contains(text),
+            "missing boundary/best-of-both-worlds text {text}: {contents}"
+        );
     }
 }

@@ -16,7 +16,10 @@ fn pre_move_checklist_defines_required_before_move_items() {
         "scripts/base1-link-check.sh",
         "sh scripts/quality-check.sh base1-docs",
     ] {
-        assert!(doc.contains(required), "missing pre-move requirement {required}: {doc}");
+        assert!(
+            doc.contains(required),
+            "missing pre-move requirement {required}: {doc}"
+        );
     }
 }
 
@@ -35,7 +38,10 @@ fn pre_move_checklist_requires_tests_before_moves() {
         "Non-claims remain visible.",
         "Dry-run and read-only wording remains visible where relevant.",
     ] {
-        assert!(doc.contains(required), "missing test requirement {required}: {doc}");
+        assert!(
+            doc.contains(required),
+            "missing test requirement {required}: {doc}"
+        );
     }
 }
 
@@ -45,10 +51,7 @@ fn pre_move_checklist_preserves_first_safe_candidate_limits() {
         .expect("Base1 pre-move checklist");
 
     assert!(doc.contains("First safe candidate group"), "{doc}");
-    assert!(
-        doc.contains("release/checkpoint notes"),
-        "{doc}"
-    );
+    assert!(doc.contains("release/checkpoint notes"), "{doc}");
     assert!(
         doc.contains("no root checkpoint file should be removed"),
         "{doc}"
@@ -69,7 +72,10 @@ fn pre_move_checklist_blocks_unsafe_moves() {
         "Non-claims would be weakened.",
         "The move would require deletion to look clean.",
     ] {
-        assert!(doc.contains(blocked), "missing blocked condition {blocked}: {doc}");
+        assert!(
+            doc.contains(blocked),
+            "missing blocked condition {blocked}: {doc}"
+        );
     }
 }
 
@@ -78,8 +84,8 @@ fn pre_move_checklist_is_linked_and_integrity_checked() {
     let manual = std::fs::read_to_string("docs/base1/README.md").expect("Base1 manual");
     let map = std::fs::read_to_string("docs/base1/DOCUMENTATION_MAP.md")
         .expect("Base1 documentation map");
-    let integrity = std::fs::read_to_string("scripts/base1-doc-integrity.sh")
-        .expect("Base1 integrity gate");
+    let integrity =
+        std::fs::read_to_string("scripts/base1-doc-integrity.sh").expect("Base1 integrity gate");
 
     for doc in [&manual, &map, &integrity] {
         assert!(doc.contains("PRE_MOVE_CHECKLIST.md"), "{doc}");

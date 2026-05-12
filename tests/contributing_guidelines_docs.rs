@@ -1,7 +1,6 @@
 #[test]
 fn contributing_guidelines_define_project_scope_and_ground_rules() {
-    let doc = std::fs::read_to_string("CONTRIBUTING.md")
-        .expect("CONTRIBUTING.md");
+    let doc = std::fs::read_to_string("CONTRIBUTING.md").expect("CONTRIBUTING.md");
 
     assert!(doc.contains("Contributing to Phase1"), "{doc}");
 
@@ -22,8 +21,7 @@ fn contributing_guidelines_define_project_scope_and_ground_rules() {
 
 #[test]
 fn contributing_guidelines_define_branch_pr_and_validation_workflow() {
-    let doc = std::fs::read_to_string("CONTRIBUTING.md")
-        .expect("CONTRIBUTING.md");
+    let doc = std::fs::read_to_string("CONTRIBUTING.md").expect("CONTRIBUTING.md");
 
     for text in [
         "branch from `edge/stable`",
@@ -36,14 +34,16 @@ fn contributing_guidelines_define_branch_pr_and_validation_workflow() {
         "sh scripts/quality-check.sh security-crypto-docs",
         "sh scripts/quality-check.sh full",
     ] {
-        assert!(doc.contains(text), "missing workflow or validation text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing workflow or validation text {text}: {doc}"
+        );
     }
 }
 
 #[test]
 fn contributing_guidelines_define_pr_checklist() {
-    let doc = std::fs::read_to_string("CONTRIBUTING.md")
-        .expect("CONTRIBUTING.md");
+    let doc = std::fs::read_to_string("CONTRIBUTING.md").expect("CONTRIBUTING.md");
 
     for text in [
         "what changed;",
@@ -56,14 +56,16 @@ fn contributing_guidelines_define_pr_checklist() {
         "whether safe defaults are preserved;",
         "whether any compatibility path is affected.",
     ] {
-        assert!(doc.contains(text), "missing PR checklist item {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing PR checklist item {text}: {doc}"
+        );
     }
 }
 
 #[test]
 fn contributing_guidelines_preserve_docs_claim_rules() {
-    let doc = std::fs::read_to_string("CONTRIBUTING.md")
-        .expect("CONTRIBUTING.md");
+    let doc = std::fs::read_to_string("CONTRIBUTING.md").expect("CONTRIBUTING.md");
 
     for text in [
         "> **Status:** Implemented | Experimental | Design | Dry-run | Preview | Roadmap | Not claimed",
@@ -84,8 +86,7 @@ fn contributing_guidelines_preserve_docs_claim_rules() {
 
 #[test]
 fn contributing_guidelines_define_security_crypto_base1_and_fyr_rules() {
-    let doc = std::fs::read_to_string("CONTRIBUTING.md")
-        .expect("CONTRIBUTING.md");
+    let doc = std::fs::read_to_string("CONTRIBUTING.md").expect("CONTRIBUTING.md");
 
     for text in [
         "Security contribution rules",
@@ -106,8 +107,7 @@ fn contributing_guidelines_define_security_crypto_base1_and_fyr_rules() {
 
 #[test]
 fn contributing_guidelines_define_testing_expectations_and_rejection_criteria() {
-    let doc = std::fs::read_to_string("CONTRIBUTING.md")
-        .expect("CONTRIBUTING.md");
+    let doc = std::fs::read_to_string("CONTRIBUTING.md").expect("CONTRIBUTING.md");
 
     for text in [
         "Add or update tests when you:",
@@ -121,17 +121,25 @@ fn contributing_guidelines_define_testing_expectations_and_rejection_criteria() 
         "introduces secret leakage risk;",
         "adds custom cryptography for real protection;",
     ] {
-        assert!(doc.contains(text), "missing testing/rejection criterion {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing testing/rejection criterion {text}: {doc}"
+        );
     }
 }
 
 #[test]
 fn contributing_guidelines_preserve_non_claims() {
-    let doc = std::fs::read_to_string("CONTRIBUTING.md")
-        .expect("CONTRIBUTING.md");
+    let doc = std::fs::read_to_string("CONTRIBUTING.md").expect("CONTRIBUTING.md");
 
-    assert!(doc.contains("These guidelines do not guarantee acceptance of any contribution"), "{doc}");
+    assert!(
+        doc.contains("These guidelines do not guarantee acceptance of any contribution"),
+        "{doc}"
+    );
     assert!(doc.contains("provide legal advice"), "{doc}");
     assert!(doc.contains("launch a support program"), "{doc}");
-    assert!(doc.contains("make Phase1, Base1, or Fyr production-ready"), "{doc}");
+    assert!(
+        doc.contains("make Phase1, Base1, or Fyr production-ready"),
+        "{doc}"
+    );
 }

@@ -83,3 +83,9 @@ See also: [Recovery USB hardware validation summary](RECOVERY_USB_HARDWARE_SUMMA
 
 
 See also: [Recovery USB target-device selection design](RECOVERY_USB_TARGET_SELECTION.md).
+- [`base1/RECOVERY_USB_IMAGE_PROVENANCE.md`](RECOVERY_USB_IMAGE_PROVENANCE.md) — Recovery USB image provenance.
+- [`base1/RECOVERY_USB_IMAGE_SUMMARY.md`](RECOVERY_USB_IMAGE_SUMMARY.md) — Recovery USB image summary.
+- [`docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md`](../docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md) — Recovery USB image read-only checkpoint release notes.
+- [`base1/RECOVERY_USB_TARGET_COMMAND_INDEX.md`](RECOVERY_USB_TARGET_COMMAND_INDEX.md) — Recovery USB target command index.
+- [`base1/RECOVERY_USB_TARGET_SELECTION.md`](RECOVERY_USB_TARGET_SELECTION.md) — Recovery USB target selection design.
+- [`docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md`](../docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md) — Recovery USB target read-only checkpoint release notes.

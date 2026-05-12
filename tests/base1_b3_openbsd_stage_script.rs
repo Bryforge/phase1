@@ -5,7 +5,10 @@ const SCRIPT: &str = "scripts/base1-b3-openbsd-stage.sh";
 #[test]
 fn base1_b3_openbsd_stage_script_exists_and_has_valid_shell_syntax() {
     let metadata = std::fs::metadata(SCRIPT).expect("B3 OpenBSD stage script exists");
-    assert!(metadata.len() > 0, "B3 OpenBSD stage script should not be empty");
+    assert!(
+        metadata.len() > 0,
+        "B3 OpenBSD stage script should not be empty"
+    );
 
     let output = Command::new("sh")
         .arg("-n")
@@ -62,7 +65,10 @@ fn base1_b3_openbsd_stage_requires_local_artifact_and_rejects_unknown_arguments(
         .arg(SCRIPT)
         .output()
         .expect("run B3 OpenBSD stage without artifact");
-    assert!(!no_args.status.success(), "script should require --iso or --img");
+    assert!(
+        !no_args.status.success(),
+        "script should require --iso or --img"
+    );
     let stderr = String::from_utf8_lossy(&no_args.stderr);
     assert!(
         stderr.contains("provide --iso <path> or --img <path> for the OpenBSD stage"),
@@ -74,9 +80,15 @@ fn base1_b3_openbsd_stage_requires_local_artifact_and_rejects_unknown_arguments(
         .arg("--unknown")
         .output()
         .expect("run B3 OpenBSD stage with unknown option");
-    assert!(!unknown.status.success(), "script should reject unknown args");
+    assert!(
+        !unknown.status.success(),
+        "script should reject unknown args"
+    );
     let unknown_stderr = String::from_utf8_lossy(&unknown.stderr);
-    assert!(unknown_stderr.contains("unknown option: --unknown"), "stderr was: {unknown_stderr}");
+    assert!(
+        unknown_stderr.contains("unknown option: --unknown"),
+        "stderr was: {unknown_stderr}"
+    );
 }
 
 #[test]
@@ -98,7 +110,10 @@ fn base1_b3_openbsd_stage_uses_expected_qemu_shapes() {
         "BASE1_B3_OPENBSD_RESULT=$result",
         "BASE1_B3_OPENBSD_CLAIM=not_claimed",
     ] {
-        assert!(script.contains(text), "missing OpenBSD QEMU/evidence text {text}: {script}");
+        assert!(
+            script.contains(text),
+            "missing OpenBSD QEMU/evidence text {text}: {script}"
+        );
     }
 }
 
@@ -120,6 +135,9 @@ fn base1_b3_openbsd_stage_preserves_local_only_non_claims() {
         "no hardening proof",
         "no daily-driver claim",
     ] {
-        assert!(script.contains(text), "missing OpenBSD non-claim text {text}: {script}");
+        assert!(
+            script.contains(text),
+            "missing OpenBSD non-claim text {text}: {script}"
+        );
     }
 }

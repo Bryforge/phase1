@@ -3,13 +3,18 @@ fn b2_limitations_note_defines_scope_and_command() {
     let doc = std::fs::read_to_string("docs/os/B2_DRY_RUN_ASSEMBLY_LIMITATIONS.md")
         .expect("B2 dry-run assembly limitations note");
 
-    assert!(doc.contains("Base1 B2 dry-run assembly limitations"), "{doc}");
+    assert!(
+        doc.contains("Base1 B2 dry-run assembly limitations"),
+        "{doc}"
+    );
     assert!(
         doc.contains("known limitations for `scripts/base1-b2-assembly-dry-run.sh --dry-run --profile <profile>`"),
         "{doc}"
     );
     assert!(
-        doc.contains("sh scripts/base1-b2-assembly-dry-run.sh --dry-run --profile x86_64-vm-validation"),
+        doc.contains(
+            "sh scripts/base1-b2-assembly-dry-run.sh --dry-run --profile x86_64-vm-validation"
+        ),
         "{doc}"
     );
     assert!(
@@ -65,7 +70,10 @@ fn b2_limitations_note_lists_what_b2_cannot_prove() {
         "that the system is release-candidate ready",
         "that the system is daily-driver ready",
     ] {
-        assert!(doc.contains(text), "missing cannot-prove text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing cannot-prove text {text}: {doc}"
+        );
     }
 }
 
@@ -88,7 +96,10 @@ fn b2_limitations_note_preserves_known_limitations_table() {
         "Hardware",
         "No physical hardware support claim is allowed from B2.",
     ] {
-        assert!(doc.contains(text), "missing known limitation text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing known limitation text {text}: {doc}"
+        );
     }
 }
 
@@ -130,7 +141,10 @@ fn b2_limitations_note_defines_b2_completion_requirements() {
         "validation report documenting review results",
         "README or roadmap visibility for the B2 boundary",
     ] {
-        assert!(doc.contains(text), "missing completion requirement {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing completion requirement {text}: {doc}"
+        );
     }
 }
 
@@ -143,7 +157,10 @@ fn b2_limitations_note_is_linked_from_status_tracker() {
         status.contains("B2_DRY_RUN_ASSEMBLY_LIMITATIONS.md"),
         "{status}"
     );
-    assert!(status.contains("B2 known limitations are documented."), "{status}");
+    assert!(
+        status.contains("B2 known limitations are documented."),
+        "{status}"
+    );
 }
 
 #[test]

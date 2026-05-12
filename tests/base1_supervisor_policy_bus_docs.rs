@@ -14,7 +14,10 @@ fn base1_supervisor_policy_bus_defines_scope_and_purpose() {
     let doc = read_doc();
     assert_contains(&doc, "Base1 supervisor policy bus");
     assert_contains(&doc, "profile-gated command authorization");
-    assert_contains(&doc, "decides whether a requested supervisor control-plane action is allowed");
+    assert_contains(
+        &doc,
+        "decides whether a requested supervisor control-plane action is allowed",
+    );
     assert_contains(&doc, "keeps the X200 path lightweight");
 }
 

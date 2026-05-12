@@ -64,3 +64,9 @@ If material ever needs to leave the main repository, place it in a separate hold
 - Not hardware-validated.
 - Not daily-driver ready.
 - No real-device write path.
+
+## Test-guarded boundaries
+
+- without moving files in this PR
+- No file moves in this plan
+- No destructive disk writes

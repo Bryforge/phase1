@@ -16,7 +16,10 @@ fn repository_navigation_guide_defines_purpose_and_scope() {
         "security and crypto policy planning",
         "community support and future support AI planning",
     ] {
-        assert!(nav.contains(workstream), "missing workstream {workstream}: {nav}");
+        assert!(
+            nav.contains(workstream),
+            "missing workstream {workstream}: {nav}"
+        );
     }
 }
 
@@ -82,7 +85,10 @@ fn repository_navigation_guide_maps_repository_paths() {
         "tests/",
         "assets/",
     ] {
-        assert!(nav.contains(path), "missing repository map path {path}: {nav}");
+        assert!(
+            nav.contains(path),
+            "missing repository map path {path}: {nav}"
+        );
     }
 }
 
@@ -140,7 +146,10 @@ fn repository_navigation_guide_defines_quality_gate_chooser() {
         "sh scripts/quality-check.sh files",
         "sh scripts/quality-check.sh score",
     ] {
-        assert!(nav.contains(command), "missing quality gate {command}: {nav}");
+        assert!(
+            nav.contains(command),
+            "missing quality gate {command}: {nav}"
+        );
     }
 }
 
@@ -161,7 +170,10 @@ fn repository_navigation_guide_defines_issue_template_chooser() {
         "Private vulnerability or sensitive security report",
         "Do not open a public issue; follow `SECURITY.md`",
     ] {
-        assert!(nav.contains(text), "missing issue chooser text {text}: {nav}");
+        assert!(
+            nav.contains(text),
+            "missing issue chooser text {text}: {nav}"
+        );
     }
 }
 
@@ -184,7 +196,10 @@ fn repository_navigation_guide_preserves_reorganization_rules_and_non_claims() {
 
     assert!(nav.contains("does not move files"), "{nav}");
     assert!(nav.contains("does not"), "{nav}");
-    assert!(nav.contains("make Phase1, Base1, or Fyr production-ready"), "{nav}");
+    assert!(
+        nav.contains("make Phase1, Base1, or Fyr production-ready"),
+        "{nav}"
+    );
 }
 
 #[test]

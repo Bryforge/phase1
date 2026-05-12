@@ -1,7 +1,8 @@
 # Phase1 repository navigation guide
 
 Status: active navigation guide
-Scope: repository organization, reader paths, contribution paths, support paths, asset paths, and validation paths
+Scope: repository organization, reader paths, contribution paths, support paths, and validation paths
+Asset paths are also covered by this navigation guide.
 
 ## Purpose
 

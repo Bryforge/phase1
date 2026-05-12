@@ -1,9 +1,10 @@
-const IMAGE_RELEASE_NOTES: &str = "docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md";
+const IMAGE_RELEASE_NOTES: &str =
+    "docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md";
 
 #[test]
 fn recovery_usb_image_release_notes_record_checkpoint_status() {
-    let doc = std::fs::read_to_string(IMAGE_RELEASE_NOTES)
-        .expect("recovery usb image release notes");
+    let doc =
+        std::fs::read_to_string(IMAGE_RELEASE_NOTES).expect("recovery usb image release notes");
 
     assert!(
         doc.contains("Base1 recovery USB image provenance read-only checkpoint v1"),
@@ -34,8 +35,8 @@ fn recovery_usb_image_release_notes_record_checkpoint_status() {
 
 #[test]
 fn recovery_usb_image_release_notes_list_surfaces_and_non_claims() {
-    let doc = std::fs::read_to_string(IMAGE_RELEASE_NOTES)
-        .expect("recovery usb image release notes");
+    let doc =
+        std::fs::read_to_string(IMAGE_RELEASE_NOTES).expect("recovery usb image release notes");
 
     assert!(
         doc.contains("base1/RECOVERY_USB_IMAGE_COMMAND_INDEX.md"),
@@ -70,9 +71,24 @@ fn recovery_usb_image_surfaces_link_release_notes() {
     let releases = std::fs::read_to_string("docs/base1/releases/README.md")
         .expect("base1 release notes index");
 
-    assert!(summary.contains("RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md"), "{summary}");
-    assert!(index.contains("RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md"), "{index}");
-    assert!(command_index.contains(IMAGE_RELEASE_NOTES), "{command_index}");
-    assert!(readme.contains("RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md"), "{readme}");
-    assert!(releases.contains("RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md"), "{releases}");
+    assert!(
+        summary.contains("RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md"),
+        "{summary}"
+    );
+    assert!(
+        index.contains("RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md"),
+        "{index}"
+    );
+    assert!(
+        command_index.contains(IMAGE_RELEASE_NOTES),
+        "{command_index}"
+    );
+    assert!(
+        readme.contains("RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md"),
+        "{readme}"
+    );
+    assert!(
+        releases.contains("RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md"),
+        "{releases}"
+    );
 }

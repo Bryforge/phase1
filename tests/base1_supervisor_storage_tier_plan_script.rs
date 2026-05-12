@@ -74,12 +74,18 @@ fn base1_supervisor_storage_tier_plan_writes_x200_report() {
     assert!(output.status.success(), "x200 prepare should pass");
     assert!(report_path.exists(), "report should be written");
     let report = fs::read_to_string(report_path).expect("read report");
-    assert_contains(&report, "BASE1_SUPERVISOR_STORAGE_PROFILE=x200-supervisor-lite");
+    assert_contains(
+        &report,
+        "BASE1_SUPERVISOR_STORAGE_PROFILE=x200-supervisor-lite",
+    );
     assert_contains(&report, "BASE1_SUPERVISOR_STORAGE_TARGET_RAM_MB=4096");
     assert_contains(&report, "BASE1_SUPERVISOR_STORAGE_TMPFS_MB=256");
     assert_contains(&report, "BASE1_SUPERVISOR_STORAGE_ZRAM_MB=1024");
     assert_contains(&report, "BASE1_SUPERVISOR_STORAGE_SSD_SCRATCH_MB=2048");
-    assert_contains(&report, "BASE1_SUPERVISOR_STORAGE_DISK_IS_RAM_EQUIVALENT=no");
+    assert_contains(
+        &report,
+        "BASE1_SUPERVISOR_STORAGE_DISK_IS_RAM_EQUIVALENT=no",
+    );
     assert_contains(&report, "BASE1_SUPERVISOR_STORAGE_CLAIM=not_claimed");
 }
 

@@ -7,10 +7,7 @@ fn reorganization_readiness_records_current_state() {
         doc.contains("Base1 is not ready for a full reorganization yet."),
         "{doc}"
     );
-    assert!(
-        doc.contains("safe incremental organization only"),
-        "{doc}"
-    );
+    assert!(doc.contains("safe incremental organization only"), "{doc}");
 }
 
 #[test]

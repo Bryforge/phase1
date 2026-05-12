@@ -16,7 +16,10 @@ fn crypto_operator_commands_define_planned_command_surface() {
         "crypto policy verify --profile <profile>",
         "crypto policy verify --scope <control-point>",
     ] {
-        assert!(doc.contains(command), "missing planned command {command}: {doc}");
+        assert!(
+            doc.contains(command),
+            "missing planned command {command}: {doc}"
+        );
     }
 }
 
@@ -51,7 +54,10 @@ fn crypto_operator_commands_define_allowed_scopes_and_profiles() {
     }
 
     assert!(doc.contains("Unknown scopes should fail closed."), "{doc}");
-    assert!(doc.contains("Unknown profiles should fail closed."), "{doc}");
+    assert!(
+        doc.contains("Unknown profiles should fail closed."),
+        "{doc}"
+    );
 }
 
 #[test]
@@ -70,7 +76,10 @@ fn crypto_operator_commands_define_selection_safety_gates() {
         "Downgrades and compatibility exceptions must require `--confirm`.",
         "Lab-only selections must fail outside `lab`, `docs`, or `tests` scopes.",
     ] {
-        assert!(doc.contains(text), "missing selection safety gate {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing selection safety gate {text}: {doc}"
+        );
     }
 }
 
@@ -89,7 +98,10 @@ fn crypto_operator_commands_define_verification_rules() {
         "deprecated, rejected, or lab-only entries are not used in production scopes",
         "non-claims are preserved",
     ] {
-        assert!(doc.contains(rule), "missing verification rule {rule}: {doc}");
+        assert!(
+            doc.contains(rule),
+            "missing verification rule {rule}: {doc}"
+        );
     }
 }
 
@@ -108,14 +120,16 @@ fn crypto_operator_commands_define_audit_expectations() {
         "rollback guidance reference",
         "must not print secrets, private keys, seed material, tokens, or raw credentials",
     ] {
-        assert!(doc.contains(text), "missing audit expectation {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing audit expectation {text}: {doc}"
+        );
     }
 }
 
 #[test]
 fn crypto_operator_commands_are_linked_from_security_index_and_roadmap() {
-    let index = std::fs::read_to_string("docs/security/README.md")
-        .expect("security docs index");
+    let index = std::fs::read_to_string("docs/security/README.md").expect("security docs index");
     let roadmap = std::fs::read_to_string("docs/security/CRYPTO_POLICY_ROADMAP.md")
         .expect("crypto policy roadmap");
 
@@ -128,7 +142,10 @@ fn crypto_operator_commands_preserve_non_claims() {
     let doc = std::fs::read_to_string("docs/security/CRYPTO_OPERATOR_COMMANDS.md")
         .expect("crypto operator command plan");
 
-    assert!(doc.contains("does not make Phase1 or Base1 cryptographically complete"), "{doc}");
+    assert!(
+        doc.contains("does not make Phase1 or Base1 cryptographically complete"),
+        "{doc}"
+    );
     assert!(doc.contains("audited"), "{doc}");
     assert!(doc.contains("certified"), "{doc}");
     assert!(doc.contains("quantum-safe"), "{doc}");

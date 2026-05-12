@@ -239,7 +239,7 @@ fn command_palette() -> String {
     }
 
     out.push_str(&palette_bottom(width));
-    out.push_str("\n");
+    out.push('\n');
 
     out.push_str("phase1 command palette\n");
     out.push_str("hot zones\n");

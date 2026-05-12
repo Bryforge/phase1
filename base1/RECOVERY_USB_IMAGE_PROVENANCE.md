@@ -88,3 +88,6 @@ See also: [Recovery USB image provenance command index](RECOVERY_USB_IMAGE_COMMA
 
 
 See also: [Recovery USB emergency shell behavior design](RECOVERY_USB_EMERGENCY_SHELL.md).
+- [`base1/RECOVERY_USB_IMAGE_COMMAND_INDEX.md`](RECOVERY_USB_IMAGE_COMMAND_INDEX.md) — Recovery USB image command index.
+- [`docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md`](../docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md) — Recovery USB image read-only checkpoint release notes.
+- [`base1/RECOVERY_USB_IMAGE_SUMMARY.md`](RECOVERY_USB_IMAGE_SUMMARY.md) — Recovery USB image summary.

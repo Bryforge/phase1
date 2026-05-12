@@ -1,9 +1,18 @@
 # Base1 QEMU visual boot preview
 
 Status: showcase helper documentation
-Scope: local QEMU visual boot splash preview using `assets/phase1_word.png`
+Scope: local QEMU visual boot splash preview using `assets/phase1-splash.png`
 
 ## Purpose
+
+This page is visual boot preview only. It documents a local QEMU showcase helper, not a Base1 boot-readiness proof.
+
+The visual preview assets are:
+
+- `assets/phase1_word.png` — Phase1 word-mark source used for the fitted QEMU splash.
+- `assets/phase1-splash.png` — Phase1 boot splash asset tracked as part of the public visual boot surface.
+
+The generated preview remains a local showcase artifact under `build/`.
 
 This document explains the local visual boot preview helper for Phase1/Base1.
 
@@ -43,7 +52,13 @@ The image is a local showcase artifact. It is not a release image and should not
 
 ## Input asset
 
-The preview uses the Phase1 word-mark asset:
+The preview uses the Phase1 boot splash asset:
+
+```text
+assets/phase1-splash.png
+```
+
+The Phase1 word-mark asset remains available for branding/reference:
 
 ```text
 assets/phase1_word.png
@@ -52,7 +67,7 @@ assets/phase1_word.png
 The script converts that source into a generated QEMU-only splash:
 
 ```text
-build/base1-qemu-visual-boot-preview/boot/grub/phase1-qemu-splash.png
+build/base1-qemu-visual-boot-preview/boot/grub/phase1-splash.png
 ```
 
 Sizing policy:
@@ -72,7 +87,7 @@ The generated image should contain:
 
 ```text
 /EFI/BOOT/BOOTX64.EFI
-/boot/grub/phase1-qemu-splash.png
+/boot/grub/phase1-splash.png
 /boot/grub/fonts/phase1.pf2
 ```
 
@@ -140,7 +155,7 @@ sh scripts/base1-qemu-visual-boot-preview.sh --build --run
 
 ### Splash too large or cropped
 
-The QEMU splash should be generated from `assets/phase1_word.png` into a padded `1024x768` PNG with a `560px` maximum edge. Rebuild the generated image after changing the source asset:
+The QEMU splash should be generated from `assets/phase1-splash.png` into a padded `1024x768` PNG with a `560px` maximum edge. Rebuild the generated image after changing the source asset:
 
 ```bash
 sh scripts/base1-qemu-visual-boot-preview.sh --build

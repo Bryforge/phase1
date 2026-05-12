@@ -15,7 +15,10 @@ fn root_compatibility_map_lists_root_and_mirror_paths() {
         "RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md",
         "RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md",
     ] {
-        assert!(doc.contains(path), "missing root compatibility path {path}: {doc}");
+        assert!(
+            doc.contains(path),
+            "missing root compatibility path {path}: {doc}"
+        );
         assert!(
             std::path::Path::new(path).is_file(),
             "root compatibility file missing: {path}"
@@ -30,7 +33,10 @@ fn root_compatibility_map_lists_root_and_mirror_paths() {
         "docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md",
         "docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md",
     ] {
-        assert!(doc.contains(path), "missing organized mirror path {path}: {doc}");
+        assert!(
+            doc.contains(path),
+            "missing organized mirror path {path}: {doc}"
+        );
         assert!(
             std::path::Path::new(path).is_file(),
             "organized mirror file missing: {path}"
@@ -40,8 +46,8 @@ fn root_compatibility_map_lists_root_and_mirror_paths() {
 
 #[test]
 fn documentation_map_and_manual_link_root_compatibility_map() {
-    let map = std::fs::read_to_string("docs/base1/DOCUMENTATION_MAP.md")
-        .expect("documentation map");
+    let map =
+        std::fs::read_to_string("docs/base1/DOCUMENTATION_MAP.md").expect("documentation map");
     let manual = std::fs::read_to_string("docs/base1/README.md").expect("base1 manual");
 
     assert!(map.contains("ROOT_COMPATIBILITY_MAP.md"), "{map}");
@@ -58,9 +64,18 @@ fn integrity_gate_checks_root_compatibility_and_release_mirrors() {
         .expect("base1 doc integrity script");
 
     assert!(script.contains("check_root_compatibility_docs"), "{script}");
-    assert!(script.contains("docs/base1/ROOT_COMPATIBILITY_MAP.md"), "{script}");
+    assert!(
+        script.contains("docs/base1/ROOT_COMPATIBILITY_MAP.md"),
+        "{script}"
+    );
     assert!(script.contains("docs/base1/releases/README.md"), "{script}");
-    assert!(script.contains("RELEASE_BASE1_LIBREBOOT_READONLY_V1.md"), "{script}");
-    assert!(script.contains("RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md"), "{script}");
+    assert!(
+        script.contains("RELEASE_BASE1_LIBREBOOT_READONLY_V1.md"),
+        "{script}"
+    );
+    assert!(
+        script.contains("RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md"),
+        "{script}"
+    );
     assert!(script.contains("writes: no"), "{script}");
 }

@@ -20,7 +20,10 @@ fn crypto_implementation_plan_defines_safe_sequence() {
         "Migration and rollback tooling",
         "External review and audit preparation",
     ] {
-        assert!(plan.contains(phase), "missing implementation phase {phase}: {plan}");
+        assert!(
+            plan.contains(phase),
+            "missing implementation phase {phase}: {plan}"
+        );
     }
 }
 
@@ -38,7 +41,10 @@ fn crypto_implementation_plan_preserves_security_rules() {
         "lab-only behavior isolated from real protection decisions",
         "preserve rollback and recovery paths before protecting real data",
     ] {
-        assert!(plan.contains(rule), "missing implementation security rule {rule}: {plan}");
+        assert!(
+            plan.contains(rule),
+            "missing implementation security rule {rule}: {plan}"
+        );
     }
 }
 
@@ -56,7 +62,10 @@ fn crypto_implementation_plan_lists_required_docs_including_provider_registry() 
         "CRYPTO_CONFIG_SCHEMA.md",
         "crypto-profiles/README.md",
     ] {
-        assert!(plan.contains(doc), "missing required crypto doc {doc}: {plan}");
+        assert!(
+            plan.contains(doc),
+            "missing required crypto doc {doc}: {plan}"
+        );
     }
 
     assert!(
@@ -89,7 +98,10 @@ fn crypto_implementation_plan_defines_provider_abstraction_requirements() {
         "providers are not silently selected",
         "no provider is used for production claims until registry status allows it",
     ] {
-        assert!(plan.contains(item), "missing provider requirement {item}: {plan}");
+        assert!(
+            plan.contains(item),
+            "missing provider requirement {item}: {plan}"
+        );
     }
 }
 
@@ -112,7 +124,10 @@ fn crypto_implementation_plan_blocks_runtime_use_until_prerequisites() {
         "post-quantum default behavior",
         "compatibility downgrade defaults",
     ] {
-        assert!(plan.contains(boundary), "missing implementation boundary {boundary}: {plan}");
+        assert!(
+            plan.contains(boundary),
+            "missing implementation boundary {boundary}: {plan}"
+        );
     }
 }
 
@@ -130,7 +145,10 @@ fn crypto_implementation_plan_defines_scoped_integration_order() {
         "`transport`",
         "`identity`",
     ] {
-        assert!(plan.contains(scope), "missing scoped integration {scope}: {plan}");
+        assert!(
+            plan.contains(scope),
+            "missing scoped integration {scope}: {plan}"
+        );
     }
 
     for criterion in [
@@ -140,14 +158,16 @@ fn crypto_implementation_plan_defines_scoped_integration_order() {
         "non-claims are preserved",
         "no unsupported security claim is introduced",
     ] {
-        assert!(plan.contains(criterion), "missing scoped exit criterion {criterion}: {plan}");
+        assert!(
+            plan.contains(criterion),
+            "missing scoped exit criterion {criterion}: {plan}"
+        );
     }
 }
 
 #[test]
 fn crypto_implementation_plan_is_linked_from_index_roadmap_and_integrity_gate() {
-    let index = std::fs::read_to_string("docs/security/README.md")
-        .expect("security docs index");
+    let index = std::fs::read_to_string("docs/security/README.md").expect("security docs index");
     let roadmap = std::fs::read_to_string("docs/security/CRYPTO_POLICY_ROADMAP.md")
         .expect("crypto policy roadmap");
     let gate = std::fs::read_to_string("scripts/security-crypto-doc-integrity.sh")
@@ -163,7 +183,10 @@ fn crypto_implementation_plan_preserves_non_claims() {
     let plan = std::fs::read_to_string("docs/security/CRYPTO_IMPLEMENTATION_PLAN.md")
         .expect("crypto implementation plan");
 
-    assert!(plan.contains("does not make Phase1 or Base1 cryptographically complete"), "{plan}");
+    assert!(
+        plan.contains("does not make Phase1 or Base1 cryptographically complete"),
+        "{plan}"
+    );
     assert!(plan.contains("audited"), "{plan}");
     assert!(plan.contains("certified"), "{plan}");
     assert!(plan.contains("quantum-safe"), "{plan}");

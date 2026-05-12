@@ -5,7 +5,10 @@ const SCRIPT: &str = "scripts/base1-b3-gnulinux-stage.sh";
 #[test]
 fn base1_b3_gnulinux_stage_script_exists_and_has_valid_shell_syntax() {
     let metadata = std::fs::metadata(SCRIPT).expect("B3 GNU/Linux stage script exists");
-    assert!(metadata.len() > 0, "B3 GNU/Linux stage script should not be empty");
+    assert!(
+        metadata.len() > 0,
+        "B3 GNU/Linux stage script should not be empty"
+    );
 
     let output = Command::new("sh")
         .arg("-n")
@@ -71,7 +74,10 @@ fn base1_b3_gnulinux_stage_requires_inputs_and_rejects_unknown_arguments() {
         .arg(SCRIPT)
         .output()
         .expect("run B3 GNU/Linux stage without inputs");
-    assert!(!no_args.status.success(), "script should require input paths");
+    assert!(
+        !no_args.status.success(),
+        "script should require input paths"
+    );
     let stderr = String::from_utf8_lossy(&no_args.stderr);
     assert!(
         stderr.contains("provide --kernel and --initrd, or provide --root/--boot for detection"),
@@ -83,9 +89,15 @@ fn base1_b3_gnulinux_stage_requires_inputs_and_rejects_unknown_arguments() {
         .arg("--unknown")
         .output()
         .expect("run B3 GNU/Linux stage with unknown option");
-    assert!(!unknown.status.success(), "script should reject unknown args");
+    assert!(
+        !unknown.status.success(),
+        "script should reject unknown args"
+    );
     let unknown_stderr = String::from_utf8_lossy(&unknown.stderr);
-    assert!(unknown_stderr.contains("unknown option: --unknown"), "stderr was: {unknown_stderr}");
+    assert!(
+        unknown_stderr.contains("unknown option: --unknown"),
+        "stderr was: {unknown_stderr}"
+    );
 }
 
 #[test]
@@ -97,9 +109,15 @@ fn base1_b3_gnulinux_stage_rejects_unknown_boot_profile() {
         .output()
         .expect("run B3 GNU/Linux stage with invalid boot profile");
 
-    assert!(!output.status.success(), "script should reject invalid boot profile");
+    assert!(
+        !output.status.success(),
+        "script should reject invalid boot profile"
+    );
     let stderr = String::from_utf8_lossy(&output.stderr);
-    assert!(stderr.contains("unsupported boot profile: unsafe"), "stderr was: {stderr}");
+    assert!(
+        stderr.contains("unsupported boot profile: unsafe"),
+        "stderr was: {stderr}"
+    );
 }
 
 #[test]
@@ -122,7 +140,10 @@ fn base1_b3_gnulinux_stage_detects_common_kernel_and_initrd_names() {
         "\"$dir\"/initramfs",
         "BOOT_DIR=$ROOT_DIR/boot",
     ] {
-        assert!(script.contains(text), "missing detection text {text}: {script}");
+        assert!(
+            script.contains(text),
+            "missing detection text {text}: {script}"
+        );
     }
 }
 
@@ -147,7 +168,10 @@ fn base1_b3_gnulinux_stage_delegates_to_kernel_handoff() {
         "build/base1-b3-gnulinux-stage",
         "GNU/Linux local kernel/initrd handoff",
     ] {
-        assert!(script.contains(text), "missing handoff delegation text {text}: {script}");
+        assert!(
+            script.contains(text),
+            "missing handoff delegation text {text}: {script}"
+        );
     }
 }
 
@@ -170,6 +194,9 @@ fn base1_b3_gnulinux_stage_preserves_local_only_non_claims() {
         "no hardening proof",
         "no daily-driver claim",
     ] {
-        assert!(script.contains(text), "missing non-claim text {text}: {script}");
+        assert!(
+            script.contains(text),
+            "missing non-claim text {text}: {script}"
+        );
     }
 }

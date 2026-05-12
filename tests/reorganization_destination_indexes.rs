@@ -1,10 +1,12 @@
 #[test]
 fn release_docs_index_defines_preservation_first_release_home() {
-    let doc = std::fs::read_to_string("docs/releases/README.md")
-        .expect("release docs index");
+    let doc = std::fs::read_to_string("docs/releases/README.md").expect("release docs index");
 
     assert!(doc.contains("Phase1 release documentation"), "{doc}");
-    assert!(doc.contains("organized home for release documentation"), "{doc}");
+    assert!(
+        doc.contains("organized home for release documentation"),
+        "{doc}"
+    );
 
     for text in [
         "Do not delete root-level release notes unless a future move map explicitly approves it.",
@@ -16,17 +18,22 @@ fn release_docs_index_defines_preservation_first_release_home() {
         "sh scripts/quality-check.sh quick",
         "sh scripts/quality-check.sh base1-docs",
     ] {
-        assert!(doc.contains(text), "missing release docs index text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing release docs index text {text}: {doc}"
+        );
     }
 }
 
 #[test]
 fn website_docs_index_defines_public_site_home_and_claim_safety() {
-    let doc = std::fs::read_to_string("docs/website/README.md")
-        .expect("website docs index");
+    let doc = std::fs::read_to_string("docs/website/README.md").expect("website docs index");
 
     assert!(doc.contains("Phase1 website documentation"), "{doc}");
-    assert!(doc.contains("public website planning and documentation"), "{doc}");
+    assert!(
+        doc.contains("public website planning and documentation"),
+        "{doc}"
+    );
 
     for text in [
         "Keep existing public links working where possible.",
@@ -44,11 +51,13 @@ fn website_docs_index_defines_public_site_home_and_claim_safety() {
 
 #[test]
 fn examples_index_defines_safe_example_home() {
-    let doc = std::fs::read_to_string("examples/README.md")
-        .expect("examples index");
+    let doc = std::fs::read_to_string("examples/README.md").expect("examples index");
 
     assert!(doc.contains("Phase1 examples"), "{doc}");
-    assert!(doc.contains("preferred organized home for examples"), "{doc}");
+    assert!(
+        doc.contains("preferred organized home for examples"),
+        "{doc}"
+    );
 
     for text in [
         "avoid destructive host commands by default",
@@ -69,8 +78,7 @@ fn examples_index_defines_safe_example_home() {
 
 #[test]
 fn tools_index_defines_internal_tooling_boundary() {
-    let doc = std::fs::read_to_string("tools/README.md")
-        .expect("tools index");
+    let doc = std::fs::read_to_string("tools/README.md").expect("tools index");
 
     assert!(doc.contains("Phase1 tools"), "{doc}");
     assert!(doc.contains("internal helper tooling"), "{doc}");
@@ -93,8 +101,7 @@ fn tools_index_defines_internal_tooling_boundary() {
 
 #[test]
 fn reorganization_plan_mentions_destination_folders() {
-    let plan = std::fs::read_to_string("docs/REORGANIZATION_PLAN.md")
-        .expect("reorganization plan");
+    let plan = std::fs::read_to_string("docs/REORGANIZATION_PLAN.md").expect("reorganization plan");
 
     for text in [
         "docs/releases/",
@@ -104,6 +111,9 @@ fn reorganization_plan_mentions_destination_folders() {
         "Create only folders that are actively needed",
         "Do not create empty folders unless tooling requires placeholders.",
     ] {
-        assert!(plan.contains(text), "missing destination folder plan text {text}: {plan}");
+        assert!(
+            plan.contains(text),
+            "missing destination folder plan text {text}: {plan}"
+        );
     }
 }

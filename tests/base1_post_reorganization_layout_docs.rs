@@ -38,7 +38,10 @@ fn post_reorganization_layout_preserves_public_compatibility_paths() {
         "Compatibility paths remain valid",
         "Existing public documentation links stay recoverable.",
     ] {
-        assert!(doc.contains(text), "missing compatibility text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing compatibility text {text}: {doc}"
+        );
     }
 }
 
@@ -58,7 +61,10 @@ fn post_reorganization_layout_lists_major_layout_sections() {
         "Compatibility policy",
         "Validation before any movement",
     ] {
-        assert!(doc.contains(heading), "missing layout heading {heading}: {doc}");
+        assert!(
+            doc.contains(heading),
+            "missing layout heading {heading}: {doc}"
+        );
     }
 }
 
@@ -67,8 +73,8 @@ fn post_reorganization_layout_is_linked_and_integrity_checked() {
     let manual = std::fs::read_to_string("docs/base1/README.md").expect("Base1 manual");
     let map = std::fs::read_to_string("docs/base1/DOCUMENTATION_MAP.md")
         .expect("Base1 documentation map");
-    let integrity = std::fs::read_to_string("scripts/base1-doc-integrity.sh")
-        .expect("Base1 integrity gate");
+    let integrity =
+        std::fs::read_to_string("scripts/base1-doc-integrity.sh").expect("Base1 integrity gate");
 
     for doc in [&manual, &map, &integrity] {
         assert!(doc.contains("POST_REORGANIZATION_LAYOUT.md"), "{doc}");

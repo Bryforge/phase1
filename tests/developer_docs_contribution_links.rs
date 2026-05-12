@@ -1,7 +1,6 @@
 #[test]
 fn developer_docs_link_repository_contribution_guidelines() {
-    let doc = std::fs::read_to_string("docs/developers/README.md")
-        .expect("developer reader path");
+    let doc = std::fs::read_to_string("docs/developers/README.md").expect("developer reader path");
 
     assert!(doc.contains("../../CONTRIBUTING.md"), "{doc}");
     assert!(
@@ -12,8 +11,7 @@ fn developer_docs_link_repository_contribution_guidelines() {
 
 #[test]
 fn developer_docs_define_development_reading_order() {
-    let doc = std::fs::read_to_string("docs/developers/README.md")
-        .expect("developer reader path");
+    let doc = std::fs::read_to_string("docs/developers/README.md").expect("developer reader path");
 
     for link in [
         "../../CONTRIBUTING.md",
@@ -24,14 +22,16 @@ fn developer_docs_define_development_reading_order() {
         "../security/DOCS_CLAIMS.md",
         "../security/TRUST_MODEL.md",
     ] {
-        assert!(doc.contains(link), "missing developer reading link {link}: {doc}");
+        assert!(
+            doc.contains(link),
+            "missing developer reading link {link}: {doc}"
+        );
     }
 }
 
 #[test]
 fn developer_docs_include_contribution_gates() {
-    let doc = std::fs::read_to_string("docs/developers/README.md")
-        .expect("developer reader path");
+    let doc = std::fs::read_to_string("docs/developers/README.md").expect("developer reader path");
 
     for command in [
         "cargo fmt --all -- --check",
@@ -41,14 +41,16 @@ fn developer_docs_include_contribution_gates() {
         "sh scripts/quality-check.sh base1-docs",
         "sh scripts/quality-check.sh security-crypto-docs",
     ] {
-        assert!(doc.contains(command), "missing developer gate {command}: {doc}");
+        assert!(
+            doc.contains(command),
+            "missing developer gate {command}: {doc}"
+        );
     }
 }
 
 #[test]
 fn developer_docs_mark_crypto_as_safety_sensitive() {
-    let doc = std::fs::read_to_string("docs/developers/README.md")
-        .expect("developer reader path");
+    let doc = std::fs::read_to_string("docs/developers/README.md").expect("developer reader path");
 
     for text in [
         "cryptographic policy, providers, profiles, config, or runtime integration",
@@ -58,14 +60,16 @@ fn developer_docs_mark_crypto_as_safety_sensitive() {
         "quantum-safe",
         "hardware-validated",
     ] {
-        assert!(doc.contains(text), "missing crypto safety-sensitive text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing crypto safety-sensitive text {text}: {doc}"
+        );
     }
 }
 
 #[test]
 fn developer_docs_preserve_developer_rule() {
-    let doc = std::fs::read_to_string("docs/developers/README.md")
-        .expect("developer reader path");
+    let doc = std::fs::read_to_string("docs/developers/README.md").expect("developer reader path");
 
     assert!(
         doc.contains("Every implementation claim should have a runnable path, a test path, or a linked validation artifact."),

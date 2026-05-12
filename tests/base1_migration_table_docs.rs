@@ -1,7 +1,7 @@
 #[test]
 fn migration_table_lists_required_groups() {
-    let table = std::fs::read_to_string("docs/base1/MIGRATION_TABLE.md")
-        .expect("Base1 migration table");
+    let table =
+        std::fs::read_to_string("docs/base1/MIGRATION_TABLE.md").expect("Base1 migration table");
 
     for heading in [
         "Core docs",
@@ -22,8 +22,8 @@ fn migration_table_lists_required_groups() {
 
 #[test]
 fn migration_table_preserves_compatibility_decisions() {
-    let table = std::fs::read_to_string("docs/base1/MIGRATION_TABLE.md")
-        .expect("Base1 migration table");
+    let table =
+        std::fs::read_to_string("docs/base1/MIGRATION_TABLE.md").expect("Base1 migration table");
 
     assert!(table.contains("Compatibility decision"), "{table}");
     assert!(table.contains("keep root compatibility path"), "{table}");
@@ -34,8 +34,8 @@ fn migration_table_preserves_compatibility_decisions() {
 
 #[test]
 fn migration_table_lists_key_current_and_target_paths() {
-    let table = std::fs::read_to_string("docs/base1/MIGRATION_TABLE.md")
-        .expect("Base1 migration table");
+    let table =
+        std::fs::read_to_string("docs/base1/MIGRATION_TABLE.md").expect("Base1 migration table");
 
     for path in [
         "base1/README.md",
@@ -61,8 +61,8 @@ fn migration_table_lists_key_current_and_target_paths() {
 
 #[test]
 fn migration_table_blocks_broad_moves_until_safety_work_exists() {
-    let table = std::fs::read_to_string("docs/base1/MIGRATION_TABLE.md")
-        .expect("Base1 migration table");
+    let table =
+        std::fs::read_to_string("docs/base1/MIGRATION_TABLE.md").expect("Base1 migration table");
 
     assert!(
         table.contains("No move until links, tests, and compatibility shims are planned."),
@@ -72,10 +72,7 @@ fn migration_table_blocks_broad_moves_until_safety_work_exists() {
         table.contains("Complete repository-wide test listing."),
         "{table}"
     );
-    assert!(
-        table.contains("Compatibility shim plan"),
-        "{table}"
-    );
+    assert!(table.contains("Compatibility shim plan"), "{table}");
     assert!(
         table.contains("Link checker or equivalent validation"),
         "{table}"
@@ -84,10 +81,13 @@ fn migration_table_blocks_broad_moves_until_safety_work_exists() {
 
 #[test]
 fn migration_table_preserves_non_claims() {
-    let table = std::fs::read_to_string("docs/base1/MIGRATION_TABLE.md")
-        .expect("Base1 migration table");
+    let table =
+        std::fs::read_to_string("docs/base1/MIGRATION_TABLE.md").expect("Base1 migration table");
 
-    assert!(table.contains("does not make Base1 installer-ready"), "{table}");
+    assert!(
+        table.contains("does not make Base1 installer-ready"),
+        "{table}"
+    );
     assert!(table.contains("hardware-validated"), "{table}");
     assert!(table.contains("daily-driver ready"), "{table}");
 }

@@ -4,8 +4,14 @@ fn boot_readiness_status_defines_current_level_and_target() {
         .expect("boot readiness status tracker");
 
     assert!(status.contains("Base1 boot readiness status"), "{status}");
-    assert!(status.contains("Current level: **B2 — Dry-run assembly ready, initial script present**"), "{status}");
-    assert!(status.contains("Target next level: **B3 — VM boot validated**"), "{status}");
+    assert!(
+        status.contains("Current level: **B2 — Dry-run assembly ready, initial script present**"),
+        "{status}"
+    );
+    assert!(
+        status.contains("Target next level: **B3 — VM boot validated**"),
+        "{status}"
+    );
     assert!(
         status.contains("Do not claim Base1 boot readiness, installer readiness, hardware validation, hardened status, recovery completion, or daily-driver readiness from this tracker alone."),
         "{status}"
@@ -60,7 +66,10 @@ fn boot_readiness_status_preserves_finish_before_coding_checklist() {
         "B1 plan tests.",
         "B1 plan link from OS roadmap, x86_64 roadmap, and race plan.",
     ] {
-        assert!(status.contains(item), "missing finish-before-coding item {item}: {status}");
+        assert!(
+            status.contains(item),
+            "missing finish-before-coding item {item}: {status}"
+        );
     }
 
     assert!(
@@ -168,7 +177,10 @@ fn boot_readiness_status_preserves_b2_completion_checklist() {
         "B2 focused test-suite checker tests exist.",
         "B2 test suite passes in CI or local validation.",
     ] {
-        assert!(status.contains(text), "missing B2 completion text {text}: {status}");
+        assert!(
+            status.contains(text),
+            "missing B2 completion text {text}: {status}"
+        );
     }
 }
 
@@ -249,7 +261,10 @@ fn boot_readiness_status_preserves_b3_completion_checklist() {
         "Phase1 launch result is recorded.",
         "non-claims are preserved.",
     ] {
-        assert!(status.contains(text), "missing B3 completion text {text}: {status}");
+        assert!(
+            status.contains(text),
+            "missing B3 completion text {text}: {status}"
+        );
     }
 }
 
@@ -274,7 +289,10 @@ fn boot_readiness_status_defines_first_coding_slice() {
         "reports recovery availability hints;",
         "fails closed when required facts are unknown.",
     ] {
-        assert!(status.contains(text), "missing B1 first-slice text {text}: {status}");
+        assert!(
+            status.contains(text),
+            "missing B1 first-slice text {text}: {status}"
+        );
     }
 }
 
@@ -341,7 +359,10 @@ fn boot_readiness_status_preserves_evidence_map() {
         "Recovery validation report",
         "Hardware validation report",
     ] {
-        assert!(status.contains(text), "missing evidence map text {text}: {status}");
+        assert!(
+            status.contains(text),
+            "missing evidence map text {text}: {status}"
+        );
     }
 }
 
@@ -364,8 +385,14 @@ fn boot_readiness_status_preserves_hardening_and_non_claims() {
     let status = std::fs::read_to_string("docs/os/BOOT_READINESS_STATUS.md")
         .expect("boot readiness status tracker");
 
-    assert!(status.contains("Hardening is a roadmap goal and design direction."), "{status}");
-    assert!(status.contains("Current status: **planned, evidence-bound**."), "{status}");
+    assert!(
+        status.contains("Hardening is a roadmap goal and design direction."),
+        "{status}"
+    );
+    assert!(
+        status.contains("Current status: **planned, evidence-bound**."),
+        "{status}"
+    );
 
     for text in [
         "does not make Base1 bootable",

@@ -11,7 +11,10 @@ fn b3_openbsd_serial_limitation_doc_defines_scope_and_purpose() {
         "expected OpenBSD serial marker is not yet captured",
         "OpenBSD currently has launch-check evidence, not serial-marker boot evidence",
     ] {
-        assert!(doc.contains(text), "missing scope/purpose text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing scope/purpose text {text}: {doc}"
+        );
     }
 }
 
@@ -29,7 +32,10 @@ fn b3_openbsd_serial_limitation_doc_records_observed_behavior() {
         "OpenBSD launch-check: pass",
         "OpenBSD serial marker-check: not yet captured",
     ] {
-        assert!(doc.contains(text), "missing observed behavior text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing observed behavior text {text}: {doc}"
+        );
     }
 }
 
@@ -49,7 +55,10 @@ fn b3_openbsd_serial_limitation_doc_defines_interpretation_boundary() {
         "userland",
         "expected serial marker",
     ] {
-        assert!(doc.contains(text), "missing interpretation boundary text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing interpretation boundary text {text}: {doc}"
+        );
     }
 }
 
@@ -66,7 +75,10 @@ fn b3_openbsd_serial_limitation_doc_lists_tuning_candidates() {
         "set tty com0",
         "captures `OpenBSD` in the serial log",
     ] {
-        assert!(doc.contains(text), "missing tuning candidate text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing tuning candidate text {text}: {doc}"
+        );
     }
 }
 

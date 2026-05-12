@@ -82,3 +82,5 @@ See also: [Recovery USB target selection command index](RECOVERY_USB_TARGET_COMM
 
 
 See also: [Recovery USB target selection summary](RECOVERY_USB_TARGET_SUMMARY.md).
+- [`base1/RECOVERY_USB_TARGET_COMMAND_INDEX.md`](RECOVERY_USB_TARGET_COMMAND_INDEX.md) — Recovery USB target command index.
+- [`docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md`](../docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md) — Recovery USB target read-only checkpoint release notes.

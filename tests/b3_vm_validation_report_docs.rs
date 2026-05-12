@@ -11,7 +11,10 @@ fn b3_vm_validation_report_defines_scope_and_summary() {
         "BASE1_B3_VALIDATION_CLAIM=not_claimed",
         "does not prove Base1 is fully bootable",
     ] {
-        assert!(report.contains(text), "missing report scope/summary text {text}: {report}");
+        assert!(
+            report.contains(text),
+            "missing report scope/summary text {text}: {report}"
+        );
     }
 }
 
@@ -36,7 +39,10 @@ fn b3_vm_validation_report_records_evidence_items() {
         "Launch-check evidence only until serial marker routing is tuned.",
         "Marker-check is a known limitation until serial routing is tuned.",
     ] {
-        assert!(report.contains(text), "missing evidence item text {text}: {report}");
+        assert!(
+            report.contains(text),
+            "missing evidence item text {text}: {report}"
+        );
     }
 }
 
@@ -60,7 +66,10 @@ fn b3_vm_validation_report_lists_commands() {
         "--profile x86_64-vm-validation",
         "--write-report",
     ] {
-        assert!(report.contains(text), "missing command text {text}: {report}");
+        assert!(
+            report.contains(text),
+            "missing command text {text}: {report}"
+        );
     }
 }
 
@@ -84,7 +93,10 @@ fn b3_vm_validation_report_preserves_interpretation_boundaries() {
         "inside the local evidence boundary",
         "OpenBSD serial marker limitation is documented",
     ] {
-        assert!(report.contains(text), "missing interpretation boundary text {text}: {report}");
+        assert!(
+            report.contains(text),
+            "missing interpretation boundary text {text}: {report}"
+        );
     }
 }
 
@@ -110,6 +122,9 @@ fn b3_vm_validation_report_lists_remaining_requirements_and_non_claims() {
         "daily-driver ready",
         "documented OpenBSD serial-marker limitation",
     ] {
-        assert!(report.contains(text), "missing remaining requirement/non-claim text {text}: {report}");
+        assert!(
+            report.contains(text),
+            "missing remaining requirement/non-claim text {text}: {report}"
+        );
     }
 }

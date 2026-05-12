@@ -1,7 +1,6 @@
 #[test]
 fn base1_inventory_lists_required_groups() {
-    let inventory = std::fs::read_to_string("docs/base1/INVENTORY.md")
-        .expect("Base1 inventory");
+    let inventory = std::fs::read_to_string("docs/base1/INVENTORY.md").expect("Base1 inventory");
 
     for heading in [
         "Core Base1 docs",
@@ -23,8 +22,7 @@ fn base1_inventory_lists_required_groups() {
 
 #[test]
 fn base1_inventory_preserves_key_paths() {
-    let inventory = std::fs::read_to_string("docs/base1/INVENTORY.md")
-        .expect("Base1 inventory");
+    let inventory = std::fs::read_to_string("docs/base1/INVENTORY.md").expect("Base1 inventory");
 
     for path in [
         "base1/README.md",
@@ -50,8 +48,8 @@ fn base1_inventory_preserves_key_paths() {
 
 #[test]
 fn base1_test_inventory_lists_required_test_groups() {
-    let tests = std::fs::read_to_string("docs/base1/TEST_INVENTORY.md")
-        .expect("Base1 test inventory");
+    let tests =
+        std::fs::read_to_string("docs/base1/TEST_INVENTORY.md").expect("Base1 test inventory");
 
     for heading in [
         "Core and OS-track tests",
@@ -73,8 +71,8 @@ fn base1_test_inventory_lists_required_test_groups() {
 
 #[test]
 fn base1_test_inventory_preserves_key_test_paths() {
-    let tests = std::fs::read_to_string("docs/base1/TEST_INVENTORY.md")
-        .expect("Base1 test inventory");
+    let tests =
+        std::fs::read_to_string("docs/base1/TEST_INVENTORY.md").expect("Base1 test inventory");
 
     for path in [
         "tests/base1_foundation.rs",
@@ -95,10 +93,9 @@ fn base1_test_inventory_preserves_key_test_paths() {
 
 #[test]
 fn base1_inventory_docs_keep_non_claims() {
-    let inventory = std::fs::read_to_string("docs/base1/INVENTORY.md")
-        .expect("Base1 inventory");
-    let tests = std::fs::read_to_string("docs/base1/TEST_INVENTORY.md")
-        .expect("Base1 test inventory");
+    let inventory = std::fs::read_to_string("docs/base1/INVENTORY.md").expect("Base1 inventory");
+    let tests =
+        std::fs::read_to_string("docs/base1/TEST_INVENTORY.md").expect("Base1 test inventory");
 
     for doc in [inventory, tests] {
         assert!(doc.contains("does not make Base1 installer-ready"), "{doc}");

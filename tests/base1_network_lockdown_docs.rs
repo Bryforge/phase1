@@ -2,10 +2,7 @@
 fn base1_readme_links_network_lockdown_preview() {
     let readme = std::fs::read_to_string("base1/README.md").expect("base1 readme");
 
-    assert!(
-        readme.contains("NETWORK_LOCKDOWN_DRY_RUN.md"),
-        "{readme}"
-    );
+    assert!(readme.contains("NETWORK_LOCKDOWN_DRY_RUN.md"), "{readme}");
     assert!(
         readme.contains("base1-network-lockdown-dry-run.sh"),
         "{readme}"
@@ -34,12 +31,18 @@ fn network_lockdown_script_requires_dry_run_and_reports_no_writes() {
     let script = std::fs::read_to_string("scripts/base1-network-lockdown-dry-run.sh")
         .expect("network lockdown dry-run script");
 
-    assert!(script.contains("refusing to run without --dry-run"), "{script}");
+    assert!(
+        script.contains("refusing to run without --dry-run"),
+        "{script}"
+    );
     assert!(script.contains("info 'mode: dry-run'"), "{script}");
     assert!(script.contains("info 'writes: no'"), "{script}");
     assert!(script.contains("planned-inbound: deny"), "{script}");
     assert!(script.contains("planned-outbound"), "{script}");
-    assert!(script.contains("planned-phase1-host-tools: denied"), "{script}");
+    assert!(
+        script.contains("planned-phase1-host-tools: denied"),
+        "{script}"
+    );
 }
 
 #[test]

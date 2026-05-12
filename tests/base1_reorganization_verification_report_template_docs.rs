@@ -18,7 +18,10 @@ fn reorganization_report_template_defines_metadata_and_commands() {
         "sh scripts/quality-check.sh base1-reorg",
         "cargo test --all-targets",
     ] {
-        assert!(doc.contains(text), "missing template field or command {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing template field or command {text}: {doc}"
+        );
     }
 }
 
@@ -38,7 +41,10 @@ fn reorganization_report_template_lists_expected_passing_conditions() {
         "Organized release/checkpoint mirrors remain present.",
         "Base1 non-claims remain visible.",
     ] {
-        assert!(doc.contains(condition), "missing passing condition {condition}: {doc}");
+        assert!(
+            doc.contains(condition),
+            "missing passing condition {condition}: {doc}"
+        );
     }
 }
 
@@ -60,7 +66,10 @@ fn reorganization_report_template_includes_compatibility_review_and_decision() {
         "Ready for one small preservation-first group move.",
         "Ready for broader organization planning only.",
     ] {
-        assert!(doc.contains(text), "missing compatibility or decision text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing compatibility or decision text {text}: {doc}"
+        );
     }
 }
 
@@ -69,8 +78,8 @@ fn reorganization_report_template_is_linked_and_integrity_checked() {
     let manual = std::fs::read_to_string("docs/base1/README.md").expect("Base1 manual");
     let map = std::fs::read_to_string("docs/base1/DOCUMENTATION_MAP.md")
         .expect("Base1 documentation map");
-    let integrity = std::fs::read_to_string("scripts/base1-doc-integrity.sh")
-        .expect("Base1 integrity gate");
+    let integrity =
+        std::fs::read_to_string("scripts/base1-doc-integrity.sh").expect("Base1 integrity gate");
 
     for doc in [&manual, &map, &integrity] {
         assert!(

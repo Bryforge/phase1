@@ -24,7 +24,10 @@ fn crypto_provider_template_defines_required_sections() {
         "Review checklist",
         "Non-claims",
     ] {
-        assert!(template.contains(section), "missing provider template section {section}: {template}");
+        assert!(
+            template.contains(section),
+            "missing provider template section {section}: {template}"
+        );
     }
 }
 
@@ -43,7 +46,10 @@ fn crypto_provider_template_requires_source_license_and_pinning() {
         "Version or source pinning plan:",
         "Maintenance status:",
     ] {
-        assert!(template.contains(field), "missing source/license field {field}: {template}");
+        assert!(
+            template.contains(field),
+            "missing source/license field {field}: {template}"
+        );
     }
 }
 
@@ -59,7 +65,10 @@ fn crypto_provider_template_lists_profile_and_control_point_compatibility() {
         "post-quantum-preview",
         "lab-only",
     ] {
-        assert!(template.contains(profile), "missing profile {profile}: {template}");
+        assert!(
+            template.contains(profile),
+            "missing profile {profile}: {template}"
+        );
     }
 
     for control_point in [
@@ -92,7 +101,10 @@ fn crypto_provider_template_requires_fail_closed_and_explicit_fallback() {
         "Required audit event:",
         "Conditions where fallback is rejected:",
     ] {
-        assert!(template.contains(text), "missing fail-closed/fallback text {text}: {template}");
+        assert!(
+            template.contains(text),
+            "missing fail-closed/fallback text {text}: {template}"
+        );
     }
 }
 
@@ -113,7 +125,10 @@ fn crypto_provider_template_preserves_review_checklist() {
         "Fallback behavior is explicit.",
         "Non-claims are preserved.",
     ] {
-        assert!(template.contains(item), "missing provider review item {item}: {template}");
+        assert!(
+            template.contains(item),
+            "missing provider review item {item}: {template}"
+        );
     }
 }
 
@@ -121,8 +136,7 @@ fn crypto_provider_template_preserves_review_checklist() {
 fn crypto_provider_template_is_linked_from_provider_registry_index_and_integrity_gate() {
     let registry = std::fs::read_to_string("docs/security/CRYPTO_PROVIDER_REGISTRY.md")
         .expect("crypto provider registry");
-    let index = std::fs::read_to_string("docs/security/README.md")
-        .expect("security docs index");
+    let index = std::fs::read_to_string("docs/security/README.md").expect("security docs index");
     let gate = std::fs::read_to_string("scripts/security-crypto-doc-integrity.sh")
         .expect("crypto docs integrity gate");
 
@@ -136,7 +150,10 @@ fn crypto_provider_template_preserves_non_claims() {
     let template = std::fs::read_to_string("docs/security/CRYPTO_PROVIDER_TEMPLATE.md")
         .expect("crypto provider template");
 
-    assert!(template.contains("does not make Phase1 or Base1 cryptographically complete"), "{template}");
+    assert!(
+        template.contains("does not make Phase1 or Base1 cryptographically complete"),
+        "{template}"
+    );
     assert!(template.contains("audited"), "{template}");
     assert!(template.contains("certified"), "{template}");
     assert!(template.contains("quantum-safe"), "{template}");

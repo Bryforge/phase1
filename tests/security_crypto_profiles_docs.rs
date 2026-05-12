@@ -3,7 +3,10 @@ fn crypto_profiles_index_defines_profile_classes() {
     let profiles = std::fs::read_to_string("docs/security/crypto-profiles/README.md")
         .expect("crypto profiles index");
 
-    assert!(profiles.contains("Phase1 cryptographic profiles"), "{profiles}");
+    assert!(
+        profiles.contains("Phase1 cryptographic profiles"),
+        "{profiles}"
+    );
     assert!(
         profiles.contains("as secure as possible while maintaining practical usability"),
         "{profiles}"
@@ -16,7 +19,10 @@ fn crypto_profiles_index_defines_profile_classes() {
         "post-quantum-preview",
         "lab-only",
     ] {
-        assert!(profiles.contains(profile), "missing crypto profile {profile}: {profiles}");
+        assert!(
+            profiles.contains(profile),
+            "missing crypto profile {profile}: {profiles}"
+        );
     }
 }
 
@@ -25,11 +31,11 @@ fn crypto_profiles_index_links_current_profile_drafts() {
     let profiles = std::fs::read_to_string("docs/security/crypto-profiles/README.md")
         .expect("crypto profiles index");
 
-    for draft in [
-        "SAFE_DEFAULT.md",
-        "HIGH_SECURITY.md",
-    ] {
-        assert!(profiles.contains(draft), "missing profile draft {draft}: {profiles}");
+    for draft in ["SAFE_DEFAULT.md", "HIGH_SECURITY.md"] {
+        assert!(
+            profiles.contains(draft),
+            "missing profile draft {draft}: {profiles}"
+        );
     }
 
     assert!(
@@ -59,7 +65,10 @@ fn crypto_profiles_index_requires_profile_documentation_fields() {
         "test and review requirements",
         "non-claims",
     ] {
-        assert!(profiles.contains(field), "missing profile field {field}: {profiles}");
+        assert!(
+            profiles.contains(field),
+            "missing profile field {field}: {profiles}"
+        );
     }
 }
 
@@ -91,14 +100,16 @@ fn crypto_profiles_index_links_related_crypto_docs() {
         "../CRYPTO_ALGORITHM_TEMPLATE.md",
         "../TRUST_MODEL.md",
     ] {
-        assert!(profiles.contains(link), "missing related doc {link}: {profiles}");
+        assert!(
+            profiles.contains(link),
+            "missing related doc {link}: {profiles}"
+        );
     }
 }
 
 #[test]
 fn crypto_profiles_index_is_linked_from_security_index_and_roadmap() {
-    let index = std::fs::read_to_string("docs/security/README.md")
-        .expect("security docs index");
+    let index = std::fs::read_to_string("docs/security/README.md").expect("security docs index");
     let roadmap = std::fs::read_to_string("docs/security/CRYPTO_POLICY_ROADMAP.md")
         .expect("crypto policy roadmap");
 
@@ -111,7 +122,10 @@ fn crypto_profiles_index_preserves_non_claims() {
     let profiles = std::fs::read_to_string("docs/security/crypto-profiles/README.md")
         .expect("crypto profiles index");
 
-    assert!(profiles.contains("does not make Phase1 or Base1 cryptographically complete"), "{profiles}");
+    assert!(
+        profiles.contains("does not make Phase1 or Base1 cryptographically complete"),
+        "{profiles}"
+    );
     assert!(profiles.contains("audited"), "{profiles}");
     assert!(profiles.contains("certified"), "{profiles}");
     assert!(profiles.contains("quantum-safe"), "{profiles}");

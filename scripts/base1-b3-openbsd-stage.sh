@@ -57,9 +57,8 @@ outputs:
 
 non-claims:
   This is emulator-only OpenBSD staging evidence. It does not make Base1 an
-  OpenBSD distribution, install Base1, modify host boot settings, validate
-  physical hardware, validate an installer, validate recovery, prove hardening,
-  or prove daily-driver readiness.
+  OpenBSD distribution, install Base1, modify host boot settings, validate physical hardware,
+  validate an installer, validate recovery, prove hardening, or prove daily-driver readiness.
 USAGE
 }
 
@@ -218,7 +217,7 @@ case "$BOOT_MODE" in
     QEMU_ARGS="-m $MEMORY_MB -display none -serial file:$LOG -no-reboot -cdrom $ARTIFACT -boot d"
     ;;
   img)
-    QEMU_ARGS="-m $MEMORY_MB -display none -serial file:$LOG -no-reboot -drive file=$ARTIFACT,format=raw,if=ide -boot c"
+    QEMU_ARGS="-m $MEMORY_MB -display none -serial file:$LOG -no-reboot -drive file=$ARTIFACT,format=raw,if=virtio -boot c"
     ;;
 esac
 

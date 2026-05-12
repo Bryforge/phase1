@@ -3,7 +3,10 @@ fn lab_only_profile_defines_purpose_and_operator() {
     let profile = std::fs::read_to_string("docs/security/crypto-profiles/LAB_ONLY.md")
         .expect("lab-only crypto profile");
 
-    assert!(profile.contains("Lab-only cryptographic profile"), "{profile}");
+    assert!(
+        profile.contains("Lab-only cryptographic profile"),
+        "{profile}"
+    );
     assert!(profile.contains("planned profile"), "{profile}");
 
     for operator in [
@@ -13,7 +16,10 @@ fn lab_only_profile_defines_purpose_and_operator() {
         "Advanced operators reviewing non-production behavior",
         "Contributors writing documentation or examples",
     ] {
-        assert!(profile.contains(operator), "missing intended operator {operator}: {profile}");
+        assert!(
+            profile.contains(operator),
+            "missing intended operator {operator}: {profile}"
+        );
     }
 }
 
@@ -22,12 +28,11 @@ fn lab_only_profile_limits_allowed_control_points() {
     let profile = std::fs::read_to_string("docs/security/crypto-profiles/LAB_ONLY.md")
         .expect("lab-only crypto profile");
 
-    for allowed in [
-        "lab",
-        "docs",
-        "tests",
-    ] {
-        assert!(profile.contains(allowed), "missing allowed control point {allowed}: {profile}");
+    for allowed in ["lab", "docs", "tests"] {
+        assert!(
+            profile.contains(allowed),
+            "missing allowed control point {allowed}: {profile}"
+        );
     }
 
     assert!(
@@ -50,7 +55,10 @@ fn lab_only_profile_blocks_production_control_points() {
         "logs/evidence",
         "fyr/packages",
     ] {
-        assert!(profile.contains(blocked), "missing blocked control point {blocked}: {profile}");
+        assert!(
+            profile.contains(blocked),
+            "missing blocked control point {blocked}: {profile}"
+        );
     }
 
     assert!(
@@ -65,14 +73,16 @@ fn lab_only_profile_requires_registry_and_template() {
         .expect("lab-only crypto profile");
 
     assert!(profile.contains("../CRYPTO_REGISTRY.md"), "{profile}");
-    assert!(profile.contains("../CRYPTO_ALGORITHM_TEMPLATE.md"), "{profile}");
+    assert!(
+        profile.contains("../CRYPTO_ALGORITHM_TEMPLATE.md"),
+        "{profile}"
+    );
 
-    for status in [
-        "lab-only",
-        "rejected",
-        "documented",
-    ] {
-        assert!(profile.contains(status), "missing required status {status}: {profile}");
+    for status in ["lab-only", "rejected", "documented"] {
+        assert!(
+            profile.contains(status),
+            "missing required status {status}: {profile}"
+        );
     }
 }
 
@@ -90,7 +100,10 @@ fn lab_only_profile_rejects_real_protection_and_unsafe_claims() {
         "silent promotion into another profile",
         "any claim that lab behavior is secure, audited, certified, quantum-safe, or hardened",
     ] {
-        assert!(profile.contains(rejected), "missing rejection {rejected}: {profile}");
+        assert!(
+            profile.contains(rejected),
+            "missing rejection {rejected}: {profile}"
+        );
     }
 }
 
@@ -110,7 +123,10 @@ fn lab_only_profile_defines_warnings_audit_and_cleanup() {
         "cleanup command",
         "proof that no production control point was changed",
     ] {
-        assert!(profile.contains(text), "missing warning/audit/cleanup text {text}: {profile}");
+        assert!(
+            profile.contains(text),
+            "missing warning/audit/cleanup text {text}: {profile}"
+        );
     }
 }
 
@@ -128,7 +144,10 @@ fn lab_only_profile_preserves_non_claims() {
     let profile = std::fs::read_to_string("docs/security/crypto-profiles/LAB_ONLY.md")
         .expect("lab-only crypto profile");
 
-    assert!(profile.contains("does not make Phase1 or Base1 cryptographically complete"), "{profile}");
+    assert!(
+        profile.contains("does not make Phase1 or Base1 cryptographically complete"),
+        "{profile}"
+    );
     assert!(profile.contains("audited"), "{profile}");
     assert!(profile.contains("certified"), "{profile}");
     assert!(profile.contains("quantum-safe"), "{profile}");

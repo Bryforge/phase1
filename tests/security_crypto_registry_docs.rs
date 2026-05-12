@@ -1,7 +1,7 @@
 #[test]
 fn crypto_registry_defines_profile_classes_and_control_points() {
-    let registry = std::fs::read_to_string("docs/security/CRYPTO_REGISTRY.md")
-        .expect("crypto registry");
+    let registry =
+        std::fs::read_to_string("docs/security/CRYPTO_REGISTRY.md").expect("crypto registry");
 
     assert!(
         registry.contains("Phase1 cryptographic capability registry"),
@@ -15,7 +15,10 @@ fn crypto_registry_defines_profile_classes_and_control_points() {
         "post-quantum-preview",
         "lab-only",
     ] {
-        assert!(registry.contains(profile), "missing profile {profile}: {registry}");
+        assert!(
+            registry.contains(profile),
+            "missing profile {profile}: {registry}"
+        );
     }
 
     for control_point in [
@@ -36,10 +39,13 @@ fn crypto_registry_defines_profile_classes_and_control_points() {
 
 #[test]
 fn crypto_registry_requires_algorithm_template_and_review_fields() {
-    let registry = std::fs::read_to_string("docs/security/CRYPTO_REGISTRY.md")
-        .expect("crypto registry");
+    let registry =
+        std::fs::read_to_string("docs/security/CRYPTO_REGISTRY.md").expect("crypto registry");
 
-    assert!(registry.contains("CRYPTO_ALGORITHM_TEMPLATE.md"), "{registry}");
+    assert!(
+        registry.contains("CRYPTO_ALGORITHM_TEMPLATE.md"),
+        "{registry}"
+    );
 
     for field in [
         "allowed use cases",
@@ -51,14 +57,17 @@ fn crypto_registry_requires_algorithm_template_and_review_fields() {
         "usability impact",
         "non-claims",
     ] {
-        assert!(registry.contains(field), "missing required field {field}: {registry}");
+        assert!(
+            registry.contains(field),
+            "missing required field {field}: {registry}"
+        );
     }
 }
 
 #[test]
 fn crypto_registry_lists_algorithm_families() {
-    let registry = std::fs::read_to_string("docs/security/CRYPTO_REGISTRY.md")
-        .expect("crypto registry");
+    let registry =
+        std::fs::read_to_string("docs/security/CRYPTO_REGISTRY.md").expect("crypto registry");
 
     for family in [
         "Entropy and random generation",
@@ -74,14 +83,17 @@ fn crypto_registry_lists_algorithm_families() {
         "Authenticated data structures",
         "Non-cryptographic checksums",
     ] {
-        assert!(registry.contains(family), "missing algorithm family {family}: {registry}");
+        assert!(
+            registry.contains(family),
+            "missing algorithm family {family}: {registry}"
+        );
     }
 }
 
 #[test]
 fn crypto_registry_defines_entry_status_labels() {
-    let registry = std::fs::read_to_string("docs/security/CRYPTO_REGISTRY.md")
-        .expect("crypto registry");
+    let registry =
+        std::fs::read_to_string("docs/security/CRYPTO_REGISTRY.md").expect("crypto registry");
 
     for status in [
         "candidate",
@@ -94,14 +106,17 @@ fn crypto_registry_defines_entry_status_labels() {
         "rejected",
         "lab-only",
     ] {
-        assert!(registry.contains(status), "missing status {status}: {registry}");
+        assert!(
+            registry.contains(status),
+            "missing status {status}: {registry}"
+        );
     }
 }
 
 #[test]
 fn crypto_registry_preserves_initial_non_claims() {
-    let registry = std::fs::read_to_string("docs/security/CRYPTO_REGISTRY.md")
-        .expect("crypto registry");
+    let registry =
+        std::fs::read_to_string("docs/security/CRYPTO_REGISTRY.md").expect("crypto registry");
 
     assert!(
         registry.contains("No algorithm is currently approved by this registry for new production security claims."),
@@ -119,8 +134,7 @@ fn crypto_registry_preserves_initial_non_claims() {
 
 #[test]
 fn crypto_registry_is_linked_from_security_index_and_roadmap() {
-    let index = std::fs::read_to_string("docs/security/README.md")
-        .expect("security docs index");
+    let index = std::fs::read_to_string("docs/security/README.md").expect("security docs index");
     let roadmap = std::fs::read_to_string("docs/security/CRYPTO_POLICY_ROADMAP.md")
         .expect("crypto policy roadmap");
 

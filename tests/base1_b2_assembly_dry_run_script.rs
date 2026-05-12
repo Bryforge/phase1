@@ -5,7 +5,10 @@ const SCRIPT: &str = "scripts/base1-b2-assembly-dry-run.sh";
 #[test]
 fn base1_b2_assembly_dry_run_script_exists_and_has_valid_shell_syntax() {
     let metadata = std::fs::metadata(SCRIPT).expect("B2 dry-run assembly script exists");
-    assert!(metadata.len() > 0, "B2 dry-run assembly script should not be empty");
+    assert!(
+        metadata.len() > 0,
+        "B2 dry-run assembly script should not be empty"
+    );
 
     let output = Command::new("sh")
         .arg("-n")
@@ -36,7 +39,10 @@ fn base1_b2_assembly_dry_run_requires_dry_run() {
     );
 
     let stderr = String::from_utf8_lossy(&output.stderr);
-    assert!(stderr.contains("--dry-run is required"), "stderr was: {stderr}");
+    assert!(
+        stderr.contains("--dry-run is required"),
+        "stderr was: {stderr}"
+    );
 }
 
 #[test]
@@ -53,7 +59,10 @@ fn base1_b2_assembly_dry_run_requires_profile() {
     );
 
     let stderr = String::from_utf8_lossy(&output.stderr);
-    assert!(stderr.contains("--profile is required"), "stderr was: {stderr}");
+    assert!(
+        stderr.contains("--profile is required"),
+        "stderr was: {stderr}"
+    );
 }
 
 #[test]
@@ -72,7 +81,10 @@ fn base1_b2_assembly_dry_run_rejects_unknown_profile() {
     );
 
     let stderr = String::from_utf8_lossy(&output.stderr);
-    assert!(stderr.contains("unsupported profile"), "stderr was: {stderr}");
+    assert!(
+        stderr.contains("unsupported profile"),
+        "stderr was: {stderr}"
+    );
 }
 
 #[test]
@@ -113,7 +125,10 @@ fn base1_b2_assembly_dry_run_reports_expected_sections() {
         "next_validation_step:",
         "base1_b2_assembly_dry_run: complete",
     ] {
-        assert!(stdout.contains(text), "missing dry-run output {text}: {stdout}");
+        assert!(
+            stdout.contains(text),
+            "missing dry-run output {text}: {stdout}"
+        );
     }
 }
 
@@ -142,7 +157,10 @@ fn base1_b2_assembly_dry_run_accepts_planned_profiles() {
         );
 
         let stdout = String::from_utf8_lossy(&output.stdout);
-        assert!(stdout.contains(&format!("profile: {profile}")), "stdout was: {stdout}");
+        assert!(
+            stdout.contains(&format!("profile: {profile}")),
+            "stdout was: {stdout}"
+        );
     }
 }
 
@@ -163,7 +181,10 @@ fn base1_b2_assembly_dry_run_source_preserves_non_mutation_scope() {
         "hardened: not_claimed",
         "release_candidate: not_claimed",
     ] {
-        assert!(script.contains(required), "missing required source text {required}: {script}");
+        assert!(
+            script.contains(required),
+            "missing required source text {required}: {script}"
+        );
     }
 
     for forbidden in [
@@ -192,15 +213,21 @@ fn base1_b2_assembly_dry_run_source_preserves_non_mutation_scope() {
 fn base1_b2_assembly_dry_run_is_documented_from_plan_and_status() {
     let plan = std::fs::read_to_string("docs/os/B2_DRY_RUN_ASSEMBLY_PLAN.md")
         .expect("B2 dry-run assembly plan");
-    let status = std::fs::read_to_string("docs/os/BOOT_READINESS_STATUS.md")
-        .expect("boot readiness status");
+    let status =
+        std::fs::read_to_string("docs/os/BOOT_READINESS_STATUS.md").expect("boot readiness status");
     let race = std::fs::read_to_string("docs/os/BOOT_READINESS_RACE_PLAN.md")
         .expect("boot readiness race plan");
     let roadmap = std::fs::read_to_string("docs/os/ROADMAP.md").expect("OS roadmap");
 
     for doc in [&plan, &status, &race, &roadmap] {
         assert!(doc.contains(SCRIPT), "missing script path in doc: {doc}");
-        assert!(doc.contains("--dry-run"), "missing dry-run reference in doc: {doc}");
-        assert!(doc.contains("x86_64-vm-validation"), "missing VM profile reference in doc: {doc}");
+        assert!(
+            doc.contains("--dry-run"),
+            "missing dry-run reference in doc: {doc}"
+        );
+        assert!(
+            doc.contains("x86_64-vm-validation"),
+            "missing VM profile reference in doc: {doc}"
+        );
     }
 }

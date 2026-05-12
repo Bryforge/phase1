@@ -5,7 +5,10 @@ const SCRIPT: &str = "scripts/base1-qemu-visual-boot-preview.sh";
 #[test]
 fn qemu_visual_boot_preview_script_exists_and_has_valid_shell_syntax() {
     let metadata = std::fs::metadata(SCRIPT).expect("QEMU visual boot preview script exists");
-    assert!(metadata.len() > 0, "QEMU visual boot preview script should not be empty");
+    assert!(
+        metadata.len() > 0,
+        "QEMU visual boot preview script should not be empty"
+    );
 
     let output = Command::new("sh")
         .arg("-n")
@@ -69,7 +72,10 @@ fn qemu_visual_boot_preview_script_requires_action() {
     assert!(!output.status.success(), "script should require an action");
 
     let stderr = String::from_utf8_lossy(&output.stderr);
-    assert!(stderr.contains("choose --build, --run, or both"), "stderr was: {stderr}");
+    assert!(
+        stderr.contains("choose --build, --run, or both"),
+        "stderr was: {stderr}"
+    );
 }
 
 #[test]
@@ -80,10 +86,16 @@ fn qemu_visual_boot_preview_script_rejects_unknown_argument() {
         .output()
         .expect("run QEMU visual boot preview with unknown argument");
 
-    assert!(!output.status.success(), "script should reject unknown arguments");
+    assert!(
+        !output.status.success(),
+        "script should reject unknown arguments"
+    );
 
     let stderr = String::from_utf8_lossy(&output.stderr);
-    assert!(stderr.contains("unknown argument: --unknown"), "stderr was: {stderr}");
+    assert!(
+        stderr.contains("unknown argument: --unknown"),
+        "stderr was: {stderr}"
+    );
 }
 
 #[test]
@@ -112,7 +124,10 @@ fn qemu_visual_boot_preview_script_uses_expected_local_artifacts() {
         "edk2-x86_64-code.fd",
         "qemu-system-x86_64",
     ] {
-        assert!(script.contains(text), "missing expected artifact/tool text {text}: {script}");
+        assert!(
+            script.contains(text),
+            "missing expected artifact/tool text {text}: {script}"
+        );
     }
 }
 
@@ -127,7 +142,10 @@ fn qemu_visual_boot_preview_script_uses_phase1_wordmark_and_fits_it() {
         "background_image /boot/grub/phase1-qemu-splash.png",
         "splash: assets/phase1_word.png fitted to",
     ] {
-        assert!(script.contains(required), "missing fitted wordmark guard text {required}: {script}");
+        assert!(
+            script.contains(required),
+            "missing fitted wordmark guard text {required}: {script}"
+        );
     }
 
     for forbidden in [
@@ -161,7 +179,10 @@ fn qemu_visual_boot_preview_script_uses_safe_qemu_launch_shape() {
         "-display cocoa,zoom-to-fit=on",
         "-net none",
     ] {
-        assert!(script.contains(text), "missing expected QEMU launch text {text}: {script}");
+        assert!(
+            script.contains(text),
+            "missing expected QEMU launch text {text}: {script}"
+        );
     }
 }
 
@@ -175,7 +196,10 @@ fn qemu_visual_boot_preview_script_preserves_non_install_boundary() {
         "boot_readiness_claim: no",
         "writes: build-directory-only",
     ] {
-        assert!(script.contains(required), "missing boundary text {required}: {script}");
+        assert!(
+            script.contains(required),
+            "missing boundary text {required}: {script}"
+        );
     }
 
     for forbidden in [

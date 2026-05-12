@@ -8,7 +8,10 @@ fn readme_links_core_navigation_and_reorganization_docs() {
         "CONTRIBUTING.md",
         ".github/pull_request_template.md",
     ] {
-        assert!(readme.contains(link), "README missing link {link}: {readme}");
+        assert!(
+            readme.contains(link),
+            "README missing link {link}: {readme}"
+        );
     }
 }
 
@@ -22,7 +25,10 @@ fn readme_links_current_public_asset_components() {
         "assets/fyr_symbol.png",
         "assets/fyr_word.png",
     ] {
-        assert!(readme.contains(asset), "README missing current asset component {asset}: {readme}");
+        assert!(
+            readme.contains(asset),
+            "README missing current asset component {asset}: {readme}"
+        );
     }
 
     assert!(
@@ -57,7 +63,10 @@ fn readme_links_boot_readiness_b1_docs_and_detector() {
         "docs/os/B1_READ_ONLY_DETECTION_VALIDATION.md",
         "scripts/base1-x86_64-detect.sh --dry-run",
     ] {
-        assert!(readme.contains(link), "README missing B1 boot-readiness link/text {link}: {readme}");
+        assert!(
+            readme.contains(link),
+            "README missing B1 boot-readiness link/text {link}: {readme}"
+        );
     }
 
     for text in [
@@ -66,7 +75,10 @@ fn readme_links_boot_readiness_b1_docs_and_detector() {
         "cargo test -p phase1 --test b1_read_only_detection_limitations_docs",
         "cargo test -p phase1 --test b1_read_only_detection_validation_docs",
     ] {
-        assert!(readme.contains(text), "README missing B1 status text {text}: {readme}");
+        assert!(
+            readme.contains(text),
+            "README missing B1 status text {text}: {readme}"
+        );
     }
 }
 
@@ -80,7 +92,10 @@ fn readme_links_boot_readiness_b2_docs_and_assembly_preview() {
         "docs/os/B2_DRY_RUN_ASSEMBLY_VALIDATION.md",
         "scripts/base1-b2-assembly-dry-run.sh --dry-run --profile x86_64-vm-validation",
     ] {
-        assert!(readme.contains(link), "README missing B2 boot-readiness link/text {link}: {readme}");
+        assert!(
+            readme.contains(link),
+            "README missing B2 boot-readiness link/text {link}: {readme}"
+        );
     }
 
     for text in [
@@ -91,7 +106,10 @@ fn readme_links_boot_readiness_b2_docs_and_assembly_preview() {
         "cargo test -p phase1 --test b2_dry_run_assembly_limitations_docs",
         "cargo test -p phase1 --test b2_dry_run_assembly_validation_docs",
     ] {
-        assert!(readme.contains(text), "README missing B2 status text {text}: {readme}");
+        assert!(
+            readme.contains(text),
+            "README missing B2 status text {text}: {readme}"
+        );
     }
 }
 
@@ -105,7 +123,10 @@ fn readme_links_organized_destinations() {
         "examples/README.md",
         "tools/README.md",
     ] {
-        assert!(readme.contains(link), "README missing organized destination {link}: {readme}");
+        assert!(
+            readme.contains(link),
+            "README missing organized destination {link}: {readme}"
+        );
     }
 }
 
@@ -119,6 +140,9 @@ fn readme_links_current_support_templates() {
         ".github/ISSUE_TEMPLATE/feature_request.yml",
         ".github/ISSUE_TEMPLATE/documentation_issue.yml",
     ] {
-        assert!(readme.contains(link), "README missing issue template link {link}: {readme}");
+        assert!(
+            readme.contains(link),
+            "README missing issue template link {link}: {readme}"
+        );
     }
 }

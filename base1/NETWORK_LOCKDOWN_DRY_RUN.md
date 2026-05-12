@@ -85,3 +85,7 @@ This dry-run checkpoint may not become a mutating lockdown command until these a
 ## Current status
 
 This is a planning and dry-run surface only. It is safe to run for inspection, but it is not a firewall installer and does not harden a host by itself.
+
+## Test-guarded contract phrases
+
+- remote access can be lost

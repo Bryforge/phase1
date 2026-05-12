@@ -5,7 +5,10 @@ fn base1_b2_test_suite_check_script_exists_and_has_valid_shell_syntax() {
     let script = "scripts/base1-b2-test-suite-check.sh";
     let contents = std::fs::read_to_string(script).expect("B2 test suite checker script");
 
-    assert!(contents.contains("Base1 B2 focused test-suite checker"), "{contents}");
+    assert!(
+        contents.contains("Base1 B2 focused test-suite checker"),
+        "{contents}"
+    );
     assert!(contents.contains("set -eu"), "{contents}");
     assert!(contents.contains("require_build_out_dir"), "{contents}");
     assert!(contents.contains("build/*"), "{contents}");
@@ -16,7 +19,10 @@ fn base1_b2_test_suite_check_script_exists_and_has_valid_shell_syntax() {
         .status()
         .expect("run sh -n on B2 test suite checker");
 
-    assert!(status.success(), "B2 test suite checker should have valid shell syntax");
+    assert!(
+        status.success(),
+        "B2 test suite checker should have valid shell syntax"
+    );
 }
 
 #[test]
@@ -82,7 +88,10 @@ fn base1_b2_test_suite_check_dry_run_prints_plan_and_can_write_report() {
         "no tests executed",
         "no VM/hardware validation claim",
     ] {
-        assert!(stdout.contains(text), "missing dry-run stdout text {text}: {stdout}");
+        assert!(
+            stdout.contains(text),
+            "missing dry-run stdout text {text}: {stdout}"
+        );
     }
 
     let summary = std::fs::read_to_string(format!("{out_dir}/b2-test-suite-summary.env"))
@@ -98,7 +107,10 @@ fn base1_b2_test_suite_check_dry_run_prints_plan_and_can_write_report() {
         "BASE1_B2_NON_CLAIM_HARDWARE=1",
         "BASE1_B2_NON_CLAIM_DAILY_DRIVER=1",
     ] {
-        assert!(summary.contains(text), "missing summary text {text}: {summary}");
+        assert!(
+            summary.contains(text),
+            "missing summary text {text}: {summary}"
+        );
     }
 }
 
@@ -139,6 +151,9 @@ fn base1_b2_test_suite_check_preserves_non_claims_and_local_build_boundary() {
         "BASE1_B2_NON_CLAIM_HARDWARE=1",
         "BASE1_B2_NON_CLAIM_DAILY_DRIVER=1",
     ] {
-        assert!(contents.contains(text), "missing script boundary text {text}: {contents}");
+        assert!(
+            contents.contains(text),
+            "missing script boundary text {text}: {contents}"
+        );
     }
 }

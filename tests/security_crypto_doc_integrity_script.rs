@@ -37,7 +37,10 @@ fn security_crypto_doc_integrity_gate_checks_required_docs() {
         "docs/security/crypto-profiles/POST_QUANTUM_PREVIEW.md",
         "docs/security/crypto-profiles/LAB_ONLY.md",
     ] {
-        assert!(script.contains(path), "missing required path {path}: {script}");
+        assert!(
+            script.contains(path),
+            "missing required path {path}: {script}"
+        );
     }
 }
 
@@ -65,7 +68,10 @@ fn security_crypto_doc_integrity_gate_checks_links_and_guardrails() {
         "unsupported claims of quantum safety",
         "must not be used as a real security profile",
     ] {
-        assert!(script.contains(text), "missing guardrail text {text}: {script}");
+        assert!(
+            script.contains(text),
+            "missing guardrail text {text}: {script}"
+        );
     }
 }
 
@@ -87,7 +93,10 @@ fn security_crypto_doc_integrity_gate_checks_operator_command_plan() {
         "Lab-only selections must fail outside `lab`, `docs`, or `tests` scopes.",
         "deprecated, rejected, or lab-only entries are not used in production scopes",
     ] {
-        assert!(script.contains(text), "missing operator command check {text}: {script}");
+        assert!(
+            script.contains(text),
+            "missing operator command check {text}: {script}"
+        );
     }
 }
 
@@ -137,7 +146,10 @@ fn security_crypto_doc_integrity_gate_checks_provider_registry_and_template() {
         "Control-point compatibility",
         "Fallback behavior",
     ] {
-        assert!(script.contains(text), "missing provider integrity check {text}: {script}");
+        assert!(
+            script.contains(text),
+            "missing provider integrity check {text}: {script}"
+        );
     }
 }
 
@@ -153,14 +165,17 @@ fn security_crypto_doc_integrity_gate_checks_profile_non_claims() {
         "hardware-validated",
         "daily-driver ready",
     ] {
-        assert!(script.contains(text), "missing non-claim text {text}: {script}");
+        assert!(
+            script.contains(text),
+            "missing non-claim text {text}: {script}"
+        );
     }
 }
 
 #[test]
 fn quality_check_runs_security_crypto_docs_gate() {
-    let quality = std::fs::read_to_string("scripts/quality-check.sh")
-        .expect("quality-check script");
+    let quality =
+        std::fs::read_to_string("scripts/quality-check.sh").expect("quality-check script");
 
     assert!(
         quality.contains("check_security_crypto_docs()"),

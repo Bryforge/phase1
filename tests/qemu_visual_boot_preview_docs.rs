@@ -42,7 +42,10 @@ fn qemu_visual_boot_preview_doc_lists_artifacts_and_assets() {
         "The image is a local showcase artifact.",
         "It is not a release image and should not be committed.",
     ] {
-        assert!(doc.contains(text), "missing artifact/asset text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing artifact/asset text {text}: {doc}"
+        );
     }
 }
 
@@ -74,7 +77,10 @@ fn qemu_visual_boot_preview_doc_preserves_inspection_commands() {
         "mdir -i build/base1-qemu-visual-boot-preview.img ::/boot/grub",
         "mdir -i build/base1-qemu-visual-boot-preview.img ::/boot/grub/fonts",
     ] {
-        assert!(doc.contains(command), "missing inspection command {command}: {doc}");
+        assert!(
+            doc.contains(command),
+            "missing inspection command {command}: {doc}"
+        );
     }
 }
 
@@ -90,7 +96,10 @@ fn qemu_visual_boot_preview_doc_preserves_troubleshooting() {
         "Backslash mistakes in manual commands",
         "Do not type a space after the backslash.",
     ] {
-        assert!(doc.contains(text), "missing troubleshooting text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing troubleshooting text {text}: {doc}"
+        );
     }
 }
 
@@ -112,7 +121,10 @@ fn qemu_visual_boot_preview_doc_preserves_safety_boundary() {
         "claim hardening",
         "The only intended writes are local files under `build/`.",
     ] {
-        assert!(doc.contains(text), "missing safety-boundary text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing safety-boundary text {text}: {doc}"
+        );
     }
 }
 

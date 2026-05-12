@@ -67,3 +67,4 @@ A future recovery USB writer can only follow after image provenance, checksum ve
 
 
 See also: [`RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md`](../RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md) — recovery USB image provenance read-only checkpoint release notes.
+- [`docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md`](../docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md) — Recovery USB image read-only checkpoint release notes.

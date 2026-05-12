@@ -5,7 +5,10 @@ const SCRIPT: &str = "scripts/base1-x86_64-detect.sh";
 #[test]
 fn base1_x86_64_detect_script_exists_and_has_valid_shell_syntax() {
     let metadata = std::fs::metadata(SCRIPT).expect("B1 x86_64 detection script exists");
-    assert!(metadata.len() > 0, "B1 x86_64 detection script should not be empty");
+    assert!(
+        metadata.len() > 0,
+        "B1 x86_64 detection script should not be empty"
+    );
 
     let output = Command::new("sh")
         .arg("-n")
@@ -34,7 +37,10 @@ fn base1_x86_64_detect_requires_dry_run() {
     );
 
     let stderr = String::from_utf8_lossy(&output.stderr);
-    assert!(stderr.contains("--dry-run is required"), "stderr was: {stderr}");
+    assert!(
+        stderr.contains("--dry-run is required"),
+        "stderr was: {stderr}"
+    );
 }
 
 #[test]
@@ -70,7 +76,10 @@ fn base1_x86_64_detect_dry_run_reports_no_writes() {
         "next_read_only_check:",
         "base1_x86_64_detect: complete",
     ] {
-        assert!(stdout.contains(text), "missing dry-run output {text}: {stdout}");
+        assert!(
+            stdout.contains(text),
+            "missing dry-run output {text}: {stdout}"
+        );
     }
 }
 
@@ -90,7 +99,10 @@ fn base1_x86_64_detect_preserves_read_only_scope_in_source() {
         if required == "No silent boot" {
             continue;
         }
-        assert!(script.contains(required), "missing required source text {required}: {script}");
+        assert!(
+            script.contains(required),
+            "missing required source text {required}: {script}"
+        );
     }
 
     for forbidden in [
@@ -119,13 +131,16 @@ fn base1_x86_64_detect_preserves_read_only_scope_in_source() {
 fn base1_x86_64_detect_is_documented_from_b1_plan_and_status() {
     let plan = std::fs::read_to_string("docs/os/B1_READ_ONLY_DETECTION_PLAN.md")
         .expect("B1 detection plan");
-    let status = std::fs::read_to_string("docs/os/BOOT_READINESS_STATUS.md")
-        .expect("boot readiness status");
-    let x86 = std::fs::read_to_string("docs/os/X86_64_BOOT_SUPPORT_ROADMAP.md")
-        .expect("x86_64 roadmap");
+    let status =
+        std::fs::read_to_string("docs/os/BOOT_READINESS_STATUS.md").expect("boot readiness status");
+    let x86 =
+        std::fs::read_to_string("docs/os/X86_64_BOOT_SUPPORT_ROADMAP.md").expect("x86_64 roadmap");
 
     for doc in [&plan, &status, &x86] {
         assert!(doc.contains(SCRIPT), "missing script path in doc: {doc}");
-        assert!(doc.contains("--dry-run"), "missing dry-run reference in doc: {doc}");
+        assert!(
+            doc.contains("--dry-run"),
+            "missing dry-run reference in doc: {doc}"
+        );
     }
 }

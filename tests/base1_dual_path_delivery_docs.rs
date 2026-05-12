@@ -55,7 +55,10 @@ fn base1_dual_path_delivery_preserves_supervisor_orchestration_path() {
         "grow toward supervisor/hypervisor behavior only when evidence supports it",
         "must not be described as a hypervisor",
     ] {
-        assert!(doc.contains(text), "missing supervisor path text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing supervisor path text {text}: {doc}"
+        );
     }
 }
 
@@ -80,7 +83,10 @@ fn base1_dual_path_delivery_defines_shared_contract_and_profiles() {
         "Non-claims",
         "Compatibility",
     ] {
-        assert!(doc.contains(text), "missing shared contract text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing shared contract text {text}: {doc}"
+        );
     }
 }
 

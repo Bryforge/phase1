@@ -9,7 +9,7 @@ body:
       value: |
         Thanks for asking for support. Please do not include secrets, tokens, private keys, recovery codes, private logs, or unrevised screenshots.
 
-        If this involves a private vulnerability, account compromise, safety bypass, or sensitive data exposure, do not file a public support issue. Follow `SECURITY.md` instead.
+        If this involves a private vulnerability, account compromise, safety bypass, or sensitive data exposure, do not file a public support issue. follow `SECURITY.md` instead.
 
   - type: dropdown
     id: project_area

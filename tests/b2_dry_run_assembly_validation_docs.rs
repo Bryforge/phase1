@@ -3,16 +3,24 @@ fn b2_validation_report_defines_scope_and_command() {
     let report = std::fs::read_to_string("docs/os/B2_DRY_RUN_ASSEMBLY_VALIDATION.md")
         .expect("B2 dry-run assembly validation report");
 
-    assert!(report.contains("Base1 B2 dry-run assembly validation"), "{report}");
+    assert!(
+        report.contains("Base1 B2 dry-run assembly validation"),
+        "{report}"
+    );
     assert!(
         report.contains("validation evidence and review checklist for `scripts/base1-b2-assembly-dry-run.sh --dry-run --profile <profile>`"),
         "{report}"
     );
     assert!(
-        report.contains("sh scripts/base1-b2-assembly-dry-run.sh --dry-run --profile x86_64-vm-validation"),
+        report.contains(
+            "sh scripts/base1-b2-assembly-dry-run.sh --dry-run --profile x86_64-vm-validation"
+        ),
         "{report}"
     );
-    assert!(report.contains("It does not claim boot readiness."), "{report}");
+    assert!(
+        report.contains("It does not claim boot readiness."),
+        "{report}"
+    );
 }
 
 #[test]
@@ -28,7 +36,10 @@ fn b2_validation_report_lists_test_commands() {
         "cargo test -p phase1 --test boot_readiness_race_plan_docs",
         "cargo test -p phase1 --test x86_64_boot_support_roadmap_docs",
     ] {
-        assert!(report.contains(command), "missing validation command {command}: {report}");
+        assert!(
+            report.contains(command),
+            "missing validation command {command}: {report}"
+        );
     }
 }
 
@@ -52,7 +63,10 @@ fn b2_validation_report_preserves_validation_status_table() {
         "CI/local test result",
         "Pending",
     ] {
-        assert!(report.contains(text), "missing validation status text {text}: {report}");
+        assert!(
+            report.contains(text),
+            "missing validation status text {text}: {report}"
+        );
     }
 }
 
@@ -104,7 +118,10 @@ fn b2_validation_report_preserves_output_review_checklist() {
         "known limitations",
         "next validation step",
     ] {
-        assert!(report.contains(text), "missing output review text {text}: {report}");
+        assert!(
+            report.contains(text),
+            "missing output review text {text}: {report}"
+        );
     }
 }
 
@@ -136,7 +153,10 @@ fn b2_validation_report_links_related_docs() {
         "B2_DRY_RUN_ASSEMBLY_LIMITATIONS.md",
         "X86_64_BOOT_SUPPORT_ROADMAP.md",
     ] {
-        assert!(report.contains(link), "missing related doc link {link}: {report}");
+        assert!(
+            report.contains(link),
+            "missing related doc link {link}: {report}"
+        );
     }
 }
 

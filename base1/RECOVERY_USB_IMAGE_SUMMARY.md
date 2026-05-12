@@ -89,3 +89,5 @@ See also: [Recovery USB emergency shell behavior design](RECOVERY_USB_EMERGENCY_
 
 
 See also: [Recovery USB emergency shell summary](RECOVERY_USB_EMERGENCY_SHELL_SUMMARY.md).
+- [`base1/RECOVERY_USB_IMAGE_COMMAND_INDEX.md`](RECOVERY_USB_IMAGE_COMMAND_INDEX.md) — Recovery USB image command index.
+- [`docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md`](../docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md) — Recovery USB image read-only checkpoint release notes.

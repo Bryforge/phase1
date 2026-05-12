@@ -1,9 +1,9 @@
-const LIBREBOOT_V1_RELEASE_NOTES: &str = "docs/base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1.md";
+const LIBREBOOT_V1_RELEASE_NOTES: &str =
+    "docs/base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1.md";
 
 #[test]
 fn libreboot_release_notes_record_checkpoint_status() {
-    let doc = std::fs::read_to_string(LIBREBOOT_V1_RELEASE_NOTES)
-        .expect("libreboot release notes");
+    let doc = std::fs::read_to_string(LIBREBOOT_V1_RELEASE_NOTES).expect("libreboot release notes");
 
     assert!(
         doc.contains("Base1 Libreboot read-only validation checkpoint v1"),
@@ -21,8 +21,7 @@ fn libreboot_release_notes_record_checkpoint_status() {
 
 #[test]
 fn libreboot_release_notes_list_surfaces_and_non_claims() {
-    let doc = std::fs::read_to_string(LIBREBOOT_V1_RELEASE_NOTES)
-        .expect("libreboot release notes");
+    let doc = std::fs::read_to_string(LIBREBOOT_V1_RELEASE_NOTES).expect("libreboot release notes");
 
     assert!(doc.contains("base1/LIBREBOOT_MILESTONE.md"), "{doc}");
     assert!(

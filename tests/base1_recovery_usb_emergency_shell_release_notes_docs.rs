@@ -1,4 +1,5 @@
-const EMERGENCY_SHELL_RELEASE_NOTES: &str = "docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md";
+const EMERGENCY_SHELL_RELEASE_NOTES: &str =
+    "docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md";
 
 #[test]
 fn recovery_usb_emergency_shell_release_notes_record_checkpoint_status() {
@@ -67,9 +68,24 @@ fn recovery_usb_emergency_shell_surfaces_link_release_notes() {
     let releases = std::fs::read_to_string("docs/base1/releases/README.md")
         .expect("base1 release notes index");
 
-    assert!(summary.contains("RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md"), "{summary}");
-    assert!(index.contains("RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md"), "{index}");
-    assert!(command_index.contains(EMERGENCY_SHELL_RELEASE_NOTES), "{command_index}");
-    assert!(readme.contains("RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md"), "{readme}");
-    assert!(releases.contains("RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md"), "{releases}");
+    assert!(
+        summary.contains("RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md"),
+        "{summary}"
+    );
+    assert!(
+        index.contains("RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md"),
+        "{index}"
+    );
+    assert!(
+        command_index.contains(EMERGENCY_SHELL_RELEASE_NOTES),
+        "{command_index}"
+    );
+    assert!(
+        readme.contains("RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md"),
+        "{readme}"
+    );
+    assert!(
+        releases.contains("RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md"),
+        "{releases}"
+    );
 }

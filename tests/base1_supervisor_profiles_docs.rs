@@ -15,7 +15,10 @@ fn base1_supervisor_profiles_doc_defines_purpose_and_profile_set() {
         "vm-validation",
         "workstation",
     ] {
-        assert!(doc.contains(text), "missing purpose/profile-set text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing purpose/profile-set text {text}: {doc}"
+        );
     }
 }
 
@@ -74,7 +77,10 @@ fn base1_supervisor_profiles_doc_defines_x200_vm_and_workstation_intents() {
         "The workstation profile is for larger-memory development and parallel validation.",
         "requires explicit evidence and reviewed logs before any claim strengthens",
     ] {
-        assert!(doc.contains(text), "missing profile intent text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing profile intent text {text}: {doc}"
+        );
     }
 }
 
@@ -99,6 +105,9 @@ fn base1_supervisor_profiles_doc_preserves_compatibility_rules_and_non_claims() 
         "hypervisor-ready",
         "daily-driver ready",
     ] {
-        assert!(doc.contains(text), "missing compatibility/non-claim text {text}: {doc}");
+        assert!(
+            doc.contains(text),
+            "missing compatibility/non-claim text {text}: {doc}"
+        );
     }
 }
