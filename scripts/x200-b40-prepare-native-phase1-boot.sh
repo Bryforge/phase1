@@ -96,19 +96,37 @@ apt_install_if_allowed() {
   sudo apt-get install -y $packages
 }
 
+ensure_rustup_default_if_needed() {
+  if [ "$SKIP_BUILD" = "1" ]; then
+    return 0
+  fi
+  if command -v cargo >/dev/null 2>&1 && cargo --version >/dev/null 2>&1; then
+    return 0
+  fi
+  if command -v rustup >/dev/null 2>&1; then
+    printf 'Cargo exists but no default Rust toolchain is configured. Setting rustup default stable...\n'
+    rustup default stable
+    cargo --version >/dev/null 2>&1 && return 0
+  fi
+  return 1
+}
+
 ensure_cargo_if_needed() {
   if [ "$SKIP_BUILD" = "1" ]; then
     return 0
   fi
   if command -v cargo >/dev/null 2>&1; then
-    printf 'cargo: %s\n' "$(command -v cargo)"
-    return 0
+    if ensure_rustup_default_if_needed; then
+      printf 'cargo: %s\n' "$(command -v cargo)"
+      cargo --version || true
+      return 0
+    fi
   fi
-  printf 'Cargo is missing from PATH. Checked cargo homes: %s and %s\n' "$HOME" "$ORIGINAL_HOME"
+  printf 'Cargo is missing from PATH or has no working default toolchain. Checked cargo homes: %s and %s\n' "$HOME" "$ORIGINAL_HOME"
   if apt_install_if_allowed "cargo rustc"; then
     command -v cargo >/dev/null 2>&1 && return 0
   fi
-  fail "missing command: cargo. Try: export PATH=\"$ORIGINAL_HOME/.cargo/bin:\$PATH\" or source $ORIGINAL_HOME/.cargo/env; or set BASE1_B40_PHASE1_BIN and BASE1_SKIP_BUILD=1"
+  fail "missing working cargo. Try: rustup default stable; or export PATH=\"$ORIGINAL_HOME/.cargo/bin:\$PATH\"; or set BASE1_B40_PHASE1_BIN and BASE1_SKIP_BUILD=1"
 }
 
 find_busybox() {
