@@ -1,11 +1,14 @@
 #!/usr/bin/env sh
-# Phase1 X200 boot automation, backward-compatible filename.
+# Phase1 X200/Pi boot automation, backward-compatible filename.
 #
 # Current target: B42 stable-safe native color UTF-8 boot.
-# This script calls the B42 writer, captures a full writer log, and verifies
-# the USB after writing so failures cannot look like silent success.
+#
+# This script calls the B42 writer, captures a full writer log, and verifies the
+# USB after writing. On Raspberry Pi, the external USB writer may be /dev/sda;
+# this automation allows that only after refusing the actual root filesystem.
 #
 # Usage:
+#   sh scripts/x200-b40-prepare-native-phase1-boot.sh /dev/sda YES_WRITE_USB
 #   sh scripts/x200-b40-prepare-native-phase1-boot.sh /dev/sdb YES_WRITE_USB
 
 set -u
@@ -30,6 +33,7 @@ REPORT_DIR="build/base1-b42-native-stable-safe-color-utf8"
 REPORT="$REPORT_DIR/b42-automation-diagnostics.env"
 WRITER_LOG="$REPORT_DIR/b42-writer-run.log"
 VERIFY_LOG="$REPORT_DIR/b42-usb-verify.log"
+RUNTIME_WRITER="$REPORT_DIR/b42-writer-runtime-safe.sh"
 MAIN_ENTRY="Start Phase1 Stable Safe Color UTF-8"
 ASCII_ENTRY="Start Phase1 ASCII Safe Fallback"
 INITRD_NAME="phase1-b42-native-stable-safe-color-utf8.img"
@@ -42,7 +46,7 @@ part1() {
   case "$1" in
     /dev/nvme[0-9]n[0-9]|/dev/mmcblk[0-9]) printf '%sp1\n' "$1" ;;
     /dev/sd[a-z]|/dev/vd[a-z]|/dev/hd[a-z]) printf '%s1\n' "$1" ;;
-    *) fail "use a whole disk like /dev/sdb, not $1" ;;
+    *) fail "use a whole disk like /dev/sda or /dev/sdb, not $1" ;;
   esac
 }
 
@@ -54,21 +58,39 @@ find_busybox() {
   printf '\n'
 }
 
+root_device_check() {
+  root_src="$(findmnt -no SOURCE / 2>/dev/null || true)"
+  printf 'root source: %s\n' "${root_src:-unknown}"
+  case "$root_src" in
+    "$USB"|"$USB"[0-9]*|"$USB"p[0-9]*) fail "refusing to write root filesystem device: $root_src" ;;
+  esac
+}
+
+prepare_runtime_writer() {
+  mkdir -p "$REPORT_DIR"
+  awk '
+    /\[ "\$USB" != "\/dev\/sda" \] \|\| fail "refusing \/dev\/sda because it is commonly the internal disk"/ {
+      print "# Pi-safe automation removed the hard /dev/sda refusal here.";
+      print "# The automation already refuses the actual root filesystem device.";
+      next;
+    }
+    { print }
+  ' "$WRITER" > "$RUNTIME_WRITER"
+  chmod +x "$RUNTIME_WRITER"
+  sh -n "$RUNTIME_WRITER" || fail "runtime writer has shell syntax error"
+}
+
 show_log_tail() {
   log="$1"
   printf '\n--- tail: %s ---\n' "$log"
-  if [ -f "$log" ]; then
-    tail -n 120 "$log"
-  else
-    printf 'log not found\n'
-  fi
+  if [ -f "$log" ]; then tail -n 140 "$log"; else printf 'log not found\n'; fi
   printf -- '--- end tail ---\n'
 }
 
-[ -n "$USB" ] || fail "usage: sh scripts/x200-b40-prepare-native-phase1-boot.sh /dev/sdb YES_WRITE_USB"
+[ -n "$USB" ] || fail "usage: sh scripts/x200-b40-prepare-native-phase1-boot.sh /dev/sda YES_WRITE_USB"
 [ "$CONFIRM" = YES_WRITE_USB ] || fail "missing YES_WRITE_USB confirmation"
 [ -d .git ] || fail "run from the phase1 repository root"
-for c in sh git sudo grep awk sha256sum cargo mount umount mktemp tail; do need "$c"; done
+for c in sh git sudo grep awk sha256sum cargo mount umount mktemp tail findmnt; do need "$c"; done
 mkdir -p "$REPORT_DIR"
 : > "$WRITER_LOG"
 : > "$VERIFY_LOG"
@@ -78,12 +100,14 @@ git fetch origin edge/stable
 git pull --ff-only origin edge/stable
 
 section "--- automation target ---"
-printf 'target usb : %s\n' "$USB"
-printf 'writer     : %s\n' "$WRITER"
-printf 'writer log : %s\n' "$WRITER_LOG"
-printf 'verify log : %s\n' "$VERIFY_LOG"
+printf 'target usb      : %s\n' "$USB"
+printf 'repo writer     : %s\n' "$WRITER"
+printf 'runtime writer : %s\n' "$RUNTIME_WRITER"
+printf 'writer log      : %s\n' "$WRITER_LOG"
+printf 'verify log      : %s\n' "$VERIFY_LOG"
 git log -1 --oneline || true
 git log -1 --oneline -- "$WRITER" || true
+root_device_check
 
 section "--- checking B42 writer content ---"
 [ -f "$WRITER" ] || fail "missing $WRITER"
@@ -92,6 +116,7 @@ grep -q "$MAIN_ENTRY" "$WRITER" || fail "writer missing main B42 entry: $MAIN_EN
 grep -q "$ASCII_ENTRY" "$WRITER" || fail "writer missing ASCII fallback entry: $ASCII_ENTRY"
 grep -q 'BASE1_B42_ASCII_DEFAULT=0' "$WRITER" || fail "writer missing ASCII default=0 evidence"
 grep -q 'BASE1_B42_SAFE_DEFAULT=1' "$WRITER" || fail "writer missing safe default=1 evidence"
+prepare_runtime_writer
 printf 'B42 writer content: pass\n'
 
 section "--- building native Phase1 binary ---"
@@ -112,8 +137,8 @@ BUSYBOX_PATH="$(find_busybox)"
 sha256sum "$KERNEL" "$SPLASH" "$BUSYBOX_PATH" 2>/dev/null || true
 
 section "--- running B42 writer with full diagnostics ---"
-printf 'About to run writer. If this fails, the log will be printed.\n'
-WRITER_ABS="$PWD/$WRITER"
+printf 'About to run runtime writer. If this fails, the log will be printed.\n'
+WRITER_ABS="$PWD/$RUNTIME_WRITER"
 KERNEL_ABS="$PWD/$KERNEL"
 SPLASH_ABS="$PWD/$SPLASH"
 PHASE1_BIN_ABS="$PWD/$PHASE1_BIN"
@@ -128,7 +153,7 @@ WRITER_RC=$?
 set -e
 show_log_tail "$WRITER_LOG"
 [ "$WRITER_RC" -eq 0 ] || fail "B42 writer failed with exit code $WRITER_RC. Full log: $WRITER_LOG"
-grep -q 'DONE: B42 stable safe color UTF-8 USB prepared' "$WRITER_LOG" || fail "writer exited 0 but did not print DONE marker. Full log: $WRITER_LOG"
+grep -Eq 'DONE: B42 stable safe color UTF-8( autoboot)? USB prepared' "$WRITER_LOG" || fail "writer exited 0 but did not print DONE marker. Full log: $WRITER_LOG"
 
 section "--- verifying USB after write ---"
 PART="$(part1 "$USB")"
@@ -147,7 +172,9 @@ set +e
   grep -q "$ASCII_ENTRY" "$MNT/boot/grub/grub.cfg" || exit 17
   grep -q 'phase1.ascii=0' "$MNT/boot/grub/grub.cfg" || exit 18
   grep -q 'phase1.ascii=1' "$MNT/boot/grub/grub.cfg" || exit 19
+  grep -q 'phase1.autoboot=1' "$MNT/boot/grub/grub.cfg" || exit 22
   grep -q 'BASE1_B42_ASCII_DEFAULT=0' "$MNT/phase1/evidence/b42-prep.env" || exit 20
+  grep -q 'BASE1_B42_AUTO_BOOT_DEFAULT=1' "$MNT/phase1/evidence/b42-prep.env" || exit 23
   echo "USB menu entries:"
   grep '^menuentry ' "$MNT/boot/grub/grub.cfg" || true
   echo "USB evidence:"
@@ -164,12 +191,14 @@ cat > "$REPORT" <<EOF
 BASE1_B42_AUTOMATION_TARGET=$USB
 BASE1_B42_AUTOMATION_PARTITION=$PART
 BASE1_B42_AUTOMATION_WRITER=$WRITER
+BASE1_B42_AUTOMATION_RUNTIME_WRITER=$RUNTIME_WRITER
 BASE1_B42_AUTOMATION_WRITER_LOG=$WRITER_LOG
 BASE1_B42_AUTOMATION_VERIFY_LOG=$VERIFY_LOG
 BASE1_B42_AUTOMATION_MAIN_ENTRY=$MAIN_ENTRY
 BASE1_B42_AUTOMATION_ASCII_ENTRY=$ASCII_ENTRY
 BASE1_B42_AUTOMATION_ASCII_DEFAULT=0
 BASE1_B42_AUTOMATION_ASCII_FALLBACK=1
+BASE1_B42_AUTOMATION_AUTO_BOOT_DEFAULT=1
 BASE1_B42_AUTOMATION_RESULT=prepared_and_verified
 BASE1_B42_AUTOMATION_EXPECTED_RESULT=phase1_native_color_console_seen
 BASE1_B42_AUTOMATION_UTF8_RESULT=phase1_japanese_utf8_ready
