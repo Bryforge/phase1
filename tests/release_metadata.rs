@@ -101,7 +101,7 @@ fn edge_checkpoint_records_current_dev_boundary() {
 
 #[test]
 fn compatibility_base_remains_documented() {
-    for path in ["README.md", "site.js"] {
+    for path in ["README.md", "site/site.js"] {
         let text = read(path);
         assert!(
             text.contains(COMPATIBILITY_BASE),
@@ -112,7 +112,7 @@ fn compatibility_base_remains_documented() {
 
 #[test]
 fn website_demo_reports_current_stable_track() {
-    let js = read("site.js");
+    let js = read("site/site.js");
     assert!(has_line(&js, "    \"stable: v5.0.0\","));
     assert!(has_line(&js, "    \"previous stable: v4.4.0\","));
     assert!(has_line(&js, "    \"next edge: v6.0.0\","));
@@ -122,9 +122,10 @@ fn website_demo_reports_current_stable_track() {
 
 #[test]
 fn stale_dev_release_lines_are_removed_from_release_facing_files() {
-    for path in release_facing_files()
-        .into_iter()
-        .chain(["Cargo.toml", "Cargo.lock", "site.js"])
+    for path in
+        release_facing_files()
+            .into_iter()
+            .chain(["Cargo.toml", "Cargo.lock", "site/site.js"])
     {
         let text = read(path);
         assert!(
@@ -153,15 +154,19 @@ fn is_edge_track(cargo_toml: &str) -> bool {
 fn edge_facing_files() -> [&'static str; 5] {
     [
         "README.md",
-        "EDGE.md",
-        "CHANGELOG.md",
-        "site.js",
+        "docs/repo/EDGE.md",
+        "docs/releases/CHANGELOG.md",
+        "site/site.js",
         EDGE_CHECKPOINT,
     ]
 }
 
 fn release_facing_files() -> [&'static str; 3] {
-    ["README.md", "RELEASE_v5.0.0.md", "site.js"]
+    [
+        "README.md",
+        "docs/releases/RELEASE_v5.0.0.md",
+        "site/site.js",
+    ]
 }
 
 fn has_line(text: &str, expected: &str) -> bool {

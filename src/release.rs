@@ -4,7 +4,7 @@ pub const STABLE_VERSION: &str = "4.2.0";
 pub const COMPATIBILITY_BASE: &str = "3.6.0";
 pub const CURRENT_VERSION: &str = env!("CARGO_PKG_VERSION");
 pub const CHANNEL: &str = "edge";
-pub const UPDATE_PROTOCOL_FILE: &str = "UPDATE_PROTOCOL.md";
+pub const UPDATE_PROTOCOL_FILE: &str = "docs/releases/UPDATE_PROTOCOL.md";
 pub const VERSION_SCHEME: &str = "MAJOR.MINOR.PATCH[-dev]";
 
 const BLEEDING_FEATURES: &[&str] = &[
@@ -43,7 +43,7 @@ const ROADMAP_STATUS: &[(&str, &str)] = &[
     ("Structured command output and pipelines", "complete"),
     (
         "Update protocol and semantic patch versioning",
-        "complete: UPDATE_PROTOCOL.md is the canonical patch-level reference",
+        "complete: docs/releases/UPDATE_PROTOCOL.md is the canonical patch-level reference",
     ),
     (
         "Capability enforcement based on command metadata",

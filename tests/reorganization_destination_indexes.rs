@@ -42,7 +42,7 @@ fn website_docs_index_defines_public_site_home_and_claim_safety() {
         "CONTENT_MAP.md",
         "BRANDING.md",
         "ACCESSIBILITY.md",
-        "RELEASE_CHECKLIST.md",
+        "docs/releases/RELEASE_CHECKLIST.md",
         "sh scripts/test-website.sh",
     ] {
         assert!(doc.contains(text), "missing website docs index text {text}: {doc}");

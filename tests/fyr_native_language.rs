@@ -2,8 +2,8 @@ use std::fs;
 
 #[test]
 fn fyr_language_spec_and_examples_exist() {
-    let spec =
-        fs::read_to_string("PHASE1_NATIVE_LANGUAGE.md").expect("native language spec exists");
+    let spec = fs::read_to_string("docs/project/PHASE1_NATIVE_LANGUAGE.md")
+        .expect("native language spec exists");
     assert!(spec.contains("Name: Fyr"));
     assert!(spec.contains("Extension: .fyr"));
     assert!(spec.contains("Command: fyr"));

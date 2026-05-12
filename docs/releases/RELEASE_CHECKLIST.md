@@ -47,4 +47,4 @@ exit
 
 ## Tagging guidance
 
-A release branch/ref can point at the v3.6.0 commit. A GitHub Release can then be created from that ref with the contents of `RELEASE_NOTES_v3.6.0.md`.
+A release branch/ref can point at the v3.6.0 commit. A GitHub Release can then be created from that ref with the contents of `docs/releases/RELEASE_NOTES_v3.6.0.md`.

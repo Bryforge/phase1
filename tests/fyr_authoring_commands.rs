@@ -25,7 +25,8 @@ fn fyr_authoring_commands_are_wired() {
     assert!(registry
         .contains("fyr [status|spec|new|init|cat|color|check|build|test|self|run <file.fyr>]"));
 
-    let spec = fs::read_to_string("PHASE1_NATIVE_LANGUAGE.md").expect("Fyr spec exists");
+    let spec =
+        fs::read_to_string("docs/project/PHASE1_NATIVE_LANGUAGE.md").expect("Fyr spec exists");
     assert!(spec.contains("fyr new hello_hacker"));
     assert!(spec.contains("fyr cat hello_hacker.fyr"));
     assert!(spec.contains("fyr self"));

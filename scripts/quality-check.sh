@@ -27,7 +27,7 @@ check_required_files() {
         README.md \
         SECURITY.md \
         SECURITY_REVIEW.md \
-        UPDATE_PROTOCOL.md \
+        docs/releases/UPDATE_PROTOCOL.md \
         QUALITY.md \
         docs/quality/QUALITY_SCORECARD.md \
         Cargo.toml \

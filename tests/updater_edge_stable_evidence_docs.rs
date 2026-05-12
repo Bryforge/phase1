@@ -30,6 +30,6 @@ fn updater_edge_stable_evidence_preserves_non_claims() {
 
 #[test]
 fn update_protocol_links_updater_edge_stable_evidence() {
-    let protocol = fs::read_to_string("UPDATE_PROTOCOL.md").unwrap_or_default();
+    let protocol = fs::read_to_string("docs/releases/UPDATE_PROTOCOL.md").unwrap_or_default();
     assert!(protocol.contains("2026-05-10-updater-edge-stable-target.md"));
 }

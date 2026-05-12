@@ -62,7 +62,7 @@ When in doubt, add an index before moving a file.
 | Security policy | `SECURITY.md` |
 | Quality system | `QUALITY.md` and `docs/quality/QUALITY_SCORECARD.md` |
 | License | `LICENSE` |
-| Feature status | `FEATURE_STATUS.md` |
+| Feature status | `docs/project/FEATURE_STATUS.md` |
 | Release notes | `docs/releases/` with root compatibility files when needed |
 | Manual pages | `docs/` |
 | Security and crypto docs | `docs/security/` |
@@ -111,8 +111,8 @@ CONTRIBUTING.md
 SECURITY.md
 QUALITY.md
 docs/quality/QUALITY_SCORECARD.md
-FEATURE_STATUS.md
-CHANGELOG.md
+docs/project/FEATURE_STATUS.md
+docs/releases/CHANGELOG.md
 LICENSE
 Cargo.toml
 Cargo.lock

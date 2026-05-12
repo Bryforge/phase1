@@ -26,7 +26,7 @@ Fyr is the Phase1-native language and toolchain track for `.fyr` files, VFS auto
 ## Source-of-truth links
 
 - [`../MANUAL_ROADMAP.md`](../MANUAL_ROADMAP.md)
-- [`../../PHASE1_NATIVE_LANGUAGE.md`](../../PHASE1_NATIVE_LANGUAGE.md)
+- [`../../docs/project/PHASE1_NATIVE_LANGUAGE.md`](../../docs/project/PHASE1_NATIVE_LANGUAGE.md)
 - [`ROADMAP.md`](ROADMAP.md)
 - [`../../examples/fyr/`](../../examples/fyr/)
 

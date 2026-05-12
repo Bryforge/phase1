@@ -76,7 +76,7 @@ cargo test --test bleeding -- --nocapture
 Patch-only bleeding-edge updates should avoid README churn. For PATCH updates, update only the files that carry the actual behavior, metadata, protocol, or tests:
 
 ```text
-UPDATE_PROTOCOL.md
+docs/releases/UPDATE_PROTOCOL.md
 src/release.rs
 src/updater.rs
 tests/bleeding.rs

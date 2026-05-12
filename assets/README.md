@@ -57,7 +57,7 @@ Use lowercase names with project prefixes. Avoid random upload IDs in final publ
 When an asset is renamed, added, or removed, update:
 
 - [`../README.md`](../README.md)
-- [`../PHASE1_NATIVE_LANGUAGE.md`](../PHASE1_NATIVE_LANGUAGE.md), when Fyr assets change
+- [`../docs/project/PHASE1_NATIVE_LANGUAGE.md`](../docs/project/PHASE1_NATIVE_LANGUAGE.md), when Fyr assets change
 - [`../docs/fyr/ROADMAP.md`](../docs/fyr/ROADMAP.md), when Fyr assets change
 - [`../docs/website/README.md`](../docs/website/README.md)
 - tests that guard public asset references

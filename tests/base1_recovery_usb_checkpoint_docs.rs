@@ -32,7 +32,8 @@ fn recovery_usb_development_checkpoint_records_current_boundary() {
 
 #[test]
 fn release_metadata_points_to_v5_tracks() {
-    let release = std::fs::read_to_string("RELEASE_v5.0.0.md").expect("release v5.0.0");
+    let release =
+        std::fs::read_to_string("docs/releases/RELEASE_v5.0.0.md").expect("release v5.0.0");
 
     assert!(release.contains("Phase1 v5.0.0 Stable"), "{release}");
     assert!(release.contains("Stable version: v5.0.0"), "{release}");

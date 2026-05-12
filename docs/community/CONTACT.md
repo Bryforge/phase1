@@ -2,7 +2,7 @@
 
 Primary public link hub:
 
-https://bryforge.github.io/phase1/links.html
+https://bryforge.github.io/phase1/site/links.html
 
 Main website:
 

@@ -9,7 +9,7 @@ use std::time::{Duration, Instant};
 const DEFAULT_REMOTE: &str = "origin";
 const BLEEDING_BRANCH: &str = "edge/stable";
 const STABLE_BRANCH: &str = "stable";
-const UPDATE_PROTOCOL_FILE: &str = "UPDATE_PROTOCOL.md";
+const UPDATE_PROTOCOL_FILE: &str = "docs/releases/UPDATE_PROTOCOL.md";
 const VERSION_SCHEME: &str = "MAJOR.MINOR.PATCH[-dev]";
 pub const CURRENT_EDGE_VERSION: &str = env!("CARGO_PKG_VERSION");
 const COMMAND_TIMEOUT: Duration = Duration::from_secs(20);
@@ -486,7 +486,7 @@ mod tests {
     fn update_protocol_is_visible() {
         let out = run(&["protocol".to_string()]);
         assert!(out.contains("phase1 update protocol"));
-        assert!(out.contains("UPDATE_PROTOCOL.md"));
+        assert!(out.contains("docs/releases/UPDATE_PROTOCOL.md"));
         assert!(out.contains("third number"));
         assert!(out.contains("--trust-host"));
         assert!(out.contains(CURRENT_EDGE_VERSION));

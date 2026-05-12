@@ -2,8 +2,8 @@ use std::fs;
 
 #[test]
 fn repository_model_documents_stable_base_and_edge_default() {
-    let checkpoint =
-        fs::read_to_string("EDGE_STABLE_CHECKPOINT.md").expect("EDGE_STABLE_CHECKPOINT.md exists");
+    let checkpoint = fs::read_to_string("docs/repo/EDGE_STABLE_CHECKPOINT.md")
+        .expect("docs/repo/EDGE_STABLE_CHECKPOINT.md exists");
 
     assert!(checkpoint.contains("base/v4.2.0"));
     assert!(checkpoint.contains("frozen stable base"));
@@ -14,7 +14,8 @@ fn repository_model_documents_stable_base_and_edge_default() {
 
 #[test]
 fn release_docs_keep_4_2_0_as_stability_base() {
-    let release = fs::read_to_string("RELEASE_v4.2.0.md").expect("RELEASE_v4.2.0.md exists");
+    let release = fs::read_to_string("docs/releases/RELEASE_v4.2.0.md")
+        .expect("docs/releases/RELEASE_v4.2.0.md exists");
 
     assert!(
         release.contains("4.2.0") || release.contains("v4.2.0"),

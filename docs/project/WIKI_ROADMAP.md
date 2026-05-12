@@ -33,12 +33,12 @@ The next website implementation should separate product and company messaging.
 
 | Page | Purpose |
 | --- | --- |
-| `index.html` | dramatic homepage and routing surface |
+| `site/index.html` | dramatic homepage and routing surface |
 | `project.html` | phase1 product page |
 | `company.html` | Bryforge company page |
 | `roadmap.html` | full public roadmap |
 | `support.html` | support and sponsorship page |
-| `wiki/index.html` | docs hub |
+| `wiki/site/index.html` | docs hub |
 
 ## Phase A — Launch homepage
 
@@ -151,7 +151,7 @@ Recommended pages:
 
 ```text
 wiki/
-  index.html
+  site/index.html
   quick-start.html
   commands.html
   security.html
@@ -240,7 +240,7 @@ The product page clarifies what phase1 is before the company page expands Bryfor
 
 ## Development checkpoint rule
 
-Feature milestones must update roadmap and planned implementation docs when they complete planned work or change direction. Review LEARNING.md, docs/project/WIKI_ROADMAP.md, docs/website/NEXT_ROADMAP_IMPLEMENTATION.md, EDGE.md, and CHANGELOG.md. If no roadmap update is needed, say why in the PR body.
+Feature milestones must update roadmap and planned implementation docs when they complete planned work or change direction. Review docs/project/LEARNING.md, docs/project/WIKI_ROADMAP.md, docs/website/NEXT_ROADMAP_IMPLEMENTATION.md, docs/repo/EDGE.md, and docs/releases/CHANGELOG.md. If no roadmap update is needed, say why in the PR body.
 
 <!-- phase1:auto:repo-model:start -->
 ## Phase1 repository model

@@ -5,11 +5,12 @@ fn fyr_brand_and_roadmap_are_documented() {
     let readme = fs::read_to_string("README.md").expect("README exists");
     assert!(readme.contains("assets/fyr_symbol.png"));
     assert!(readme.contains("assets/fyr_word.png"));
-    assert!(readme.contains("PHASE1_NATIVE_LANGUAGE.md"));
+    assert!(readme.contains("docs/project/PHASE1_NATIVE_LANGUAGE.md"));
     assert!(readme.contains("docs/fyr/ROADMAP.md"));
     assert!(readme.contains("fyr run hello_hacker.fyr"));
 
-    let spec = fs::read_to_string("PHASE1_NATIVE_LANGUAGE.md").expect("Fyr spec exists");
+    let spec =
+        fs::read_to_string("docs/project/PHASE1_NATIVE_LANGUAGE.md").expect("Fyr spec exists");
     assert!(spec.contains("Name: Fyr"));
     assert!(spec.contains("Extension: .fyr"));
     assert!(spec.contains("Visual symbol: [`assets/fyr_symbol.png`](assets/fyr_symbol.png)"));

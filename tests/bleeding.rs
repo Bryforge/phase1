@@ -73,7 +73,7 @@ fn bleeding_version_and_roadmap_are_visible() {
         "current version report did not track package version:\n{output}"
     );
     assert!(output.contains("version scheme  : MAJOR.MINOR.PATCH[-dev]"));
-    assert!(output.contains("protocol file   : UPDATE_PROTOCOL.md"));
+    assert!(output.contains("protocol file   : docs/releases/UPDATE_PROTOCOL.md"));
     assert!(output.contains("Update protocol and semantic patch versioning"));
     assert!(output.contains("Capability enforcement based on command metadata"));
     assert!(output.contains("WASM/WASI plugin runtime"));

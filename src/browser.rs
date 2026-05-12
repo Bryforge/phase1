@@ -692,7 +692,7 @@ mod tests {
     fn browser_extracts_links_and_decodes_numeric_entities() {
         let page = Browser::new().render_html(
             "<title>T</title><p>A &#35;1 <a href=\"/docs\">Docs</a></p>",
-            "https://example.com/root/index.html",
+            "https://example.com/root/site/index.html",
         );
         assert_eq!(page.title, "T");
         assert!(page.text.contains("A #1 Docs [1]"));

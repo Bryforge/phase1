@@ -4,7 +4,7 @@ Fyr is the Phase1-native language path for VFS automation, self-construction, an
 
 ## Current foundation
 
-- `PHASE1_NATIVE_LANGUAGE.md` names Fyr, reserves `.fyr`, and defines `fyr` as the command surface.
+- `docs/project/PHASE1_NATIVE_LANGUAGE.md` names Fyr, reserves `.fyr`, and defines `fyr` as the command surface.
 - Current Fyr visual assets live at `assets/fyr_symbol.png` and `assets/fyr_word.png`.
 - `examples/fyr/hello.fyr` and `examples/fyr/self_check.fyr` document the first source shape.
 - `fyr status`, `fyr spec`, and seed `fyr run <file.fyr>` support are wired into Phase1.

@@ -6,12 +6,12 @@ This guide keeps Phase1, Bryforge, and Chase Bryan discoverable across public ch
 
 Use this link in bios, posts, release notes, and outreach:
 
-https://bryforge.github.io/phase1/links.html
+https://bryforge.github.io/phase1/site/links.html
 
 ## Official channels
 
 - Phase1 website: https://bryforge.github.io/phase1/
-- Public link hub: https://bryforge.github.io/phase1/links.html
+- Public link hub: https://bryforge.github.io/phase1/site/links.html
 - GitHub repository: https://github.com/Bryforge/phase1
 - Bryforge GitHub profile: https://github.com/Bryforge
 - Bryforge / Phase1 on X: https://x.com/bryforgephase1

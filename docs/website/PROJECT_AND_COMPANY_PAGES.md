@@ -368,7 +368,7 @@ For each new page:
 2. Create `company.html` Bryforge company page.
 3. Create `roadmap.html` full roadmap page.
 4. Create `support.html` support page.
-5. Expand `wiki/index.html` into a docs hub.
+5. Expand `wiki/site/index.html` into a docs hub.
 6. Add visual command/system map components.
 7. Add screenshots/terminal captures after the layout is stable.
 

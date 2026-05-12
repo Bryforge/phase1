@@ -20,10 +20,10 @@ The archive is preservation-first. Moving a file here does not delete it, rewrit
 ## Current entry points
 
 - `../README.md`
-- `../FEATURE_STATUS.md`
+- `../docs/project/FEATURE_STATUS.md`
 - `../QUALITY.md`
-- `../EDGE.md`
-- `../REPO_CHANNELS.md`
+- `../docs/repo/EDGE.md`
+- `../docs/repo/REPO_CHANNELS.md`
 - `../docs/REPOSITORY_NAVIGATION.md`
 
 ## Preservation rules

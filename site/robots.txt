@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bryforge.github.io/phase1/site/sitemap.xml

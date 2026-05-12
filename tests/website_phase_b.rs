@@ -2,7 +2,7 @@ use std::fs;
 
 #[test]
 fn homepage_includes_phase_b_landing_sections() {
-    let html = read("index.html");
+    let html = read("site/index.html");
     assert_contains_all(
         &html,
         &[
@@ -19,7 +19,7 @@ fn homepage_includes_phase_b_landing_sections() {
 
 #[test]
 fn homepage_preserves_project_identity_and_metadata() {
-    let html = read("index.html");
+    let html = read("site/index.html");
     assert_contains_all(
         &html,
         &[
@@ -39,14 +39,14 @@ fn homepage_preserves_project_identity_and_metadata() {
 
 #[test]
 fn homepage_keeps_static_offline_friendly_dependency_posture_and_cache_busts_assets() {
-    let html = read("index.html");
+    let html = read("site/index.html");
     assert_contains_all(
         &html,
         &[
-            "./styles.css?v=4.0.0-stable-2",
-            "./button-fix.css?v=4.0.0-founder-profile-2",
-            "./button-fix.js?v=4.0.0-stable-2",
-            "./site.js?v=4.0.0-stable-2",
+            "./site/styles.css?v=4.0.0-stable-2",
+            "./site/button-fix.css?v=4.0.0-founder-profile-2",
+            "./site/button-fix.js?v=4.0.0-stable-2",
+            "./site/site.js?v=4.0.0-stable-2",
         ],
     );
     assert_not_contains_any(
@@ -63,7 +63,7 @@ fn homepage_keeps_static_offline_friendly_dependency_posture_and_cache_busts_ass
 
 #[test]
 fn homepage_has_inline_founder_profile_guard() {
-    let html = read("index.html");
+    let html = read("site/index.html");
     assert_contains_all(
         &html,
         &[
@@ -79,7 +79,7 @@ fn homepage_has_inline_founder_profile_guard() {
 
 #[test]
 fn styles_cover_terminal_roadmap_mobile_and_reveal_states() {
-    let css = read("styles.css");
+    let css = read("site/styles.css");
     assert_contains_all(
         &css,
         &[
@@ -96,7 +96,7 @@ fn styles_cover_terminal_roadmap_mobile_and_reveal_states() {
 
 #[test]
 fn website_mobile_fix_prevents_fragmented_headings_and_duplicate_creator_labels() {
-    let fix_css = read("button-fix.css");
+    let fix_css = read("site/button-fix.css");
     assert_contains_all(
         &fix_css,
         &[
@@ -126,7 +126,7 @@ fn website_mobile_fix_prevents_fragmented_headings_and_duplicate_creator_labels(
 
 #[test]
 fn site_js_implements_canvas_terminal_progressive_enhancement_and_performance_guards() {
-    let js = read("site.js");
+    let js = read("site/site.js");
     assert_contains_all(
         &js,
         &[

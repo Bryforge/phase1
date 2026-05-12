@@ -22,7 +22,7 @@ Phase1 now covers several connected workstreams:
 | Need | Start here |
 | --- | --- |
 | Run Phase1 | [`../README.md`](../README.md#quick-start) |
-| Understand what is implemented | [`../FEATURE_STATUS.md`](../FEATURE_STATUS.md) |
+| Understand what is implemented | [`../docs/project/FEATURE_STATUS.md`](../docs/project/FEATURE_STATUS.md) |
 | Learn the docs structure | [`README.md`](README.md) |
 | Understand the reorganization plan | [`REORGANIZATION_PLAN.md`](REORGANIZATION_PLAN.md) |
 | Review public asset filenames | [`../assets/README.md`](../assets/README.md) |
@@ -51,8 +51,8 @@ Phase1 now covers several connected workstreams:
 | `CONTRIBUTING.md` | Repository-wide contribution rules and validation expectations. |
 | `SECURITY.md` | Security model, trust gates, crypto policy goal, and reporting guidance. |
 | `QUALITY.md` | Quality gates, validation commands, score model, and ownership areas. |
-| `FEATURE_STATUS.md` | Implemented, experimental, restricted, and roadmap feature matrix. |
-| `PHASE1_NATIVE_LANGUAGE.md` | Fyr language specification and entry point. |
+| `docs/project/FEATURE_STATUS.md` | Implemented, experimental, restricted, and roadmap feature matrix. |
+| `docs/project/PHASE1_NATIVE_LANGUAGE.md` | Fyr language specification and entry point. |
 | `.github/` | Pull request template, issue templates, workflows, and automation. |
 | `src/` | Phase1 Rust source. |
 | `src/bin/` | Helper binaries such as storage, install, and learning tools. |
@@ -81,7 +81,7 @@ Phase1 now covers several connected workstreams:
 1. Read [`../README.md`](../README.md).
 2. Run the quick start.
 3. Read [`operators/README.md`](operators/README.md).
-4. Check [`../FEATURE_STATUS.md`](../FEATURE_STATUS.md) before assuming a feature is implemented.
+4. Check [`../docs/project/FEATURE_STATUS.md`](../docs/project/FEATURE_STATUS.md) before assuming a feature is implemented.
 
 ### Contributor
 
@@ -155,7 +155,7 @@ sh scripts/quality-check.sh base1-docs
 ### Fyr contributor
 
 1. Read [`fyr/README.md`](fyr/README.md).
-2. Read [`../PHASE1_NATIVE_LANGUAGE.md`](../PHASE1_NATIVE_LANGUAGE.md).
+2. Read [`../docs/project/PHASE1_NATIVE_LANGUAGE.md`](../docs/project/PHASE1_NATIVE_LANGUAGE.md).
 3. Check [`../assets/README.md`](../assets/README.md) before changing Fyr symbols or word marks.
 4. Add tests for parser/runtime behavior when changing implemented behavior.
 5. Avoid production-ready claims unless evidence exists.

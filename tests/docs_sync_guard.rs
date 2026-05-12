@@ -18,10 +18,10 @@ fn docs_sync_script_and_outputs_are_present() {
 fn generated_docs_preserve_stable_base_and_edge_path() {
     let docs = [
         "README.md",
-        "REPO_DOCTRINE.md",
-        "EDGE_STABLE_CHECKPOINT.md",
-        "FEATURE_STATUS.md",
-        "EDGE.md",
+        "docs/repo/REPO_DOCTRINE.md",
+        "docs/repo/EDGE_STABLE_CHECKPOINT.md",
+        "docs/project/FEATURE_STATUS.md",
+        "docs/repo/EDGE.md",
         "docs/project/WIKI_ROADMAP.md",
         "docs/wiki/Repository-Model.md",
         "docs/wiki/Current-Status.md",

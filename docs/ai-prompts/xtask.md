@@ -10,7 +10,7 @@ Files to inspect first:
 - Cargo.toml
 - xtask/Cargo.toml
 - xtask/src/main.rs
-- UPDATE_PROTOCOL.md
+- docs/releases/UPDATE_PROTOCOL.md
 - docs/CHATGPT_PROJECT_MANAGEMENT.md
 
 Requirements:

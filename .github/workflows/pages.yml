@@ -5,16 +5,16 @@ on:
     branches:
       - main
     paths:
-      - "index.html"
-      - "styles.css"
-      - "button-fix.css"
-      - "site.js"
-      - "button-fix.js"
-      - "links.html"
+      - "site/index.html"
+      - "site/styles.css"
+      - "site/button-fix.css"
+      - "site/site.js"
+      - "site/button-fix.js"
+      - "site/links.html"
       - "docs/community/CONTACT.md"
       - "docs/project/WIKI_ROADMAP.md"
-      - "robots.txt"
-      - "sitemap.xml"
+      - "site/robots.txt"
+      - "site/sitemap.xml"
       - "wiki/**"
       - "assets/**"
       - ".nojekyll"
@@ -43,9 +43,9 @@ jobs:
         run: |
           rm -rf _site
           mkdir -p _site/assets _site/wiki
-          cp index.html styles.css button-fix.css site.js button-fix.js links.html docs/community/CONTACT.md docs/project/WIKI_ROADMAP.md robots.txt sitemap.xml .nojekyll _site/
+          cp site/index.html site/styles.css site/button-fix.css site/site.js site/button-fix.js site/links.html docs/community/CONTACT.md docs/project/WIKI_ROADMAP.md site/robots.txt site/sitemap.xml .nojekyll _site/
           cp assets/phase1-banner.svg _site/assets/phase1-banner.svg
-          cp wiki/index.html wiki/docs.css wiki/docs.js _site/wiki/
+          cp wiki/site/index.html wiki/docs.css wiki/docs.js _site/wiki/
 
       - name: Configure Pages
         uses: actions/configure-pages@v5

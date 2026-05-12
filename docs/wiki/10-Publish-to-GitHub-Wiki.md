@@ -86,7 +86,7 @@ When promoting or bumping Phase1, update these docs and fixtures:
 Cargo.toml
 Cargo.lock
 README.md
-site.js
+site/site.js
 docs/wiki/Home.md
 docs/wiki/02-Version-Guide.md
 docs/wiki/08-Updates-Releases-and-Validation.md

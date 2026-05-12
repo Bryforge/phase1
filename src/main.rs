@@ -572,9 +572,9 @@ fn fyr_status() -> String {
 }
 
 fn fyr_spec() -> String {
-    match fs::read_to_string("PHASE1_NATIVE_LANGUAGE.md") {
+    match fs::read_to_string("docs/project/PHASE1_NATIVE_LANGUAGE.md") {
         Ok(spec) => spec,
-        Err(err) => format!("fyr: could not read PHASE1_NATIVE_LANGUAGE.md: {err}\n"),
+        Err(err) => format!("fyr: could not read docs/project/PHASE1_NATIVE_LANGUAGE.md: {err}\n"),
     }
 }
 

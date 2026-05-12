@@ -30,7 +30,7 @@ fn repository_navigation_guide_lists_fast_paths() {
 
     for link in [
         "../README.md",
-        "../FEATURE_STATUS.md",
+        "../docs/project/FEATURE_STATUS.md",
         "REORGANIZATION_PLAN.md",
         "../CONTRIBUTING.md",
         "../.github/pull_request_template.md",
@@ -63,8 +63,8 @@ fn repository_navigation_guide_maps_repository_paths() {
         "CONTRIBUTING.md",
         "SECURITY.md",
         "QUALITY.md",
-        "FEATURE_STATUS.md",
-        "PHASE1_NATIVE_LANGUAGE.md",
+        "docs/project/FEATURE_STATUS.md",
+        "docs/project/PHASE1_NATIVE_LANGUAGE.md",
         ".github/",
         "src/",
         "src/bin/",

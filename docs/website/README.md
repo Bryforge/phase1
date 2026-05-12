@@ -33,7 +33,7 @@ Rules:
 - Prefer indexes and redirects before moving pages.
 - Keep branding assets in `assets/` unless a future asset map says otherwise.
 - Use [`../../assets/README.md`](../../assets/README.md) as the current public asset filename index.
-- Keep public claims aligned with `README.md`, `FEATURE_STATUS.md`, `SECURITY.md`, and `QUALITY.md`.
+- Keep public claims aligned with `README.md`, `docs/project/FEATURE_STATUS.md`, `SECURITY.md`, and `QUALITY.md`.
 - Do not claim production readiness, hardened status, hardware validation, audit status, certification, or quantum safety without linked evidence.
 
 ## Planned structure
@@ -44,7 +44,7 @@ docs/website/
   CONTENT_MAP.md
   BRANDING.md
   ACCESSIBILITY.md
-  RELEASE_CHECKLIST.md
+  docs/releases/RELEASE_CHECKLIST.md
 ```
 
 Create additional files only when they have real content and tests or validation paths.
@@ -54,7 +54,7 @@ Create additional files only when they have real content and tests or validation
 Website-facing content should include clear links to:
 
 - [`../../README.md`](../../README.md)
-- [`../../FEATURE_STATUS.md`](../../FEATURE_STATUS.md)
+- [`../../docs/project/FEATURE_STATUS.md`](../../docs/project/FEATURE_STATUS.md)
 - [`../../CONTRIBUTING.md`](../../CONTRIBUTING.md)
 - [`../../SECURITY.md`](../../SECURITY.md)
 - [`../../QUALITY.md`](../../QUALITY.md)

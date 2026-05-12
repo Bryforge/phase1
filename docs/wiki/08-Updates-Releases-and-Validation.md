@@ -149,7 +149,7 @@ When version numbers change, update:
 Cargo.toml
 Cargo.lock
 README.md
-site.js
+site/site.js
 docs/wiki/Home.md
 docs/wiki/02-Version-Guide.md
 docs/wiki/08-Updates-Releases-and-Validation.md

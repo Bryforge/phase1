@@ -425,7 +425,7 @@ pub fn capabilities_report() -> String {
 }
 
 fn feature_status_summary() -> String {
-    "Phase1 feature status\n\nImplemented:\n  shell, VFS, simulated process table, audit log, /proc, text tools, dashboards, local learning, WASI-lite plugins\n\nExperimental:\n  lang run, direct Python wrapper, direct C/GCC wrapper, Git/storage helper, Rust/Cargo host workflows, browser host fetch\n\nRestricted:\n  host network inspection, host network mutation, self-update execution\n\nPlanned:\n  unified legacy runtime wrappers, doctor mobile, named boot profiles, broader language support\n\nNot planned:\n  full OS replacement, hardened VM/chroot/container sandbox\n\nMore detail:\n  FEATURE_STATUS.md\n"
+    "Phase1 feature status\n\nImplemented:\n  shell, VFS, simulated process table, audit log, /proc, text tools, dashboards, local learning, WASI-lite plugins\n\nExperimental:\n  lang run, direct Python wrapper, direct C/GCC wrapper, Git/storage helper, Rust/Cargo host workflows, browser host fetch\n\nRestricted:\n  host network inspection, host network mutation, self-update execution\n\nPlanned:\n  unified legacy runtime wrappers, doctor mobile, named boot profiles, broader language support\n\nNot planned:\n  full OS replacement, hardened VM/chroot/container sandbox\n\nMore detail:\n  docs/project/FEATURE_STATUS.md\n"
         .to_string()
 }
 
@@ -658,7 +658,7 @@ mod tests {
         assert!(report.contains("Restricted:"));
         assert!(report.contains("Not planned:"));
         assert!(report.contains("full OS replacement"));
-        assert!(report.contains("FEATURE_STATUS.md"));
+        assert!(report.contains("docs/project/FEATURE_STATUS.md"));
         assert!(report.contains("wifi-connect"));
         assert!(report.contains("network-change opt-in"));
         assert!(report.contains("PHASE1_ALLOW_HOST_TOOLS"));

@@ -42,5 +42,5 @@ Until this folder is fully written, keep existing docs as source material and li
 - [`../MANUAL_ROADMAP.md`](../MANUAL_ROADMAP.md)
 - [`../security/TRUST_MODEL.md`](../security/TRUST_MODEL.md)
 - [`../security/DOCS_CLAIMS.md`](../security/DOCS_CLAIMS.md)
-- [`../../FEATURE_STATUS.md`](../../FEATURE_STATUS.md)
+- [`../../docs/project/FEATURE_STATUS.md`](../../docs/project/FEATURE_STATUS.md)
 - [`../../docs/nest/CHECKPOINT.md`](../nest/CHECKPOINT.md)

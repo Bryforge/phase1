@@ -9,7 +9,7 @@ fn quality_docs_exist() {
         "README.md",
         "SECURITY.md",
         "SECURITY_REVIEW.md",
-        "UPDATE_PROTOCOL.md",
+        "docs/releases/UPDATE_PROTOCOL.md",
     ] {
         assert!(
             fs::metadata(path).is_ok(),

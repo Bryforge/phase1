@@ -62,14 +62,14 @@ The company track should answer:
 
 ```text
 /
-  index.html                 homepage: product overview + founder + company teaser
+  site/index.html                 homepage: product overview + founder + company teaser
   project.html               phase1 product page
   company.html               Bryforge company page
   roadmap.html               visual roadmap and release direction
   support.html               sponsor/support page
 
 /wiki/
-  index.html                 docs hub
+  site/index.html                 docs hub
   quick-start.html           install and first run
   commands.html              command map
   security.html              security model and safe-mode behavior
@@ -240,7 +240,7 @@ cargo deny check
 
 ### PR D: Wiki hub expansion
 
-- Add or improve `wiki/index.html`.
+- Add or improve `wiki/site/index.html`.
 - Add docs cards for Quick Start, Security, Base1, Releases, Tutorials.
 - Add tests.
 
@@ -250,4 +250,4 @@ The next implementation should start with `project.html`, because it clarifies t
 
 ## Roadmap maintenance requirement
 
-Future implementation PRs must keep roadmap and planning documents current. When a PR completes a planned item, starts a new track, or changes implementation priority, update the relevant roadmap docs in the same PR or explain why no roadmap change is required. Review LEARNING.md, docs/project/WIKI_ROADMAP.md, docs/website/NEXT_ROADMAP_IMPLEMENTATION.md, EDGE.md, and CHANGELOG.md during milestone PRs.
+Future implementation PRs must keep roadmap and planning documents current. When a PR completes a planned item, starts a new track, or changes implementation priority, update the relevant roadmap docs in the same PR or explain why no roadmap change is required. Review docs/project/LEARNING.md, docs/project/WIKI_ROADMAP.md, docs/website/NEXT_ROADMAP_IMPLEMENTATION.md, docs/repo/EDGE.md, and docs/releases/CHANGELOG.md during milestone PRs.

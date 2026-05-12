@@ -16,13 +16,13 @@
   ·
   <a href="#quick-start"><strong>Quick start</strong></a>
   ·
-  <a href="FEATURE_STATUS.md">Feature status</a>
+  <a href="docs/project/FEATURE_STATUS.md">Feature status</a>
   ·
   <a href="docs/REPOSITORY_NAVIGATION.md">Repository guide</a>
   ·
   <a href="docs/REORGANIZATION_PLAN.md">Reorganization</a>
   ·
-  <a href="PHASE1_NATIVE_LANGUAGE.md">Fyr language</a>
+  <a href="docs/project/PHASE1_NATIVE_LANGUAGE.md">Fyr language</a>
   ·
   <a href="QUALITY.md">Quality</a>
   ·
@@ -30,7 +30,7 @@
   ·
   <a href="base1/README.md">Base1</a>
   ·
-  <a href="EDGE.md">Edge</a>
+  <a href="docs/repo/EDGE.md">Edge</a>
 </p>
 
 <p align="center">
@@ -143,7 +143,7 @@ Organized destination indexes:
 
 ## Implementation status
 
-Phase1 separates implemented features from experimental host integrations and future plans. The canonical matrix is [`FEATURE_STATUS.md`](FEATURE_STATUS.md).
+Phase1 separates implemented features from experimental host integrations and future plans. The canonical matrix is [`docs/project/FEATURE_STATUS.md`](docs/project/FEATURE_STATUS.md).
 
 | Feature area | Status | Short answer |
 | --- | --- | --- |
@@ -248,7 +248,7 @@ Current Fyr visual assets:
 - Symbol: [`assets/fyr_symbol.png`](assets/fyr_symbol.png)
 - Word mark: [`assets/fyr_word.png`](assets/fyr_word.png)
 
-Start with [`PHASE1_NATIVE_LANGUAGE.md`](PHASE1_NATIVE_LANGUAGE.md), then follow the dedicated [`Fyr roadmap`](docs/fyr/ROADMAP.md).
+Start with [`docs/project/PHASE1_NATIVE_LANGUAGE.md`](docs/project/PHASE1_NATIVE_LANGUAGE.md), then follow the dedicated [`Fyr roadmap`](docs/fyr/ROADMAP.md).
 
 First working script inside Phase1:
 
@@ -305,7 +305,7 @@ cargo run --bin phase1-learn -- teach deploy = use main for GitHub Pages deploys
 cargo run --bin phase1-learn -- ask deploy
 ```
 
-The learning memory is local, sanitized, bounded, and ignored by git. It does not call a cloud model or upload data. See [`LEARNING.md`](LEARNING.md).
+The learning memory is local, sanitized, bounded, and ignored by git. It does not call a cloud model or upload data. See [`docs/project/LEARNING.md`](docs/project/LEARNING.md).
 
 ## Public website
 
@@ -564,7 +564,7 @@ Fyr is the Phase1 native language track.
 
 - Visual symbol: [`assets/fyr_symbol.png`](assets/fyr_symbol.png)
 - Word mark: [`assets/fyr_word.png`](assets/fyr_word.png)
-- Language spec: [`PHASE1_NATIVE_LANGUAGE.md`](PHASE1_NATIVE_LANGUAGE.md)
+- Language spec: [`docs/project/PHASE1_NATIVE_LANGUAGE.md`](docs/project/PHASE1_NATIVE_LANGUAGE.md)
 - Roadmap: [`docs/fyr/ROADMAP.md`](docs/fyr/ROADMAP.md)
 - Quick run: `fyr run hello_hacker.fyr`
 
@@ -605,4 +605,4 @@ Security and crypto usability rule:
 
 Older planning notes, development checkpoints, AI/Gina notes, AVIM notes, and legacy next-update files have been moved out of the repository root and preserved under [`docs/archive/README.md`](docs/archive/README.md).
 
-Use the current root entry points first: `README.md`, `FEATURE_STATUS.md`, `QUALITY.md`, `EDGE.md`, `REPO_CHANNELS.md`, and `docs/REPOSITORY_NAVIGATION.md`.
+Use the current root entry points first: `README.md`, `docs/project/FEATURE_STATUS.md`, `QUALITY.md`, `docs/repo/EDGE.md`, `docs/repo/REPO_CHANNELS.md`, and `docs/REPOSITORY_NAVIGATION.md`.

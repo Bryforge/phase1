@@ -9,8 +9,8 @@ Target version: <version>
 Branch: <branch-name>
 Files to inspect first:
 - Cargo.toml
-- CHANGELOG.md
-- UPDATE_PROTOCOL.md
+- docs/releases/CHANGELOG.md
+- docs/releases/UPDATE_PROTOCOL.md
 - README.md
 - docs/wiki/Home.md
 - docs/CHATGPT_PROJECT_MANAGEMENT.md

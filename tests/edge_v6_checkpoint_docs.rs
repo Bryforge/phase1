@@ -18,7 +18,7 @@ fn edge_v6_checkpoint_records_current_boundary() {
 #[test]
 fn release_metadata_points_to_v6_edge() {
     let readme = std::fs::read_to_string("README.md").expect("README.md");
-    let edge = std::fs::read_to_string("EDGE.md").expect("EDGE.md");
+    let edge = std::fs::read_to_string("docs/repo/EDGE.md").expect("docs/repo/EDGE.md");
     let cargo = std::fs::read_to_string("Cargo.toml").expect("Cargo.toml");
 
     assert!(readme.contains("edge-v6.0.0"), "{readme}");

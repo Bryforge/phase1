@@ -39,5 +39,5 @@ Each chapter should include:
 ## Source links
 
 - [`../MANUAL_ROADMAP.md`](../MANUAL_ROADMAP.md)
-- [`../../PHASE1_NATIVE_LANGUAGE.md`](../../PHASE1_NATIVE_LANGUAGE.md)
+- [`../../docs/project/PHASE1_NATIVE_LANGUAGE.md`](../../docs/project/PHASE1_NATIVE_LANGUAGE.md)
 - [`ROADMAP.md`](ROADMAP.md)
