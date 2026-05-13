@@ -1,14 +1,12 @@
 @import url("./final-design.css?v=phase1-final-design-v2");
 @import url("./bryforge-aligned.css?v=phase1-bryforge-aligned-v2");
 @import url("./phase1-polish-77.css?v=phase1-polish-77-v1");
-@import url("./phase1-orange-spectrum.css?v=phase1-orange-spectrum-v1");
-@import url("./phase1-orange-premium.css?v=phase1-orange-premium-v1");
-@import url("./phase1-orange-elite.css?v=phase1-orange-elite-v1");
 @import url("./phase1-rainbow-space.css?v=phase1-rainbow-space-v1");
+@import url("./rainbow-space-motion.css?v=phase1-rainbow-space-v2");
 
 /* Phase1 CSS loader.
-   Keep this thin: prior layers preserve the structure and official assets;
-   phase1-rainbow-space.css is the active premium readable space system. */
+   The active direction is premium rainbow space: readable glass UI,
+   visible glowing stars, and recurring shooting stars. */
 
 .logo-stage,
 .logo-stage::before,
@@ -18,7 +16,8 @@
 .aurora,
 .scanlines,
 .noise,
-#space {
+#space,
+.rainbow-space-field {
   pointer-events: none !important;
 }
 
