@@ -1,0 +1,118 @@
+/* Phase1 hero stage focus pass.
+   Fixes the hero logo chamber that showed the base1/Fyr caption and orbital clutter.
+   Goal: make the hero visual belong to the Phase1 homepage style: official logo,
+   clean dark glass, controlled spectrum glow, no distracting base1/Fyr label. */
+
+:root {
+  --hsf-line: rgba(236, 250, 255, .22);
+  --hsf-cyan: #7df7ff;
+  --hsf-orange: #ff8d2f;
+  --hsf-spectrum: linear-gradient(115deg, #7df7ff, #50c8ff, #9c7dff, #ff6fec, #ff8d2f, #ffd76c, #85ff9f);
+}
+
+/* Remove the off-style base1/Fyr caption and old orbital graphics. */
+.logo-stage::after,
+.logo-stage::before,
+.logo-glass::after,
+.orbit,
+.orbit::before,
+.orbit::after {
+  content: none !important;
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+/* Rebuild the visual as a clean Phase1 mark chamber. */
+.logo-stage {
+  min-height: clamp(340px, 42vw, 560px) !important;
+  width: min(100%, 560px) !important;
+  display: grid !important;
+  place-items: center !important;
+  isolation: isolate !important;
+}
+
+.logo-stage .logo-glass {
+  position: relative !important;
+  width: min(92%, 520px) !important;
+  aspect-ratio: 1 / 1 !important;
+  border-radius: clamp(28px, 3.8vw, 44px) !important;
+  overflow: hidden !important;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(255,255,255,.085), transparent 15%),
+    radial-gradient(circle at 34% 40%, rgba(125,247,255,.145), transparent 35%),
+    radial-gradient(circle at 72% 62%, rgba(255,141,47,.105), transparent 40%),
+    linear-gradient(145deg, rgba(2,6,15,.975), rgba(8,14,28,.88)) !important;
+  border: 1px solid var(--hsf-line) !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.055),
+    0 0 50px rgba(125,247,255,.135),
+    0 0 54px rgba(255,141,47,.095),
+    inset 0 0 72px rgba(255,255,255,.050),
+    inset 0 1px 0 rgba(255,255,255,.14) !important;
+}
+
+.logo-stage .logo-glass::before {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  inset: 18px !important;
+  border-radius: inherit !important;
+  pointer-events: none !important;
+  background:
+    linear-gradient(90deg, rgba(125,247,255,.42), transparent 22%, transparent 78%, rgba(255,141,47,.34)) top left / 100% 1px no-repeat,
+    linear-gradient(90deg, rgba(255,111,236,.26), transparent 24%, transparent 76%, rgba(133,255,159,.25)) bottom left / 100% 1px no-repeat,
+    linear-gradient(0deg, rgba(125,247,255,.30), transparent 22%, transparent 78%, rgba(255,141,47,.26)) top left / 1px 100% no-repeat,
+    linear-gradient(0deg, rgba(156,125,255,.24), transparent 22%, transparent 78%, rgba(133,255,159,.20)) top right / 1px 100% no-repeat !important;
+  opacity: .72 !important;
+  filter: drop-shadow(0 0 8px rgba(125,247,255,.18)) !important;
+}
+
+.phase-logo-image,
+.logo-stage .logo-glass img {
+  width: min(64%, 330px) !important;
+  height: auto !important;
+  object-fit: contain !important;
+  transform: translateZ(0) scale(1.02) !important;
+  filter:
+    saturate(1.13) contrast(1.09)
+    drop-shadow(0 0 20px rgba(255,255,255,.18))
+    drop-shadow(0 0 38px rgba(125,247,255,.22))
+    drop-shadow(0 0 34px rgba(255,141,47,.12)) !important;
+}
+
+/* Keep the small safety labels, but make them feel attached to the chamber. */
+.system-card {
+  background: rgba(0, 0, 0, .72) !important;
+  border-color: rgba(236, 250, 255, .18) !important;
+  box-shadow:
+    0 12px 32px rgba(0,0,0,.45),
+    0 0 12px rgba(125,247,255,.09),
+    inset 0 1px 0 rgba(255,255,255,.12) !important;
+}
+
+.system-card strong {
+  color: #85ff9f !important;
+}
+
+@media (max-width: 960px) {
+  .logo-stage {
+    min-height: 320px !important;
+    width: min(100%, 440px) !important;
+  }
+
+  .phase-logo-image,
+  .logo-stage .logo-glass img {
+    width: min(62%, 280px) !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .logo-stage {
+    min-height: 280px !important;
+  }
+
+  .logo-stage .logo-glass {
+    width: min(100%, 360px) !important;
+  }
+}
