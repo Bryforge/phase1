@@ -42,39 +42,45 @@ jobs:
           cp -R site/. _site/
           cp -R site/. _site/site/
 
-          # Force the Bryforge-aligned Phase1 visual layer to be active on Pages.
+          # Force the orange-rainbow Bryforge-aligned Phase1 visual layer on Pages.
           python3 - <<'PY'
           from pathlib import Path
           p = Path('_site/index.html')
           s = p.read_text()
           replacements = {
-              'styles.css?v=phase1-nobackground-v2': 'styles.css?v=phase1-bryforge-aligned-v1',
-              'styles.css?v=phase1-superb-overhaul-v1': 'styles.css?v=phase1-bryforge-aligned-v1',
-              'styles.css?v=phase1-final-design-v1': 'styles.css?v=phase1-bryforge-aligned-v1',
-              'button-fix.css?v=phase1-alive-buttons-v6': 'button-fix.css?v=phase1-bryforge-aligned-v1',
-              'button-fix.css?v=phase1-visual-overhaul-v2': 'button-fix.css?v=phase1-bryforge-aligned-v1',
-              'button-fix.css?v=phase1-superb-overhaul-v1': 'button-fix.css?v=phase1-bryforge-aligned-v1',
-              'button-fix.css?v=phase1-final-design-v1': 'button-fix.css?v=phase1-bryforge-aligned-v1',
-              'button-fix.js?v=phase1-alive-buttons-v6': 'button-fix.js?v=phase1-bryforge-aligned-v1',
-              'button-fix.js?v=phase1-visual-overhaul-v2': 'button-fix.js?v=phase1-bryforge-aligned-v1',
-              'button-fix.js?v=phase1-superb-overhaul-v1': 'button-fix.js?v=phase1-bryforge-aligned-v1',
-              'button-fix.js?v=phase1-final-design-v1': 'button-fix.js?v=phase1-bryforge-aligned-v1',
-              'site.js?v=phase1-nobackground-v2': 'site.js?v=phase1-bryforge-aligned-v1',
-              'site.js?v=phase1-superb-overhaul-v1': 'site.js?v=phase1-bryforge-aligned-v1',
-              'site.js?v=phase1-final-design-v1': 'site.js?v=phase1-bryforge-aligned-v1',
-              'official-phase1-logo-v7': 'official-phase1-logo-bryforge-v1',
-              'official-phase1-logo-final-v1': 'official-phase1-logo-bryforge-v1',
-              'official-phase1-logo-final-v2': 'official-phase1-logo-bryforge-v1',
+              'styles.css?v=phase1-nobackground-v2': 'styles.css?v=phase1-orange-rainbow-v1',
+              'styles.css?v=phase1-superb-overhaul-v1': 'styles.css?v=phase1-orange-rainbow-v1',
+              'styles.css?v=phase1-final-design-v1': 'styles.css?v=phase1-orange-rainbow-v1',
+              'styles.css?v=phase1-bryforge-aligned-v1': 'styles.css?v=phase1-orange-rainbow-v1',
+              'button-fix.css?v=phase1-alive-buttons-v6': 'button-fix.css?v=phase1-orange-rainbow-v1',
+              'button-fix.css?v=phase1-visual-overhaul-v2': 'button-fix.css?v=phase1-orange-rainbow-v1',
+              'button-fix.css?v=phase1-superb-overhaul-v1': 'button-fix.css?v=phase1-orange-rainbow-v1',
+              'button-fix.css?v=phase1-final-design-v1': 'button-fix.css?v=phase1-orange-rainbow-v1',
+              'button-fix.css?v=phase1-bryforge-aligned-v1': 'button-fix.css?v=phase1-orange-rainbow-v1',
+              'button-fix.js?v=phase1-alive-buttons-v6': 'button-fix.js?v=phase1-orange-rainbow-v1',
+              'button-fix.js?v=phase1-visual-overhaul-v2': 'button-fix.js?v=phase1-orange-rainbow-v1',
+              'button-fix.js?v=phase1-superb-overhaul-v1': 'button-fix.js?v=phase1-orange-rainbow-v1',
+              'button-fix.js?v=phase1-final-design-v1': 'button-fix.js?v=phase1-orange-rainbow-v1',
+              'button-fix.js?v=phase1-bryforge-aligned-v1': 'button-fix.js?v=phase1-orange-rainbow-v1',
+              'site.js?v=phase1-nobackground-v2': 'site.js?v=phase1-orange-rainbow-v1',
+              'site.js?v=phase1-superb-overhaul-v1': 'site.js?v=phase1-orange-rainbow-v1',
+              'site.js?v=phase1-final-design-v1': 'site.js?v=phase1-orange-rainbow-v1',
+              'site.js?v=phase1-bryforge-aligned-v1': 'site.js?v=phase1-orange-rainbow-v1',
+              'official-phase1-logo-v7': 'official-phase1-logo-orange-rainbow-v1',
+              'official-phase1-logo-final-v1': 'official-phase1-logo-orange-rainbow-v1',
+              'official-phase1-logo-final-v2': 'official-phase1-logo-orange-rainbow-v1',
+              'official-phase1-logo-bryforge-v1': 'official-phase1-logo-orange-rainbow-v1',
           }
           for old, new in replacements.items():
               s = s.replace(old, new)
           for css in [
-              '<link rel="stylesheet" href="./site/final-design.css?v=phase1-bryforge-aligned-v1">',
-              '<link rel="stylesheet" href="./site/bryforge-aligned.css?v=phase1-bryforge-aligned-v1">',
+              '<link rel="stylesheet" href="./site/final-design.css?v=phase1-orange-rainbow-v1">',
+              '<link rel="stylesheet" href="./site/bryforge-aligned.css?v=phase1-orange-rainbow-v1">',
+              '<link rel="stylesheet" href="./site/orange-rainbow-consistency.css?v=phase1-orange-rainbow-v1">',
           ]:
               if css not in s:
                   s = s.replace('</head>', f'  {css}\n</head>')
-          script = '<script src="./site/visual-overhaul.js?v=phase1-bryforge-aligned-v1"></script>'
+          script = '<script src="./site/visual-overhaul.js?v=phase1-orange-rainbow-v1"></script>'
           if script not in s:
               s = s.replace('</body>', f'{script}</body>')
           p.write_text(s)
@@ -105,9 +111,10 @@ jobs:
           test -f _site/status-badge.json
           test -f _site/site/final-design.css
           test -f _site/site/bryforge-aligned.css
+          test -f _site/site/orange-rainbow-consistency.css
           test -f _site/site/visual-overhaul.css
           test -f _site/site/visual-overhaul.js
-          grep -q 'bryforge-aligned.css?v=phase1-bryforge-aligned-v1' _site/index.html
+          grep -q 'orange-rainbow-consistency.css?v=phase1-orange-rainbow-v1' _site/index.html
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
