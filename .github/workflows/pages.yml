@@ -50,13 +50,17 @@ jobs:
 
           python3 - <<'PY'
           from pathlib import Path
+          key = 'phase1-mobile-nav-fix-v1'
           p = Path('_site/index.html')
           s = p.read_text()
-          for old in ['phase1-final-background-v1', 'phase1-homepage-cta-v1']:
-              s = s.replace(f'styles.css?v={old}', 'styles.css?v=phase1-side-rail-fix-v1')
-              s = s.replace(f'button-fix.css?v={old}', 'button-fix.css?v=phase1-side-rail-fix-v1')
-              s = s.replace(f'site.js?v={old}', 'site.js?v=phase1-side-rail-fix-v1')
-              s = s.replace(f'official-phase1-logo-{old.replace("phase1-", "")}', 'official-phase1-logo-side-rail-fix-v1')
+          for old in ['phase1-final-background-v1', 'phase1-homepage-cta-v1', 'phase1-side-rail-fix-v1']:
+              s = s.replace(f'styles.css?v={old}', f'styles.css?v={key}')
+              s = s.replace(f'button-fix.css?v={old}', f'button-fix.css?v={key}')
+              s = s.replace(f'site.js?v={old}', f'site.js?v={key}')
+              s = s.replace(f'official-phase1-logo-{old.replace("phase1-", "")}', f'official-phase1-logo-{key}')
+          nav_script = f'<script src="./site/mobile-nav-fix.js?v={key}"></script>'
+          if nav_script not in s:
+              s = s.replace('</body>', f'{nav_script}\n</body>')
           p.write_text(s)
           PY
 
@@ -67,9 +71,12 @@ jobs:
           test -f _site/wiki/index.html
           test -f _site/site/button-fix.css
           test -f _site/site/phase1-side-rail-fix.css
+          test -f _site/site/phase1-mobile-nav-fix.css
+          test -f _site/site/mobile-nav-fix.js
           test -f _site/site/phase1-public-pages-refine.css
-          grep -q 'button-fix.css?v=phase1-side-rail-fix-v1' _site/index.html
-          grep -q 'site.js?v=phase1-side-rail-fix-v1' _site/index.html
+          grep -q 'button-fix.css?v=phase1-mobile-nav-fix-v1' _site/index.html
+          grep -q 'site.js?v=phase1-mobile-nav-fix-v1' _site/index.html
+          grep -q 'mobile-nav-fix.js?v=phase1-mobile-nav-fix-v1' _site/index.html
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
