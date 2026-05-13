@@ -1,8 +1,8 @@
 # Troubleshooting
 
-![Troubleshooting](https://img.shields.io/badge/troubleshooting-operator%20guide-00d8ff) ![Safe](https://img.shields.io/badge/safe-default-39ff88)
+![Troubleshooting](https://img.shields.io/badge/troubleshooting-operator%20guide-00d8ff) ![Safe](https://img.shields.io/badge/safe-default-39ff88) ![Edge](https://img.shields.io/badge/edge-v6.0.0-00d8ff)
 
-This page covers common Phase1 build, boot, terminal, browser, network, runtime, and Git workflow issues.
+This page covers common Phase1 build, boot, terminal, browser, network, runtime, wiki, Base1, Fyr, and Git workflow issues.
 
 ## Build fails after pull
 
@@ -10,7 +10,9 @@ This page covers common Phase1 build, boot, terminal, browser, network, runtime,
 > TRY THIS
 >
 > ```bash
-> git pull origin master
+> git fetch origin
+> git checkout edge/stable
+> git pull origin edge/stable
 > cargo fmt --all
 > cargo fmt --all -- --check
 > cargo check --all-targets
@@ -38,14 +40,14 @@ Keep local work:
 ```bash
 git add .
 git commit -m "Save local work"
-git pull --rebase origin master
+git pull --rebase origin edge/stable
 ```
 
 Temporarily move local work aside:
 
 ```bash
 git stash push -m "local phase1 changes"
-git pull origin master
+git pull origin edge/stable
 git stash pop
 ```
 
@@ -53,7 +55,7 @@ Discard local work:
 
 ```bash
 git restore <file>
-git pull origin master
+git pull origin edge/stable
 ```
 
 ## Safe mode blocks Python, browser, or runtimes
@@ -84,6 +86,7 @@ Verify:
 
 ```text
 security
+capabilities
 ```
 
 ## Browser fetch fails
@@ -99,11 +102,11 @@ Possible causes:
 
 | Symptom | Cause | Fix |
 | --- | --- | --- |
-| Disabled by safe boot | SHIELD is on | Use runtime launcher or press `4` at boot |
-| Trusted host tools disabled | TRUST HOST is off | Use runtime launcher or press `t` at boot |
-| Curl unavailable | Host lacks curl | Install curl on the host |
-| URL rejected | Unsupported protocol or URL credentials | Use plain HTTP/HTTPS without embedded credentials |
-| Empty readable output | Page is script-heavy | Try another URL or inspect with a full browser outside Phase1 |
+| Disabled by safe boot | SHIELD is on | Use runtime launcher or press `4` at boot. |
+| Trusted host tools disabled | TRUST HOST is off | Use runtime launcher or press `t` at boot. |
+| Curl unavailable | Host lacks curl | Install curl on the host. |
+| URL rejected | Unsupported protocol or URL credentials | Use plain HTTP/HTTPS without embedded credentials. |
+| Empty readable output | Page is script-heavy | Try another URL or inspect with a full browser outside Phase1. |
 
 ## Network commands fail
 
@@ -120,10 +123,44 @@ Possible causes:
 
 | Symptom | Cause | Fix |
 | --- | --- | --- |
-| Safe-mode denial | SHIELD is on | Disable SHIELD only when intended |
-| Host-tools denial | TRUST HOST is off | Enable TRUST HOST |
-| WiFi scan unavailable | Host command unsupported | Use OS-native WiFi tools |
-| WiFi connect blocked | Mutation gate off | Set `PHASE1_ALLOW_HOST_NETWORK_CHANGES=1` |
+| Safe-mode denial | SHIELD is on | Disable SHIELD only when intended. |
+| Host-tools denial | TRUST HOST is off | Enable TRUST HOST. |
+| WiFi scan unavailable | Host command unsupported | Use OS-native WiFi tools. |
+| WiFi connect blocked | Mutation gate off | Set `PHASE1_ALLOW_HOST_NETWORK_CHANGES=1`. |
+
+## Fyr script does not run
+
+Check the file extension and command:
+
+```text
+ls
+cat hello.fyr
+fyr run hello.fyr
+```
+
+Common causes:
+
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| File not found | Script is not in the current VFS directory | Run `pwd`, `ls`, or use the correct path. |
+| Parse error | Example uses unsupported Fyr syntax | Start from the examples in `14-Fyr-Native-Language.md`. |
+| No output | Script did not call `print` | Add a supported `print(...)` statement. |
+| Unexpected behavior | Language surface changed | Re-run tests and update docs with implementation. |
+
+## Base1 dry-run looks like an install
+
+Base1 dry-run commands are previews and checks. They should not be described as completed installs.
+
+Verify that commands include read-only or dry-run flags:
+
+```bash
+sh scripts/base1-x86_64-detect.sh --dry-run
+sh scripts/base1-b2-assembly-dry-run.sh --dry-run --profile x86_64-vm-validation
+sh scripts/base1-install-dry-run.sh --dry-run --target /dev/example
+sh scripts/base1-recovery-dry-run.sh --dry-run
+```
+
+Use [Base1 OS Track](13-Base1-OS-Track.md) for correct public wording.
 
 ## Termius or mobile SSH sends a stale Enter
 
@@ -167,6 +204,23 @@ cat readme.txt
 ```
 
 The generated readme should reflect the current booted version when persistent state is fresh.
+
+## Wiki page looks stale
+
+Check whether you are viewing the reviewable source wiki, native GitHub Wiki, or website copy.
+
+| Surface | Source |
+| --- | --- |
+| Reviewable source | `docs/wiki/` |
+| Native GitHub Wiki | `Bryforge/phase1.wiki` after publishing |
+| In-system compact wiki | `plugins/wiki-*.wasi` |
+| Website links | `site/` and GitHub Pages output |
+
+If the native GitHub Wiki is stale, publish the reviewed source:
+
+```bash
+scripts/publish-wiki.sh
+```
 
 ## Smoke test expected output fails
 
@@ -217,11 +271,14 @@ Fix options:
 > TRY THIS
 >
 > ```bash
-> git pull origin master
+> git fetch origin
+> git checkout edge/stable
+> git pull origin edge/stable
 > cargo fmt --all
 > cargo fmt --all -- --check
 > cargo check --all-targets
 > cargo test --all-targets
+> sh scripts/quality-check.sh quick
 > cargo run
 > ```
 
@@ -231,6 +288,7 @@ Expected result:
 format passes
 compile passes
 tests pass
+quality gate passes
 Phase1 boots
 shutdown banner reports the current package version
 ```
