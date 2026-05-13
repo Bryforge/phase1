@@ -62,10 +62,11 @@ jobs:
               'phase1-eye-candy-boost-v1',
               'phase1-first-view-mobile-v1',
               'phase1-hero-stage-focus-v1',
+              'phase1-first-view-balance-v1',
           ]:
-              s = s.replace(f'button-fix.css?v={old}', 'button-fix.css?v=phase1-first-view-balance-v1')
-              s = s.replace(f'site.js?v={old}', 'site.js?v=phase1-first-view-balance-v1')
-              s = s.replace(f'official-phase1-logo-{old.replace("phase1-", "")}', 'official-phase1-logo-first-view-balance-v1')
+              s = s.replace(f'button-fix.css?v={old}', 'button-fix.css?v=phase1-atmospheric-field-v1')
+              s = s.replace(f'site.js?v={old}', 'site.js?v=phase1-atmospheric-field-v1')
+              s = s.replace(f'official-phase1-logo-{old.replace("phase1-", "")}', 'official-phase1-logo-atmospheric-field-v1')
           p.write_text(s)
           PY
 
@@ -80,10 +81,11 @@ jobs:
           test -f _site/site/phase1-hero-stage-focus.css
           test -f _site/site/phase1-first-view-mobile.css
           test -f _site/site/phase1-first-view-balance.css
+          test -f _site/site/phase1-atmospheric-field.css
           test -f _site/site/phase1-public-pages-align.css
           test -f _site/site/phase1-public-pages-refine.css
-          grep -q 'button-fix.css?v=phase1-first-view-balance-v1' _site/index.html
-          grep -q 'site.js?v=phase1-first-view-balance-v1' _site/index.html
+          grep -q 'button-fix.css?v=phase1-atmospheric-field-v1' _site/index.html
+          grep -q 'site.js?v=phase1-atmospheric-field-v1' _site/index.html
           grep -q 'phase1-public-pages-refine.css?v=phase1-public-pages-refine-v1' _site/status.html
           grep -q 'phase1-public-pages-refine.css?v=phase1-public-pages-refine-v1' _site/wiki/index.html
 
