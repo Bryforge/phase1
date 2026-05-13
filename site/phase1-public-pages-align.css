@@ -1,0 +1,242 @@
+/* Phase1 public pages alignment.
+   Small shared layer for status + wiki consistency after the main site 9.5+ checkpoint.
+   Scope: unify public-page surfaces, navigation, typography, and core content rhythm
+   without changing the accepted main landing page design. */
+
+:root {
+  --phase-public-bg: #010208;
+  --phase-public-panel: rgba(5, 9, 20, .90);
+  --phase-public-panel-soft: rgba(8, 13, 26, .78);
+  --phase-public-line: rgba(235, 250, 255, .18);
+  --phase-public-line-hot: rgba(235, 250, 255, .28);
+  --phase-public-text: #fbfdff;
+  --phase-public-muted: #d7e2f1;
+  --phase-public-cyan: #7df7ff;
+  --phase-public-orange: #ff8d2f;
+  --phase-public-spectrum: linear-gradient(115deg, #7df7ff, #50c8ff, #9c7dff, #ff6fec, #ff8d2f, #ffd76c, #85ff9f);
+}
+
+/* Shared dark starlight surface for secondary public pages. */
+.status-shell,
+.docs-shell {
+  color: var(--phase-public-text) !important;
+}
+
+.status-nav,
+.docs-sidebar,
+.status-hero,
+.docs-hero,
+.status-card,
+.doc-section,
+.quick-card,
+.card-grid article,
+.command-grid article,
+.status-metrics,
+.metric,
+.status-footer,
+.code-card {
+  border-color: var(--phase-public-line) !important;
+  background:
+    radial-gradient(circle at 18% 14%, rgba(125,247,255,.060), transparent 17rem),
+    radial-gradient(circle at 86% 24%, rgba(255,141,47,.048), transparent 19rem),
+    linear-gradient(145deg, var(--phase-public-panel-soft), rgba(255,255,255,.034)) !important;
+  box-shadow:
+    0 26px 90px rgba(0,0,0,.58),
+    0 0 20px rgba(125,247,255,.055),
+    0 0 24px rgba(255,141,47,.040),
+    inset 0 1px 0 rgba(255,255,255,.10) !important;
+}
+
+.status-hero,
+.docs-hero {
+  border-radius: clamp(28px, 3vw, 42px) !important;
+  background:
+    radial-gradient(circle at 16% 18%, rgba(125,247,255,.105), transparent 24rem),
+    radial-gradient(circle at 86% 28%, rgba(255,141,47,.085), transparent 28rem),
+    linear-gradient(145deg, rgba(4,8,18,.95), rgba(255,255,255,.046)) !important;
+}
+
+.status-hero h1,
+.docs-hero h1,
+.doc-section h2,
+.status-card h2 {
+  color: var(--phase-public-text) !important;
+  line-height: 1.08 !important;
+  padding-bottom: .12em !important;
+  overflow: visible !important;
+  text-wrap: balance !important;
+  text-shadow:
+    0 0 16px rgba(125,247,255,.12),
+    0 0 18px rgba(255,141,47,.08),
+    0 2px 18px rgba(0,0,0,.40) !important;
+}
+
+.status-hero h1,
+.docs-hero h1 {
+  font-size: clamp(2.15rem, 5.4vw, 4.55rem) !important;
+  letter-spacing: clamp(-.048em, -.34vw, -.024em) !important;
+}
+
+.doc-section h2,
+.status-card h2 {
+  font-size: clamp(1.55rem, 3.5vw, 2.9rem) !important;
+  letter-spacing: clamp(-.032em, -.22vw, -.012em) !important;
+}
+
+.meta,
+.small,
+.hero-text,
+.doc-section p,
+.doc-section li,
+.quick-card small,
+.card-grid article p,
+.command-grid article p {
+  color: var(--phase-public-muted) !important;
+}
+
+.eyebrow,
+.sidebar-label,
+.status-brand,
+.docs-brand {
+  color: rgba(212, 252, 255, .96) !important;
+  text-shadow: 0 0 10px rgba(125,247,255,.16) !important;
+}
+
+.status-brand img,
+.hero-logo {
+  filter:
+    saturate(1.12) contrast(1.07)
+    drop-shadow(0 0 18px rgba(255,255,255,.17))
+    drop-shadow(0 0 32px rgba(125,247,255,.18))
+    drop-shadow(0 0 34px rgba(255,141,47,.11)) !important;
+}
+
+/* Shared button/link treatment for status + wiki. */
+.status-links a,
+.status-footer a,
+.docs-sidebar nav a,
+.sidebar-button,
+.quick-card,
+.coffee-link,
+.runtime-track span,
+.command-grid kbd {
+  color: #fff !important;
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(180deg, rgba(8,13,27,.88), rgba(4,7,16,.76)) padding-box,
+    var(--phase-public-spectrum) border-box !important;
+  background-size: 100% 100%, 260% 260% !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.045),
+    0 0 8px rgba(125,247,255,.052),
+    inset 0 1px 0 rgba(255,255,255,.13),
+    inset 0 -1px 0 rgba(0,0,0,.42) !important;
+  animation: phase-public-spectrum 18s ease-in-out infinite !important;
+}
+
+.status-links a:hover,
+.status-links a:focus-visible,
+.status-footer a:hover,
+.docs-sidebar nav a:hover,
+.docs-sidebar nav a:focus-visible,
+.sidebar-button:hover,
+.sidebar-button:focus-visible,
+.quick-card:hover,
+.quick-card:focus-visible,
+.coffee-link:hover,
+.coffee-link:focus-visible,
+.runtime-track span:hover {
+  transform: translateY(-1px) !important;
+  border-color: var(--phase-public-line-hot) !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.10),
+    0 0 14px rgba(125,247,255,.16),
+    0 0 22px rgba(156,125,255,.13),
+    0 0 30px rgba(255,141,47,.10),
+    inset 0 1px 0 rgba(255,255,255,.18) !important;
+}
+
+.status-links a.primary,
+.sidebar-button,
+.coffee-link {
+  font-weight: 850 !important;
+}
+
+/* Status progress bars should match the public spectrum language. */
+.status-progress {
+  height: 12px !important;
+  border-radius: 999px !important;
+  background:
+    linear-gradient(180deg, rgba(1,3,8,.86), rgba(8,12,22,.76)) padding-box,
+    linear-gradient(90deg, rgba(125,247,255,.20), rgba(255,141,47,.16)) border-box !important;
+  border: 1px solid transparent !important;
+  box-shadow: inset 0 1px 4px rgba(0,0,0,.55), 0 0 12px rgba(125,247,255,.060) !important;
+}
+
+.status-progress span,
+.status-progress > span {
+  display: block !important;
+  height: 100% !important;
+  width: var(--p, 0%) !important;
+  border-radius: inherit !important;
+  background: var(--phase-public-spectrum) !important;
+  background-size: 240% 100% !important;
+  box-shadow: 0 0 16px rgba(125,247,255,.22), 0 0 12px rgba(255,141,47,.12) !important;
+  animation: phase-public-spectrum 14s ease-in-out infinite !important;
+}
+
+/* Wiki command/reference cards should feel like the status cards. */
+.card-grid article,
+.command-grid article,
+.quick-card,
+.status-card,
+.metric {
+  transition: transform .20s ease, border-color .20s ease, box-shadow .20s ease !important;
+}
+
+.card-grid article:hover,
+.command-grid article:hover,
+.quick-card:hover,
+.status-card:hover,
+.metric:hover {
+  transform: translateY(-2px) !important;
+  border-color: var(--phase-public-line-hot) !important;
+}
+
+#docs-search {
+  background:
+    linear-gradient(180deg, rgba(3,6,15,.90), rgba(8,12,24,.72)) padding-box,
+    linear-gradient(90deg, rgba(125,247,255,.28), rgba(156,125,255,.22), rgba(255,141,47,.24)) border-box !important;
+  border: 1px solid transparent !important;
+  color: var(--phase-public-text) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 0 16px rgba(125,247,255,.055) !important;
+}
+
+/* Status + wiki mobile consistency. */
+@media (max-width: 760px) {
+  .status-hero h1,
+  .docs-hero h1 {
+    font-size: clamp(1.9rem, 9.8vw, 3.0rem) !important;
+    line-height: 1.10 !important;
+  }
+  .doc-section h2,
+  .status-card h2 {
+    font-size: clamp(1.35rem, 7vw, 2.1rem) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-links a,
+  .docs-sidebar nav a,
+  .sidebar-button,
+  .quick-card,
+  .coffee-link,
+  .runtime-track span,
+  .command-grid kbd,
+  .status-progress span { animation: none !important; }
+}
+
+@keyframes phase-public-spectrum {
+  0%, 100% { background-position: 0% 50%; filter: hue-rotate(0deg) saturate(1.04); }
+  50% { background-position: 100% 50%; filter: hue-rotate(20deg) saturate(1.12); }
+}
