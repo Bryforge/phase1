@@ -59,6 +59,7 @@ jobs:
           computer = 'phase1-computer-joy-v1'
           harmony = 'phase1-machine-harmony-v1'
           public_polish = 'phase1-public-polish-v1'
+          presentation = 'phase1-presentation-10-v1'
           status_polish = 'phase1-status-polish-v1'
           previous = [
               'phase1-nobackground-v2', 'phase1-superb-overhaul-v1', 'phase1-final-design-v1',
@@ -70,18 +71,18 @@ jobs:
               'phase1-star-edge-polish-v1', 'phase1-eye-candy-v1', 'phase1-eye-candy-boost-v1',
               'phase1-starlight-motion-v1', 'phase1-starlight-premium-v1', 'phase1-starlight-depth-v1',
               'phase1-spectrum-buttons-v1', 'phase1-spectrum-solid-v1', 'phase1-computer-joy-v1',
-              'phase1-machine-harmony-v1'
+              'phase1-machine-harmony-v1', 'phase1-public-polish-v1'
           ]
           def add_once(text, tag):
               return text if tag in text else text.replace('</head>', f'  {tag}\n</head>')
           p = Path('_site/index.html')
           s = p.read_text()
           for old in previous:
-              s = s.replace(f'styles.css?v={old}', f'styles.css?v={public_polish}')
-              s = s.replace(f'button-fix.css?v={old}', f'button-fix.css?v={public_polish}')
-              s = s.replace(f'site.js?v={old}', f'site.js?v={public_polish}')
-              s = s.replace(f'button-fix.js?v={old}', f'button-fix.js?v={public_polish}')
-              s = s.replace(f'official-phase1-logo-{old.replace("phase1-", "")}', 'official-phase1-logo-public-polish-v1')
+              s = s.replace(f'styles.css?v={old}', f'styles.css?v={presentation}')
+              s = s.replace(f'button-fix.css?v={old}', f'button-fix.css?v={presentation}')
+              s = s.replace(f'site.js?v={old}', f'site.js?v={presentation}')
+              s = s.replace(f'button-fix.js?v={old}', f'button-fix.js?v={presentation}')
+              s = s.replace(f'official-phase1-logo-{old.replace("phase1-", "")}', 'official-phase1-logo-presentation-10-v1')
           for css in [
               f'<link rel="stylesheet" href="./site/phase1-banner-overhaul.css?v={banner}">',
               f'<link rel="stylesheet" href="./site/phase1-structure-recovery.css?v={structure}">',
@@ -99,6 +100,7 @@ jobs:
               f'<link rel="stylesheet" href="./site/phase1-computer-joy.css?v={computer}">',
               f'<link rel="stylesheet" href="./site/phase1-machine-harmony.css?v={harmony}">',
               f'<link rel="stylesheet" href="./site/phase1-public-polish.css?v={public_polish}">',
+              f'<link rel="stylesheet" href="./site/phase1-presentation-10.css?v={presentation}">',
           ]:
               s = add_once(s, css)
           p.write_text(s)
@@ -117,6 +119,7 @@ jobs:
                   f'<link rel="stylesheet" href="./site/phase1-computer-joy.css?v={computer}">',
                   f'<link rel="stylesheet" href="./site/phase1-machine-harmony.css?v={harmony}">',
                   f'<link rel="stylesheet" href="./site/phase1-public-polish.css?v={public_polish}">',
+                  f'<link rel="stylesheet" href="./site/phase1-presentation-10.css?v={presentation}">',
               ]:
                   t = add_once(t, css)
               sp.write_text(t)
@@ -153,10 +156,11 @@ jobs:
           test -f _site/site/phase1-computer-joy.css
           test -f _site/site/phase1-machine-harmony.css
           test -f _site/site/phase1-public-polish.css
-          grep -q 'phase1-public-polish.css?v=phase1-public-polish-v1' _site/index.html
-          grep -q 'button-fix.css?v=phase1-public-polish-v1' _site/index.html
-          grep -q 'site.js?v=phase1-public-polish-v1' _site/index.html
-          grep -q 'phase1-public-polish.css?v=phase1-public-polish-v1' _site/status.html
+          test -f _site/site/phase1-presentation-10.css
+          grep -q 'phase1-presentation-10.css?v=phase1-presentation-10-v1' _site/index.html
+          grep -q 'button-fix.css?v=phase1-presentation-10-v1' _site/index.html
+          grep -q 'site.js?v=phase1-presentation-10-v1' _site/index.html
+          grep -q 'phase1-presentation-10.css?v=phase1-presentation-10-v1' _site/status.html
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
