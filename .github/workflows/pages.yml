@@ -42,62 +42,68 @@ jobs:
           cp -R site/. _site/
           cp -R site/. _site/site/
 
-          # Force the premium orange-spectrum-only Phase1 visual layer on Pages.
+          # Force the elite orange-spectrum-only Phase1 visual layer on Pages.
           python3 - <<'PY'
           from pathlib import Path
           p = Path('_site/index.html')
           s = p.read_text()
           replacements = {
-              'styles.css?v=phase1-nobackground-v2': 'styles.css?v=phase1-orange-premium-v1',
-              'styles.css?v=phase1-superb-overhaul-v1': 'styles.css?v=phase1-orange-premium-v1',
-              'styles.css?v=phase1-final-design-v1': 'styles.css?v=phase1-orange-premium-v1',
-              'styles.css?v=phase1-bryforge-aligned-v1': 'styles.css?v=phase1-orange-premium-v1',
-              'styles.css?v=phase1-orange-rainbow-v1': 'styles.css?v=phase1-orange-premium-v1',
-              'styles.css?v=phase1-polish-77-v1': 'styles.css?v=phase1-orange-premium-v1',
-              'styles.css?v=phase1-orange-spectrum-v1': 'styles.css?v=phase1-orange-premium-v1',
-              'button-fix.css?v=phase1-alive-buttons-v6': 'button-fix.css?v=phase1-orange-premium-v1',
-              'button-fix.css?v=phase1-visual-overhaul-v2': 'button-fix.css?v=phase1-orange-premium-v1',
-              'button-fix.css?v=phase1-superb-overhaul-v1': 'button-fix.css?v=phase1-orange-premium-v1',
-              'button-fix.css?v=phase1-final-design-v1': 'button-fix.css?v=phase1-orange-premium-v1',
-              'button-fix.css?v=phase1-bryforge-aligned-v1': 'button-fix.css?v=phase1-orange-premium-v1',
-              'button-fix.css?v=phase1-orange-rainbow-v1': 'button-fix.css?v=phase1-orange-premium-v1',
-              'button-fix.css?v=phase1-polish-77-v1': 'button-fix.css?v=phase1-orange-premium-v1',
-              'button-fix.css?v=phase1-orange-spectrum-v1': 'button-fix.css?v=phase1-orange-premium-v1',
-              'button-fix.js?v=phase1-alive-buttons-v6': 'button-fix.js?v=phase1-orange-premium-v1',
-              'button-fix.js?v=phase1-visual-overhaul-v2': 'button-fix.js?v=phase1-orange-premium-v1',
-              'button-fix.js?v=phase1-superb-overhaul-v1': 'button-fix.js?v=phase1-orange-premium-v1',
-              'button-fix.js?v=phase1-final-design-v1': 'button-fix.js?v=phase1-orange-premium-v1',
-              'button-fix.js?v=phase1-bryforge-aligned-v1': 'button-fix.js?v=phase1-orange-premium-v1',
-              'button-fix.js?v=phase1-orange-rainbow-v1': 'button-fix.js?v=phase1-orange-premium-v1',
-              'button-fix.js?v=phase1-polish-77-v1': 'button-fix.js?v=phase1-orange-premium-v1',
-              'button-fix.js?v=phase1-orange-spectrum-v1': 'button-fix.js?v=phase1-orange-premium-v1',
-              'site.js?v=phase1-nobackground-v2': 'site.js?v=phase1-orange-premium-v1',
-              'site.js?v=phase1-superb-overhaul-v1': 'site.js?v=phase1-orange-premium-v1',
-              'site.js?v=phase1-final-design-v1': 'site.js?v=phase1-orange-premium-v1',
-              'site.js?v=phase1-bryforge-aligned-v1': 'site.js?v=phase1-orange-premium-v1',
-              'site.js?v=phase1-orange-rainbow-v1': 'site.js?v=phase1-orange-premium-v1',
-              'site.js?v=phase1-polish-77-v1': 'site.js?v=phase1-orange-premium-v1',
-              'site.js?v=phase1-orange-spectrum-v1': 'site.js?v=phase1-orange-premium-v1',
-              'official-phase1-logo-v7': 'official-phase1-logo-orange-premium-v1',
-              'official-phase1-logo-final-v1': 'official-phase1-logo-orange-premium-v1',
-              'official-phase1-logo-final-v2': 'official-phase1-logo-orange-premium-v1',
-              'official-phase1-logo-bryforge-v1': 'official-phase1-logo-orange-premium-v1',
-              'official-phase1-logo-orange-rainbow-v1': 'official-phase1-logo-orange-premium-v1',
-              'official-phase1-logo-polish-77-v1': 'official-phase1-logo-orange-premium-v1',
-              'official-phase1-logo-orange-spectrum-v1': 'official-phase1-logo-orange-premium-v1',
+              'styles.css?v=phase1-nobackground-v2': 'styles.css?v=phase1-orange-elite-v1',
+              'styles.css?v=phase1-superb-overhaul-v1': 'styles.css?v=phase1-orange-elite-v1',
+              'styles.css?v=phase1-final-design-v1': 'styles.css?v=phase1-orange-elite-v1',
+              'styles.css?v=phase1-bryforge-aligned-v1': 'styles.css?v=phase1-orange-elite-v1',
+              'styles.css?v=phase1-orange-rainbow-v1': 'styles.css?v=phase1-orange-elite-v1',
+              'styles.css?v=phase1-polish-77-v1': 'styles.css?v=phase1-orange-elite-v1',
+              'styles.css?v=phase1-orange-spectrum-v1': 'styles.css?v=phase1-orange-elite-v1',
+              'styles.css?v=phase1-orange-premium-v1': 'styles.css?v=phase1-orange-elite-v1',
+              'button-fix.css?v=phase1-alive-buttons-v6': 'button-fix.css?v=phase1-orange-elite-v1',
+              'button-fix.css?v=phase1-visual-overhaul-v2': 'button-fix.css?v=phase1-orange-elite-v1',
+              'button-fix.css?v=phase1-superb-overhaul-v1': 'button-fix.css?v=phase1-orange-elite-v1',
+              'button-fix.css?v=phase1-final-design-v1': 'button-fix.css?v=phase1-orange-elite-v1',
+              'button-fix.css?v=phase1-bryforge-aligned-v1': 'button-fix.css?v=phase1-orange-elite-v1',
+              'button-fix.css?v=phase1-orange-rainbow-v1': 'button-fix.css?v=phase1-orange-elite-v1',
+              'button-fix.css?v=phase1-polish-77-v1': 'button-fix.css?v=phase1-orange-elite-v1',
+              'button-fix.css?v=phase1-orange-spectrum-v1': 'button-fix.css?v=phase1-orange-elite-v1',
+              'button-fix.css?v=phase1-orange-premium-v1': 'button-fix.css?v=phase1-orange-elite-v1',
+              'button-fix.js?v=phase1-alive-buttons-v6': 'button-fix.js?v=phase1-orange-elite-v1',
+              'button-fix.js?v=phase1-visual-overhaul-v2': 'button-fix.js?v=phase1-orange-elite-v1',
+              'button-fix.js?v=phase1-superb-overhaul-v1': 'button-fix.js?v=phase1-orange-elite-v1',
+              'button-fix.js?v=phase1-final-design-v1': 'button-fix.js?v=phase1-orange-elite-v1',
+              'button-fix.js?v=phase1-bryforge-aligned-v1': 'button-fix.js?v=phase1-orange-elite-v1',
+              'button-fix.js?v=phase1-orange-rainbow-v1': 'button-fix.js?v=phase1-orange-elite-v1',
+              'button-fix.js?v=phase1-polish-77-v1': 'button-fix.js?v=phase1-orange-elite-v1',
+              'button-fix.js?v=phase1-orange-spectrum-v1': 'button-fix.js?v=phase1-orange-elite-v1',
+              'button-fix.js?v=phase1-orange-premium-v1': 'button-fix.js?v=phase1-orange-elite-v1',
+              'site.js?v=phase1-nobackground-v2': 'site.js?v=phase1-orange-elite-v1',
+              'site.js?v=phase1-superb-overhaul-v1': 'site.js?v=phase1-orange-elite-v1',
+              'site.js?v=phase1-final-design-v1': 'site.js?v=phase1-orange-elite-v1',
+              'site.js?v=phase1-bryforge-aligned-v1': 'site.js?v=phase1-orange-elite-v1',
+              'site.js?v=phase1-orange-rainbow-v1': 'site.js?v=phase1-orange-elite-v1',
+              'site.js?v=phase1-polish-77-v1': 'site.js?v=phase1-orange-elite-v1',
+              'site.js?v=phase1-orange-spectrum-v1': 'site.js?v=phase1-orange-elite-v1',
+              'site.js?v=phase1-orange-premium-v1': 'site.js?v=phase1-orange-elite-v1',
+              'official-phase1-logo-v7': 'official-phase1-logo-orange-elite-v1',
+              'official-phase1-logo-final-v1': 'official-phase1-logo-orange-elite-v1',
+              'official-phase1-logo-final-v2': 'official-phase1-logo-orange-elite-v1',
+              'official-phase1-logo-bryforge-v1': 'official-phase1-logo-orange-elite-v1',
+              'official-phase1-logo-orange-rainbow-v1': 'official-phase1-logo-orange-elite-v1',
+              'official-phase1-logo-polish-77-v1': 'official-phase1-logo-orange-elite-v1',
+              'official-phase1-logo-orange-spectrum-v1': 'official-phase1-logo-orange-elite-v1',
+              'official-phase1-logo-orange-premium-v1': 'official-phase1-logo-orange-elite-v1',
           }
           for old, new in replacements.items():
               s = s.replace(old, new)
           for css in [
-              '<link rel="stylesheet" href="./site/final-design.css?v=phase1-orange-premium-v1">',
-              '<link rel="stylesheet" href="./site/bryforge-aligned.css?v=phase1-orange-premium-v1">',
-              '<link rel="stylesheet" href="./site/phase1-polish-77.css?v=phase1-orange-premium-v1">',
-              '<link rel="stylesheet" href="./site/phase1-orange-spectrum.css?v=phase1-orange-premium-v1">',
-              '<link rel="stylesheet" href="./site/phase1-orange-premium.css?v=phase1-orange-premium-v1">',
+              '<link rel="stylesheet" href="./site/final-design.css?v=phase1-orange-elite-v1">',
+              '<link rel="stylesheet" href="./site/bryforge-aligned.css?v=phase1-orange-elite-v1">',
+              '<link rel="stylesheet" href="./site/phase1-polish-77.css?v=phase1-orange-elite-v1">',
+              '<link rel="stylesheet" href="./site/phase1-orange-spectrum.css?v=phase1-orange-elite-v1">',
+              '<link rel="stylesheet" href="./site/phase1-orange-premium.css?v=phase1-orange-elite-v1">',
+              '<link rel="stylesheet" href="./site/phase1-orange-elite.css?v=phase1-orange-elite-v1">',
           ]:
               if css not in s:
                   s = s.replace('</head>', f'  {css}\n</head>')
-          script = '<script src="./site/visual-overhaul.js?v=phase1-orange-premium-v1"></script>'
+          script = '<script src="./site/visual-overhaul.js?v=phase1-orange-elite-v1"></script>'
           if script not in s:
               s = s.replace('</body>', f'{script}</body>')
           p.write_text(s)
@@ -131,9 +137,10 @@ jobs:
           test -f _site/site/phase1-polish-77.css
           test -f _site/site/phase1-orange-spectrum.css
           test -f _site/site/phase1-orange-premium.css
+          test -f _site/site/phase1-orange-elite.css
           test -f _site/site/visual-overhaul.css
           test -f _site/site/visual-overhaul.js
-          grep -q 'phase1-orange-premium.css?v=phase1-orange-premium-v1' _site/index.html
+          grep -q 'phase1-orange-elite.css?v=phase1-orange-elite-v1' _site/index.html
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
