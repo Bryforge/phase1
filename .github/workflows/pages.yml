@@ -43,7 +43,7 @@ jobs:
           if [ -f docs/community/CONTACT.md ]; then cp docs/community/CONTACT.md _site/CONTACT.md; fi
           if [ -f docs/project/WIKI_ROADMAP.md ]; then cp docs/project/WIKI_ROADMAP.md _site/WIKI_ROADMAP.md; fi
           if [ -f wiki/index.html ] && [ -f wiki/docs.css ] && [ -f wiki/docs.js ]; then
-            cp wiki/index.html wiki/docs.css wiki/docs.js _site/wiki/
+            cp wiki/*.html wiki/docs.css wiki/docs.js _site/wiki/
           elif [ -f wiki/site/index.html ] && [ -f wiki/docs.css ] && [ -f wiki/docs.js ]; then
             cp wiki/site/index.html wiki/docs.css wiki/docs.js _site/wiki/
           fi
@@ -69,6 +69,9 @@ jobs:
           test -f _site/status.json
           test -f _site/status-badge.json
           test -f _site/wiki/index.html
+          test -f _site/wiki/commands.html
+          test -f _site/wiki/docs.css
+          test -f _site/wiki/docs.js
           test -f _site/site/button-fix.css
           test -f _site/site/phase1-side-rail-fix.css
           test -f _site/site/phase1-mobile-nav-fix.css
@@ -77,6 +80,7 @@ jobs:
           grep -q 'button-fix.css?v=phase1-mobile-nav-fix-v1' _site/index.html
           grep -q 'site.js?v=phase1-mobile-nav-fix-v1' _site/index.html
           grep -q 'mobile-nav-fix.js?v=phase1-mobile-nav-fix-v1' _site/index.html
+          grep -q 'commands.html' _site/wiki/index.html
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
