@@ -3,8 +3,8 @@
 Status kind: estimated roadmap progress
 Source marker: [`site/status.json`](../../site/status.json)
 Badge marker: [`site/status-badge.json`](../../site/status-badge.json)
-Generated from commit: `6b5f72f387550d8257ad43f7381b811270ab1d2d`
-Last updated UTC: `2026-05-13T21:27:00Z`
+Generated from commit: `74c3c97e2ff2f6e95d3aa4ea1156eeaf83953b41`
+Last updated UTC: `2026-05-13T21:42:00Z`
 
 ## Current estimate
 
@@ -12,17 +12,17 @@ Last updated UTC: `2026-05-13T21:27:00Z`
 | --- | ---: | --- | --- |
 | Phase1 operator console | 82% | usable edge console with guarded host access, VFS, dashboards, help UI, themes, learning, and tests | polish release-facing flows and keep safe defaults simple |
 | Fyr native language | 44% | seed language and toolchain surface exist with scripts, tests, assertions, package checks, and docs | expand language book, package workflow, and runtime integration |
-| Base1 secure host / OS track | 36% | documentation, dry-run scripts, release archives, validation gates, recovery planning, x86_64 boot planning, wiki guardrails, B3 GNU/Linux emulator evidence, and B3 UEFI emulator proof are present; full B3 remains not claimed | add kernel/initrd handoff evidence and promote a reviewed validation report without over-claiming |
-| X200 / Libreboot hardware path | 41% | X200 Linux-libre host can stage local kernel/initrd into B3 GNU/Linux emulator evidence and run B3 UEFI proof; USB staging, framebuffer proof paths, recovery notes, and safety gates remain evidence-bound | capture repeatable physical boot evidence and keep emulator, USB, and hardware claims separated |
+| Base1 secure host / OS track | 38% | documentation, dry-run scripts, release archives, validation gates, recovery planning, x86_64 boot planning, wiki guardrails, B3 GNU/Linux emulator evidence, B3 UEFI emulator proof, and B3 kernel/initrd handoff evidence are present; full B3 remains not claimed | promote a reviewed B3 validation report without over-claiming, then move toward recovery and physical hardware evidence |
+| X200 / Libreboot hardware path | 42% | X200 Linux-libre host can stage local kernel/initrd into B3 GNU/Linux emulator evidence, run B3 UEFI proof, and produce B3 kernel/initrd handoff evidence; USB staging, framebuffer proof paths, recovery notes, and safety gates remain evidence-bound | capture repeatable physical boot evidence and keep emulator, USB, and hardware claims separated |
 | Security and crypto policy | 55% | trust model, crypto policy roadmap, provider registry, profile docs, config schema, and integrity checks are present | move from documentation policy into scoped implementation only after tests and review evidence |
-| Website and public docs | 86% | public site, status page, status JSON, badge endpoint, native GitHub Wiki, refreshed source wiki, organized docs, asset policy, Pages routing, clean public link checks, and B3 evidence status wording are in place | publish reviewed B3 evidence docs after handoff evidence is complete |
+| Website and public docs | 87% | public site, status page, status JSON, badge endpoint, native GitHub Wiki, refreshed source wiki, organized docs, asset policy, Pages routing, clean public link checks, and B3 emulator evidence-set status wording are in place | publish the reviewed B3 validation report and keep public claims evidence-bound |
 | Repository organization | 100% | minimal root has 12 tracked files, 16 top-level folders, 0 unplanned root files, 0 tracked build files, 0 root status duplicates, and clean Base1 link-check output | keep generated artifacts out of Git and keep compatibility links clean as work lands |
 
-Overall estimated roadmap completion: **64%**.
+Overall estimated roadmap completion: **65%**.
 
 ## B3 evidence boundary
 
-B3 GNU/Linux emulator stage evidence and B3 UEFI proof evidence are present. Full B3 validation remains incomplete and not claimed. Required follow-up evidence still includes kernel/initrd handoff evidence and a reviewed validation report.
+B3 GNU/Linux emulator stage evidence, B3 UEFI proof evidence, and B3 kernel/initrd handoff evidence are present. Full B3 validation remains incomplete and not claimed until a reviewed validation report exists.
 
 ## Repository organization inputs
 
