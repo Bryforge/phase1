@@ -103,10 +103,35 @@
       content: none !important;
       display: none !important;
     }
-  </style>
+  
+.status-callout {
+  max-width: 1050px;
+  margin: 18px auto;
+  padding: 0 18px;
+}
+.status-callout__link {
+  display: block;
+  border: 1px solid rgba(0, 216, 255, 0.45);
+  border-radius: 16px;
+  padding: 14px 16px;
+  background: rgba(0, 216, 255, 0.08);
+  color: #e7f7ff;
+  text-decoration: none;
+  font-weight: 800;
+  box-shadow: 0 0 24px rgba(0, 216, 255, 0.12);
+}
+.status-callout__link:hover {
+  border-color: rgba(57, 255, 136, 0.75);
+}
+
+</style>
 </head>
 <body>
-<a href="status.html" style="position:absolute;left:-9999px">Live project status</a>
+<section class="status-callout" aria-label="Project status">
+  <a class="status-callout__link" href="status.html">
+    Live project status · 61% roadmap · Repository organization 100%
+  </a>
+</section>
 
   <a class="skip-link" href="#main">Skip to content</a>
   <canvas id="space" aria-hidden="true"></canvas>
