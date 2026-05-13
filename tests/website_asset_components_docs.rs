@@ -5,7 +5,7 @@ fn website_docs_reference_current_public_asset_components() {
 
     for asset in [
         "../../assets/phase1_base_fyr_banner1.png",
-        "../../assets/phase1-splash.png",
+        "../../assets/phase1_word.png",
         "../../assets/fyr_symbol.png",
         "../../assets/fyr_word.png",
     ] {
@@ -21,18 +21,13 @@ fn website_docs_mark_outdated_visual_assets_without_using_them_as_current() {
     let website =
         std::fs::read_to_string("docs/website/README.md").expect("website documentation index");
 
-    assert!(
-        website.contains("Older references to `assets/phase1-splash.svg` are outdated"),
-        "website docs should mark old Phase1 splash SVG as outdated: {website}"
-    );
-    assert!(
-        website.contains("Older references to `assets/fyr-flame.svg` are outdated"),
-        "website docs should mark old Fyr flame SVG as outdated: {website}"
-    );
-    assert!(
-        website.contains("current Phase1 boot splash PNG"),
-        "website docs should identify the current Phase1 splash as PNG: {website}"
-    );
+    for text in [
+        "Older references to `assets/phase1-splash.png`, `assets/phase1-splash.svg`, and `assets/phase1-logo.svg` are outdated",
+        "Older references to `assets/fyr-flame.svg` are outdated",
+        "current Phase1 word-mark/splash PNG",
+    ] {
+        assert!(website.contains(text), "missing website asset note {text}: {website}");
+    }
 }
 
 #[test]
@@ -42,7 +37,7 @@ fn asset_index_and_readme_agree_on_current_public_assets() {
 
     for asset in [
         "assets/phase1_base_fyr_banner1.png",
-        "assets/phase1-splash.png",
+        "assets/phase1_word.png",
         "assets/fyr_symbol.png",
         "assets/fyr_word.png",
     ] {
@@ -58,7 +53,7 @@ fn asset_index_and_readme_agree_on_current_public_assets() {
 fn current_public_asset_files_exist() {
     for asset in [
         "assets/phase1_base_fyr_banner1.png",
-        "assets/phase1-splash.png",
+        "assets/phase1_word.png",
         "assets/fyr_symbol.png",
         "assets/fyr_word.png",
     ] {
