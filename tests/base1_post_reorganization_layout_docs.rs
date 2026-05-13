@@ -29,13 +29,16 @@ fn post_reorganization_layout_preserves_public_compatibility_paths() {
         .expect("Base1 post-reorganization layout");
 
     for text in [
-        "Root-level checkpoint notes remain compatibility paths.",
+        "Former root-level checkpoint names remain documented in `docs/base1/RELEASE_ARCHIVE_MAP.md`",
+        "current repository does not require root-level release files to exist",
         "Current script paths remain the stable operator interface.",
         "scripts/base1-*.sh",
         "tests/base1_*.rs",
         "tests/quality_base1_*.rs",
         "tests/*base1*.rs",
         "Compatibility paths remain valid",
+        "Organized release/checkpoint archives stay available.",
+        "Former root-level release/checkpoint filenames remain documented in the archive map.",
         "Existing public documentation links stay recoverable.",
     ] {
         assert!(
