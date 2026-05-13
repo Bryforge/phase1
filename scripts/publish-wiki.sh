@@ -12,6 +12,18 @@ if [[ ! -d "${WIKI_SOURCE}" ]]; then
   exit 1
 fi
 
+if [[ -e "${WORK_DIR}" && ! -d "${WORK_DIR}/.git" ]]; then
+  cat >&2 <<EOF
+phase1 wiki publish: ${WORK_DIR} exists but is not a git checkout.
+
+Move or remove that directory, then run this script again:
+
+  rm -rf "${WORK_DIR}"
+  bash scripts/publish-wiki.sh
+EOF
+  exit 1
+fi
+
 if [[ ! -d "${WORK_DIR}/.git" ]]; then
   echo "phase1 wiki publish: cloning ${WIKI_URL}"
   if ! git clone "${WIKI_URL}" "${WORK_DIR}"; then
@@ -26,7 +38,7 @@ EOF
   fi
 fi
 
-rsync -av --delete "${WIKI_SOURCE}/" "${WORK_DIR}/"
+rsync -av --delete --exclude='.git/' "${WIKI_SOURCE}/" "${WORK_DIR}/"
 cd "${WORK_DIR}"
 
 git status --short
