@@ -7,7 +7,7 @@ fn asset_index_documents_current_public_assets() {
 
     for asset in [
         "assets/phase1_base_fyr_banner1.png",
-        "assets/phase1-splash.png",
+        "assets/phase1_word.png",
         "assets/fyr_symbol.png",
         "assets/fyr_word.png",
     ] {
@@ -19,17 +19,15 @@ fn asset_index_documents_current_public_assets() {
 }
 
 #[test]
-fn asset_index_marks_old_phase1_splash_svg_reference_outdated() {
+fn asset_index_marks_old_phase1_splash_and_logo_references_outdated() {
     let index = std::fs::read_to_string("assets/README.md").expect("assets index");
 
-    assert!(
-        index.contains("Older references to `phase1-splash.svg` are outdated"),
-        "{index}"
-    );
-    assert!(
-        index.contains("should be replaced with the current PNG asset above"),
-        "{index}"
-    );
+    for text in [
+        "Older references to `phase1-splash.png`, `phase1-splash.svg`, and `phase1-logo.svg` are outdated",
+        "should be replaced with the current `phase1_word.png` asset above",
+    ] {
+        assert!(index.contains(text), "missing outdated Phase1 asset note {text}: {index}");
+    }
 }
 
 #[test]
@@ -74,7 +72,7 @@ fn asset_index_referenced_from_readme_and_website_docs() {
 
     for asset in [
         "assets/phase1_base_fyr_banner1.png",
-        "assets/phase1-splash.png",
+        "assets/phase1_word.png",
         "assets/fyr_symbol.png",
         "assets/fyr_word.png",
     ] {
@@ -85,8 +83,8 @@ fn asset_index_referenced_from_readme_and_website_docs() {
     }
 
     assert!(
-        website.contains("../../assets/phase1-splash.png"),
-        "website docs should reference current Phase1 splash PNG: {website}"
+        website.contains("../../assets/phase1_word.png"),
+        "website docs should reference current Phase1 word mark PNG: {website}"
     );
 }
 
@@ -94,7 +92,7 @@ fn asset_index_referenced_from_readme_and_website_docs() {
 fn current_asset_files_exist_and_are_non_empty() {
     for asset in [
         "assets/phase1_base_fyr_banner1.png",
-        "assets/phase1-splash.png",
+        "assets/phase1_word.png",
         "assets/fyr_symbol.png",
         "assets/fyr_word.png",
     ] {
