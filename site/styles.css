@@ -1324,3 +1324,19 @@ h1,
     display: none;
   }
 }
+
+/* Hero asset v1: use real Phase1 asset inside the glass panel */
+.phase-logo {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  padding: clamp(10px, 2vw, 22px);
+  background:
+    radial-gradient(circle at 50% 50%, rgba(35, 247, 255, 0.10), transparent 62%),
+    rgba(0, 0, 0, 0.12);
+}
+
+.logo-glass {
+  overflow: hidden;
+}

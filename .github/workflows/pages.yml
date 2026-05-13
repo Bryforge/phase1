@@ -54,11 +54,13 @@ jobs:
             printf "optional wiki roadmap doc not present; skipping roadmap copy\n"
           fi
 
-          if [ -f assets/phase1-banner.svg ]; then
-            cp assets/phase1-banner.svg _site/assets/phase1-banner.svg
-          else
-            printf "optional phase1 banner asset not present; skipping banner copy\n"
-          fi
+          for asset in assets/phase1-banner.svg assets/phase1-splash.png assets/phase1_base_fyr_banner1.png; do
+            if [ -f "$asset" ]; then
+              cp "$asset" "_site/assets/$(basename "$asset")"
+            else
+              printf "optional asset not present; skipping %s\n" "$asset"
+            fi
+          done
 
           if [ -f wiki/site/index.html ] && [ -f wiki/docs.css ] && [ -f wiki/docs.js ]; then
             cp wiki/site/index.html wiki/docs.css wiki/docs.js _site/wiki/
