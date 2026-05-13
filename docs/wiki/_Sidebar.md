@@ -13,3 +13,6 @@
 - [Publish to GitHub Wiki](10-Publish-to-GitHub-Wiki.md)
 - [Tutorials](11-Tutorials.md)
 - [In-System Wiki](12-In-System-Wiki.md)
+- [Base1 OS Track](13-Base1-OS-Track.md)
+- [Fyr Native Language](14-Fyr-Native-Language.md)
+- [Legacy v4 Reference](12-v4-Edge-Manual.md)
