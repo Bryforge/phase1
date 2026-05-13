@@ -1,0 +1,237 @@
+/* Phase1 matrix polish pass.
+   Builds on the matrix-fit checkpoint with smaller hero typography,
+   cleaner above-the-fold fit, more consistent matrix panels, and calmer premium glow. */
+
+:root {
+  --mp-line: rgba(210, 229, 255, .16);
+  --mp-line-soft: rgba(210, 229, 255, .075);
+  --mp-cyan: rgba(94, 216, 255, .18);
+  --mp-orange: rgba(255, 139, 43, .14);
+  --mp-panel: rgba(5, 9, 20, .88);
+}
+
+.status-callout {
+  margin-top: 10px !important;
+  margin-bottom: 8px !important;
+}
+
+.status-callout__link {
+  min-height: 42px !important;
+  padding: 10px 16px !important;
+  font-size: clamp(.88rem, 1.02vw, .98rem) !important;
+}
+
+.nav {
+  min-height: 62px !important;
+  padding: 11px 16px !important;
+}
+
+.nav-links a {
+  font-size: .93rem !important;
+}
+
+.hero {
+  isolation: isolate !important;
+  grid-template-columns: minmax(0, .99fr) minmax(320px, .82fr) !important;
+  gap: clamp(22px, 3.4vw, 48px) !important;
+  padding: clamp(28px, 4vw, 54px) clamp(24px, 4.6vw, 62px) !important;
+  border-color: rgba(210, 229, 255, .19) !important;
+}
+
+.hero::before {
+  opacity: .44 !important;
+}
+
+.hero::after {
+  opacity: .28 !important;
+}
+
+.hero-copy {
+  gap: clamp(12px, 1.65vw, 18px) !important;
+}
+
+.hero .eyebrow {
+  font-size: clamp(.70rem, .82vw, .82rem) !important;
+  letter-spacing: .20em !important;
+}
+
+.hero h1 {
+  max-width: min(100%, 760px) !important;
+  font-size: clamp(2.65rem, min(5.72vw, 8.1vh), 5.72rem) !important;
+  line-height: .965 !important;
+  letter-spacing: -.064em !important;
+}
+
+.hero-text {
+  max-width: min(100%, 650px) !important;
+  line-height: 1.50 !important;
+}
+
+.hero-actions {
+  gap: 9px !important;
+}
+
+.button,
+.hero-status-panel a,
+.quick-commands button,
+.terminal-form button {
+  min-height: 40px !important;
+  padding: 10px 15px !important;
+  font-size: .92rem !important;
+  box-shadow:
+    0 0 16px rgba(43, 141, 255, .13),
+    0 0 20px rgba(255, 122, 24, .085),
+    inset 0 1px 0 rgba(255, 255, 255, .15) !important;
+}
+
+.hero-command {
+  max-width: min(100%, 660px) !important;
+  font-size: clamp(.78rem, .88vw, .92rem) !important;
+  border-radius: 15px !important;
+}
+
+.metric-strip,
+.hero-status-panel {
+  max-width: min(100%, 660px) !important;
+}
+
+.metric-strip {
+  gap: 8px !important;
+}
+
+.metric-strip div {
+  min-height: 60px !important;
+  padding: 10px 12px !important;
+  background:
+    linear-gradient(90deg, var(--mp-line-soft) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255,255,255,.04) 1px, transparent 1px),
+    linear-gradient(145deg, rgba(8, 14, 27, .82), rgba(255,255,255,.045)) !important;
+  background-size: 28px 28px, 28px 28px, 100% 100% !important;
+}
+
+.hero-status-panel {
+  padding: 14px !important;
+  background:
+    linear-gradient(90deg, rgba(94,216,255,.07) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255,139,43,.045) 1px, transparent 1px),
+    linear-gradient(145deg, rgba(8, 14, 27, .86), rgba(255,255,255,.052)) !important;
+  background-size: 30px 30px, 30px 30px, 100% 100% !important;
+}
+
+.logo-stage {
+  min-height: clamp(290px, 31vw, 460px) !important;
+}
+
+.logo-glass {
+  width: min(94%, 470px) !important;
+  border-radius: 30px !important;
+}
+
+.phase-logo-image,
+.logo-glass img {
+  width: min(39%, 196px) !important;
+}
+
+.logo-stage::after {
+  bottom: 18px !important;
+  font-size: clamp(.98rem, 1.75vw, 1.42rem) !important;
+  opacity: .74 !important;
+}
+
+.system-card {
+  transform: scale(.84) !important;
+}
+
+.system-card-one {
+  left: 4% !important;
+  top: 18% !important;
+}
+
+.system-card-two {
+  right: 4% !important;
+  bottom: 16% !important;
+}
+
+.terminal-section,
+.features,
+.roadmap,
+.founder,
+.support-grid,
+.footer {
+  margin-top: clamp(34px, 5vw, 66px) !important;
+}
+
+.feature-card,
+.roadmap,
+.founder,
+.support-card,
+.footer,
+.terminal,
+.bryforge-card,
+.timeline li {
+  background:
+    linear-gradient(90deg, rgba(94,216,255,.055) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255,139,43,.038) 1px, transparent 1px),
+    linear-gradient(145deg, rgba(8, 14, 27, .84), rgba(255,255,255,.045)) !important;
+  background-size: 38px 38px, 38px 38px, 100% 100% !important;
+}
+
+.section-heading h2,
+.founder-copy h2,
+.support-card h2 {
+  line-height: 1.02 !important;
+}
+
+@media (max-height: 780px) and (min-width: 900px) {
+  .status-callout__link { min-height: 36px !important; padding-top: 8px !important; padding-bottom: 8px !important; }
+  .nav { min-height: 54px !important; }
+  .hero {
+    padding-top: 20px !important;
+    padding-bottom: 20px !important;
+    gap: 20px !important;
+  }
+  .hero h1 {
+    font-size: clamp(2.35rem, min(5.05vw, 7.45vh), 5rem) !important;
+    line-height: .98 !important;
+  }
+  .hero-copy { gap: 10px !important; }
+  .hero-text { font-size: .92rem !important; line-height: 1.42 !important; }
+  .button { min-height: 34px !important; padding: 8px 12px !important; font-size: .86rem !important; }
+  .hero-command { padding: 8px 11px !important; }
+  .metric-strip div { min-height: 52px !important; }
+  .hero-status-panel { padding: 12px !important; }
+  .logo-stage { min-height: 260px !important; }
+}
+
+@media (max-width: 1080px) {
+  .hero h1 {
+    font-size: clamp(2.45rem, min(6.05vw, 7.8vh), 5.25rem) !important;
+  }
+}
+
+@media (max-width: 960px) {
+  .hero {
+    grid-template-columns: 1fr !important;
+  }
+  .logo-stage {
+    min-height: 300px !important;
+  }
+  .hero h1 {
+    font-size: clamp(2.7rem, 11.4vw, 4.9rem) !important;
+  }
+}
+
+@media (max-width: 680px) {
+  .hero {
+    padding: 20px 15px 26px !important;
+  }
+  .hero h1 {
+    font-size: clamp(2.38rem, 12.8vw, 4rem) !important;
+  }
+  .logo-stage {
+    min-height: 248px !important;
+  }
+  .metric-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
