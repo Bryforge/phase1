@@ -272,7 +272,7 @@ Current verified public asset paths:
 | Asset | Path |
 | --- | --- |
 | Public Phase1/Base1/Fyr banner | [`assets/phase1_base_fyr_banner1.png`](assets/phase1_base_fyr_banner1.png) |
-| Phase1 boot splash PNG | [`assets/phase1-splash.png`](assets/phase1-splash.png) |
+| Phase1 word mark PNG | [`assets/phase1_word.png`](assets/phase1_word.png) |
 | Fyr symbol | [`assets/fyr_symbol.png`](assets/fyr_symbol.png) |
 | Fyr word mark | [`assets/fyr_word.png`](assets/fyr_word.png) |
 
