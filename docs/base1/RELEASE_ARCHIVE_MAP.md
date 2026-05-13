@@ -1,19 +1,23 @@
-# Base1 root compatibility map
+# Base1 release archive map
 
-Status: active compatibility map
-Scope: Base1 files that still exist at the repository root for public compatibility
+Status: active release archive map
+Scope: Base1 release/checkpoint notes archived under `docs/base1/releases/` for public compatibility and organized browsing
 
 ## Purpose
 
-Some Base1 checkpoint notes are now mirrored under `docs/base1/releases/` for cleaner navigation. The original root-level files remain available for existing links, bookmarks, branch notes, and release references.
+Base1 checkpoint and release notes are archived under `docs/base1/releases/` for cleaner navigation and stable public links.
+
+Older root-level checkpoint filenames remain documented here as historical compatibility names, but the repository no longer requires those files to exist at the repository root.
 
 ## Compatibility rule
 
-Root-level checkpoint notes are compatibility paths. The organized docs tree is the preferred navigation path, but the root files remain recoverable and visible.
+Use the organized archive path for current links, docs, validation, and release references.
 
-## Root checkpoint notes
+The former root filenames remain visible in this map so old references can be resolved manually to their archived paths.
 
-| Root path | Organized mirror |
+## Archived checkpoint notes
+
+| Former root path | Archived path |
 | --- | --- |
 | `RELEASE_BASE1_LIBREBOOT_READONLY_V1.md` | `docs/base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1.md` |
 | `RELEASE_BASE1_LIBREBOOT_READONLY_V1_1.md` | `docs/base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1_1.md` |
@@ -26,7 +30,7 @@ Root-level checkpoint notes are compatibility paths. The organized docs tree is 
 
 Use `docs/base1/releases/README.md` for organized browsing.
 
-Use the root files when following older links, release notes, or checkpoint references.
+Use this map when following older release-note names, branch notes, or checkpoint references.
 
 ## Integrity check
 
@@ -36,7 +40,7 @@ Run:
 sh scripts/base1-doc-integrity.sh
 ```
 
-The integrity gate should verify that both compatibility paths and organized mirrors remain present.
+The integrity gate verifies that the release archive map and organized release archive files are present.
 
 ## Non-claims
 
