@@ -1,0 +1,186 @@
+/* Phase1 spectrum solidity pass.
+   Softens the resting/static glow so it does not hurt the eyes, adds a more solid
+   dark interior, and keeps the animated rainbow alive primarily in the rim. */
+
+:root {
+  --pss-dark-a: rgba(4, 7, 16, .96);
+  --pss-dark-b: rgba(10, 14, 28, .94);
+  --pss-edge-soft: .46;
+  --pss-edge-hover: .82;
+}
+
+.button,
+.hero-actions a,
+.hero-actions button,
+.roadmap-actions a,
+.nav-links a,
+.status-callout__link,
+.hero-status-panel a,
+.quick-commands button,
+.terminal-form button,
+.footer-links a,
+.status-links a,
+.status-button,
+.terminal button,
+button[type="submit"] {
+  background:
+    linear-gradient(180deg, var(--pss-dark-b), var(--pss-dark-a)) padding-box,
+    var(--phase-spectrum) border-box !important;
+  background-size: 100% 100%, 280% 280% !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.055),
+    0 0 8px rgba(111,247,255,.085),
+    0 0 13px rgba(216,107,255,.070),
+    0 0 18px rgba(255,138,87,.060),
+    inset 0 1px 0 rgba(255,255,255,.12),
+    inset 0 -1px 0 rgba(0,0,0,.38) !important;
+  animation: phase-spectrum-shift-solid 14s ease-in-out infinite !important;
+  filter: saturate(1.02) contrast(1.04) !important;
+}
+
+.button::before,
+.hero-actions a::before,
+.hero-actions button::before,
+.roadmap-actions a::before,
+.nav-links a::before,
+.status-callout__link::before,
+.hero-status-panel a::before,
+.quick-commands button::before,
+.terminal-form button::before,
+.footer-links a::before,
+.status-links a::before,
+.status-button::before,
+.terminal button::before,
+button[type="submit"]::before {
+  inset: -2px !important;
+  opacity: var(--pss-edge-soft) !important;
+  filter: blur(6px) saturate(1.12) !important;
+  animation:
+    phase-spectrum-shift-solid 14s ease-in-out infinite,
+    phase-spectrum-breathe-solid 8s ease-in-out infinite !important;
+}
+
+.button::after,
+.hero-actions a::after,
+.hero-actions button::after,
+.roadmap-actions a::after,
+.nav-links a::after,
+.status-callout__link::after,
+.hero-status-panel a::after,
+.quick-commands button::after,
+.terminal-form button::after,
+.footer-links a::after,
+.status-links a::after,
+.status-button::after,
+.terminal button::after,
+button[type="submit"]::after {
+  opacity: .18 !important;
+  animation: phase-button-sheen-solid 8.8s linear infinite !important;
+}
+
+.button:hover,
+.hero-actions a:hover,
+.hero-actions button:hover,
+.roadmap-actions a:hover,
+.nav-links a:hover,
+.status-callout__link:hover,
+.hero-status-panel a:hover,
+.quick-commands button:hover,
+.terminal-form button:hover,
+.footer-links a:hover,
+.status-links a:hover,
+.status-button:hover,
+.terminal button:hover,
+button[type="submit"]:hover,
+.button:focus-visible,
+.hero-actions a:focus-visible,
+.hero-actions button:focus-visible,
+.roadmap-actions a:focus-visible,
+.nav-links a:focus-visible,
+.status-callout__link:focus-visible,
+.hero-status-panel a:focus-visible,
+.quick-commands button:focus-visible,
+.terminal-form button:focus-visible,
+.footer-links a:focus-visible,
+.status-links a:focus-visible,
+.status-button:focus-visible,
+.terminal button:focus-visible,
+button[type="submit"]:focus-visible {
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.11),
+    0 0 14px rgba(111,247,255,.17),
+    0 0 22px rgba(216,107,255,.15),
+    0 0 32px rgba(255,138,87,.12),
+    inset 0 1px 0 rgba(255,255,255,.18),
+    inset 0 -1px 0 rgba(0,0,0,.35) !important;
+}
+
+.button:hover::before,
+.hero-actions a:hover::before,
+.hero-actions button:hover::before,
+.roadmap-actions a:hover::before,
+.nav-links a:hover::before,
+.status-callout__link:hover::before,
+.hero-status-panel a:hover::before,
+.quick-commands button:hover::before,
+.terminal-form button:hover::before,
+.footer-links a:hover::before,
+.status-links a:hover::before,
+.status-button:hover::before,
+.terminal button:hover::before,
+button[type="submit"]:hover::before,
+.button:focus-visible::before,
+.nav-links a:focus-visible::before,
+.status-callout__link:focus-visible::before {
+  opacity: var(--pss-edge-hover) !important;
+  filter: blur(8px) saturate(1.24) !important;
+}
+
+/* Keep the status callout elegant instead of glowing like a flashlight. */
+.status-callout__link {
+  min-height: 36px !important;
+  background:
+    linear-gradient(180deg, rgba(6,10,22,.92), rgba(4,7,16,.88)) padding-box,
+    var(--phase-spectrum) border-box !important;
+  box-shadow:
+    0 14px 42px rgba(0,0,0,.48),
+    0 0 10px rgba(111,247,255,.08),
+    0 0 14px rgba(255,138,87,.06),
+    inset 0 1px 0 rgba(255,255,255,.13) !important;
+}
+
+/* Nav links should be more solid by default, then come alive on hover. */
+.nav-links a:not(.nav-status-link),
+.footer-links a,
+.status-links a:not(.primary) {
+  background:
+    linear-gradient(180deg, rgba(9,13,27,.88), rgba(4,7,16,.74)) padding-box,
+    linear-gradient(115deg, rgba(255,255,255,.34), rgba(125,247,255,.34), rgba(255,255,255,.24)) border-box !important;
+}
+
+.nav-links a:not(.nav-status-link)::before,
+.footer-links a::before,
+.status-links a:not(.primary)::before {
+  opacity: .26 !important;
+  filter: blur(4px) saturate(1.02) !important;
+}
+
+@keyframes phase-spectrum-shift-solid {
+  0% { background-position: 0% 50%; filter: hue-rotate(0deg) saturate(1.02); }
+  25% { background-position: 46% 50%; filter: hue-rotate(10deg) saturate(1.06); }
+  50% { background-position: 100% 50%; filter: hue-rotate(22deg) saturate(1.10); }
+  75% { background-position: 46% 50%; filter: hue-rotate(10deg) saturate(1.06); }
+  100% { background-position: 0% 50%; filter: hue-rotate(0deg) saturate(1.02); }
+}
+
+@keyframes phase-spectrum-breathe-solid {
+  0%, 100% { opacity: .38; transform: scale(1); }
+  50% { opacity: .58; transform: scale(1.008); }
+}
+
+@keyframes phase-button-sheen-solid {
+  0% { transform: translateX(-125%) skewX(-18deg); opacity: 0; }
+  18% { opacity: .10; }
+  48% { opacity: .16; }
+  100% { transform: translateX(220%) skewX(-18deg); opacity: 0; }
+}
