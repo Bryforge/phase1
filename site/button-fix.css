@@ -1,9 +1,11 @@
 @import url("./final-design.css?v=phase1-final-design-v2");
-@import url("./bryforge-aligned.css?v=phase1-bryforge-aligned-v1");
+@import url("./bryforge-aligned.css?v=phase1-bryforge-aligned-v2");
+@import url("./orange-rainbow-consistency.css?v=phase1-orange-rainbow-v1");
 
 /* Phase1 CSS loader.
    Keep this thin: final-design.css establishes the cleaned Phase1 system,
-   then bryforge-aligned.css applies the Bryforge homepage glow/button language. */
+   bryforge-aligned.css applies the Bryforge homepage glow/button language,
+   and orange-rainbow-consistency.css normalizes the living orange/rainbow accents. */
 
 .logo-stage,
 .logo-stage::before,
