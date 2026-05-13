@@ -291,7 +291,50 @@ function setupTerminalDemo() {
   });
 }
 
+async function setupPublicStatus() {
+  const summary = document.querySelector("[data-status-summary]");
+  const button = document.querySelector("[data-status-button]");
+  const overall = document.querySelector("[data-status-overall]");
+  const detail = document.querySelector("[data-status-detail]");
+  const description = document.querySelector("[data-status-description]");
+
+  if (!summary && !button && !overall && !detail && !description) return;
+
+  try {
+    const response = await fetch("status.json", { cache: "no-store" });
+    if (!response.ok) throw new Error(`status fetch failed: ${response.status}`);
+    const data = await response.json();
+
+    const pct = Number(data.overall_estimated_completion_percent || 0);
+    const repo = (data.projects || []).find((project) =>
+      String(project.name || "").toLowerCase().includes("repository organization")
+    );
+    const repoPct = Number(repo?.estimated_completion_percent || 0);
+    const updated = data.last_updated_utc ? ` · updated ${data.last_updated_utc}` : "";
+
+    if (summary) {
+      summary.textContent = `Live project status · ${pct}% roadmap · Repository organization ${repoPct}% · View details`;
+    }
+    if (button) {
+      button.textContent = `Live status · ${pct}%`;
+    }
+    if (overall) {
+      overall.textContent = `${pct}%`;
+    }
+    if (detail) {
+      detail.textContent = `${pct}% roadmap · repository organization ${repoPct}%`;
+    }
+    if (description) {
+      description.textContent =
+        `Public status marker is live from status.json with repository metrics, estimated project percentages, and non-claim boundaries${updated}.`;
+    }
+  } catch (error) {
+    console.warn("Phase1 public status unavailable:", error);
+  }
+}
+
 resize();
+setupPublicStatus();
 setupNavigation();
 setupReveals();
 setupTerminalDemo();
