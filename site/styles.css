@@ -1208,3 +1208,119 @@ h1,
   font-weight: 900;
   text-decoration: none;
 }
+
+/* Website fit v2: keep the hero fully visible on laptop screens */
+@media (min-width: 981px) {
+  .site-shell {
+    width: min(1180px, calc(100% - 48px));
+    padding-top: 14px;
+  }
+
+  .status-callout {
+    margin: 10px auto 8px;
+  }
+
+  .nav {
+    top: 8px;
+  }
+
+  .hero {
+    min-height: auto;
+    margin-top: 16px;
+    padding: clamp(22px, 4vw, 48px);
+    grid-template-columns: minmax(430px, 0.95fr) minmax(330px, 0.78fr);
+    gap: clamp(18px, 3vw, 42px);
+    align-items: center;
+  }
+
+  h1 {
+    max-width: 680px;
+    font-size: clamp(2.75rem, 5.75vw, 5.35rem);
+    line-height: 0.86;
+    letter-spacing: -0.078em;
+    margin-bottom: 14px;
+  }
+
+  .hero-text {
+    max-width: 620px;
+    font-size: clamp(0.95rem, 1.3vw, 1.08rem);
+    line-height: 1.55;
+  }
+
+  .hero-actions {
+    margin: 20px 0 16px;
+  }
+
+  .hero-command {
+    max-width: 620px;
+  }
+
+  .metric-strip {
+    margin-top: 16px;
+  }
+
+  .metric-strip div {
+    padding: 11px;
+  }
+
+  .logo-stage {
+    min-height: min(48vw, 430px);
+  }
+
+  .logo-glass {
+    width: min(100%, 430px);
+  }
+
+  .hero-status-panel {
+    max-width: 620px;
+    margin-top: 16px;
+    padding: 14px;
+  }
+}
+
+@media (min-width: 1181px) {
+  .hero {
+    grid-template-columns: minmax(470px, 0.98fr) minmax(360px, 0.78fr);
+  }
+
+  h1 {
+    font-size: clamp(3rem, 5.4vw, 5.6rem);
+  }
+
+  .logo-stage {
+    min-height: 470px;
+  }
+
+  .logo-glass {
+    width: min(100%, 465px);
+  }
+}
+
+/* Emergency fit for shorter laptop browser windows */
+@media (min-width: 981px) and (max-height: 850px) {
+  .hero {
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
+
+  h1 {
+    font-size: clamp(2.45rem, 5.1vw, 4.8rem);
+  }
+
+  .hero-text {
+    font-size: 0.96rem;
+  }
+
+  .logo-stage {
+    min-height: 390px;
+  }
+
+  .logo-glass {
+    width: min(100%, 395px);
+  }
+
+  .hero-command,
+  .metric-strip {
+    display: none;
+  }
+}
