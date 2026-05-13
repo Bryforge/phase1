@@ -1,13 +1,19 @@
-/* Interaction hardening for mobile browsers and in-app webviews. */
+/* Phase1 public-site final visual consistency guard.
+   Loads after styles.css. Keep this file focused on interaction safety,
+   official logo routing, and consistent rainbow/glass treatment. */
+
 .nav,
 .hero,
 .hero-copy,
 .hero-actions,
 .founder,
 .founder-copy,
-.sponsor-card,
 .roadmap,
-.footer {
+.footer,
+.status-callout,
+.support-card,
+.bryforge-card,
+.hero-status-panel {
   isolation: isolate;
 }
 
@@ -16,8 +22,9 @@
 .hero-copy,
 .hero-actions,
 .button,
-.coffee-button,
-.roadmap-link {
+.nav-toggle,
+.footer-links a,
+.hero-status-panel a {
   position: relative;
   z-index: 50;
   pointer-events: auto;
@@ -31,6 +38,7 @@
 .orbit::before,
 .orbit::after,
 .phase-logo,
+.phase-logo-image,
 .aurora,
 .scanlines,
 #space {
@@ -38,21 +46,193 @@
 }
 
 .button,
-.coffee-button,
 .nav-links a,
-.roadmap-link {
+.footer-links a,
+.hero-status-panel a {
   cursor: pointer;
   user-select: none;
 }
 
 .button:active,
-.coffee-button:active,
 .nav-links a:active,
-.roadmap-link:active {
+.footer-links a:active,
+.hero-status-panel a:active {
   transform: translateY(1px) scale(0.99);
 }
 
-/* Founder-section cleanup: keep the real Founder profile label and prevent generated duplicates. */
+/* Shared premium glass surface: hero, founder, Bryforge, support, status, roadmap cards. */
+.glass-panel,
+.status-callout__link,
+.feature-card,
+.bryforge-card,
+.support-card,
+.hero-status-panel,
+.metric-strip div,
+.timeline li {
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03)),
+    radial-gradient(circle at 14% 0%, rgba(255, 61, 242, 0.2), transparent 18rem),
+    radial-gradient(circle at 82% 18%, rgba(35, 247, 255, 0.18), transparent 20rem),
+    radial-gradient(circle at 42% 100%, rgba(83, 255, 133, 0.14), transparent 20rem) !important;
+  box-shadow:
+    0 34px 140px rgba(255, 61, 242, 0.17),
+    0 0 92px rgba(35, 247, 255, 0.13),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+  backdrop-filter: blur(24px) saturate(1.3) !important;
+}
+
+.hero,
+.founder,
+.roadmap,
+.support-card,
+.terminal,
+.bryforge-card,
+.hero-status-panel {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before,
+.founder::before,
+.roadmap::before,
+.support-card::before,
+.terminal::before,
+.bryforge-card::before,
+.hero-status-panel::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  pointer-events: none;
+  background:
+    linear-gradient(110deg, transparent 0%, rgba(35, 247, 255, 0.18) 35%, rgba(255, 61, 242, 0.17) 54%, transparent 78%),
+    radial-gradient(circle at 72% 44%, rgba(255, 61, 242, 0.22), transparent 34rem) !important;
+  opacity: 0.95;
+}
+
+.hero::after,
+.founder::after,
+.support-card::after,
+.bryforge-card::after,
+.hero-status-panel::after {
+  content: "";
+  position: absolute;
+  left: -20%;
+  right: -20%;
+  bottom: -70px;
+  height: 125px;
+  pointer-events: none;
+  background: linear-gradient(90deg, var(--red), var(--yellow), var(--green), var(--cyan), var(--magenta));
+  filter: blur(44px);
+  opacity: 0.24;
+  animation: rainbow-shift 7s linear infinite;
+}
+
+.hero-copy,
+.logo-stage,
+.founder-profile,
+.founder-copy,
+.support-card > *,
+.bryforge-card > *,
+.hero-status-panel > *,
+.terminal > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Consistent heading treatment and no clipped descenders. */
+h1,
+.section-heading h2,
+.founder-copy h2,
+.support-card h2,
+.bryforge-card h3 {
+  overflow: visible !important;
+  padding-bottom: 0.12em !important;
+  line-height: 1.04 !important;
+  background: linear-gradient(90deg, #ff4438, #ffe85f, #54ff7a, #29f8ff, #5d85ff, #ff3df2, #ff4438) !important;
+  background-size: 220% 100% !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+  animation: rainbow-shift 7s linear infinite !important;
+}
+
+h1 {
+  line-height: 0.96 !important;
+}
+
+.eyebrow,
+.card-kicker,
+.timeline-status {
+  color: var(--cyan) !important;
+  text-shadow: 0 0 22px rgba(35, 247, 255, 0.72) !important;
+}
+
+/* Official Phase1 hero logo. Hide stale img rendering and draw the known asset cleanly. */
+.logo-glass {
+  position: relative !important;
+  display: grid !important;
+  place-items: center !important;
+  width: min(100%, 520px) !important;
+  aspect-ratio: 1 / 1 !important;
+  padding: clamp(36px, 7vw, 74px) !important;
+  border-radius: 46px !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  background:
+    radial-gradient(circle at 50% 46%, rgba(126, 178, 255, 0.25), transparent 48%),
+    radial-gradient(circle at 20% 28%, rgba(35, 247, 255, 0.19), transparent 36%),
+    radial-gradient(circle at 76% 74%, rgba(255, 61, 242, 0.18), transparent 40%),
+    rgba(2, 4, 10, 0.78) !important;
+  box-shadow:
+    0 0 100px rgba(126, 178, 255, 0.24),
+    0 30px 120px rgba(0, 0, 0, 0.46),
+    inset 0 1px 0 rgba(255, 255, 255, 0.17) !important;
+}
+
+.logo-glass::after {
+  content: "";
+  position: relative;
+  z-index: 4;
+  display: block;
+  width: min(76%, 360px);
+  aspect-ratio: 1 / 1;
+  margin: auto;
+  background: url("../assets/phase1-nobackground.png?v=official-phase1-logo-v5") center / contain no-repeat;
+  filter:
+    drop-shadow(0 0 28px rgba(170, 205, 255, 0.72))
+    drop-shadow(0 0 76px rgba(85, 136, 255, 0.34));
+}
+
+.logo-glass img,
+.phase-logo,
+.phase-logo-image {
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  border: 0 !important;
+}
+
+.logo-stage::before {
+  opacity: 0.92 !important;
+  filter: blur(26px) saturate(1.25) !important;
+}
+
+.system-card {
+  background: rgba(4, 8, 18, 0.82) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 0 42px rgba(35, 247, 255, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+}
+
+.system-card strong,
+.terminal-status {
+  color: var(--green) !important;
+  text-shadow: 0 0 16px rgba(83, 255, 133, 0.72) !important;
+}
+
+/* Founder profile must match the rest of the rainbow glass visual system. */
 .profile-label {
   display: none !important;
 }
@@ -66,86 +246,41 @@
   display: none !important;
 }
 
-/* Keep founder/profile and support cards in the same rainbow glass language as the rest of the site. */
-.founder,
-.bryforge-card,
-.support-card {
+.avatar-ring {
+  background: conic-gradient(var(--red), var(--yellow), var(--green), var(--cyan), var(--blue), var(--magenta), var(--red)) !important;
+  box-shadow: 0 0 48px rgba(35, 247, 255, 0.3), 0 0 82px rgba(255, 61, 242, 0.18) !important;
+}
+
+/* Buttons and status links keep the bright electric sheen. */
+.button-primary,
+.button-coffee,
+.button-status,
+.nav-status-link,
+.status-callout__link {
+  background: linear-gradient(90deg, #ff8a3d, #ff3df2, #23f7ff, #53ff85, #ffe95c, #ff8a3d) !important;
+  background-size: 260% 100% !important;
+  animation: rainbow-shift 5s linear infinite !important;
+  box-shadow: 0 0 42px rgba(35, 247, 255, 0.26), 0 0 70px rgba(255, 61, 242, 0.12) !important;
+}
+
+.nav-status-link,
+.status-callout__link {
+  color: #07101b !important;
+  font-weight: 950 !important;
+}
+
+.button-secondary,
+.button-ghost,
+.support-card-mini span {
+  background: rgba(255, 255, 255, 0.07) !important;
   border-color: rgba(255, 255, 255, 0.18) !important;
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.095), rgba(255, 255, 255, 0.03)),
-    radial-gradient(circle at 18% 0%, rgba(255, 61, 242, 0.18), transparent 16rem),
-    radial-gradient(circle at 78% 22%, rgba(35, 247, 255, 0.15), transparent 18rem),
-    radial-gradient(circle at 42% 100%, rgba(83, 255, 133, 0.12), transparent 18rem) !important;
-  box-shadow: var(--shadow-strong), inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 0 34px rgba(35, 247, 255, 0.08) !important;
 }
 
-.founder-copy h2,
-.bryforge-card h3,
-.support-card h2 {
-  background: linear-gradient(90deg, #ff4438, #ffe85f, #54ff7a, #29f8ff, #5d85ff, #ff3df2, #ff4438) !important;
-  background-size: 220% 100% !important;
-  -webkit-background-clip: text !important;
-  background-clip: text !important;
-  color: transparent !important;
-  animation: rainbow-shift 7s linear infinite !important;
-}
-
-/* Phase1 visual identity: the prompt cursor is intentionally blinking pink/magenta. */
-.terminal-chip .cursor,
-.cursor {
-  background: #ff3df2 !important;
-  box-shadow: 0 0 18px #ff3df2, 0 0 34px rgba(255, 61, 242, 0.72) !important;
-  animation: blink 0.9s steps(2, start) infinite !important;
-}
-
-/* Stop descenders such as the g in Bryforge from being clipped. */
-h1,
-.section-heading h2,
-.founder-copy h2,
-.support-card h2,
-.bryforge-card h3 {
-  overflow: visible !important;
-  padding-bottom: 0.08em !important;
-  line-height: 1.05 !important;
-}
-
-h1 {
-  line-height: 0.94 !important;
-}
-
-/* The hero box uses the standalone Phase1 mark, not the wordmark/splash graphic. */
-.logo-glass {
-  width: min(100%, 520px) !important;
-  aspect-ratio: 1 / 1 !important;
-  padding: clamp(38px, 7vw, 76px) !important;
-  border-radius: 46px !important;
-  background:
-    radial-gradient(circle at 50% 50%, rgba(126, 178, 255, 0.18), transparent 52%),
-    linear-gradient(145deg, rgba(0, 0, 0, 0.92), rgba(6, 10, 22, 0.88)) !important;
-  box-shadow:
-    0 0 90px rgba(126, 178, 255, 0.2),
-    0 30px 120px rgba(0, 0, 0, 0.48),
-    inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
-}
-
-.phase-logo {
-  display: block;
-  width: min(78%, 360px) !important;
-  height: auto !important;
-  aspect-ratio: 1 / 1 !important;
-  content: url("../assets/phase1-nobackground.png?v=official-phase1-logo-v4") !important;
-  object-fit: contain !important;
-  border-radius: 0 !important;
-  mix-blend-mode: normal !important;
-  filter: drop-shadow(0 0 26px rgba(126, 178, 255, 0.58)) drop-shadow(0 0 72px rgba(85, 136, 255, 0.26)) !important;
-}
-
-/* MacBook / compact desktop layout fix: keep the hero from crushing the headline. */
 .hero-copy,
 .logo-stage,
 .nav,
-.nav-links,
-.phase-logo {
+.nav-links {
   min-width: 0;
 }
 
@@ -168,10 +303,6 @@ h1 {
     padding: 12px 14px !important;
   }
 
-  .brand {
-    letter-spacing: 0.14em !important;
-  }
-
   .nav-links {
     gap: 4px !important;
     font-size: 0.86rem !important;
@@ -190,7 +321,6 @@ h1 {
 
   h1 {
     font-size: clamp(3.35rem, 5.05vw, 4.55rem) !important;
-    line-height: 0.98 !important;
     letter-spacing: -0.055em !important;
     text-wrap: balance;
   }
@@ -199,16 +329,6 @@ h1 {
     max-width: 600px !important;
     font-size: 1.04rem !important;
     line-height: 1.64 !important;
-  }
-
-  .hero-actions {
-    gap: 12px !important;
-    margin: 24px 0 18px !important;
-  }
-
-  .button {
-    min-height: 44px !important;
-    padding-inline: 16px !important;
   }
 
   .logo-stage {
@@ -220,12 +340,8 @@ h1 {
     border-radius: 36px !important;
   }
 
-  .phase-logo {
-    width: min(72%, 320px) !important;
-  }
-
-  .system-card {
-    transform: scale(0.9) !important;
+  .logo-glass::after {
+    width: min(74%, 320px) !important;
   }
 }
 
@@ -233,15 +349,6 @@ h1 {
   .hero {
     grid-template-columns: 1fr !important;
     align-items: start !important;
-  }
-
-  .hero-copy {
-    max-width: 860px !important;
-  }
-
-  h1 {
-    font-size: clamp(3.1rem, 7.2vw, 5rem) !important;
-    line-height: 1 !important;
   }
 
   .logo-stage {
@@ -252,17 +359,8 @@ h1 {
   .logo-glass {
     width: min(78vw, 520px) !important;
   }
-
-  .system-card-one {
-    left: 6% !important;
-  }
-
-  .system-card-two {
-    right: 6% !important;
-  }
 }
 
-/* Mobile readability: keep the design, but stop headings from fragmenting. */
 @media (max-width: 860px) {
   h1,
   .section-heading h2,
@@ -293,24 +391,6 @@ h1 {
     letter-spacing: -0.025em !important;
   }
 
-  .eyebrow,
-  .card-kicker,
-  .timeline-status,
-  .founder-copy h2::before {
-    letter-spacing: 0.12em !important;
-  }
-
-  .hero-text,
-  .section-heading p,
-  .feature-card p,
-  .roadmap p,
-  .founder p,
-  .support-card p,
-  .footer p {
-    font-size: 0.98rem;
-    line-height: 1.62 !important;
-  }
-
   .feature-card,
   .bryforge-card,
   .support-card,
@@ -323,8 +403,8 @@ h1 {
     padding: clamp(34px, 10vw, 58px) !important;
   }
 
-  .phase-logo {
-    width: min(70%, 280px) !important;
+  .logo-glass::after {
+    width: min(72%, 280px) !important;
   }
 }
 
@@ -341,83 +421,4 @@ h1 {
     font-size: clamp(1.9rem, 10vw, 2.7rem) !important;
     letter-spacing: -0.032em !important;
   }
-
-  .section-heading h2,
-  .support-card h2 {
-    font-size: clamp(1.55rem, 7.5vw, 2.2rem) !important;
-  }
-
-  .founder-copy h2 {
-    font-size: clamp(1.45rem, 7vw, 2.05rem) !important;
-  }
-
-  .hero-actions {
-    gap: 10px !important;
-  }
 }
-
-/* official Phase1 logo and rainbow-glass restoration v4 */
-.glass-panel,
-.status-callout__link,
-.feature-card,
-.bryforge-card,
-.support-card,
-.hero-status-panel,
-.metric-strip div,
-.timeline li {
-  border-color: rgba(255,255,255,.22) !important;
-  background:
-    linear-gradient(145deg, rgba(255,255,255,.11), rgba(255,255,255,.028)),
-    radial-gradient(circle at 16% 0%, rgba(255,61,242,.19), transparent 18rem),
-    radial-gradient(circle at 82% 20%, rgba(35,247,255,.17), transparent 20rem),
-    radial-gradient(circle at 42% 100%, rgba(83,255,133,.13), transparent 20rem) !important;
-  box-shadow:
-    0 34px 140px rgba(255,61,242,.17),
-    0 0 92px rgba(35,247,255,.13),
-    inset 0 1px 0 rgba(255,255,255,.17) !important;
-  backdrop-filter: blur(24px) saturate(1.28) !important;
-}
-
-.logo-glass {
-  position: relative !important;
-  overflow: hidden !important;
-  display: grid !important;
-  place-items: center !important;
-  background:
-    radial-gradient(circle at 50% 46%, rgba(126,178,255,.24), transparent 48%),
-    radial-gradient(circle at 20% 28%, rgba(35,247,255,.18), transparent 36%),
-    radial-gradient(circle at 76% 74%, rgba(255,61,242,.17), transparent 40%),
-    rgba(2,4,10,.78) !important;
-}
-
-.logo-glass::after {
-  content: "" !important;
-  position: relative !important;
-  z-index: 4 !important;
-  display: block !important;
-  width: min(76%, 360px) !important;
-  aspect-ratio: 1 / 1 !important;
-  background: url("../assets/phase1-nobackground.png?v=official-phase1-logo-v4") center / contain no-repeat !important;
-  filter:
-    drop-shadow(0 0 28px rgba(170,205,255,.72))
-    drop-shadow(0 0 76px rgba(85,136,255,.34)) !important;
-}
-
-.logo-glass img,
-.phase-logo,
-.phase-logo-image {
-  opacity: 0 !important;
-  width: 0 !important;
-  height: 0 !important;
-  border: 0 !important;
-}
-
-h1,
-.section-heading h2,
-.founder-copy h2,
-.support-card h2,
-.bryforge-card h3 {
-  overflow: visible !important;
-  padding-bottom: .12em !important;
-}
-
