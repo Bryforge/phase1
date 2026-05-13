@@ -28,10 +28,12 @@
     main { width: min(1080px, calc(100% - 32px)); margin: 0 auto; padding: 40px 0 64px; }
     a { color: var(--cyan); }
     .hero, .card {
+      position: relative;
       border: 1px solid var(--line);
       border-radius: 20px;
       background: color-mix(in srgb, var(--card) 88%, transparent);
       box-shadow: 0 0 36px rgba(0, 216, 255, 0.08);
+      overflow: hidden;
     }
     .hero { padding: 28px; margin-bottom: 18px; }
     h1 { margin: 0 0 10px; font-size: clamp(2rem, 5vw, 4rem); letter-spacing: -0.06em; }
@@ -48,6 +50,8 @@
     .warn { border-color: color-mix(in srgb, var(--orange) 45%, var(--line)); }
     footer { margin-top: 24px; color: var(--muted); font-size: 0.9rem; }
   </style>
+  <link rel="stylesheet" href="./site/phase1-rainbow-space.css?v=phase1-rainbow-space-v1">
+  <link rel="stylesheet" href="./phase1-rainbow-space.css?v=phase1-rainbow-space-v1">
 </head>
 <body>
   <main>
