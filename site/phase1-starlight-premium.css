@@ -1,0 +1,219 @@
+/* Phase1 starlight premium pass.
+   Builds on the accepted starlight direction with a cleaner premium finish:
+   - deeper black background
+   - more dimensional hero/status panels
+   - slower, softer glow
+   - consistent glass treatment across homepage and status page
+   - no matrix-grid background return */
+
+:root {
+  --sp-black: #010208;
+  --sp-panel: rgba(5, 9, 20, .84);
+  --sp-panel-strong: rgba(5, 9, 20, .93);
+  --sp-line: rgba(235, 247, 255, .18);
+  --sp-text: #f9fcff;
+  --sp-muted: #cbd8ea;
+  --sp-cyan: #7df7ff;
+  --sp-blue: #50c8ff;
+  --sp-violet: #9c7dff;
+  --sp-pink: #ff6fec;
+  --sp-orange: #ff8d2f;
+  --sp-gold: #ffd76c;
+  --sp-green: #85ff9f;
+}
+
+body {
+  color: var(--sp-text) !important;
+  background:
+    radial-gradient(circle at 14% 10%, rgba(80, 200, 255, .15), transparent 24rem),
+    radial-gradient(circle at 86% 16%, rgba(255, 141, 47, .12), transparent 28rem),
+    radial-gradient(circle at 48% 108%, rgba(156, 125, 255, .12), transparent 34rem),
+    linear-gradient(180deg, #010208 0%, #020511 44%, #010208 100%) !important;
+}
+
+/* No grid. Only soft ambient glow. */
+body::before {
+  background:
+    radial-gradient(circle at 22% 22%, rgba(125,247,255,.11), transparent 27rem),
+    radial-gradient(circle at 78% 30%, rgba(255,141,47,.09), transparent 31rem),
+    radial-gradient(circle at 50% 74%, rgba(156,125,255,.075), transparent 32rem) !important;
+  opacity: .46 !important;
+  animation: sp-ambient-breathe 34s ease-in-out infinite alternate !important;
+}
+
+.phase-starfield {
+  opacity: .95 !important;
+}
+
+.phase-starfield::before {
+  filter: drop-shadow(0 0 7px rgba(125,247,255,.40)) drop-shadow(0 0 10px rgba(255,141,47,.20)) !important;
+  animation: sl-star-drift-a 74s linear infinite, sp-star-pulse 10s ease-in-out infinite !important;
+}
+
+.phase-starfield::after {
+  opacity: .68 !important;
+  animation: sl-star-drift-b 94s linear infinite reverse, sp-star-pulse-soft 14s ease-in-out infinite !important;
+}
+
+.phase-starfield__drift {
+  opacity: .60 !important;
+  animation: sl-star-drift-c 118s linear infinite, sp-star-pulse-soft 17s ease-in-out infinite !important;
+}
+
+.hero,
+.status-hero {
+  border-radius: clamp(28px, 3.4vw, 42px) !important;
+  border-color: rgba(235,247,255,.20) !important;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(125,247,255,.10), transparent 24rem),
+    radial-gradient(circle at 85% 28%, rgba(255,141,47,.08), transparent 26rem),
+    linear-gradient(145deg, rgba(6, 10, 22, .91), rgba(255,255,255,.052)) !important;
+  box-shadow:
+    0 34px 120px rgba(0,0,0,.66),
+    0 0 48px rgba(125,247,255,.105),
+    0 0 52px rgba(255,141,47,.075),
+    inset 0 1px 0 rgba(255,255,255,.13) !important;
+}
+
+.hero::before,
+.status-hero::before {
+  opacity: .16 !important;
+}
+
+.hero::after,
+.status-hero::after,
+.feature-card::after,
+.terminal::after,
+.roadmap::after,
+.founder::after,
+.support-card::after,
+.status-card::after {
+  animation-duration: 24s !important;
+  opacity: .46 !important;
+}
+
+.nav,
+.status-nav,
+.status-callout__link,
+.feature-card,
+.roadmap,
+.founder,
+.support-card,
+.terminal,
+.footer,
+.status-card,
+.status-metrics,
+.status-footer,
+.hero-status-panel,
+.metric-strip div,
+.bryforge-card,
+.timeline li,
+.metric {
+  background:
+    radial-gradient(circle at 20% 12%, rgba(125,247,255,.065), transparent 16rem),
+    radial-gradient(circle at 84% 22%, rgba(255,141,47,.052), transparent 18rem),
+    linear-gradient(145deg, rgba(6, 10, 22, .84), rgba(255,255,255,.040)) !important;
+  border-color: rgba(235,247,255,.16) !important;
+  box-shadow:
+    0 26px 90px rgba(0,0,0,.58),
+    0 0 30px rgba(125,247,255,.075),
+    0 0 34px rgba(255,141,47,.055),
+    inset 0 1px 0 rgba(255,255,255,.105) !important;
+}
+
+.hero h1,
+.status-hero h1,
+.section-heading h2,
+.founder-copy h2,
+.support-card h2,
+.status-card h2 {
+  text-shadow: 0 0 18px rgba(125,247,255,.10), 0 0 20px rgba(255,141,47,.075) !important;
+}
+
+.hero-text,
+.section-heading p,
+.feature-card p,
+.founder-copy p,
+.support-card p,
+.hero-status-panel p,
+.timeline p,
+.small,
+.meta {
+  color: var(--sp-muted) !important;
+}
+
+.button,
+.nav-links a,
+.status-callout__link,
+.hero-status-panel a,
+.quick-commands button,
+.terminal-form button,
+.footer-links a,
+.status-links a,
+.status-button {
+  color: #fff !important;
+  transition: transform .22s ease, box-shadow .22s ease, filter .22s ease !important;
+}
+
+.button::before,
+.nav-links a::before,
+.status-callout__link::before,
+.hero-status-panel a::before,
+.quick-commands button::before,
+.terminal-form button::before,
+.footer-links a::before,
+.status-links a::before,
+.status-button::before {
+  opacity: .58 !important;
+  filter: blur(5px) !important;
+}
+
+.button:hover::before,
+.nav-links a:hover::before,
+.status-callout__link:hover::before,
+.hero-status-panel a:hover::before,
+.quick-commands button:hover::before,
+.terminal-form button:hover::before,
+.footer-links a:hover::before,
+.status-links a:hover::before,
+.status-button:hover::before {
+  opacity: .82 !important;
+  filter: blur(6px) !important;
+}
+
+.logo-glass {
+  background:
+    radial-gradient(circle at 24% 42%, rgba(125,247,255,.16), transparent 36%),
+    radial-gradient(circle at 76% 52%, rgba(255,141,47,.15), transparent 36%),
+    linear-gradient(145deg, rgba(3,6,15,.94), rgba(255,255,255,.050)) !important;
+  box-shadow:
+    0 0 0 1px rgba(235,247,255,.16),
+    0 0 54px rgba(125,247,255,.16),
+    0 0 56px rgba(255,141,47,.11),
+    inset 0 0 58px rgba(255,255,255,.045) !important;
+}
+
+.phase-logo-image,
+.logo-glass img {
+  filter: saturate(1.12) contrast(1.08) drop-shadow(0 0 18px rgba(255,255,255,.18)) drop-shadow(0 0 32px rgba(125,247,255,.18)) drop-shadow(0 0 34px rgba(255,141,47,.11)) !important;
+}
+
+@media (max-width: 680px) {
+  .phase-starfield { opacity: .78 !important; }
+  .hero, .status-hero { border-radius: 24px !important; }
+}
+
+@keyframes sp-ambient-breathe {
+  0% { transform: translate3d(0,0,0) scale(1); opacity: .38; }
+  100% { transform: translate3d(1%, -1.2%, 0) scale(1.035); opacity: .52; }
+}
+
+@keyframes sp-star-pulse {
+  0%, 100% { opacity: .58; }
+  50% { opacity: .96; }
+}
+
+@keyframes sp-star-pulse-soft {
+  0%, 100% { opacity: .38; }
+  50% { opacity: .78; }
+}
