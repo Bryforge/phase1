@@ -50,19 +50,20 @@ jobs:
           matrix = 'phase1-matrix-fit-v1'
           polish = 'phase1-matrix-polish-v1'
           readability = 'phase1-matrix-readability-v1'
+          star = 'phase1-star-edge-polish-v1'
           previous = [
               'phase1-nobackground-v2', 'phase1-superb-overhaul-v1', 'phase1-final-design-v1',
               'phase1-bryforge-aligned-v1', 'phase1-orange-rainbow-v1', 'phase1-polish-77-v1',
               'phase1-orange-spectrum-v1', 'phase1-orange-premium-v1', 'phase1-orange-elite-v1',
               'phase1-rainbow-space-v1', 'phase1-rainbow-space-v2', 'phase1-rainbow-space-v3',
               'phase1-rainbow-space-v4', 'phase1-visible-fix-v1', 'phase1-render-fix-v1',
-              'phase1-matrix-fit-v1', 'phase1-matrix-polish-v1'
+              'phase1-matrix-fit-v1', 'phase1-matrix-polish-v1', 'phase1-matrix-readability-v1'
           ]
           for old in previous:
-              s = s.replace(f'styles.css?v={old}', f'styles.css?v={readability}')
-              s = s.replace(f'button-fix.css?v={old}', f'button-fix.css?v={readability}')
-              s = s.replace(f'site.js?v={old}', f'site.js?v={readability}')
-              s = s.replace(f'button-fix.js?v={old}', f'button-fix.js?v={readability}')
+              s = s.replace(f'styles.css?v={old}', f'styles.css?v={star}')
+              s = s.replace(f'button-fix.css?v={old}', f'button-fix.css?v={star}')
+              s = s.replace(f'site.js?v={old}', f'site.js?v={star}')
+              s = s.replace(f'button-fix.js?v={old}', f'button-fix.js?v={star}')
               s = s.replace(f'official-phase1-logo-{old.replace("phase1-", "")}', 'official-phase1-logo-banner-overhaul-v1')
           for css in [
               f'<link rel="stylesheet" href="./site/phase1-banner-overhaul.css?v={banner}">',
@@ -70,6 +71,7 @@ jobs:
               f'<link rel="stylesheet" href="./site/phase1-matrix-fit.css?v={matrix}">',
               f'<link rel="stylesheet" href="./site/phase1-matrix-polish.css?v={polish}">',
               f'<link rel="stylesheet" href="./site/phase1-matrix-readability.css?v={readability}">',
+              f'<link rel="stylesheet" href="./site/phase1-star-edge-polish.css?v={star}">',
           ]:
               if css not in s:
                   s = s.replace('</head>', f'  {css}\n</head>')
@@ -95,12 +97,14 @@ jobs:
           test -f _site/site/phase1-matrix-fit.css
           test -f _site/site/phase1-matrix-polish.css
           test -f _site/site/phase1-matrix-readability.css
+          test -f _site/site/phase1-star-edge-polish.css
           grep -q 'phase1-banner-overhaul.css?v=phase1-banner-overhaul-v1' _site/index.html
           grep -q 'phase1-structure-recovery.css?v=phase1-structure-recovery-v1' _site/index.html
           grep -q 'phase1-matrix-fit.css?v=phase1-matrix-fit-v1' _site/index.html
           grep -q 'phase1-matrix-polish.css?v=phase1-matrix-polish-v1' _site/index.html
           grep -q 'phase1-matrix-readability.css?v=phase1-matrix-readability-v1' _site/index.html
-          grep -q 'button-fix.css?v=phase1-matrix-readability-v1' _site/index.html
+          grep -q 'phase1-star-edge-polish.css?v=phase1-star-edge-polish-v1' _site/index.html
+          grep -q 'button-fix.css?v=phase1-star-edge-polish-v1' _site/index.html
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
