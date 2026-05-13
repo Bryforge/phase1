@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Phase1 Browser + Network Safety // Bryforge Docs</title>
+  <meta name="description" content="Phase1 browser and network safety guide: guarded browsing, supported schemes, active content boundaries, loopback behavior, network visibility, command workflow, and non-claims.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="theme-color" content="#050711">
+  <link rel="canonical" href="https://bryforge.github.io/phase1/wiki/browser.html">
+  <meta property="og:title" content="Phase1 Browser + Network Safety // Bryforge Docs">
+  <meta property="og:description" content="Guarded browser, network visibility, supported schemes, active content boundaries, and non-claims for Phase1.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://bryforge.github.io/phase1/wiki/browser.html">
+  <meta property="og:image" content="https://bryforge.github.io/phase1/assets/phase1-nobackground.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Phase1 Browser + Network Safety">
+  <meta name="twitter:description" content="Guarded browser and network safety model for Phase1.">
+  <meta name="twitter:image" content="https://bryforge.github.io/phase1/assets/phase1-nobackground.png">
+  <link rel="stylesheet" href="./docs.css?v=phase1-wiki-browser-v1">
+  <link rel="stylesheet" href="../site/phase1-eye-candy-boost.css?v=phase1-eye-candy-boost-v1">
+  <link rel="stylesheet" href="../site/phase1-starlight-motion.css?v=phase1-starlight-motion-v1">
+  <link rel="stylesheet" href="../site/phase1-starlight-premium.css?v=phase1-starlight-premium-v1">
+  <link rel="stylesheet" href="../site/phase1-starlight-depth.css?v=phase1-starlight-depth-v1">
+  <link rel="stylesheet" href="../site/phase1-spectrum-buttons.css?v=phase1-spectrum-buttons-v1">
+  <link rel="stylesheet" href="../site/phase1-spectrum-solid.css?v=phase1-spectrum-solid-v1">
+  <link rel="stylesheet" href="../site/phase1-public-pages-align.css?v=phase1-public-pages-align-v1">
+  <link rel="stylesheet" href="../site/phase1-public-pages-refine.css?v=phase1-public-pages-refine-v1">
+</head>
+<body>
+  <div class="phase-starfield" aria-hidden="true"><span class="phase-starfield__drift"></span></div>
+  <canvas id="docs-space" aria-hidden="true"></canvas>
+  <div class="docs-aura docs-aura-a" aria-hidden="true"></div>
+  <div class="docs-aura docs-aura-b" aria-hidden="true"></div>
+
+  <div class="docs-shell">
+    <aside class="docs-sidebar" aria-label="Phase1 browser safety navigation">
+      <a class="docs-brand" href="../">
+        <span class="brand-dot"></span>
+        <span>PHASE1</span>
+      </a>
+      <p class="sidebar-label">Browser safety</p>
+      <nav>
+        <a href="./">Wiki Hub</a>
+        <a href="commands.html">Command Reference</a>
+        <a href="security.html">Security Model</a>
+        <a href="storage.html">Storage + VFS</a>
+        <a href="runtime.html">Runtime Roadmap</a>
+        <a href="../status.html">Status</a>
+        <a href="#model">Browser Model</a>
+        <a href="#schemes">Schemes</a>
+        <a href="#active-content">Active Content</a>
+        <a href="#loopback">Loopback</a>
+        <a href="#commands">Command Flow</a>
+        <a href="#visibility">Visibility</a>
+        <a href="#checklist">Checklist</a>
+        <a href="#boundaries">Boundaries</a>
+      </nav>
+      <a class="sidebar-button" href="https://github.com/Bryforge/phase1" target="_blank" rel="noopener noreferrer">Open GitHub</a>
+    </aside>
+
+    <main class="docs-main">
+      <section class="docs-hero panel" id="top">
+        <div>
+          <p class="eyebrow">guarded browsing · network visibility · explicit boundaries</p>
+          <h1>Browser + Network Safety</h1>
+          <p class="hero-text">
+            Phase1 browser workflows are meant to be terminal-first and inspectable. The browser should help operators view and reason about content without becoming a hidden, full-trust web runtime.
+          </p>
+          <div class="search-wrap" role="search">
+            <label for="docs-search">Search browser docs</label>
+            <input id="docs-search" type="search" placeholder="Search browser, URL, schemes, HTML, network, loopback..." autocomplete="off">
+          </div>
+        </div>
+        <img src="../assets/phase1-nobackground.png" alt="Phase1 logo" class="hero-logo">
+      </section>
+
+      <section class="quick-links" aria-label="Browser safety quick links">
+        <a class="quick-card" href="#model" data-search="browser model guarded terminal first">
+          <span>01</span><strong>Model</strong><small>How it should work.</small>
+        </a>
+        <a class="quick-card" href="#schemes" data-search="scheme http https file javascript blocked">
+          <span>02</span><strong>Schemes</strong><small>Allowed boundaries.</small>
+        </a>
+        <a class="quick-card" href="#active-content" data-search="active content scripts stripped safe">
+          <span>03</span><strong>Content</strong><small>Scripts and stripping.</small>
+        </a>
+        <a class="quick-card" href="#commands" data-search="browse html headers commands">
+          <span>04</span><strong>Commands</strong><small>Operator flow.</small>
+        </a>
+      </section>
+
+      <section class="doc-section panel" id="model" data-search="browser model terminal first guarded content inspectable visible operator">
+        <p class="eyebrow">browser model</p>
+        <h2>A terminal-first browser should be inspectable.</h2>
+        <p>The Phase1 browser idea is not a normal browser replacement. It is a guarded inspection surface for operators. It should show what was requested, what was returned, and what was simplified, stripped, or blocked.</p>
+        <div class="card-grid">
+          <article><h3>Terminal-first</h3><p>Content should be viewable through command output and searchable text.</p></article>
+          <article><h3>Guarded by default</h3><p>Network behavior should stay behind clear safety and trust boundaries.</p></article>
+          <article><h3>No hidden runtime</h3><p>The browser should not silently execute active web content like a full browser.</p></article>
+        </div>
+      </section>
+
+      <section class="doc-section panel" id="schemes" data-search="schemes http https file data javascript blocked url scheme safety">
+        <p class="eyebrow">scheme boundaries</p>
+        <h2>URL schemes need explicit rules.</h2>
+        <p>Browser docs should explain which schemes are supported, which are blocked, and why. This prevents confusion when a URL behaves differently from a full desktop browser.</p>
+        <div class="command-grid">
+          <article><kbd>https://</kbd><p>Expected primary public web scheme when network access is available.</p></article>
+          <article><kbd>http://</kbd><p>Useful for local or explicit non-TLS test workflows, with clear warnings.</p></article>
+          <article><kbd>file://</kbd><p>Should be guarded carefully because it can imply host filesystem access.</p></article>
+          <article><kbd>javascript:</kbd><p>Should not be treated like a normal clickable browser script path.</p></article>
+        </div>
+      </section>
+
+      <section class="doc-section panel" id="active-content" data-search="active content scripts css html stripped sanitized safe mode browser">
+        <p class="eyebrow">active content</p>
+        <h2>Active content should be stripped, blocked, or clearly labeled.</h2>
+        <p>If Phase1 renders or extracts web content, users should know whether scripts were removed, styles were simplified, forms were disabled, and media was ignored. The safest documentation posture is to assume simplified inspection unless a build explicitly says otherwise.</p>
+        <ul class="clean-list">
+          <li>Do not silently run scripts from arbitrary pages.</li>
+          <li>Label stripped or simplified HTML output clearly.</li>
+          <li>Do not ask users for credentials through the browser workflow.</li>
+          <li>Keep page inspection text-first and auditable.</li>
+        </ul>
+      </section>
+
+      <section class="doc-section panel" id="loopback" data-search="loopback localhost local server 127.0.0.1 testing fallback browser">
+        <p class="eyebrow">loopback + local testing</p>
+        <h2>Local browsing is useful, but it is still a boundary.</h2>
+        <p>Loopback workflows are valuable for testing local docs, local development servers, and generated output. They should still be documented as a boundary because local services can expose sensitive information or trigger host behavior.</p>
+        <div class="card-grid">
+          <article><h3>Local docs</h3><p>Useful for previewing generated site and docs pages.</p></article>
+          <article><h3>Development servers</h3><p>Helpful for testing, but should be obvious when local network access is involved.</p></article>
+          <article><h3>Host awareness</h3><p>Localhost is still the host environment, not the virtual filesystem.</p></article>
+        </div>
+      </section>
+
+      <section class="doc-section panel" id="commands" data-search="commands browse html headers fetch view source search text">
+        <p class="eyebrow">command flow</p>
+        <h2>Browser commands should produce inspectable output.</h2>
+        <p>Exact commands can vary by build. The command reference remains the main map, but browser workflows should follow this style: request, inspect metadata, inspect text, then decide whether to save or discard output.</p>
+        <div class="command-grid">
+          <article><kbd>browse</kbd><p>Request a page through the guarded browser path.</p></article>
+          <article><kbd>headers</kbd><p>Inspect status, content type, redirect, and cache metadata where available.</p></article>
+          <article><kbd>html</kbd><p>Inspect simplified HTML or extracted text when supported.</p></article>
+          <article><kbd>save</kbd><p>Save output only when the storage boundary is clear.</p></article>
+        </div>
+        <p><a class="coffee-link" href="commands.html#browser-network">Open browser command reference →</a></p>
+      </section>
+
+      <section class="doc-section panel" id="visibility" data-search="visibility audit network log status metadata browser output">
+        <p class="eyebrow">visibility</p>
+        <h2>Network behavior should leave a visible trail.</h2>
+        <p>When network access is part of a workflow, Phase1 should make the request visible. Useful details include URL, scheme, redirect, status, content type, output location, and whether content was stripped or simplified.</p>
+        <div class="command-grid">
+          <article><kbd>url</kbd><p>The requested URL should be visible in output or audit notes.</p></article>
+          <article><kbd>status</kbd><p>HTTP status and failure states should be easy to read.</p></article>
+          <article><kbd>content-type</kbd><p>Operators should know if the result was HTML, text, JSON, or something else.</p></article>
+          <article><kbd>output</kbd><p>Saved output should identify where it went and how to remove it.</p></article>
+        </div>
+      </section>
+
+      <section class="doc-section panel" id="checklist" data-search="checklist browser security operator url trust credentials secrets scripts">
+        <p class="eyebrow">operator checklist</p>
+        <h2>Before browsing, ask five questions.</h2>
+        <ol class="timeline-list">
+          <li><strong>What scheme is this?</strong> Prefer explicit HTTP/HTTPS behavior.</li>
+          <li><strong>Does this touch localhost?</strong> Treat loopback as a host boundary.</li>
+          <li><strong>Is active content blocked?</strong> Do not assume arbitrary scripts are safe.</li>
+          <li><strong>Does this ask for credentials?</strong> Do not enter passwords or private keys into normal browsing workflows.</li>
+          <li><strong>Where does output go?</strong> Know whether content is temporary, VFS-backed, or host-backed.</li>
+        </ol>
+      </section>
+
+      <section class="doc-section panel" id="boundaries" data-search="non claims browser secure sandbox production hardened privacy anonymity">
+        <p class="eyebrow">non-claims</p>
+        <h2>Browser docs are safety guidance, not a secure-browser claim.</h2>
+        <p>This page does not claim Phase1 is a production web browser, privacy browser, hardened sandbox, malware-analysis environment, anonymity tool, or complete web runtime. It documents the intended guarded browsing model and public boundaries.</p>
+        <p><a class="coffee-link" href="./">Back to Wiki Hub</a></p>
+      </section>
+    </main>
+  </div>
+
+  <script src="./docs.js?v=phase1-wiki-browser-v1"></script>
+</body>
+</html>
