@@ -40,35 +40,39 @@ jobs:
           cp -R site/. _site/
           cp -R site/. _site/site/
 
-          # Force the README-banner-inspired Phase1 recovery layer on Pages.
+          # Force the current Phase1 recovery layers on Pages.
           python3 - <<'PY'
           from pathlib import Path
           p = Path('_site/index.html')
           s = p.read_text()
-          cache = 'phase1-banner-overhaul-v1'
+          banner = 'phase1-banner-overhaul-v1'
           structure = 'phase1-structure-recovery-v1'
           matrix = 'phase1-matrix-fit-v1'
+          polish = 'phase1-matrix-polish-v1'
+          readability = 'phase1-matrix-readability-v1'
           previous = [
               'phase1-nobackground-v2', 'phase1-superb-overhaul-v1', 'phase1-final-design-v1',
               'phase1-bryforge-aligned-v1', 'phase1-orange-rainbow-v1', 'phase1-polish-77-v1',
               'phase1-orange-spectrum-v1', 'phase1-orange-premium-v1', 'phase1-orange-elite-v1',
               'phase1-rainbow-space-v1', 'phase1-rainbow-space-v2', 'phase1-rainbow-space-v3',
-              'phase1-rainbow-space-v4', 'phase1-visible-fix-v1'
+              'phase1-rainbow-space-v4', 'phase1-visible-fix-v1', 'phase1-render-fix-v1',
+              'phase1-matrix-fit-v1', 'phase1-matrix-polish-v1'
           ]
           for old in previous:
-              s = s.replace(f'styles.css?v={old}', f'styles.css?v={cache}')
-              s = s.replace(f'button-fix.css?v={old}', f'button-fix.css?v={cache}')
-              s = s.replace(f'button-fix.js?v={old}', f'button-fix.js?v={cache}')
-              s = s.replace(f'site.js?v={old}', f'site.js?v={cache}')
+              s = s.replace(f'styles.css?v={old}', f'styles.css?v={readability}')
+              s = s.replace(f'button-fix.css?v={old}', f'button-fix.css?v={readability}')
+              s = s.replace(f'site.js?v={old}', f'site.js?v={readability}')
+              s = s.replace(f'button-fix.js?v={old}', f'button-fix.js?v={readability}')
               s = s.replace(f'official-phase1-logo-{old.replace("phase1-", "")}', 'official-phase1-logo-banner-overhaul-v1')
           for css in [
-              f'<link rel="stylesheet" href="./site/phase1-banner-overhaul.css?v={cache}">',
+              f'<link rel="stylesheet" href="./site/phase1-banner-overhaul.css?v={banner}">',
               f'<link rel="stylesheet" href="./site/phase1-structure-recovery.css?v={structure}">',
               f'<link rel="stylesheet" href="./site/phase1-matrix-fit.css?v={matrix}">',
+              f'<link rel="stylesheet" href="./site/phase1-matrix-polish.css?v={polish}">',
+              f'<link rel="stylesheet" href="./site/phase1-matrix-readability.css?v={readability}">',
           ]:
               if css not in s:
                   s = s.replace('</head>', f'  {css}\n</head>')
-          # Keep only the official recovery extras. Do not inject older experiment layers.
           p.write_text(s)
           PY
 
@@ -89,10 +93,14 @@ jobs:
           test -f _site/site/phase1-banner-overhaul.css
           test -f _site/site/phase1-structure-recovery.css
           test -f _site/site/phase1-matrix-fit.css
+          test -f _site/site/phase1-matrix-polish.css
+          test -f _site/site/phase1-matrix-readability.css
           grep -q 'phase1-banner-overhaul.css?v=phase1-banner-overhaul-v1' _site/index.html
           grep -q 'phase1-structure-recovery.css?v=phase1-structure-recovery-v1' _site/index.html
           grep -q 'phase1-matrix-fit.css?v=phase1-matrix-fit-v1' _site/index.html
-          grep -q 'button-fix.css?v=phase1-banner-overhaul-v1' _site/index.html
+          grep -q 'phase1-matrix-polish.css?v=phase1-matrix-polish-v1' _site/index.html
+          grep -q 'phase1-matrix-readability.css?v=phase1-matrix-readability-v1' _site/index.html
+          grep -q 'button-fix.css?v=phase1-matrix-readability-v1' _site/index.html
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
