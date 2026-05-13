@@ -1,19 +1,35 @@
-const canvas = document.getElementById("space");
-const ctx = canvas.getContext("2d", { alpha: true });
+// Phase1 public site behavior.
+// Keep this file defensive: the recovered homepage no longer requires every legacy
+// animation node to exist, so missing optional elements must never break rendering.
 
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const canvas = document.getElementById("space");
+const ctx = canvas ? canvas.getContext("2d", { alpha: true }) : null;
+
 let width = 0;
 let height = 0;
 let stars = [];
-let comets = [];
 let animationFrame = 0;
 let resizeTimer = 0;
 let running = false;
 
+function makeStar(randomizeY = false) {
+  return {
+    x: Math.random() * width,
+    y: randomizeY ? Math.random() * height : -10,
+    r: Math.random() * 1.45 + 0.25,
+    vx: (Math.random() - 0.5) * 0.035,
+    vy: Math.random() * 0.08 + 0.018,
+    hue: Math.random() > 0.55 ? 205 : 28,
+    pulse: Math.random() * Math.PI * 2,
+  };
+}
+
 function resize() {
-  const ratio = Math.min(window.devicePixelRatio || 1, width >= 1200 ? 1.5 : 2);
+  if (!canvas || !ctx) return;
   width = window.innerWidth;
   height = window.innerHeight;
+  const ratio = Math.min(window.devicePixelRatio || 1, width >= 1200 ? 1.25 : 1.6);
   canvas.width = Math.floor(width * ratio);
   canvas.height = Math.floor(height * ratio);
   canvas.style.width = `${width}px`;
@@ -21,11 +37,10 @@ function resize() {
   ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
 
   const desktop = width >= 1024;
-  const density = prefersReducedMotion ? 16000 : desktop ? 8800 : 6800;
-  const cap = prefersReducedMotion ? 80 : desktop ? 180 : 210;
+  const density = prefersReducedMotion ? 20000 : desktop ? 16000 : 14000;
+  const cap = prefersReducedMotion ? 40 : desktop ? 110 : 90;
   const starCount = Math.min(cap, Math.floor((width * height) / density));
   stars = Array.from({ length: starCount }, () => makeStar(true));
-  comets = Array.from({ length: prefersReducedMotion ? 0 : desktop ? 2 : 3 }, (_, idx) => makeComet(idx));
 }
 
 function scheduleResize() {
@@ -33,115 +48,55 @@ function scheduleResize() {
   resizeTimer = window.setTimeout(resize, 120);
 }
 
-function makeStar(randomizeY = false) {
-  return {
-    x: Math.random() * width,
-    y: randomizeY ? Math.random() * height : -10,
-    r: Math.random() * 1.8 + 0.25,
-    vx: (Math.random() - 0.5) * 0.12,
-    vy: Math.random() * 0.28 + 0.04,
-    hue: Math.random() * 360,
-    pulse: Math.random() * Math.PI * 2,
-  };
-}
-
-function makeComet(idx = 0) {
-  return {
-    x: Math.random() * width,
-    y: Math.random() * height * 0.55,
-    vx: 0.65 + idx * 0.2,
-    vy: 0.18 + idx * 0.05,
-    hue: [190, 285, 122][idx % 3],
-    delay: Math.random() * 800,
-  };
-}
-
 function drawNebula(time) {
+  if (!ctx) return;
   const gradient = ctx.createRadialGradient(
-    width * (0.5 + Math.sin(time * 0.00008) * 0.08),
+    width * (0.50 + Math.sin(time * 0.00004) * 0.04),
     height * 0.32,
-    30,
-    width * 0.5,
+    20,
+    width * 0.52,
     height * 0.48,
-    Math.max(width, height) * 0.75,
+    Math.max(width, height) * 0.78,
   );
-  gradient.addColorStop(0, "rgba(39, 248, 255, 0.10)");
-  gradient.addColorStop(0.35, "rgba(255, 61, 242, 0.055)");
-  gradient.addColorStop(0.7, "rgba(83, 255, 133, 0.035)");
+  gradient.addColorStop(0, "rgba(43, 141, 255, 0.08)");
+  gradient.addColorStop(0.42, "rgba(255, 122, 24, 0.045)");
   gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, width, height);
 }
 
 function drawStar(star, time) {
+  if (!ctx) return;
   if (!prefersReducedMotion) {
     star.x += star.vx;
     star.y += star.vy;
-    star.pulse += 0.018;
-    star.hue = (star.hue + 0.08) % 360;
+    star.pulse += 0.006;
   }
 
   if (star.y > height + 10 || star.x < -10 || star.x > width + 10) {
     Object.assign(star, makeStar(false));
   }
 
-  const alpha = 0.38 + Math.sin(star.pulse + time * 0.001) * 0.28;
+  const alpha = 0.22 + Math.sin(star.pulse + time * 0.00045) * 0.16;
   ctx.beginPath();
-  ctx.fillStyle = `hsla(${star.hue}, 95%, 72%, ${Math.max(0.18, alpha)})`;
-  ctx.shadowBlur = 12;
-  ctx.shadowColor = `hsla(${star.hue}, 95%, 62%, 0.9)`;
+  ctx.fillStyle = `hsla(${star.hue}, 95%, 72%, ${Math.max(0.10, alpha)})`;
+  ctx.shadowBlur = 8;
+  ctx.shadowColor = `hsla(${star.hue}, 95%, 62%, 0.45)`;
   ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
   ctx.fill();
   ctx.shadowBlur = 0;
 }
 
-function drawComet(comet) {
-  comet.delay -= 1;
-  if (comet.delay > 0) return;
-
-  comet.x += comet.vx;
-  comet.y += comet.vy;
-
-  const trail = 92;
-  const gradient = ctx.createLinearGradient(comet.x, comet.y, comet.x - trail, comet.y - trail * 0.28);
-  gradient.addColorStop(0, `hsla(${comet.hue}, 100%, 70%, 0.95)`);
-  gradient.addColorStop(1, `hsla(${comet.hue}, 100%, 70%, 0)`);
-
-  ctx.strokeStyle = gradient;
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(comet.x, comet.y);
-  ctx.lineTo(comet.x - trail, comet.y - trail * 0.28);
-  ctx.stroke();
-
-  if (comet.x > width + 130 || comet.y > height + 80) {
-    comet.x = -40 - Math.random() * width * 0.3;
-    comet.y = Math.random() * height * 0.45;
-    comet.delay = 200 + Math.random() * 900;
-  }
-}
-
 function frame(time) {
-  if (!running) return;
-
+  if (!running || !canvas || !ctx) return;
   ctx.clearRect(0, 0, width, height);
   drawNebula(time);
-
-  for (const star of stars) {
-    drawStar(star, time);
-  }
-
-  if (!prefersReducedMotion) {
-    for (const comet of comets) {
-      drawComet(comet);
-    }
-  }
-
+  for (const star of stars) drawStar(star, time);
   animationFrame = requestAnimationFrame(frame);
 }
 
 function startAnimation() {
-  if (running) return;
+  if (!canvas || !ctx || running) return;
   running = true;
   animationFrame = requestAnimationFrame(frame);
 }
@@ -152,11 +107,8 @@ function stopAnimation() {
 }
 
 function handleVisibilityChange() {
-  if (document.hidden) {
-    stopAnimation();
-  } else {
-    startAnimation();
-  }
+  if (document.hidden) stopAnimation();
+  else startAnimation();
 }
 
 function setupNavigation() {
@@ -180,10 +132,13 @@ function setupNavigation() {
 
 function setupReveals() {
   const revealEls = Array.from(document.querySelectorAll(".reveal"));
-  if (prefersReducedMotion || !("IntersectionObserver" in window)) {
-    revealEls.forEach((el) => el.classList.add("is-visible"));
-    return;
-  }
+  if (!revealEls.length) return;
+
+  // Fail-open for public representation: content should never be invisible because
+  // animation setup failed, loaded late, or a browser blocks observers.
+  revealEls.forEach((el) => el.classList.add("is-visible"));
+
+  if (prefersReducedMotion || !("IntersectionObserver" in window)) return;
 
   const observer = new IntersectionObserver(
     (entries) => {
@@ -194,7 +149,7 @@ function setupReveals() {
         }
       }
     },
-    { threshold: 0.14 },
+    { threshold: 0.10 },
   );
 
   revealEls.forEach((el) => observer.observe(el));
@@ -307,23 +262,15 @@ async function setupPublicStatus() {
 
     const pct = Number(data.overall_estimated_completion_percent || 0);
     const repo = (data.projects || []).find((project) =>
-      String(project.name || "").toLowerCase().includes("repository organization")
+      String(project.name || "").toLowerCase().includes("repository organization"),
     );
     const repoPct = Number(repo?.estimated_completion_percent || 0);
     const updated = data.last_updated_utc ? ` · updated ${data.last_updated_utc}` : "";
 
-    if (summary) {
-      summary.textContent = `Live project status · ${pct}% roadmap · Repository organization ${repoPct}% · View details`;
-    }
-    if (button) {
-      button.textContent = `Live status · ${pct}%`;
-    }
-    if (overall) {
-      overall.textContent = `${pct}%`;
-    }
-    if (detail) {
-      detail.textContent = `${pct}% roadmap · repository organization ${repoPct}%`;
-    }
+    if (summary) summary.textContent = `Live project status · ${pct}% roadmap · Repository organization ${repoPct}% · View details`;
+    if (button) button.textContent = `Live status · ${pct}%`;
+    if (overall) overall.textContent = `${pct}%`;
+    if (detail) detail.textContent = `${pct}% roadmap · repository organization ${repoPct}%`;
     if (description) {
       description.textContent =
         `Public status marker is live from status.json with repository metrics, estimated project percentages, and non-claim boundaries${updated}.`;
@@ -333,12 +280,23 @@ async function setupPublicStatus() {
   }
 }
 
-resize();
-setupPublicStatus();
-setupNavigation();
-setupReveals();
-setupTerminalDemo();
-startAnimation();
-window.addEventListener("resize", scheduleResize, { passive: true });
-document.addEventListener("visibilitychange", handleVisibilityChange);
-window.addEventListener("pagehide", stopAnimation);
+function boot() {
+  setupPublicStatus();
+  setupNavigation();
+  setupReveals();
+  setupTerminalDemo();
+
+  if (canvas && ctx) {
+    resize();
+    startAnimation();
+    window.addEventListener("resize", scheduleResize, { passive: true });
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("pagehide", stopAnimation);
+  }
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", boot, { once: true });
+} else {
+  boot();
+}
