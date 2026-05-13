@@ -1,0 +1,455 @@
+/* Phase1 public-site recovery layer.
+   Goal: one premium Phase1 identity inspired by the README banner:
+   deep black space, blue/orange orbital split, official logo focus, white readable UI,
+   software-startup credibility, and consistent section treatment. */
+
+:root {
+  --p1-bg: #03050b;
+  --p1-ink: #f7fbff;
+  --p1-text: #eaf2ff;
+  --p1-muted: #aebcd0;
+  --p1-soft: #708199;
+  --p1-blue: #2b8dff;
+  --p1-blue-hot: #5ed8ff;
+  --p1-orange: #ff7a18;
+  --p1-orange-hot: #ffc15a;
+  --p1-red: #ff392e;
+  --p1-violet: #754dff;
+  --p1-line: rgba(202, 226, 255, .18);
+  --p1-line-hot: rgba(103, 212, 255, .44);
+  --p1-panel: rgba(5, 9, 20, .86);
+  --p1-panel-2: rgba(9, 15, 29, .78);
+  --p1-action: linear-gradient(90deg, #41cfff 0%, #2b8dff 28%, #754dff 49%, #ff392e 72%, #ff9a2d 100%);
+  --p1-action-soft: linear-gradient(90deg, rgba(65,207,255,.32), rgba(43,141,255,.24), rgba(117,77,255,.22), rgba(255,57,46,.20), rgba(255,154,45,.28));
+  --p1-title: linear-gradient(90deg, #ffffff 0%, #e8f6ff 14%, #5ed8ff 34%, #77a7ff 49%, #f2f5ff 61%, #ffbf5d 78%, #ff6a20 100%);
+  --p1-shadow: 0 38px 130px rgba(0,0,0,.72), 0 0 60px rgba(43,141,255,.10), 0 0 80px rgba(255,122,24,.08);
+}
+
+html,
+body {
+  background: var(--p1-bg) !important;
+  color: var(--p1-text) !important;
+}
+
+body,
+button,
+input,
+textarea,
+select,
+.button,
+.nav,
+.status-callout__link,
+.feature-card,
+.hero-status-panel,
+.metric-strip,
+.footer,
+.card,
+.founder,
+.support-card,
+.bryforge-card {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+}
+
+body {
+  background:
+    radial-gradient(circle at 50% -18%, rgba(28, 66, 120, .40), transparent 36rem),
+    radial-gradient(circle at 16% 20%, rgba(43, 141, 255, .16), transparent 30rem),
+    radial-gradient(circle at 84% 18%, rgba(255, 122, 24, .14), transparent 31rem),
+    radial-gradient(circle at 72% 90%, rgba(117, 77, 255, .10), transparent 30rem),
+    linear-gradient(180deg, #03050b 0%, #070b14 48%, #020309 100%) !important;
+  overflow-x: hidden !important;
+}
+
+body::before {
+  content: "" !important;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+  background:
+    radial-gradient(circle, rgba(255,255,255,.62) 0 1px, transparent 1.65px),
+    radial-gradient(circle, rgba(94,216,255,.44) 0 1px, transparent 1.7px),
+    radial-gradient(circle, rgba(255,193,90,.30) 0 1px, transparent 1.7px),
+    linear-gradient(90deg, transparent 0 49.8%, rgba(94,216,255,.06) 50%, transparent 50.2% 100%),
+    linear-gradient(0deg, transparent 0 49.8%, rgba(255,122,24,.04) 50%, transparent 50.2% 100%) !important;
+  background-size: 220px 220px, 340px 340px, 520px 520px, 88px 88px, 88px 88px !important;
+  opacity: .17 !important;
+  mask-image: radial-gradient(circle at 50% 26%, black 0 62%, transparent 92%) !important;
+  animation: p1-starfield-drift 240s linear infinite !important;
+}
+
+/* Replace the temporary chaotic layers with a clean banner-style orbital world. */
+.rainbow-space-field,
+.orbital-system-field,
+#space,
+.aurora,
+.scanlines,
+.noise {
+  opacity: 0 !important;
+  display: none !important;
+}
+
+.site-shell,
+.status-callout,
+body > main,
+.nav,
+.hero,
+.footer,
+.glass-panel,
+.card {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.status-callout {
+  max-width: 1180px !important;
+  margin: 16px auto 10px !important;
+}
+
+.status-callout__link {
+  border: 1px solid rgba(94,216,255,.30) !important;
+  background: linear-gradient(90deg, rgba(43,141,255,.22), rgba(255,122,24,.15)) !important;
+  color: #ffffff !important;
+  border-radius: 14px !important;
+  box-shadow: 0 0 34px rgba(43,141,255,.12), inset 0 1px 0 rgba(255,255,255,.12) !important;
+  text-shadow: 0 1px 1px rgba(0,0,0,.62) !important;
+}
+
+.nav {
+  max-width: 1180px !important;
+  margin: 0 auto 16px !important;
+  border-radius: 20px !important;
+  background: rgba(5, 9, 20, .82) !important;
+  border: 1px solid var(--p1-line) !important;
+  box-shadow: 0 22px 90px rgba(0,0,0,.46), inset 0 1px 0 rgba(255,255,255,.08) !important;
+}
+
+.brand,
+.nav a,
+.footer-links a {
+  color: #f7fbff !important;
+  font-weight: 780 !important;
+  letter-spacing: .01em !important;
+}
+
+.nav-status-link {
+  border-radius: 999px !important;
+}
+
+.hero {
+  max-width: 1180px !important;
+  margin: 0 auto !important;
+  min-height: min(760px, calc(100vh - 108px)) !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.06fr) minmax(340px, .88fr) !important;
+  gap: clamp(28px, 5vw, 74px) !important;
+  align-items: center !important;
+  padding: clamp(42px, 6vw, 86px) clamp(26px, 5vw, 72px) !important;
+  border-radius: clamp(28px, 4vw, 48px) !important;
+  overflow: hidden !important;
+  background:
+    radial-gradient(circle at 64% 45%, rgba(43,141,255,.16), transparent 22rem),
+    radial-gradient(circle at 93% 42%, rgba(255,122,24,.15), transparent 23rem),
+    linear-gradient(105deg, rgba(4,8,18,.95), rgba(7,12,24,.88) 52%, rgba(12,7,6,.88)) !important;
+  border: 1px solid rgba(202, 226, 255, .20) !important;
+  box-shadow: var(--p1-shadow), inset 0 1px 0 rgba(255,255,255,.08) !important;
+}
+
+.hero::before {
+  content: "" !important;
+  position: absolute !important;
+  right: -14%;
+  top: -18%;
+  width: min(72vw, 920px);
+  height: min(72vw, 920px);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 52%, rgba(255,255,255,.10) 0 1%, rgba(10,24,48,.72) 16%, rgba(2,6,14,.86) 48%, transparent 61%),
+    conic-gradient(from 220deg, rgba(43,141,255,.88), rgba(94,216,255,.34), transparent 38%, rgba(255,122,24,.38), rgba(255,193,90,.82), rgba(255,88,35,.64), transparent 74%, rgba(43,141,255,.82));
+  opacity: .66 !important;
+  filter: blur(.2px) saturate(1.08);
+  animation: p1-planet-breathe 20s ease-in-out infinite !important;
+}
+
+.hero::after {
+  content: "" !important;
+  position: absolute !important;
+  right: -8%;
+  top: 8%;
+  width: min(64vw, 780px);
+  height: min(33vw, 400px);
+  border: 1px solid rgba(255,255,255,.11);
+  border-left-color: rgba(94,216,255,.24);
+  border-right-color: rgba(255,122,24,.30);
+  border-radius: 50%;
+  transform: rotate(-16deg);
+  opacity: .52 !important;
+  box-shadow: 0 0 32px rgba(94,216,255,.10), 0 0 38px rgba(255,122,24,.10) !important;
+  animation: p1-orbit-calm 28s ease-in-out infinite !important;
+}
+
+.hero-copy,
+.logo-stage {
+  position: relative !important;
+  z-index: 3 !important;
+}
+
+.hero-copy::before {
+  content: "BUILD\A EXECUTE\A STORE\A VERIFY\A CONNECT";
+  white-space: pre;
+  position: absolute;
+  left: -8px;
+  top: -58px;
+  transform: translateX(-100%);
+  color: rgba(213, 232, 255, .64);
+  font-family: "SFMono-Regular", "SF Mono", Consolas, monospace !important;
+  font-size: .74rem;
+  line-height: 2.15;
+  letter-spacing: .18em;
+  text-shadow: 0 0 16px rgba(94,216,255,.22);
+  opacity: .85;
+}
+
+.eyebrow,
+.card-kicker,
+.timeline-status,
+.status-pill,
+.terminal-status {
+  color: #9fdcff !important;
+  font-weight: 900 !important;
+  letter-spacing: .24em !important;
+  text-transform: uppercase !important;
+  text-shadow: 0 0 18px rgba(94,216,255,.28) !important;
+}
+
+.hero h1,
+h1,
+.section-heading h2,
+.founder-copy h2,
+.support-card h2,
+.bryforge-card h3,
+.feature-card h3,
+.roadmap h3,
+body > main h1,
+body > main h2 {
+  color: transparent !important;
+  background: var(--p1-title) !important;
+  background-size: 180% 100% !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  font-weight: 950 !important;
+  letter-spacing: -.075em !important;
+  line-height: .90 !important;
+  animation: p1-title-glow 28s ease-in-out infinite !important;
+  text-wrap: balance !important;
+}
+
+.hero h1 {
+  font-size: clamp(3.7rem, 8.4vw, 7.4rem) !important;
+  max-width: 860px !important;
+}
+
+.hero-text {
+  max-width: 760px !important;
+  color: #d9e5f4 !important;
+  font-size: clamp(1rem, 1.35vw, 1.24rem) !important;
+  font-weight: 620 !important;
+  line-height: 1.58 !important;
+}
+
+.hero-actions {
+  gap: 14px !important;
+}
+
+.button,
+.button-primary,
+.button-secondary,
+.button-ghost,
+.button-status,
+.button-coffee,
+.status-callout__link,
+.nav-status-link,
+.support-card-mini span,
+.quick-commands button,
+.terminal-form button,
+.hero-status-panel a,
+.footer-links a {
+  color: #ffffff !important;
+  background:
+    linear-gradient(rgba(4, 8, 18, .38), rgba(4, 8, 18, .28)) padding-box,
+    var(--p1-action) border-box !important;
+  border: 1px solid transparent !important;
+  box-shadow: 0 0 20px rgba(43,141,255,.12), 0 0 22px rgba(255,122,24,.08), inset 0 1px 0 rgba(255,255,255,.16) !important;
+  text-shadow: 0 1px 1px rgba(0,0,0,.64) !important;
+  font-weight: 850 !important;
+  letter-spacing: .01em !important;
+  animation: none !important;
+}
+
+.button-primary,
+.button-status,
+.button-coffee {
+  background:
+    linear-gradient(90deg, rgba(43,141,255,.84), rgba(117,77,255,.78), rgba(255,57,46,.70), rgba(255,122,24,.82)) padding-box,
+    linear-gradient(90deg, #5ed8ff, #2b8dff, #ff7a18, #ffc15a) border-box !important;
+}
+
+.button:hover,
+.nav-status-link:hover,
+.status-callout__link:hover,
+.hero-status-panel a:hover {
+  transform: translateY(-1px) !important;
+  border-color: var(--p1-line-hot) !important;
+  box-shadow: 0 0 34px rgba(43,141,255,.22), 0 0 38px rgba(255,122,24,.14), inset 0 1px 0 rgba(255,255,255,.24) !important;
+}
+
+.hero-command {
+  max-width: 760px !important;
+  background: rgba(0, 0, 0, .70) !important;
+  border: 1px solid rgba(202,226,255,.18) !important;
+  color: #ffffff !important;
+  box-shadow: inset 0 0 28px rgba(0,0,0,.52), 0 0 24px rgba(43,141,255,.08) !important;
+}
+
+.metric-strip {
+  grid-template-columns: repeat(4, minmax(132px, 1fr)) !important;
+  max-width: 760px !important;
+}
+
+.metric-strip div,
+.hero-status-panel,
+.feature-card,
+.bryforge-card,
+.support-card,
+.timeline li,
+.terminal,
+.founder,
+.roadmap,
+.footer,
+.card {
+  background: linear-gradient(145deg, rgba(8, 14, 27, .82), rgba(255,255,255,.045)) !important;
+  border: 1px solid rgba(202, 226, 255, .16) !important;
+  box-shadow: 0 24px 80px rgba(0,0,0,.46), inset 0 1px 0 rgba(255,255,255,.07) !important;
+}
+
+.hero-status-panel {
+  max-width: 760px !important;
+  border-left: 3px solid rgba(94,216,255,.62) !important;
+}
+
+.logo-stage {
+  min-height: clamp(390px, 42vw, 620px) !important;
+  display: grid !important;
+  place-items: center !important;
+}
+
+.logo-glass {
+  width: min(92%, 560px) !important;
+  aspect-ratio: 1.23 / 1 !important;
+  border-radius: 34px !important;
+  background:
+    radial-gradient(circle at 20% 45%, rgba(43,141,255,.30), transparent 36%),
+    radial-gradient(circle at 75% 52%, rgba(255,122,24,.32), transparent 35%),
+    radial-gradient(circle at 50% 52%, rgba(255,255,255,.12), transparent 15%),
+    linear-gradient(145deg, rgba(3,5,12,.94), rgba(10,16,32,.86)) !important;
+  border: 1px solid rgba(202,226,255,.18) !important;
+  box-shadow: 0 0 70px rgba(43,141,255,.12), 0 0 76px rgba(255,122,24,.10), inset 0 0 80px rgba(255,255,255,.045) !important;
+}
+
+.logo-glass::before {
+  display: none !important;
+}
+
+.phase-logo-image,
+.logo-glass img {
+  width: min(44%, 250px) !important;
+  filter: contrast(1.08) saturate(1.08) drop-shadow(0 0 22px rgba(255,255,255,.20)) drop-shadow(0 0 42px rgba(94,216,255,.18)) !important;
+}
+
+.logo-stage::after {
+  content: "base1   |   Fyr";
+  position: absolute;
+  bottom: 34px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #edf6ff;
+  font-size: clamp(1.35rem, 3vw, 2.15rem);
+  font-weight: 900;
+  letter-spacing: .035em;
+  text-shadow: 0 0 22px rgba(94,216,255,.18), 0 0 28px rgba(255,122,24,.14);
+  opacity: .88;
+}
+
+.orbit { opacity: .28 !important; animation-duration: 60s !important; }
+.system-card { background: rgba(0,0,0,.74) !important; border-color: rgba(202,226,255,.18) !important; }
+.system-card strong { color: #7dff91 !important; }
+
+.features,
+.terminal-section,
+.roadmap,
+.founder,
+.support-grid,
+.footer {
+  max-width: 1180px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.feature-grid {
+  gap: 18px !important;
+}
+
+.feature-card {
+  border-radius: 22px !important;
+}
+
+.feature-icon {
+  color: #9fdcff !important;
+  background: rgba(43,141,255,.10) !important;
+}
+
+@media (max-width: 1180px) {
+  .hero-copy::before { display: none !important; }
+}
+
+@media (max-width: 960px) {
+  .hero {
+    grid-template-columns: 1fr !important;
+    min-height: auto !important;
+  }
+  .hero h1 {
+    font-size: clamp(3.1rem, 14vw, 5.8rem) !important;
+  }
+  .logo-stage {
+    min-height: 360px !important;
+    order: -1;
+  }
+  .metric-strip {
+    grid-template-columns: repeat(2, minmax(120px, 1fr)) !important;
+  }
+}
+
+@media (max-width: 620px) {
+  .hero {
+    border-radius: 28px !important;
+    padding: 28px 18px 34px !important;
+  }
+  .hero h1 {
+    font-size: clamp(2.95rem, 16vw, 4.8rem) !important;
+  }
+  .hero-actions {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+  }
+  .button {
+    justify-content: center !important;
+  }
+  .logo-glass {
+    width: min(100%, 430px) !important;
+  }
+}
+
+@keyframes p1-starfield-drift { to { background-position: 220px 220px, 340px 340px, 520px 520px, 88px 88px, 88px 88px; } }
+@keyframes p1-planet-breathe { 0%,100% { transform: scale(.985); opacity: .58; } 50% { transform: scale(1.025); opacity: .72; } }
+@keyframes p1-orbit-calm { 0%,100% { transform: rotate(-16deg) scale(.995); opacity: .38; } 50% { transform: rotate(-13deg) scale(1.02); opacity: .56; } }
+@keyframes p1-title-glow { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
