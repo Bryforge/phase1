@@ -1,0 +1,315 @@
+/* Phase1 rainbow-space visual system.
+   Premium readable space design: clean black-glass surfaces, animated starfield feel,
+   rainbow spectral glow, shooting-star sheen, and consistent styling for homepage + status. */
+
+:root {
+  --rs-bg: #02030a;
+  --rs-panel: rgba(8, 12, 24, 0.84);
+  --rs-panel-soft: rgba(255, 255, 255, 0.055);
+  --rs-text: #f8fbff;
+  --rs-muted: #b9c7df;
+  --rs-dim: #7f8da8;
+  --rs-line: rgba(180, 215, 255, 0.18);
+  --rs-line-hot: rgba(116, 231, 255, 0.46);
+  --rs-cyan: #30f7ff;
+  --rs-blue: #6388ff;
+  --rs-violet: #a45dff;
+  --rs-pink: #ff48dc;
+  --rs-red: #ff4e5e;
+  --rs-orange: #ff9c35;
+  --rs-gold: #ffe66b;
+  --rs-green: #66ff9a;
+  --rs-spectrum: linear-gradient(90deg, #30f7ff, #6388ff, #a45dff, #ff48dc, #ff4e5e, #ff9c35, #ffe66b, #66ff9a, #30f7ff);
+  --rs-spectrum-hot: linear-gradient(90deg, #f8fbff, #30f7ff, #6388ff, #a45dff, #ff48dc, #ff9c35, #ffe66b, #f8fbff);
+  --rs-glass: radial-gradient(circle at 16% 8%, rgba(48, 247, 255, 0.12), transparent 24rem), radial-gradient(circle at 80% 18%, rgba(255, 72, 220, 0.11), transparent 24rem), radial-gradient(circle at 48% 95%, rgba(255, 156, 53, 0.10), transparent 28rem), linear-gradient(145deg, rgba(8, 12, 24, 0.86), rgba(255, 255, 255, 0.052));
+  --rs-shadow: 0 36px 142px rgba(0, 0, 0, 0.66), 0 0 60px rgba(48, 247, 255, 0.10), 0 0 90px rgba(255, 72, 220, 0.075), 0 0 100px rgba(255, 156, 53, 0.055);
+  --rs-live: 0 0 34px rgba(48, 247, 255, 0.28), 0 0 72px rgba(164, 93, 255, 0.20), 0 0 118px rgba(255, 72, 220, 0.12);
+}
+
+html,
+body { background: var(--rs-bg) !important; }
+
+body {
+  color: var(--rs-text) !important;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(48,247,255,.18), transparent 30rem),
+    radial-gradient(circle at 88% 6%, rgba(255,72,220,.15), transparent 30rem),
+    radial-gradient(circle at 22% 82%, rgba(99,136,255,.12), transparent 26rem),
+    radial-gradient(circle at 72% 88%, rgba(255,156,53,.12), transparent 28rem),
+    linear-gradient(180deg, #02030a 0%, #070b18 48%, #02030a 100%) !important;
+  overflow-x: hidden !important;
+}
+
+body::before {
+  content: "" !important;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: -3 !important;
+  pointer-events: none !important;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,.82) 0 1px, transparent 1.8px),
+    radial-gradient(circle, rgba(48,247,255,.55) 0 1.1px, transparent 1.9px),
+    radial-gradient(circle, rgba(255,72,220,.45) 0 1px, transparent 1.8px),
+    linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px) !important;
+  background-size: 190px 190px, 270px 270px, 350px 350px, 72px 72px, 72px 72px !important;
+  opacity: .30 !important;
+  mask-image: radial-gradient(circle at center, black 0 58%, transparent 92%) !important;
+  animation: rs-star-drift 54s linear infinite !important;
+}
+
+body::after {
+  content: "" !important;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: -2 !important;
+  pointer-events: none !important;
+  background:
+    linear-gradient(122deg, transparent 0 30%, rgba(255,255,255,.055) 37%, rgba(48,247,255,.11) 44%, rgba(255,72,220,.09) 52%, transparent 64% 100%),
+    radial-gradient(circle at 18% 18%, rgba(48,247,255,.10), transparent 26rem),
+    radial-gradient(circle at 80% 74%, rgba(255,156,53,.08), transparent 26rem) !important;
+  opacity: .86 !important;
+  animation: rs-cosmic-sheen 13s ease-in-out infinite !important;
+}
+
+#space { opacity: .86 !important; filter: saturate(1.18) contrast(1.08) brightness(.96) !important; }
+.aurora { opacity: .13 !important; filter: blur(82px) saturate(1.25) !important; }
+.aurora-one { background: var(--rs-cyan) !important; }
+.aurora-two { background: var(--rs-pink) !important; }
+.noise { opacity: .035 !important; }
+.scanlines { opacity: .012 !important; }
+
+.site-shell,
+.status-callout,
+body > main { position: relative !important; z-index: 1 !important; }
+
+.nav,
+.status-callout__link,
+.glass-panel,
+.hero,
+.feature-card,
+.bryforge-card,
+.support-card,
+.metric-strip div,
+.timeline li,
+.hero-status-panel,
+.terminal,
+.footer,
+.founder,
+.roadmap,
+.card,
+body > main > .hero {
+  background: var(--rs-glass) !important;
+  border: 1px solid var(--rs-line) !important;
+  box-shadow: var(--rs-shadow), inset 0 1px 0 rgba(255,255,255,.10) !important;
+  backdrop-filter: blur(30px) saturate(1.16) !important;
+}
+
+.hero,
+body > main > .hero {
+  border-radius: clamp(32px, 4vw, 52px) !important;
+  overflow: hidden !important;
+}
+
+.hero::before,
+.roadmap::before,
+.founder::before,
+.support-card::before,
+.terminal::before,
+.feature-card::before,
+.bryforge-card::before,
+.hero-status-panel::before,
+.timeline li::before,
+.metric-strip div::before,
+.card::before,
+body > main > .hero::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  pointer-events: none !important;
+  border-radius: inherit !important;
+  background:
+    radial-gradient(circle at 16% 16%, rgba(48,247,255,.13), transparent 18rem),
+    radial-gradient(circle at 86% 32%, rgba(255,72,220,.105), transparent 18rem),
+    linear-gradient(114deg, transparent 0%, rgba(255,255,255,.035) 34%, rgba(48,247,255,.12) 45%, rgba(164,93,255,.105) 54%, rgba(255,156,53,.075) 64%, transparent 78%) !important;
+  opacity: .76 !important;
+  mix-blend-mode: screen !important;
+  animation: rs-panel-sheen 10s ease-in-out infinite !important;
+}
+
+.hero::after,
+.feature-card::after,
+.bryforge-card::after,
+.support-card::after,
+.founder::after,
+.terminal::after,
+.roadmap::after,
+.hero-status-panel::after,
+.card::after,
+body > main > .hero::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  pointer-events: none !important;
+  border-radius: inherit !important;
+  background: linear-gradient(122deg, transparent 0 32%, rgba(255,255,255,.07) 42%, rgba(48,247,255,.12) 50%, rgba(255,72,220,.08) 59%, transparent 72% 100%) !important;
+  opacity: .48 !important;
+  animation: rs-shooting-sheen 8.6s ease-in-out infinite !important;
+}
+
+h1,
+.section-heading h2,
+.founder-copy h2,
+.support-card h2,
+.bryforge-card h3,
+.feature-card h3,
+.roadmap h3,
+body > main h1,
+body > main h2 {
+  background-image: var(--rs-spectrum-hot) !important;
+  background-size: 340% 100% !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+  animation: rs-spectrum-flow 10s linear infinite !important;
+  text-shadow: none !important;
+}
+
+.hero h1 { line-height: .9 !important; letter-spacing: -0.075em !important; text-wrap: balance !important; }
+
+.hero-text,
+.section-heading p,
+.feature-card p,
+.bryforge-card p,
+.founder-copy p,
+.hero-status-panel p,
+.support-card p,
+.timeline p,
+.terminal p,
+.footer,
+.small,
+.meta,
+body > main p,
+body > main footer {
+  color: var(--rs-muted) !important;
+}
+
+.eyebrow,
+.card-kicker,
+.timeline-status,
+.status-pill,
+.terminal-status,
+.live-pill {
+  color: var(--rs-cyan) !important;
+  text-shadow: 0 0 18px rgba(48,247,255,.62), 0 0 42px rgba(255,72,220,.24) !important;
+}
+
+.status-callout__link,
+.nav-status-link,
+.button-primary,
+.button-coffee,
+.button-status,
+.support-card-mini span,
+.avatar-ring,
+.brand-pip,
+.quick-commands button,
+.terminal-form button,
+.hero-status-panel a {
+  background-image: var(--rs-spectrum) !important;
+  background-size: 340% 100% !important;
+  color: #050611 !important;
+  box-shadow: var(--rs-live), inset 0 1px 0 rgba(255,255,255,.40) !important;
+  animation: rs-spectrum-flow 6.8s linear infinite, rs-live-pulse 3.2s ease-in-out infinite !important;
+}
+
+.button-secondary,
+.button-ghost,
+.quick-commands button,
+.terminal-form button,
+.hero-status-panel a {
+  color: var(--rs-text) !important;
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(rgba(8,12,24,.88), rgba(255,255,255,.055)) padding-box,
+    var(--rs-spectrum) border-box !important;
+  background-size: 100% 100%, 340% 100% !important;
+  animation: rs-border-flow 8.2s linear infinite !important;
+}
+
+.button::before,
+.status-callout__link::before,
+.nav-status-link::before,
+.hero-status-panel a::before,
+.quick-commands button::before,
+.terminal-form button::before {
+  background: linear-gradient(112deg, transparent 0%, rgba(255,255,255,0) 34%, rgba(255,255,255,.58) 48%, rgba(48,247,255,.40) 55%, rgba(255,72,220,.25) 63%, transparent 78%) !important;
+  animation: rs-button-sheen 3.05s ease-in-out infinite !important;
+}
+
+.hero-command,
+.terminal-output {
+  background: rgba(2, 4, 13, .66) !important;
+  border-color: rgba(180,215,255,.20) !important;
+  box-shadow: inset 0 0 32px rgba(0,0,0,.46), 0 0 38px rgba(48,247,255,.10), 0 0 56px rgba(255,72,220,.07) !important;
+}
+
+.logo-glass {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(48,247,255,.18), transparent 18rem),
+    radial-gradient(circle at 36% 62%, rgba(255,72,220,.15), transparent 16rem),
+    radial-gradient(circle at 68% 24%, rgba(255,156,53,.10), transparent 16rem),
+    linear-gradient(145deg, rgba(2,3,10,.98), rgba(14,18,36,.88)) !important;
+  border-color: rgba(180,215,255,.22) !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.07), inset 0 0 80px rgba(48,247,255,.09), 0 0 76px rgba(48,247,255,.14), 0 0 110px rgba(255,72,220,.09) !important;
+}
+
+.logo-glass::before {
+  background: conic-gradient(from 0deg, #30f7ff, #6388ff, #a45dff, #ff48dc, #ff4e5e, #ff9c35, #ffe66b, #66ff9a, #30f7ff) !important;
+  opacity: .42 !important;
+  filter: blur(25px) saturate(1.18) !important;
+}
+
+.phase-logo-image,
+.logo-glass img {
+  filter: saturate(1.14) contrast(1.08) drop-shadow(0 0 22px rgba(255,255,255,.16)) drop-shadow(0 0 42px rgba(48,247,255,.24)) drop-shadow(0 0 58px rgba(255,72,220,.14)) !important;
+}
+
+.orbit-one { border-top-color: var(--rs-cyan) !important; border-right-color: var(--rs-pink) !important; }
+.orbit-two { border-bottom-color: var(--rs-gold) !important; border-left-color: var(--rs-green) !important; }
+.orbit-three { border-top-color: var(--rs-blue) !important; border-bottom-color: var(--rs-orange) !important; }
+
+.bar { background: rgba(2,4,13,.72) !important; border-color: var(--rs-line) !important; }
+.bar > span { background: var(--rs-spectrum) !important; background-size: 340% 100% !important; animation: rs-spectrum-flow 7s linear infinite !important; }
+.percent { color: var(--rs-cyan) !important; text-shadow: 0 0 24px rgba(48,247,255,.46) !important; }
+a { color: var(--rs-cyan) !important; }
+
+.button:hover,
+.status-callout__link:hover,
+.nav-status-link:hover,
+.hero-status-panel a:hover,
+.quick-commands button:hover,
+.terminal-form button:hover,
+.feature-card:hover,
+.bryforge-card:hover,
+.support-card:hover,
+.hero-status-panel:hover,
+.metric-strip div:hover,
+.timeline li:hover,
+.card:hover {
+  border-color: var(--rs-line-hot) !important;
+  box-shadow: 0 42px 150px rgba(0,0,0,.68), 0 0 90px rgba(48,247,255,.20), 0 0 122px rgba(255,72,220,.14), inset 0 1px 0 rgba(255,255,255,.13) !important;
+}
+
+@media (max-width: 920px) {
+  .hero h1 { line-height: .94 !important; letter-spacing: -0.062em !important; }
+  .logo-stage { min-height: 300px !important; }
+}
+
+@keyframes rs-spectrum-flow { to { background-position: 340% 50%; } }
+@keyframes rs-border-flow { to { background-position: 0 0, 340% 50%; } }
+@keyframes rs-live-pulse { 0%,100% { filter: saturate(1) brightness(1); } 50% { filter: saturate(1.2) brightness(1.08); } }
+@keyframes rs-button-sheen { 0%, 35% { transform: translateX(-132%); opacity: 0; } 50% { opacity: .62; } 78%, 100% { transform: translateX(132%); opacity: 0; } }
+@keyframes rs-panel-sheen { 0%,100% { transform: translateX(-4%) translateY(-1%); opacity: .36; } 50% { transform: translateX(4%) translateY(1%); opacity: .72; } }
+@keyframes rs-shooting-sheen { 0%, 24% { transform: translateX(-80%) skewX(-12deg); opacity: 0; } 43% { opacity: .48; } 68%, 100% { transform: translateX(80%) skewX(-12deg); opacity: 0; } }
+@keyframes rs-cosmic-sheen { 0%,100% { transform: translateX(-3%); opacity: .60; } 50% { transform: translateX(3%); opacity: .95; } }
+@keyframes rs-star-drift { to { background-position: 190px 190px, 270px 270px, 350px 350px, 72px 72px, 72px 72px; } }
