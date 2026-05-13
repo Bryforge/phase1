@@ -39,109 +39,7 @@ jobs:
 
           cp -R site/. _site/
           cp -R site/. _site/site/
-
-          python3 - <<'PY'
-          from pathlib import Path
-          banner = 'phase1-banner-overhaul-v1'
-          structure = 'phase1-structure-recovery-v1'
-          matrix = 'phase1-matrix-fit-v1'
-          polish = 'phase1-matrix-polish-v1'
-          readability = 'phase1-matrix-readability-v1'
-          star = 'phase1-star-edge-polish-v1'
-          eye = 'phase1-eye-candy-v1'
-          boost = 'phase1-eye-candy-boost-v1'
-          starlight = 'phase1-starlight-motion-v1'
-          premium = 'phase1-starlight-premium-v1'
-          depth = 'phase1-starlight-depth-v1'
-          spectrum = 'phase1-spectrum-buttons-v1'
-          solid = 'phase1-spectrum-solid-v1'
-          computer = 'phase1-computer-joy-v1'
-          harmony = 'phase1-machine-harmony-v1'
-          public_polish = 'phase1-public-polish-v1'
-          presentation = 'phase1-presentation-10-v1'
-          core_fix = 'phase1-core-values-fix-v1'
-          main_finish = 'phase1-main-site-finish-v1'
-          last_mile = 'phase1-main-site-last-mile-v1'
-          plus = 'phase1-main-site-95plus-v1'
-          main_refine = 'phase1-main-site-refine-v1'
-          hero_stage = 'phase1-hero-stage-focus-v1'
-          public_pages = 'phase1-public-pages-align-v1'
-          public_pages_refine = 'phase1-public-pages-refine-v1'
-          status_polish = 'phase1-status-polish-v1'
-          previous = [
-              'phase1-nobackground-v2', 'phase1-superb-overhaul-v1', 'phase1-final-design-v1',
-              'phase1-bryforge-aligned-v1', 'phase1-orange-rainbow-v1', 'phase1-polish-77-v1',
-              'phase1-orange-spectrum-v1', 'phase1-orange-premium-v1', 'phase1-orange-elite-v1',
-              'phase1-rainbow-space-v1', 'phase1-rainbow-space-v2', 'phase1-rainbow-space-v3',
-              'phase1-rainbow-space-v4', 'phase1-visible-fix-v1', 'phase1-render-fix-v1',
-              'phase1-matrix-fit-v1', 'phase1-matrix-polish-v1', 'phase1-matrix-readability-v1',
-              'phase1-star-edge-polish-v1', 'phase1-eye-candy-v1', 'phase1-eye-candy-boost-v1',
-              'phase1-starlight-motion-v1', 'phase1-starlight-premium-v1', 'phase1-starlight-depth-v1',
-              'phase1-spectrum-buttons-v1', 'phase1-spectrum-solid-v1', 'phase1-computer-joy-v1',
-              'phase1-machine-harmony-v1', 'phase1-public-polish-v1', 'phase1-presentation-10-v1',
-              'phase1-core-values-fix-v1', 'phase1-main-site-finish-v1', 'phase1-main-site-last-mile-v1',
-              'phase1-main-site-95plus-v1', 'phase1-main-site-refine-v1'
-          ]
-          def add_once(text, tag):
-              return text if tag in text else text.replace('</head>', f'  {tag}\n</head>')
-          p = Path('_site/index.html')
-          s = p.read_text()
-          for old in previous:
-              s = s.replace(f'styles.css?v={old}', f'styles.css?v={hero_stage}')
-              s = s.replace(f'button-fix.css?v={old}', f'button-fix.css?v={hero_stage}')
-              s = s.replace(f'site.js?v={old}', f'site.js?v={hero_stage}')
-              s = s.replace(f'button-fix.js?v={old}', f'button-fix.js?v={hero_stage}')
-              s = s.replace(f'official-phase1-logo-{old.replace("phase1-", "")}', 'official-phase1-logo-hero-stage-focus-v1')
-          for css in [
-              f'<link rel="stylesheet" href="./site/phase1-banner-overhaul.css?v={banner}">',
-              f'<link rel="stylesheet" href="./site/phase1-structure-recovery.css?v={structure}">',
-              f'<link rel="stylesheet" href="./site/phase1-matrix-fit.css?v={matrix}">',
-              f'<link rel="stylesheet" href="./site/phase1-matrix-polish.css?v={polish}">',
-              f'<link rel="stylesheet" href="./site/phase1-matrix-readability.css?v={readability}">',
-              f'<link rel="stylesheet" href="./site/phase1-star-edge-polish.css?v={star}">',
-              f'<link rel="stylesheet" href="./site/phase1-eye-candy.css?v={eye}">',
-              f'<link rel="stylesheet" href="./site/phase1-eye-candy-boost.css?v={boost}">',
-              f'<link rel="stylesheet" href="./site/phase1-starlight-motion.css?v={starlight}">',
-              f'<link rel="stylesheet" href="./site/phase1-starlight-premium.css?v={premium}">',
-              f'<link rel="stylesheet" href="./site/phase1-starlight-depth.css?v={depth}">',
-              f'<link rel="stylesheet" href="./site/phase1-spectrum-buttons.css?v={spectrum}">',
-              f'<link rel="stylesheet" href="./site/phase1-spectrum-solid.css?v={solid}">',
-              f'<link rel="stylesheet" href="./site/phase1-computer-joy.css?v={computer}">',
-              f'<link rel="stylesheet" href="./site/phase1-machine-harmony.css?v={harmony}">',
-              f'<link rel="stylesheet" href="./site/phase1-public-polish.css?v={public_polish}">',
-              f'<link rel="stylesheet" href="./site/phase1-presentation-10.css?v={presentation}">',
-              f'<link rel="stylesheet" href="./site/phase1-core-values-fix.css?v={core_fix}">',
-              f'<link rel="stylesheet" href="./site/phase1-main-site-finish.css?v={main_finish}">',
-              f'<link rel="stylesheet" href="./site/phase1-main-site-last-mile.css?v={last_mile}">',
-              f'<link rel="stylesheet" href="./site/phase1-main-site-95plus.css?v={plus}">',
-              f'<link rel="stylesheet" href="./site/phase1-main-site-refine.css?v={main_refine}">',
-              f'<link rel="stylesheet" href="./site/phase1-hero-stage-focus.css?v={hero_stage}">',
-          ]:
-              s = add_once(s, css)
-          p.write_text(s)
-
-          sp = Path('_site/status.html')
-          if sp.exists():
-              t = sp.read_text()
-              for css in [
-                  f'<link rel="stylesheet" href="./site/phase1-eye-candy-boost.css?v={boost}">',
-                  f'<link rel="stylesheet" href="./site/phase1-starlight-motion.css?v={starlight}">',
-                  f'<link rel="stylesheet" href="./site/phase1-starlight-premium.css?v={premium}">',
-                  f'<link rel="stylesheet" href="./site/phase1-starlight-depth.css?v={depth}">',
-                  f'<link rel="stylesheet" href="./site/phase1-status-polish.css?v={status_polish}">',
-                  f'<link rel="stylesheet" href="./site/phase1-spectrum-buttons.css?v={spectrum}">',
-                  f'<link rel="stylesheet" href="./site/phase1-spectrum-solid.css?v={solid}">',
-                  f'<link rel="stylesheet" href="./site/phase1-computer-joy.css?v={computer}">',
-                  f'<link rel="stylesheet" href="./site/phase1-machine-harmony.css?v={harmony}">',
-                  f'<link rel="stylesheet" href="./site/phase1-public-polish.css?v={public_polish}">',
-                  f'<link rel="stylesheet" href="./site/phase1-presentation-10.css?v={presentation}">',
-                  f'<link rel="stylesheet" href="./site/phase1-core-values-fix.css?v={core_fix}">',
-                  f'<link rel="stylesheet" href="./site/phase1-public-pages-align.css?v={public_pages}">',
-                  f'<link rel="stylesheet" href="./site/phase1-public-pages-refine.css?v={public_pages_refine}">',
-              ]:
-                  t = add_once(t, css)
-              sp.write_text(t)
-          PY
+          cp -R assets/. _site/assets/
 
           if [ -f docs/community/CONTACT.md ]; then
             cp docs/community/CONTACT.md _site/CONTACT.md
@@ -149,30 +47,37 @@ jobs:
           if [ -f docs/project/WIKI_ROADMAP.md ]; then
             cp docs/project/WIKI_ROADMAP.md _site/WIKI_ROADMAP.md
           fi
-          cp -R assets/. _site/assets/
+
           if [ -f wiki/index.html ] && [ -f wiki/docs.css ] && [ -f wiki/docs.js ]; then
             cp wiki/index.html wiki/docs.css wiki/docs.js _site/wiki/
           elif [ -f wiki/site/index.html ] && [ -f wiki/docs.css ] && [ -f wiki/docs.js ]; then
             cp wiki/site/index.html wiki/docs.css wiki/docs.js _site/wiki/
           fi
 
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('_site/index.html')
+          s = p.read_text()
+          s = s.replace('button-fix.css?v=phase1-eye-candy-boost-v1', 'button-fix.css?v=phase1-first-view-mobile-v1')
+          s = s.replace('site.js?v=phase1-eye-candy-boost-v1', 'site.js?v=phase1-first-view-mobile-v1')
+          s = s.replace('official-phase1-logo-eye-candy-boost-v1', 'official-phase1-logo-first-view-mobile-v1')
+          p.write_text(s)
+          PY
+
+          test -f _site/index.html
           test -f _site/status.html
           test -f _site/status.json
           test -f _site/status-badge.json
-          test -f _site/site/phase1-core-values-fix.css
-          test -f _site/site/phase1-main-site-finish.css
-          test -f _site/site/phase1-main-site-last-mile.css
-          test -f _site/site/phase1-main-site-95plus.css
-          test -f _site/site/phase1-main-site-refine.css
-          test -f _site/site/phase1-hero-stage-focus.css
-          test -f _site/site/phase1-public-pages-align.css
-          test -f _site/site/phase1-public-pages-refine.css
           test -f _site/wiki/index.html
           test -f _site/wiki/docs.css
           test -f _site/wiki/docs.js
-          grep -q 'phase1-hero-stage-focus.css?v=phase1-hero-stage-focus-v1' _site/index.html
-          grep -q 'button-fix.css?v=phase1-hero-stage-focus-v1' _site/index.html
-          grep -q 'site.js?v=phase1-hero-stage-focus-v1' _site/index.html
+          test -f _site/site/button-fix.css
+          test -f _site/site/phase1-hero-stage-focus.css
+          test -f _site/site/phase1-first-view-mobile.css
+          test -f _site/site/phase1-public-pages-align.css
+          test -f _site/site/phase1-public-pages-refine.css
+          grep -q 'button-fix.css?v=phase1-first-view-mobile-v1' _site/index.html
+          grep -q 'site.js?v=phase1-first-view-mobile-v1' _site/index.html
           grep -q 'phase1-public-pages-refine.css?v=phase1-public-pages-refine-v1' _site/status.html
           grep -q 'phase1-public-pages-refine.css?v=phase1-public-pages-refine-v1' _site/wiki/index.html
 
