@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Phase1 Wiki // Bryforge Docs Hub</title>
-  <meta name="description" content="Phase1 wiki and docs hub by Bryforge: quick start, command reference, security model, storage and VFS, runtime roadmap, boot profiles, browser safety, updates, tutorials, sponsorship, and Bryforge information.">
+  <meta name="description" content="Phase1 wiki and docs hub by Bryforge: quick start, command reference, security model, storage and VFS, runtime roadmap, browser safety, updates, tutorials, sponsorship, and Bryforge information.">
   <meta name="robots" content="index, follow, max-image-preview:large">
   <meta name="theme-color" content="#050711">
   <link rel="canonical" href="https://bryforge.github.io/phase1/wiki/">
@@ -15,9 +15,9 @@
   <meta property="og:image" content="https://bryforge.github.io/phase1/assets/phase1-nobackground.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Phase1 Wiki // Bryforge Docs Hub">
-  <meta name="twitter:description" content="Quick start, command reference, security model, storage/VFS, runtime roadmap, tutorials, and public roadmap for Phase1.">
+  <meta name="twitter:description" content="Quick start, command reference, security model, storage/VFS, runtime roadmap, browser safety, tutorials, and public roadmap for Phase1.">
   <meta name="twitter:image" content="https://bryforge.github.io/phase1/assets/phase1-nobackground.png">
-  <link rel="stylesheet" href="./docs.css?v=phase1-wiki-runtime-v1">
+  <link rel="stylesheet" href="./docs.css?v=phase1-wiki-browser-v1">
   <link rel="stylesheet" href="../site/phase1-eye-candy-boost.css?v=phase1-eye-candy-boost-v1">
   <link rel="stylesheet" href="../site/phase1-starlight-motion.css?v=phase1-starlight-motion-v1">
   <link rel="stylesheet" href="../site/phase1-starlight-premium.css?v=phase1-starlight-premium-v1">
@@ -47,6 +47,7 @@
         <a href="security.html">Security Model</a>
         <a href="storage.html">Storage + VFS</a>
         <a href="runtime.html">Runtime Roadmap</a>
+        <a href="browser.html">Browser Safety</a>
         <a href="#quick-start">Quick Start</a>
         <a href="#boot">Boot Profiles</a>
         <a href="#commands">Command Index</a>
@@ -95,8 +96,11 @@
         <a class="quick-card" href="runtime.html" data-search="language runtime rust python javascript typescript go java wasm capability">
           <span>05</span><strong>Runtimes</strong><small>Language roadmap.</small>
         </a>
+        <a class="quick-card" href="browser.html" data-search="browser network safety http html scheme loopback active content">
+          <span>06</span><strong>Browser</strong><small>Network safety model.</small>
+        </a>
         <a class="quick-card" href="../status.html" data-search="status roadmap progress public marker">
-          <span>06</span><strong>Status</strong><small>Live roadmap signal.</small>
+          <span>07</span><strong>Status</strong><small>Live roadmap signal.</small>
         </a>
       </section>
 
@@ -146,7 +150,7 @@
         <p class="eyebrow">browser + network safety</p>
         <h2>Guarded access instead of blind host execution.</h2>
         <p>The browser and network sections explain scheme restrictions, safe-mode behavior, stripped active content, loopback fallbacks, and why Phase1 does not need passwords, private keys, or personal tokens.</p>
-        <p><a class="coffee-link" href="security.html#browser-boundary">Open browser boundary notes →</a></p>
+        <p><a class="coffee-link" href="browser.html">Open Browser + Network Safety →</a></p>
       </section>
 
       <section id="languages" class="doc-section panel" data-search="language runtimes rust python javascript typescript go java csharp swift webassembly wasm">
@@ -200,6 +204,6 @@
     </main>
   </div>
 
-  <script src="./docs.js?v=phase1-wiki-runtime-v1"></script>
+  <script src="./docs.js?v=phase1-wiki-browser-v1"></script>
 </body>
 </html>
