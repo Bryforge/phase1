@@ -1,0 +1,247 @@
+/* Phase1 orange-spectrum elite polish.
+   Tightens the design from good to intentional: orange-only spectrum, cleaner black glass,
+   less washed-out smoke, sharper hierarchy, smoother living sheen, stronger consistency. */
+
+:root {
+  --oe-void: #010000;
+  --oe-ink: #fff7e8;
+  --oe-muted: #d6ad84;
+  --oe-soft: #a77a55;
+  --oe-dark: #160805;
+  --oe-deep: #321005;
+  --oe-rust: #7a2307;
+  --oe-redorange: #e23a08;
+  --oe-ember: #ff470b;
+  --oe-flame: #ff6415;
+  --oe-tangerine: #ff821b;
+  --oe-amber: #ffad35;
+  --oe-gold: #ffd063;
+  --oe-cream: #fff2cc;
+  --oe-line: rgba(255, 180, 82, .20);
+  --oe-line-hot: rgba(255, 130, 27, .62);
+  --oe-spectrum: linear-gradient(90deg, #321005, #7a2307, #e23a08, #ff470b, #ff6415, #ff821b, #ffad35, #ffd063, #fff2cc, #ffd063, #ffad35, #ff6415, #e23a08, #321005);
+  --oe-heading: linear-gradient(90deg, #fff2cc, #ffd063, #ffad35, #ff821b, #ff6415, #ff470b, #b63a0d, #fff2cc);
+  --oe-panel: radial-gradient(circle at 18% 8%, rgba(255, 71, 11, .14), transparent 21rem), radial-gradient(circle at 84% 14%, rgba(255, 173, 53, .10), transparent 24rem), radial-gradient(circle at 52% 92%, rgba(122, 35, 7, .20), transparent 28rem), linear-gradient(145deg, rgba(15, 7, 4, .91), rgba(255, 208, 99, .038));
+  --oe-card-shadow: 0 36px 132px rgba(0,0,0,.68), 0 0 54px rgba(255,71,11,.15), 0 0 98px rgba(255,173,53,.075);
+  --oe-live-shadow: 0 0 34px rgba(255,71,11,.31), 0 0 74px rgba(255,130,27,.18), 0 0 118px rgba(255,208,99,.10);
+}
+
+body {
+  background:
+    radial-gradient(circle at 10% 7%, rgba(255,71,11,.20), transparent 27rem),
+    radial-gradient(circle at 90% 6%, rgba(255,173,53,.105), transparent 27rem),
+    radial-gradient(circle at 20% 82%, rgba(122,35,7,.20), transparent 25rem),
+    linear-gradient(180deg, #010000 0%, #060201 48%, #010000 100%) !important;
+}
+
+body::before {
+  opacity: .10 !important;
+  filter: sepia(.55) saturate(1.3) !important;
+}
+
+body::after {
+  opacity: .78 !important;
+  background:
+    radial-gradient(circle at 12% 14%, rgba(255,71,11,.14), transparent 24rem),
+    radial-gradient(circle at 86% 72%, rgba(255,173,53,.08), transparent 24rem),
+    linear-gradient(116deg, transparent 0%, rgba(255,242,204,.027) 38%, rgba(255,130,27,.095) 52%, transparent 72%) !important;
+}
+
+#space {
+  opacity: .70 !important;
+  filter: sepia(.62) saturate(1.62) hue-rotate(-22deg) contrast(1.1) brightness(.9) !important;
+}
+
+.aurora {
+  opacity: .072 !important;
+  filter: blur(90px) sepia(.58) saturate(1.75) hue-rotate(-24deg) !important;
+}
+
+.nav,
+.status-callout__link,
+.glass-panel,
+.hero,
+.feature-card,
+.bryforge-card,
+.support-card,
+.metric-strip div,
+.timeline li,
+.hero-status-panel,
+.terminal,
+.footer,
+.founder,
+.roadmap {
+  background: var(--oe-panel) !important;
+  border-color: var(--oe-line) !important;
+  box-shadow: var(--oe-card-shadow), inset 0 1px 0 rgba(255,242,204,.075) !important;
+}
+
+.hero {
+  min-height: clamp(660px, 78vh, 820px) !important;
+  border-radius: clamp(32px, 4vw, 50px) !important;
+}
+
+.hero h1,
+.section-heading h2,
+.founder-copy h2,
+.support-card h2,
+.bryforge-card h3,
+.feature-card h3,
+.roadmap h3 {
+  background-image: var(--oe-heading) !important;
+  background-size: 340% 100% !important;
+  animation: oe-flow 10.5s linear infinite !important;
+  letter-spacing: -0.072em !important;
+}
+
+.hero h1 {
+  max-width: 900px !important;
+  line-height: .89 !important;
+}
+
+.hero-text,
+.section-heading p,
+.feature-card p,
+.bryforge-card p,
+.founder-copy p,
+.hero-status-panel p,
+.support-card p,
+.timeline p,
+.terminal p,
+.footer {
+  color: var(--oe-muted) !important;
+}
+
+.eyebrow,
+.card-kicker,
+.timeline-status,
+.status-pill,
+.terminal-status {
+  color: var(--oe-gold) !important;
+  text-shadow: 0 0 18px rgba(255,173,53,.55), 0 0 42px rgba(255,71,11,.22) !important;
+}
+
+.status-callout__link,
+.nav-status-link,
+.button-primary,
+.button-coffee,
+.button-status,
+.live-pill,
+.support-card-mini span,
+.avatar-ring,
+.brand-pip {
+  background-image: var(--oe-spectrum) !important;
+  background-size: 340% 100% !important;
+  color: #130502 !important;
+  box-shadow: var(--oe-live-shadow), inset 0 1px 0 rgba(255,242,204,.38) !important;
+  animation: oe-flow 6.4s linear infinite, oe-breathe 3.2s ease-in-out infinite !important;
+}
+
+.button-secondary,
+.button-ghost,
+.quick-commands button,
+.terminal-form button,
+.hero-status-panel a,
+.footer-links .nav-status-link {
+  color: var(--oe-cream) !important;
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(rgba(15,7,4,.9), rgba(255,208,99,.05)) padding-box,
+    var(--oe-spectrum) border-box !important;
+  background-size: 100% 100%, 340% 100% !important;
+  animation: oe-border 8.5s linear infinite !important;
+}
+
+.button::before,
+.status-callout__link::before,
+.nav-status-link::before,
+.hero-status-panel a::before,
+.quick-commands button::before,
+.terminal-form button::before {
+  background: linear-gradient(110deg, transparent 0%, rgba(255,242,204,0) 34%, rgba(255,242,204,.50) 48%, rgba(255,173,53,.40) 56%, rgba(255,71,11,.18) 65%, transparent 79%) !important;
+  animation: oe-button-sheen 3.15s ease-in-out infinite !important;
+}
+
+.hero::before,
+.roadmap::before,
+.founder::before,
+.support-card::before,
+.terminal::before,
+.feature-card::before,
+.bryforge-card::before,
+.hero-status-panel::before,
+.timeline li::before,
+.metric-strip div::before,
+.feature-card::after,
+.bryforge-card::after,
+.support-card::after,
+.founder::after,
+.hero::after,
+.terminal::after,
+.roadmap::after,
+.hero-status-panel::after {
+  background: linear-gradient(112deg, transparent 0%, rgba(255,242,204,.02) 30%, rgba(255,130,27,.12) 45%, rgba(255,71,11,.10) 56%, rgba(255,173,53,.07) 66%, transparent 82%) !important;
+  opacity: .58 !important;
+  animation: oe-panel-sheen 10s ease-in-out infinite !important;
+}
+
+.logo-glass {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255,130,27,.24), transparent 17rem),
+    radial-gradient(circle at 34% 62%, rgba(255,71,11,.15), transparent 15rem),
+    radial-gradient(circle at 68% 24%, rgba(255,208,99,.09), transparent 15rem),
+    linear-gradient(145deg, rgba(3,1,0,.99), rgba(27,10,4,.90)) !important;
+  border-color: rgba(255,180,82,.22) !important;
+  box-shadow: inset 0 0 0 1px rgba(255,242,204,.06), inset 0 0 80px rgba(255,71,11,.11), 0 0 76px rgba(255,71,11,.18), 0 0 110px rgba(255,173,53,.09) !important;
+}
+
+.logo-glass::before {
+  background: conic-gradient(from 0deg, #321005, #7a2307, #e23a08, #ff470b, #ff6415, #ff821b, #ffad35, #ffd063, #fff2cc, #ffd063, #ffad35, #ff6415, #e23a08, #321005) !important;
+  opacity: .40 !important;
+}
+
+.phase-logo-image,
+.logo-glass img {
+  filter: sepia(.20) saturate(1.14) contrast(1.1) drop-shadow(0 0 20px rgba(255,208,99,.21)) drop-shadow(0 0 40px rgba(255,71,11,.24)) !important;
+}
+
+.hero-command,
+.terminal-output {
+  background: rgba(7,3,1,.64) !important;
+  border-color: rgba(255,130,27,.24) !important;
+}
+
+.metric-strip div,
+.hero-status-panel {
+  background:
+    radial-gradient(circle at 18% 8%, rgba(255,71,11,.12), transparent 18rem),
+    linear-gradient(145deg, rgba(13,6,3,.88), rgba(255,208,99,.045)) !important;
+}
+
+.button:hover,
+.status-callout__link:hover,
+.nav-status-link:hover,
+.hero-status-panel a:hover,
+.quick-commands button:hover,
+.terminal-form button:hover,
+.feature-card:hover,
+.bryforge-card:hover,
+.support-card:hover,
+.hero-status-panel:hover,
+.metric-strip div:hover,
+.timeline li:hover {
+  border-color: var(--oe-line-hot) !important;
+  box-shadow: 0 42px 150px rgba(0,0,0,.68), 0 0 90px rgba(255,71,11,.27), 0 0 122px rgba(255,173,53,.13), inset 0 1px 0 rgba(255,242,204,.12) !important;
+}
+
+@media (max-width: 920px) {
+  .hero { min-height: auto !important; }
+  .hero h1 { letter-spacing: -0.064em !important; }
+  .status-callout__link { box-shadow: 0 0 24px rgba(255,71,11,.24), 0 0 60px rgba(255,173,53,.10) !important; }
+}
+
+@keyframes oe-flow { to { background-position: 340% 50%; } }
+@keyframes oe-border { to { background-position: 0 0, 340% 50%; } }
+@keyframes oe-breathe { 0%,100% { filter: saturate(1) brightness(1); } 50% { filter: saturate(1.18) brightness(1.07); } }
+@keyframes oe-button-sheen { 0%, 36% { transform: translateX(-132%); opacity: 0; } 50% { opacity: .58; } 78%, 100% { transform: translateX(132%); opacity: 0; } }
+@keyframes oe-panel-sheen { 0%,100% { transform: translateX(-4%); opacity: .30; } 50% { transform: translateX(4%); opacity: .62; } }
