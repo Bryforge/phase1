@@ -1,0 +1,157 @@
+/* Phase1 atmospheric field pass.
+   Fades the grid into a smoky background texture and makes the starfield feel
+   alive: small, glowing, slow, and secondary to the hero content. */
+
+:root {
+  --atm-cyan: rgba(125, 247, 255, .55);
+  --atm-violet: rgba(156, 125, 255, .38);
+  --atm-orange: rgba(255, 141, 47, .34);
+}
+
+/* Make the old grid a soft atmospheric texture, not a first-read detail. */
+body::before {
+  content: "" !important;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(125,247,255,.22) 0 1px, transparent 1.8px),
+    radial-gradient(circle at 74% 18%, rgba(255,255,255,.20) 0 1px, transparent 1.7px),
+    radial-gradient(circle at 48% 78%, rgba(255,141,47,.15) 0 1px, transparent 1.8px),
+    linear-gradient(90deg, transparent 0 49.65%, rgba(125,247,255,.030) 49.9% 50.1%, transparent 50.35% 100%),
+    linear-gradient(0deg, transparent 0 49.65%, rgba(255,141,47,.022) 49.9% 50.1%, transparent 50.35% 100%),
+    radial-gradient(circle at 24% 16%, rgba(125,247,255,.050), transparent 28rem),
+    radial-gradient(circle at 86% 22%, rgba(255,111,236,.036), transparent 30rem),
+    radial-gradient(circle at 56% 92%, rgba(255,141,47,.032), transparent 34rem) !important;
+  background-size:
+    230px 230px,
+    360px 360px,
+    520px 520px,
+    108px 108px,
+    108px 108px,
+    100% 100%,
+    100% 100%,
+    100% 100% !important;
+  opacity: .115 !important;
+  filter: blur(.35px) saturate(1.05) !important;
+  mask-image: radial-gradient(circle at 50% 24%, rgba(0,0,0,.88) 0 18%, rgba(0,0,0,.55) 44%, transparent 86%) !important;
+  animation: p1-atmospheric-grid-drift 260s linear infinite !important;
+}
+
+/* Rebuild starfield as a subtle moving glow layer. */
+.phase-starfield {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 1 !important;
+  pointer-events: none !important;
+  opacity: .62 !important;
+  overflow: hidden !important;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(125,247,255,.42) 0 1px, transparent 2px),
+    radial-gradient(circle at 86% 12%, rgba(255,255,255,.34) 0 1px, transparent 2px),
+    radial-gradient(circle at 68% 62%, rgba(255,141,47,.28) 0 1px, transparent 2px),
+    radial-gradient(circle at 32% 72%, rgba(156,125,255,.30) 0 1px, transparent 2px) !important;
+  background-size: 280px 280px, 420px 420px, 520px 520px, 360px 360px !important;
+  animation: p1-starfield-slow-drift 190s linear infinite !important;
+  mix-blend-mode: screen !important;
+}
+
+.phase-starfield::before,
+.phase-starfield::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: -12% !important;
+  pointer-events: none !important;
+  background:
+    radial-gradient(circle at 18% 26%, rgba(125,247,255,.42) 0 1px, transparent 2px),
+    radial-gradient(circle at 42% 18%, rgba(255,255,255,.32) 0 1px, transparent 2px),
+    radial-gradient(circle at 74% 36%, rgba(255,111,236,.30) 0 1px, transparent 2px),
+    radial-gradient(circle at 58% 78%, rgba(255,141,47,.26) 0 1px, transparent 2px) !important;
+  background-size: 310px 310px, 470px 470px, 610px 610px, 390px 390px !important;
+  filter: drop-shadow(0 0 5px rgba(125,247,255,.30)) drop-shadow(0 0 8px rgba(255,141,47,.14)) !important;
+  opacity: .42 !important;
+  animation: p1-star-twinkle 9s ease-in-out infinite, p1-starfield-slow-drift-alt 230s linear infinite !important;
+}
+
+.phase-starfield::after {
+  opacity: .26 !important;
+  filter: blur(.35px) drop-shadow(0 0 8px rgba(156,125,255,.22)) !important;
+  animation-duration: 13s, 310s !important;
+  transform: scale(1.08) !important;
+}
+
+.phase-starfield__drift {
+  position: absolute !important;
+  inset: -10% !important;
+  display: block !important;
+  opacity: .30 !important;
+  background:
+    radial-gradient(circle at 20% 40%, rgba(125,247,255,.30) 0 1px, transparent 2px),
+    radial-gradient(circle at 82% 64%, rgba(255,141,47,.22) 0 1px, transparent 2px),
+    radial-gradient(circle at 50% 20%, rgba(255,255,255,.28) 0 1px, transparent 2px) !important;
+  background-size: 510px 510px, 640px 640px, 430px 430px !important;
+  filter: drop-shadow(0 0 9px rgba(125,247,255,.20)) !important;
+  animation: p1-star-drift-layer 280s linear infinite, p1-star-twinkle 11s ease-in-out infinite !important;
+}
+
+/* Keep the hero chamber dominant over the background. */
+.hero,
+.nav,
+.status-callout,
+.footer,
+.glass-panel {
+  position: relative !important;
+  z-index: 3 !important;
+}
+
+@media (max-width: 760px) {
+  body::before {
+    opacity: .085 !important;
+    background-size:
+      260px 260px,
+      420px 420px,
+      580px 580px,
+      128px 128px,
+      128px 128px,
+      100% 100%,
+      100% 100%,
+      100% 100% !important;
+  }
+
+  .phase-starfield {
+    opacity: .54 !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before,
+  .phase-starfield,
+  .phase-starfield::before,
+  .phase-starfield::after,
+  .phase-starfield__drift {
+    animation: none !important;
+  }
+}
+
+@keyframes p1-atmospheric-grid-drift {
+  to { background-position: 230px 230px, 360px 360px, 520px 520px, 108px 108px, 108px 108px, 0 0, 0 0, 0 0; }
+}
+
+@keyframes p1-starfield-slow-drift {
+  to { background-position: 280px 280px, -420px 420px, 520px -520px, -360px -360px; }
+}
+
+@keyframes p1-starfield-slow-drift-alt {
+  to { background-position: -310px 310px, 470px -470px, -610px -610px, 390px 390px; }
+}
+
+@keyframes p1-star-drift-layer {
+  to { background-position: 510px -510px, -640px 640px, 430px 430px; }
+}
+
+@keyframes p1-star-twinkle {
+  0%, 100% { opacity: .24; filter: drop-shadow(0 0 4px rgba(125,247,255,.18)); }
+  45% { opacity: .52; filter: drop-shadow(0 0 8px rgba(125,247,255,.34)) drop-shadow(0 0 10px rgba(255,141,47,.16)); }
+  70% { opacity: .36; }
+}
