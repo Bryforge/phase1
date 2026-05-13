@@ -1,0 +1,147 @@
+/* Phase1 main-site finish pass.
+   A small homepage-only polish layer from the restored 9.5/10 checkpoint.
+   Scope: preserve the accepted visual language, add refinement, avoid broad redesign. */
+
+:root {
+  --msf-line: rgba(232, 248, 255, .18);
+  --msf-line-strong: rgba(232, 248, 255, .26);
+  --msf-muted: #d4dfef;
+  --msf-cyan: #7df7ff;
+  --msf-violet: #9c7dff;
+  --msf-orange: #ff8d2f;
+  --msf-gold: #ffd76c;
+  --msf-green: #85ff9f;
+  --msf-spectrum: linear-gradient(115deg, #7df7ff, #50c8ff, #9c7dff, #ff6fec, #ff8d2f, #ffd76c, #85ff9f);
+}
+
+/* Preserve the accepted homepage, but give it a more finished product-shell feel. */
+.hero {
+  border-color: var(--msf-line) !important;
+  box-shadow:
+    0 36px 124px rgba(0, 0, 0, .66),
+    0 0 36px rgba(125, 247, 255, .090),
+    0 0 42px rgba(255, 141, 47, .060),
+    inset 0 1px 0 rgba(255, 255, 255, .13) !important;
+}
+
+.hero h1,
+#hero-title {
+  line-height: 1.055 !important;
+  padding-bottom: .14em !important;
+  overflow: visible !important;
+  text-wrap: balance !important;
+}
+
+.hero-text {
+  color: var(--msf-muted) !important;
+  max-width: 66ch !important;
+}
+
+.logo-glass {
+  border-color: rgba(232, 248, 255, .20) !important;
+  box-shadow:
+    0 0 0 1px rgba(232, 248, 255, .13),
+    0 0 58px rgba(125, 247, 255, .16),
+    0 0 62px rgba(255, 141, 47, .11),
+    inset 0 0 66px rgba(255, 255, 255, .052) !important;
+}
+
+.phase-logo-image,
+.logo-glass img {
+  filter:
+    saturate(1.12) contrast(1.07)
+    drop-shadow(0 0 18px rgba(255,255,255,.18))
+    drop-shadow(0 0 32px rgba(125,247,255,.18))
+    drop-shadow(0 0 34px rgba(255,141,47,.12)) !important;
+}
+
+/* Slightly richer, not louder, action surfaces. */
+.button,
+.hero-actions a,
+.hero-status-panel a,
+.quick-commands button,
+.terminal-form button,
+.footer-links a {
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.065),
+    0 0 8px rgba(125,247,255,.065),
+    inset 0 1px 0 rgba(255,255,255,.14),
+    inset 0 -1px 0 rgba(0,0,0,.42) !important;
+}
+
+.button::before,
+.hero-actions a::before,
+.hero-status-panel a::before,
+.quick-commands button::before,
+.terminal-form button::before,
+.footer-links a::before {
+  opacity: .26 !important;
+  filter: blur(3.8px) saturate(1.06) !important;
+}
+
+.button:hover::before,
+.hero-actions a:hover::before,
+.hero-status-panel a:hover::before,
+.quick-commands button:hover::before,
+.terminal-form button:hover::before,
+.footer-links a:hover::before {
+  opacity: .78 !important;
+  filter: blur(6.8px) saturate(1.22) !important;
+}
+
+/* Premium card rhythm without changing layout. */
+.feature-card,
+.terminal,
+.roadmap,
+.founder,
+.support-card,
+.footer,
+.hero-status-panel,
+.metric-strip div,
+.bryforge-card,
+.timeline li {
+  border-color: var(--msf-line) !important;
+}
+
+.feature-card:hover,
+.timeline li:hover,
+.metric-strip div:hover,
+.bryforge-card:hover {
+  border-color: var(--msf-line-strong) !important;
+  transform: translateY(-2px) !important;
+}
+
+.feature-icon {
+  filter: drop-shadow(0 0 10px rgba(125,247,255,.18)) !important;
+}
+
+.terminal-output {
+  border-radius: 18px !important;
+  background: rgba(0,0,0,.22) !important;
+}
+
+/* Keep core values beautiful and safely inside the card. */
+.support-card-mini {
+  overflow: hidden !important;
+}
+
+.support-card-mini::before {
+  max-width: 100% !important;
+  overflow: visible !important;
+}
+
+.support-card-mini span {
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.050),
+    0 0 9px rgba(125,247,255,.060),
+    inset 0 1px 0 rgba(255,255,255,.13),
+    inset 0 -1px 0 rgba(0,0,0,.42) !important;
+}
+
+@media (max-width: 760px) {
+  .hero h1,
+  #hero-title {
+    line-height: 1.08 !important;
+    padding-bottom: .16em !important;
+  }
+}
