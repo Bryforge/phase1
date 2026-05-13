@@ -1,0 +1,204 @@
+/* Phase1 public pages refinement.
+   Second small pass for status + wiki after alignment.
+   Goal: make both pages feel like one public system while keeping the main site stable. */
+
+:root {
+  --ppr-line: rgba(235, 250, 255, .20);
+  --ppr-line-hot: rgba(235, 250, 255, .30);
+  --ppr-muted: #d8e4f2;
+  --ppr-cyan: #7df7ff;
+  --ppr-orange: #ff8d2f;
+  --ppr-spectrum: linear-gradient(115deg, #7df7ff, #50c8ff, #9c7dff, #ff6fec, #ff8d2f, #ffd76c, #85ff9f);
+}
+
+/* Shared page rhythm. */
+.status-shell,
+.docs-shell {
+  width: min(1220px, calc(100% - 32px)) !important;
+}
+
+.status-shell {
+  gap: clamp(18px, 2.4vw, 30px) !important;
+}
+
+.docs-shell {
+  gap: clamp(18px, 2.2vw, 28px) !important;
+}
+
+.status-nav,
+.docs-sidebar {
+  border-color: var(--ppr-line) !important;
+  box-shadow:
+    0 20px 64px rgba(0,0,0,.56),
+    0 0 18px rgba(125,247,255,.060),
+    inset 0 1px 0 rgba(255,255,255,.12) !important;
+}
+
+.status-brand,
+.docs-brand {
+  letter-spacing: .055em !important;
+}
+
+.status-brand img {
+  width: 26px !important;
+  height: 26px !important;
+}
+
+/* Hero blocks should share the same public-page height and balance. */
+.status-hero,
+.docs-hero {
+  min-height: clamp(330px, 38vw, 460px) !important;
+  align-items: center !important;
+  border-color: var(--ppr-line) !important;
+  box-shadow:
+    0 34px 114px rgba(0,0,0,.64),
+    0 0 34px rgba(125,247,255,.080),
+    0 0 38px rgba(255,141,47,.054),
+    inset 0 1px 0 rgba(255,255,255,.13) !important;
+}
+
+.status-hero h1,
+.docs-hero h1 {
+  max-width: 13.6ch !important;
+  margin-bottom: .18em !important;
+}
+
+.status-hero .meta,
+.docs-hero .hero-text {
+  max-width: 68ch !important;
+  line-height: 1.70 !important;
+  color: var(--ppr-muted) !important;
+}
+
+.status-percent {
+  border-color: var(--ppr-line) !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.045),
+    0 0 22px rgba(125,247,255,.090),
+    0 0 20px rgba(255,141,47,.062),
+    inset 0 1px 0 rgba(255,255,255,.12) !important;
+}
+
+.status-percent strong {
+  line-height: 1 !important;
+}
+
+.docs-hero .hero-logo {
+  max-width: min(34vw, 340px) !important;
+  width: 100% !important;
+  justify-self: center !important;
+}
+
+/* Cards and grids: more consistent density. */
+.status-grid,
+.card-grid,
+.command-grid,
+.quick-links,
+.status-metrics {
+  gap: clamp(14px, 1.8vw, 22px) !important;
+}
+
+.status-card,
+.metric,
+.quick-card,
+.card-grid article,
+.command-grid article,
+.doc-section {
+  border-color: var(--ppr-line) !important;
+}
+
+.status-card:hover,
+.metric:hover,
+.quick-card:hover,
+.card-grid article:hover,
+.command-grid article:hover {
+  border-color: var(--ppr-line-hot) !important;
+}
+
+.project-title h2,
+.doc-section h2 {
+  line-height: 1.10 !important;
+  padding-bottom: .12em !important;
+}
+
+.project-title strong,
+.metric strong,
+.quick-card span {
+  text-shadow: 0 0 14px rgba(125,247,255,.13), 0 1px 1px rgba(0,0,0,.45) !important;
+}
+
+.status-card .small,
+.metric span,
+.command-grid p,
+.card-grid p,
+.clean-list li {
+  line-height: 1.62 !important;
+}
+
+/* Search and code: consistent terminal polish. */
+#docs-search,
+.code-card,
+.command-grid kbd {
+  border-color: transparent !important;
+}
+
+.code-card code {
+  line-height: 1.72 !important;
+}
+
+/* Secondary nav links should not overpower the page. */
+.status-links a,
+.docs-sidebar nav a,
+.sidebar-button,
+.coffee-link {
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.045),
+    0 0 8px rgba(125,247,255,.050),
+    inset 0 1px 0 rgba(255,255,255,.13),
+    inset 0 -1px 0 rgba(0,0,0,.42) !important;
+}
+
+.status-links a:hover,
+.docs-sidebar nav a:hover,
+.sidebar-button:hover,
+.coffee-link:hover {
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.11),
+    0 0 14px rgba(125,247,255,.15),
+    0 0 20px rgba(156,125,255,.12),
+    0 0 26px rgba(255,141,47,.10),
+    inset 0 1px 0 rgba(255,255,255,.18) !important;
+}
+
+/* Footer consistency. */
+.status-footer {
+  border-color: var(--ppr-line) !important;
+}
+
+@media (max-width: 860px) {
+  .status-hero,
+  .docs-hero {
+    min-height: auto !important;
+  }
+
+  .docs-hero .hero-logo {
+    max-width: 220px !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .status-shell,
+  .docs-shell {
+    width: min(100% - 18px, 680px) !important;
+  }
+
+  .status-links,
+  .docs-sidebar nav {
+    gap: 8px !important;
+  }
+
+  .status-links a,
+  .docs-sidebar nav a {
+    min-height: 38px !important;
+  }
+}
