@@ -1,0 +1,256 @@
+/* Phase1 star-edge polish pass.
+   Direction: mostly black matrix background with soft, tiny rainbow stars;
+   consistent white button text; each button family gets a subtle, distinct outermost edge shine. */
+
+:root {
+  --se-black: #020309;
+  --se-ink: #f8fbff;
+  --se-muted: #c4d0e2;
+  --se-line: rgba(214, 233, 255, .15);
+  --se-grid: rgba(214, 233, 255, .045);
+  --se-blue: #58c9ff;
+  --se-cyan: #72f6ff;
+  --se-violet: #8d73ff;
+  --se-pink: #ff6bdd;
+  --se-orange: #ff8b2b;
+  --se-gold: #ffd36f;
+  --se-green: #7cff9b;
+}
+
+html,
+body {
+  background: var(--se-black) !important;
+}
+
+body {
+  color: var(--se-ink) !important;
+  background:
+    radial-gradient(circle at 18% 16%, rgba(88, 201, 255, .10), transparent 26rem),
+    radial-gradient(circle at 82% 20%, rgba(255, 139, 43, .08), transparent 27rem),
+    radial-gradient(circle at 54% 92%, rgba(141, 115, 255, .06), transparent 28rem),
+    linear-gradient(180deg, #020309 0%, #040712 48%, #020309 100%) !important;
+}
+
+/* Majority-black nested matrix with tiny soft rainbow stars. */
+body::before {
+  opacity: .50 !important;
+  background:
+    linear-gradient(90deg, rgba(214,233,255,.042) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(214,233,255,.038) 1px, transparent 1px),
+    linear-gradient(90deg, transparent 0 49.6%, rgba(88,201,255,.10) 50%, transparent 50.4% 100%),
+    linear-gradient(0deg, transparent 0 49.6%, rgba(255,139,43,.075) 50%, transparent 50.4% 100%) !important;
+  background-size: 52px 52px, 52px 52px, 208px 208px, 208px 208px !important;
+  animation: se-grid-drift 170s linear infinite !important;
+  mask-image: linear-gradient(180deg, rgba(0,0,0,.92), rgba(0,0,0,.72) 68%, rgba(0,0,0,.22) 100%) !important;
+}
+
+body::after {
+  content: "" !important;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+  opacity: .62 !important;
+  background:
+    radial-gradient(circle at 7% 17%, rgba(114,246,255,.65) 0 1px, transparent 2.6px),
+    radial-gradient(circle at 18% 64%, rgba(255,211,111,.55) 0 1px, transparent 2.4px),
+    radial-gradient(circle at 28% 28%, rgba(255,107,221,.48) 0 1px, transparent 2.6px),
+    radial-gradient(circle at 37% 82%, rgba(124,255,155,.48) 0 1px, transparent 2.4px),
+    radial-gradient(circle at 47% 13%, rgba(141,115,255,.52) 0 1px, transparent 2.5px),
+    radial-gradient(circle at 58% 58%, rgba(88,201,255,.42) 0 1px, transparent 2.6px),
+    radial-gradient(circle at 68% 31%, rgba(255,139,43,.52) 0 1px, transparent 2.5px),
+    radial-gradient(circle at 77% 76%, rgba(114,246,255,.46) 0 1px, transparent 2.4px),
+    radial-gradient(circle at 88% 19%, rgba(255,107,221,.42) 0 1px, transparent 2.6px),
+    radial-gradient(circle at 94% 67%, rgba(255,211,111,.45) 0 1px, transparent 2.5px),
+    radial-gradient(circle at 13% 41%, rgba(255,255,255,.42) 0 .8px, transparent 2.2px),
+    radial-gradient(circle at 33% 49%, rgba(255,255,255,.32) 0 .8px, transparent 2.2px),
+    radial-gradient(circle at 52% 84%, rgba(255,255,255,.34) 0 .8px, transparent 2.1px),
+    radial-gradient(circle at 72% 8%, rgba(255,255,255,.30) 0 .8px, transparent 2.2px),
+    radial-gradient(circle at 91% 44%, rgba(255,255,255,.33) 0 .8px, transparent 2.2px) !important;
+  filter:
+    drop-shadow(0 0 5px rgba(114,246,255,.22))
+    drop-shadow(0 0 7px rgba(255,139,43,.14)) !important;
+  animation: se-star-breathe 18s ease-in-out infinite !important;
+}
+
+.hero,
+.nav,
+.status-callout__link,
+.feature-card,
+.roadmap,
+.founder,
+.support-card,
+.terminal,
+.footer,
+.hero-status-panel,
+.metric-strip div,
+.bryforge-card,
+.timeline li {
+  border-color: rgba(214, 233, 255, .16) !important;
+}
+
+.hero {
+  background:
+    linear-gradient(90deg, rgba(88,201,255,.060) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255,139,43,.045) 1px, transparent 1px),
+    radial-gradient(circle at 18% 20%, rgba(88,201,255,.14), transparent 22rem),
+    radial-gradient(circle at 82% 34%, rgba(255,139,43,.12), transparent 24rem),
+    linear-gradient(105deg, rgba(3,6,14,.97), rgba(5,9,20,.94) 56%, rgba(8,5,8,.92)) !important;
+  background-size: 48px 48px, 48px 48px, 100% 100%, 100% 100%, 100% 100% !important;
+}
+
+.hero h1,
+.section-heading h2,
+.founder-copy h2,
+.support-card h2 {
+  text-shadow: 0 0 22px rgba(88,201,255,.08), 0 0 26px rgba(255,139,43,.06) !important;
+}
+
+.hero-text,
+.section-heading p,
+.feature-card p,
+.founder-copy p,
+.support-card p,
+.hero-status-panel p {
+  color: var(--se-muted) !important;
+}
+
+/* Button system: consistent white text, distinct subtle edge shine per family. */
+.button,
+.button-primary,
+.button-secondary,
+.button-ghost,
+.button-status,
+.button-coffee,
+.nav-status-link,
+.status-callout__link,
+.hero-status-panel a,
+.quick-commands button,
+.terminal-form button,
+.footer-links a {
+  position: relative !important;
+  isolation: isolate !important;
+  color: #ffffff !important;
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(180deg, rgba(6, 11, 23, .80), rgba(4, 8, 18, .62)) padding-box,
+    linear-gradient(90deg, rgba(114,246,255,.72), rgba(141,115,255,.54), rgba(255,139,43,.58)) border-box !important;
+  text-shadow: 0 1px 1px rgba(0,0,0,.58), 0 0 10px rgba(255,255,255,.13) !important;
+  box-shadow:
+    0 0 0 1px rgba(114,246,255,.10),
+    0 0 16px rgba(88,201,255,.10),
+    inset 0 1px 0 rgba(255,255,255,.18) !important;
+}
+
+.button::after,
+.nav-status-link::after,
+.status-callout__link::after,
+.hero-status-panel a::after,
+.quick-commands button::after,
+.terminal-form button::after,
+.footer-links a::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: -2px !important;
+  border-radius: inherit !important;
+  pointer-events: none !important;
+  z-index: -1 !important;
+  opacity: .52 !important;
+  background: var(--edge, linear-gradient(90deg, rgba(114,246,255,.36), rgba(255,139,43,.30))) !important;
+  filter: blur(5px) !important;
+}
+
+.button-primary,
+.status-callout__link {
+  --edge: linear-gradient(90deg, rgba(88,201,255,.46), rgba(70,140,255,.34), rgba(255,139,43,.30));
+  background:
+    linear-gradient(90deg, rgba(43,141,255,.86), rgba(85,108,255,.74), rgba(255,139,43,.78)) padding-box,
+    linear-gradient(90deg, #72f6ff, #58c9ff, #ff8b2b, #ffd36f) border-box !important;
+}
+
+.button-secondary,
+.quick-commands button {
+  --edge: linear-gradient(90deg, rgba(114,246,255,.40), rgba(141,115,255,.36), rgba(255,107,221,.26));
+  background:
+    linear-gradient(180deg, rgba(7,13,28,.84), rgba(5,9,20,.68)) padding-box,
+    linear-gradient(90deg, #72f6ff, #8d73ff, #ff6bdd) border-box !important;
+}
+
+.button-ghost,
+.footer-links a {
+  --edge: linear-gradient(90deg, rgba(255,255,255,.28), rgba(88,201,255,.26), rgba(255,255,255,.18));
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.070), rgba(255,255,255,.035)) padding-box,
+    linear-gradient(90deg, rgba(255,255,255,.38), rgba(88,201,255,.42), rgba(255,255,255,.30)) border-box !important;
+}
+
+.button-status,
+.hero-status-panel a,
+.terminal-form button {
+  --edge: linear-gradient(90deg, rgba(124,255,155,.40), rgba(114,246,255,.34), rgba(88,201,255,.24));
+  background:
+    linear-gradient(180deg, rgba(6,20,18,.78), rgba(4,10,18,.62)) padding-box,
+    linear-gradient(90deg, #7cff9b, #72f6ff, #58c9ff) border-box !important;
+}
+
+.button-coffee {
+  --edge: linear-gradient(90deg, rgba(255,211,111,.42), rgba(255,139,43,.38), rgba(255,107,221,.22));
+  background:
+    linear-gradient(90deg, rgba(255,139,43,.84), rgba(255,100,45,.76), rgba(255,211,111,.70)) padding-box,
+    linear-gradient(90deg, #ffd36f, #ff8b2b, #ff6bdd) border-box !important;
+}
+
+.nav-status-link {
+  --edge: linear-gradient(90deg, rgba(88,201,255,.34), rgba(255,139,43,.24));
+}
+
+.button:hover,
+.nav-status-link:hover,
+.status-callout__link:hover,
+.hero-status-panel a:hover,
+.quick-commands button:hover,
+.terminal-form button:hover,
+.footer-links a:hover {
+  color: #fff !important;
+  transform: translateY(-1px) !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.16),
+    0 0 22px rgba(88,201,255,.16),
+    0 0 26px rgba(255,139,43,.12),
+    inset 0 1px 0 rgba(255,255,255,.24) !important;
+}
+
+.button:hover::after,
+.nav-status-link:hover::after,
+.status-callout__link:hover::after,
+.hero-status-panel a:hover::after,
+.quick-commands button:hover::after,
+.terminal-form button:hover::after,
+.footer-links a:hover::after {
+  opacity: .72 !important;
+  filter: blur(6px) !important;
+}
+
+.logo-glass {
+  box-shadow:
+    0 0 0 1px rgba(214,233,255,.12),
+    0 0 42px rgba(88,201,255,.12),
+    0 0 46px rgba(255,139,43,.09),
+    inset 0 0 54px rgba(255,255,255,.035) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before,
+  body::after {
+    animation: none !important;
+  }
+}
+
+@keyframes se-grid-drift {
+  to { background-position: 52px 52px, 52px 52px, 208px 208px, 208px 208px; }
+}
+
+@keyframes se-star-breathe {
+  0%, 100% { opacity: .48; filter: drop-shadow(0 0 4px rgba(114,246,255,.17)) drop-shadow(0 0 6px rgba(255,139,43,.11)); }
+  50% { opacity: .72; filter: drop-shadow(0 0 7px rgba(114,246,255,.24)) drop-shadow(0 0 9px rgba(255,139,43,.16)); }
+}
