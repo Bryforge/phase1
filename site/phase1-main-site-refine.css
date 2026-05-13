@@ -1,0 +1,192 @@
+/* Phase1 main-site refinement sweep.
+   Homepage-only polish layer after the 9.5+ checkpoint.
+   Intent: refine without changing the accepted identity, color system, or layout. */
+
+:root {
+  --msr-line: rgba(236, 250, 255, .205);
+  --msr-line-hot: rgba(236, 250, 255, .31);
+  --msr-muted: #dbe6f4;
+  --msr-cyan: #7df7ff;
+  --msr-orange: #ff8d2f;
+  --msr-violet: #9c7dff;
+  --msr-spectrum: linear-gradient(115deg, #7df7ff, #50c8ff, #9c7dff, #ff6fec, #ff8d2f, #ffd76c, #85ff9f);
+}
+
+/* Keep the accepted surface, but make the landing page feel more composed. */
+.site-shell {
+  gap: clamp(24px, 3vw, 42px) !important;
+}
+
+.nav {
+  border-color: var(--msr-line) !important;
+  box-shadow:
+    0 22px 66px rgba(0, 0, 0, .55),
+    0 0 18px rgba(125, 247, 255, .058),
+    inset 0 1px 0 rgba(255, 255, 255, .12) !important;
+}
+
+.hero {
+  border-color: var(--msr-line) !important;
+  box-shadow:
+    0 38px 128px rgba(0, 0, 0, .66),
+    0 0 38px rgba(125, 247, 255, .092),
+    0 0 42px rgba(255, 141, 47, .060),
+    inset 0 1px 0 rgba(255, 255, 255, .135),
+    inset 0 0 0 1px rgba(255, 255, 255, .018) !important;
+}
+
+.hero-copy {
+  gap: clamp(14px, 1.5vw, 22px) !important;
+}
+
+.hero h1,
+#hero-title {
+  line-height: 1.06 !important;
+  letter-spacing: clamp(-.05em, -.35vw, -.024em) !important;
+  padding-bottom: .15em !important;
+  margin-bottom: .14em !important;
+  text-shadow:
+    0 0 16px rgba(125, 247, 255, .135),
+    0 0 18px rgba(255, 141, 47, .085),
+    0 2px 20px rgba(0, 0, 0, .44) !important;
+}
+
+.hero-text,
+.feature-card p,
+.timeline p,
+.founder-copy p,
+.support-card p,
+.hero-status-panel p {
+  color: var(--msr-muted) !important;
+}
+
+.hero-command {
+  border-radius: 18px !important;
+  border-color: rgba(236, 250, 255, .16) !important;
+  background:
+    linear-gradient(180deg, rgba(2, 5, 12, .92), rgba(8, 12, 24, .74)) padding-box,
+    linear-gradient(90deg, rgba(125, 247, 255, .30), rgba(156, 125, 255, .22), rgba(255, 141, 47, .24)) border-box !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .08),
+    0 0 18px rgba(125, 247, 255, .060) !important;
+}
+
+/* Official logo stage: crisp, luminous, not smoky. */
+.logo-glass {
+  border-color: rgba(236, 250, 255, .22) !important;
+  box-shadow:
+    0 0 0 1px rgba(236, 250, 255, .145),
+    0 0 58px rgba(125, 247, 255, .17),
+    0 0 62px rgba(255, 141, 47, .115),
+    inset 0 0 68px rgba(255, 255, 255, .055) !important;
+}
+
+.phase-logo-image,
+.logo-glass img {
+  filter:
+    saturate(1.14) contrast(1.08)
+    drop-shadow(0 0 18px rgba(255,255,255,.18))
+    drop-shadow(0 0 34px rgba(125,247,255,.20))
+    drop-shadow(0 0 34px rgba(255,141,47,.12)) !important;
+}
+
+/* Buttons: rest is solid, hover is alive. */
+.button::before,
+.hero-actions a::before,
+.hero-status-panel a::before,
+.quick-commands button::before,
+.terminal-form button::before,
+.footer-links a::before {
+  opacity: .23 !important;
+  filter: blur(3.1px) saturate(1.04) !important;
+}
+
+.button:hover::before,
+.hero-actions a:hover::before,
+.hero-status-panel a:hover::before,
+.quick-commands button:hover::before,
+.terminal-form button:hover::before,
+.footer-links a:hover::before {
+  opacity: .76 !important;
+  filter: blur(6.3px) saturate(1.20) !important;
+}
+
+.button:focus-visible,
+.hero-actions a:focus-visible,
+.nav-links a:focus-visible,
+.quick-commands button:focus-visible,
+.terminal-form button:focus-visible {
+  outline: 2px solid rgba(125, 247, 255, .56) !important;
+  outline-offset: 3px !important;
+}
+
+/* Cards and demo surfaces: polished depth and consistent density. */
+.feature-card,
+.terminal,
+.roadmap,
+.founder,
+.support-card,
+.footer,
+.hero-status-panel,
+.metric-strip div,
+.bryforge-card,
+.timeline li {
+  border-color: var(--msr-line) !important;
+}
+
+.feature-card:hover,
+.timeline li:hover,
+.metric-strip div:hover,
+.bryforge-card:hover {
+  border-color: var(--msr-line-hot) !important;
+  box-shadow:
+    0 30px 94px rgba(0, 0, 0, .62),
+    0 0 24px rgba(125, 247, 255, .078),
+    0 0 26px rgba(255, 141, 47, .052),
+    inset 0 1px 0 rgba(255, 255, 255, .13) !important;
+}
+
+.feature-icon {
+  filter: drop-shadow(0 0 10px rgba(125, 247, 255, .18)) !important;
+}
+
+.terminal-output {
+  line-height: 1.64 !important;
+  letter-spacing: .005em !important;
+  background: rgba(0, 0, 0, .235) !important;
+}
+
+.terminal-form input {
+  color: #f8fdff !important;
+}
+
+/* Core values: keep current accepted form, add only tiny tactile polish. */
+.support-card-mini span {
+  min-height: 52px !important;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease !important;
+}
+
+.support-card-mini span:hover {
+  transform: translateY(-1px) !important;
+}
+
+.support-card-mini span::after {
+  opacity: .22 !important;
+}
+
+.support-card-mini span:hover::after {
+  opacity: .46 !important;
+}
+
+@media (max-width: 760px) {
+  .hero h1,
+  #hero-title {
+    line-height: 1.09 !important;
+  }
+  .hero-text {
+    line-height: 1.68 !important;
+  }
+  .hero-command {
+    font-size: .88rem !important;
+  }
+}
