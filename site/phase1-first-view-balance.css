@@ -1,0 +1,105 @@
+/* Phase1 first-view balance pass.
+   Mobile-first final polish for the first screen: preserve the clean Phase1 mark
+   chamber while letting the headline and value proposition appear sooner. */
+
+@media (max-width: 760px) {
+  .status-callout__link {
+    min-height: 48px !important;
+    padding: 8px 12px !important;
+    border-radius: 20px !important;
+    font-size: clamp(.84rem, 3.55vw, .98rem) !important;
+    line-height: 1.12 !important;
+  }
+
+  .nav {
+    min-height: 58px !important;
+    padding: 8px 10px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .brand-pip {
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  .brand {
+    font-size: clamp(1.10rem, 4.7vw, 1.34rem) !important;
+  }
+
+  .nav-toggle {
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 16px !important;
+  }
+
+  .hero {
+    padding-top: 14px !important;
+    gap: 14px !important;
+  }
+
+  .logo-stage {
+    min-height: clamp(206px, 50vw, 284px) !important;
+    width: min(100%, 330px) !important;
+  }
+
+  .logo-stage .logo-glass {
+    width: min(100%, 292px) !important;
+    max-width: 292px !important;
+    border-radius: 24px !important;
+    box-shadow:
+      0 0 0 1px rgba(236,250,255,.12),
+      0 0 28px rgba(125,247,255,.11),
+      0 0 30px rgba(255,141,47,.075),
+      inset 0 0 48px rgba(255,255,255,.042),
+      inset 0 1px 0 rgba(255,255,255,.12) !important;
+  }
+
+  .logo-stage .logo-glass::before {
+    inset: 12px !important;
+    opacity: .58 !important;
+  }
+
+  .phase-logo-image,
+  .logo-stage .logo-glass img {
+    width: min(52%, 158px) !important;
+  }
+
+  .hero .eyebrow {
+    font-size: .70rem !important;
+    letter-spacing: .19em !important;
+  }
+
+  .hero h1,
+  #hero-title {
+    font-size: clamp(2.0rem, 10.2vw, 3.18rem) !important;
+    line-height: 1.075 !important;
+    max-width: 13.4ch !important;
+    margin-top: 0 !important;
+  }
+
+  .hero-text {
+    font-size: .95rem !important;
+    line-height: 1.58 !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .logo-stage {
+    min-height: clamp(194px, 52vw, 258px) !important;
+  }
+
+  .logo-stage .logo-glass {
+    width: min(100%, 272px) !important;
+    max-width: 272px !important;
+  }
+
+  .phase-logo-image,
+  .logo-stage .logo-glass img {
+    width: min(50%, 146px) !important;
+  }
+
+  .hero h1,
+  #hero-title {
+    font-size: clamp(1.92rem, 10.3vw, 2.72rem) !important;
+  }
+}
