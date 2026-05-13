@@ -1,0 +1,222 @@
+/* Phase1 orange-rainbow consistency pass.
+   Loads last. Keeps the Bryforge forge-glow language, but makes every section use the
+   same living orange/rainbow treatment instead of mixing unrelated visual systems. */
+
+:root {
+  --or-red: #ff3f32;
+  --or-ember: #ff6a28;
+  --or-orange: #ff9b2f;
+  --or-gold: #f4b860;
+  --or-yellow: #ffe85f;
+  --or-lime: #b9ff66;
+  --or-green: #54ff7a;
+  --or-cyan: #29f8ff;
+  --or-blue: #5d85ff;
+  --or-pink: #ff3df2;
+  --or-ink: #f7f9ff;
+  --or-muted: #aeb7c8;
+  --or-panel-a: rgba(14, 12, 16, 0.84);
+  --or-panel-b: rgba(255, 255, 255, 0.045);
+  --or-glass-line: rgba(255, 255, 255, 0.135);
+  --or-hot-line: rgba(255, 154, 47, 0.42);
+  --or-rainbow: linear-gradient(90deg, #ff3f32, #ff6a28, #ff9b2f, #f4b860, #ffe85f, #54ff7a, #29f8ff, #5d85ff, #ff3df2, #ff3f32);
+  --or-forge: linear-gradient(90deg, #f7f9ff, #f4b860, #ff9b2f, #ff6a28, #ff3df2, #29f8ff, #f7f9ff);
+  --or-panel-shadow: 0 34px 132px rgba(0,0,0,.58), 0 0 54px rgba(255,106,40,.11), 0 0 84px rgba(255,61,242,.055), 0 0 72px rgba(41,248,255,.05);
+  --or-hot-shadow: 0 40px 150px rgba(0,0,0,.62), 0 0 74px rgba(255,106,40,.20), 0 0 110px rgba(244,184,96,.10), 0 0 94px rgba(41,248,255,.08);
+}
+
+body {
+  background:
+    radial-gradient(circle at 13% 10%, rgba(255, 106, 40, 0.20), transparent 28rem),
+    radial-gradient(circle at 86% 4%, rgba(255, 61, 242, 0.12), transparent 28rem),
+    radial-gradient(circle at 62% 84%, rgba(41, 248, 255, 0.08), transparent 30rem),
+    radial-gradient(circle at 28% 72%, rgba(244, 184, 96, 0.09), transparent 26rem),
+    linear-gradient(180deg, #020203 0%, #07080b 48%, #030305 100%) !important;
+}
+
+body::before {
+  opacity: .15 !important;
+  animation: or-grid-drift 38s linear infinite !important;
+}
+
+body::after {
+  background:
+    radial-gradient(circle at 14% 18%, rgba(255,106,40,.13), transparent 24rem),
+    radial-gradient(circle at 84% 68%, rgba(255,61,242,.08), transparent 23rem),
+    linear-gradient(115deg, transparent 0%, rgba(255,255,255,.04) 44%, rgba(255,154,47,.06) 50%, transparent 58% 100%) !important;
+  animation: or-atmosphere 14s ease-in-out infinite alternate !important;
+}
+
+#space { opacity: .72 !important; }
+.aurora-one { opacity: .12 !important; background: var(--or-ember) !important; }
+.aurora-two { opacity: .10 !important; background: var(--or-blue) !important; }
+
+.status-callout__link,
+.nav-status-link,
+.button-primary,
+.button-coffee,
+.button-status,
+.support-card-mini span,
+.avatar-ring,
+.brand-pip {
+  background-image: var(--or-forge) !important;
+  background-size: 260% 100% !important;
+  animation: or-flow 5.8s linear infinite, or-button-breathe 2.65s ease-in-out infinite !important;
+  box-shadow: 0 0 30px rgba(255,106,40,.26), 0 0 56px rgba(244,184,96,.13), 0 0 74px rgba(41,248,255,.08) !important;
+}
+
+.nav,
+.glass-panel,
+.feature-card,
+.bryforge-card,
+.support-card,
+.metric-strip div,
+.timeline li,
+.hero-status-panel,
+.terminal,
+.footer {
+  border-color: var(--or-glass-line) !important;
+  background:
+    linear-gradient(145deg, var(--or-panel-a), var(--or-panel-b)),
+    radial-gradient(circle at 18% 0%, rgba(255,106,40,.105), transparent 21rem),
+    radial-gradient(circle at 82% 22%, rgba(41,248,255,.045), transparent 20rem) !important;
+  box-shadow: var(--or-panel-shadow), inset 0 1px 0 rgba(255,255,255,.085) !important;
+}
+
+.hero,
+.roadmap,
+.founder,
+.support-card,
+.terminal,
+.feature-card,
+.bryforge-card {
+  isolation: isolate !important;
+}
+
+.hero::before,
+.roadmap::before,
+.founder::before,
+.support-card::before,
+.terminal::before,
+.feature-card::before,
+.bryforge-card::before,
+.hero-status-panel::before,
+.timeline li::before,
+.metric-strip div::before {
+  background:
+    linear-gradient(112deg, transparent 0%, rgba(255,255,255,.035) 28%, rgba(255,154,47,.11) 43%, rgba(255,61,242,.06) 52%, rgba(41,248,255,.06) 62%, transparent 76%),
+    radial-gradient(circle at 76% 34%, rgba(255,106,40,.12), transparent 24rem) !important;
+  opacity: .78 !important;
+  animation: or-card-sheen 8.4s ease-in-out infinite !important;
+}
+
+h1,
+.section-heading h2,
+.founder-copy h2,
+.support-card h2,
+.bryforge-card h3,
+.feature-card h3,
+.roadmap h3 {
+  background-image: linear-gradient(90deg, #ffffff, #f4b860, #ff9b2f, #ff6a28, #ff3df2, #29f8ff, #ffffff) !important;
+  background-size: 260% 100% !important;
+  animation: or-flow 9s linear infinite !important;
+}
+
+.eyebrow,
+.card-kicker,
+.timeline-status {
+  color: var(--or-gold) !important;
+  text-shadow: 0 0 22px rgba(244,184,96,.38), 0 0 38px rgba(255,106,40,.14) !important;
+}
+
+.status-pill,
+.terminal-status {
+  color: var(--or-cyan) !important;
+  text-shadow: 0 0 22px rgba(41,248,255,.7), 0 0 40px rgba(255,61,242,.16) !important;
+}
+
+.button-secondary,
+.button-ghost,
+.hero-status-panel a,
+.quick-commands button,
+.terminal-form button,
+.footer-links .nav-status-link {
+  background:
+    linear-gradient(rgba(12,13,16,.82), rgba(255,255,255,.055)) padding-box,
+    var(--or-rainbow) border-box !important;
+  background-size: 100% 100%, 280% 100% !important;
+  animation: or-border-flow 6.8s linear infinite !important;
+  border: 1px solid transparent !important;
+}
+
+.button::before,
+.status-callout__link::before,
+.nav-status-link::before,
+.hero-status-panel a::before,
+.quick-commands button::before,
+.terminal-form button::before {
+  background: linear-gradient(110deg, transparent 0%, rgba(255,255,255,.0) 35%, rgba(255,255,255,.58) 48%, rgba(244,184,96,.38) 54%, transparent 67%) !important;
+  animation: or-button-sheen 2.9s ease-in-out infinite !important;
+}
+
+.button:hover,
+.status-callout__link:hover,
+.nav-status-link:hover,
+.hero-status-panel a:hover,
+.quick-commands button:hover,
+.terminal-form button:hover,
+.feature-card:hover,
+.bryforge-card:hover,
+.support-card:hover,
+.hero-status-panel:hover,
+.metric-strip div:hover,
+.timeline li:hover {
+  border-color: var(--or-hot-line) !important;
+  box-shadow: var(--or-hot-shadow) !important;
+}
+
+.logo-glass {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255,154,47,.18), transparent 17rem),
+    radial-gradient(circle at 38% 60%, rgba(255,61,242,.12), transparent 16rem),
+    radial-gradient(circle at 66% 26%, rgba(41,248,255,.10), transparent 16rem),
+    linear-gradient(145deg, rgba(3,4,8,.96), rgba(18,20,28,.84)) !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.055), inset 0 0 72px rgba(255,106,40,.08), 0 0 72px rgba(255,106,40,.12), 0 0 94px rgba(41,248,255,.06) !important;
+}
+
+.logo-glass::before {
+  background: conic-gradient(from 0deg, var(--or-red), var(--or-ember), var(--or-orange), var(--or-gold), var(--or-yellow), var(--or-green), var(--or-cyan), var(--or-blue), var(--or-pink), var(--or-red)) !important;
+  opacity: .38 !important;
+}
+
+.phase-logo-image,
+.logo-glass img {
+  filter: saturate(1.22) contrast(1.09) drop-shadow(0 0 24px rgba(244,184,96,.18)) drop-shadow(0 0 34px rgba(41,248,255,.24)) drop-shadow(0 0 54px rgba(255,61,242,.12)) !important;
+}
+
+.orbit-one { border-top-color: var(--or-orange) !important; border-right-color: var(--or-pink) !important; }
+.orbit-two { border-bottom-color: var(--or-yellow) !important; border-left-color: var(--or-green) !important; }
+.orbit-three { border-top-color: var(--or-red) !important; border-bottom-color: var(--or-cyan) !important; }
+
+.hero-command,
+.terminal-output {
+  border-color: rgba(255,154,47,.18) !important;
+  box-shadow: inset 0 0 24px rgba(0,0,0,.34), 0 0 34px rgba(255,106,40,.09), 0 0 42px rgba(41,248,255,.05) !important;
+}
+
+.founder-avatar {
+  box-shadow: 0 0 34px rgba(255,106,40,.18), 0 0 48px rgba(41,248,255,.10) !important;
+}
+
+@media (max-width: 920px) {
+  .hero { margin-top: 18px !important; }
+  .status-callout { margin-top: 8px !important; }
+}
+
+@keyframes or-flow { to { background-position: 260% 50%; } }
+@keyframes or-border-flow { to { background-position: 0 0, 280% 50%; } }
+@keyframes or-button-breathe { 0%, 100% { filter: saturate(1) brightness(1); } 50% { filter: saturate(1.15) brightness(1.07); } }
+@keyframes or-button-sheen { 0%, 34% { transform: translateX(-130%); opacity: 0; } 48% { opacity: .58; } 76%, 100% { transform: translateX(130%); opacity: 0; } }
+@keyframes or-card-sheen { 0%, 100% { transform: translateX(-4%) translateY(-1%); opacity: .48; } 50% { transform: translateX(4%) translateY(1%); opacity: .84; } }
+@keyframes or-atmosphere { 0% { filter: saturate(1) brightness(1); } 100% { filter: saturate(1.12) brightness(1.04); } }
+@keyframes or-grid-drift { to { background-position: 62px 62px, 62px 62px, 210px 180px, 340px 260px; } }
