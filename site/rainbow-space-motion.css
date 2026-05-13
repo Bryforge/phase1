@@ -1,5 +1,9 @@
-/* Real rainbow-space motion layer: visible glowing stars + recurring shooting stars.
-   This is intentionally separate from the glass UI so the background feels alive. */
+/* Calm rainbow-space motion layer: visible glowing stars + slow recurring shooting stars.
+   Motion is intentionally slow, readable, and slightly glowing rather than frantic. */
+
+:root {
+  --rs-calm-glow: 0 0 24px rgba(48,247,255,.16), 0 0 52px rgba(255,72,220,.09), 0 0 78px rgba(255,156,53,.055);
+}
 
 .rainbow-space-field {
   position: fixed;
@@ -8,9 +12,9 @@
   pointer-events: none;
   overflow: hidden;
   background:
-    radial-gradient(circle at 18% 14%, rgba(48, 247, 255, .12), transparent 24rem),
-    radial-gradient(circle at 82% 18%, rgba(255, 72, 220, .10), transparent 24rem),
-    radial-gradient(circle at 58% 86%, rgba(255, 156, 53, .08), transparent 28rem);
+    radial-gradient(circle at 18% 14%, rgba(48, 247, 255, .085), transparent 26rem),
+    radial-gradient(circle at 82% 18%, rgba(255, 72, 220, .07), transparent 26rem),
+    radial-gradient(circle at 58% 86%, rgba(255, 156, 53, .06), transparent 30rem);
   mix-blend-mode: screen;
 }
 
@@ -20,19 +24,19 @@
   position: absolute;
   inset: -12%;
   background-image:
-    radial-gradient(circle, rgba(255,255,255,.95) 0 1px, transparent 1.8px),
-    radial-gradient(circle, rgba(48,247,255,.72) 0 1px, transparent 1.9px),
-    radial-gradient(circle, rgba(255,72,220,.60) 0 1px, transparent 1.8px),
-    radial-gradient(circle, rgba(255,230,107,.52) 0 1px, transparent 1.8px);
-  background-size: 160px 160px, 230px 230px, 310px 310px, 410px 410px;
-  opacity: .28;
-  animation: rs-deep-star-drift 74s linear infinite;
+    radial-gradient(circle, rgba(255,255,255,.78) 0 1px, transparent 1.8px),
+    radial-gradient(circle, rgba(48,247,255,.46) 0 1px, transparent 1.9px),
+    radial-gradient(circle, rgba(255,72,220,.35) 0 1px, transparent 1.8px),
+    radial-gradient(circle, rgba(255,230,107,.34) 0 1px, transparent 1.8px);
+  background-size: 170px 170px, 250px 250px, 340px 340px, 470px 470px;
+  opacity: .20;
+  animation: rs-deep-star-drift 160s linear infinite;
 }
 
 .rainbow-space-field::after {
-  opacity: .18;
-  filter: blur(.6px);
-  animation-duration: 112s;
+  opacity: .12;
+  filter: blur(.7px);
+  animation-duration: 220s;
   animation-direction: reverse;
 }
 
@@ -44,34 +48,34 @@
   top: var(--y, 50%);
   border-radius: 999px;
   background: var(--c, #fff);
-  opacity: var(--o, .78);
+  opacity: var(--o, .58);
   box-shadow:
-    0 0 calc(var(--s, 2px) * 6) var(--c, #fff),
-    0 0 calc(var(--s, 2px) * 14) color-mix(in srgb, var(--c, #fff) 48%, transparent);
-  animation: rs-twinkle var(--d, 4s) ease-in-out infinite;
+    0 0 calc(var(--s, 2px) * 5) color-mix(in srgb, var(--c, #fff) 78%, transparent),
+    0 0 calc(var(--s, 2px) * 12) color-mix(in srgb, var(--c, #fff) 34%, transparent);
+  animation: rs-twinkle var(--d, 10s) ease-in-out infinite;
   animation-delay: var(--delay, 0s);
 }
 
 .rs-star.big {
   box-shadow:
-    0 0 calc(var(--s, 3px) * 8) var(--c, #fff),
-    0 0 calc(var(--s, 3px) * 22) color-mix(in srgb, var(--c, #fff) 58%, transparent),
-    0 0 calc(var(--s, 3px) * 42) color-mix(in srgb, var(--c, #fff) 24%, transparent);
+    0 0 calc(var(--s, 3px) * 7) color-mix(in srgb, var(--c, #fff) 78%, transparent),
+    0 0 calc(var(--s, 3px) * 18) color-mix(in srgb, var(--c, #fff) 40%, transparent),
+    0 0 calc(var(--s, 3px) * 34) color-mix(in srgb, var(--c, #fff) 16%, transparent);
 }
 
 .rs-shooting-star {
   position: absolute;
   left: var(--x, 20%);
   top: var(--y, 20%);
-  width: var(--w, 190px);
+  width: var(--w, 180px);
   height: 2px;
   border-radius: 999px;
   transform: rotate(var(--r, -34deg));
   transform-origin: left center;
   opacity: 0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,.98), var(--c1, #30f7ff), var(--c2, #ff48dc), transparent);
-  filter: drop-shadow(0 0 10px var(--c1, #30f7ff)) drop-shadow(0 0 22px var(--c2, #ff48dc));
-  animation: rs-shoot var(--d, 7s) linear infinite;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.86), var(--c1, #30f7ff), var(--c2, #ff48dc), transparent);
+  filter: drop-shadow(0 0 7px var(--c1, #30f7ff)) drop-shadow(0 0 16px var(--c2, #ff48dc));
+  animation: rs-shoot var(--d, 22s) linear infinite;
   animation-delay: var(--delay, 0s);
 }
 
@@ -80,12 +84,12 @@
   position: absolute;
   right: 0;
   top: 50%;
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border-radius: 999px;
   transform: translateY(-50%);
-  background: #fff;
-  box-shadow: 0 0 16px #fff, 0 0 28px var(--c1, #30f7ff), 0 0 46px var(--c2, #ff48dc);
+  background: rgba(255,255,255,.92);
+  box-shadow: 0 0 12px #fff, 0 0 20px var(--c1, #30f7ff), 0 0 32px var(--c2, #ff48dc);
 }
 
 .site-shell,
@@ -105,27 +109,88 @@ body > main,
   z-index: 2;
 }
 
+/* Slow the rest of the living visuals without freezing the site. */
+h1,
+.section-heading h2,
+.founder-copy h2,
+.support-card h2,
+.bryforge-card h3,
+.feature-card h3,
+.roadmap h3,
+.button,
+.status-callout__link,
+.nav-status-link,
+.hero-status-panel a,
+.quick-commands button,
+.terminal-form button,
+.bar > span {
+  animation-duration: 18s, 9s !important;
+}
+
+.hero::before,
+.hero::after,
+.roadmap::before,
+.roadmap::after,
+.founder::before,
+.founder::after,
+.support-card::before,
+.support-card::after,
+.terminal::before,
+.terminal::after,
+.feature-card::before,
+.feature-card::after,
+.bryforge-card::before,
+.bryforge-card::after,
+.hero-status-panel::before,
+.hero-status-panel::after,
+.card::before,
+.card::after,
+body::after {
+  animation-duration: 28s !important;
+  opacity: .34 !important;
+}
+
+.logo-glass::before,
+.phase-logo-image,
+.logo-glass img,
+.orbit,
+.orbit-one,
+.orbit-two,
+.orbit-three {
+  animation-duration: 32s !important;
+}
+
+.button,
+.status-callout__link,
+.nav-status-link,
+.hero-status-panel a,
+.quick-commands button,
+.terminal-form button {
+  box-shadow: var(--rs-calm-glow), inset 0 1px 0 rgba(255,255,255,.22) !important;
+}
+
 @keyframes rs-deep-star-drift {
-  to { transform: translate3d(-4%, 6%, 0); }
+  to { transform: translate3d(-2%, 3%, 0); }
 }
 
 @keyframes rs-twinkle {
-  0%, 100% { transform: scale(.78); opacity: calc(var(--o, .78) * .48); }
-  38% { transform: scale(1.28); opacity: var(--o, .78); }
-  64% { transform: scale(.92); opacity: calc(var(--o, .78) * .66); }
+  0%, 100% { transform: scale(.9); opacity: calc(var(--o, .58) * .55); }
+  45% { transform: scale(1.16); opacity: var(--o, .58); }
+  72% { transform: scale(.98); opacity: calc(var(--o, .58) * .74); }
 }
 
 @keyframes rs-shoot {
-  0%, 12% { opacity: 0; transform: translate3d(-22vw, -6vh, 0) rotate(var(--r, -34deg)); }
-  18% { opacity: .95; }
-  42% { opacity: .96; }
-  58%, 100% { opacity: 0; transform: translate3d(118vw, 58vh, 0) rotate(var(--r, -34deg)); }
+  0%, 18% { opacity: 0; transform: translate3d(-18vw, -5vh, 0) rotate(var(--r, -34deg)); }
+  24% { opacity: .70; }
+  39% { opacity: .66; }
+  54%, 100% { opacity: 0; transform: translate3d(112vw, 48vh, 0) rotate(var(--r, -34deg)); }
 }
 
 @media (max-width: 720px) {
   .rainbow-space-field::before,
-  .rainbow-space-field::after { opacity: .22; }
-  .rs-shooting-star { width: calc(var(--w, 190px) * .72); }
+  .rainbow-space-field::after { opacity: .14; }
+  .rs-shooting-star { width: calc(var(--w, 180px) * .66); }
+  .rs-star { opacity: calc(var(--o, .58) * .78); }
 }
 
 @media (prefers-reduced-motion: reduce) {
