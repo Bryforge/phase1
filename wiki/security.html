@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Phase1 Security Model // Bryforge Docs</title>
+  <meta name="description" content="Phase1 security model: safe mode, host trust, browser boundaries, secrets policy, audit visibility, operator checklist, and non-claim boundaries.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="theme-color" content="#050711">
+  <link rel="canonical" href="https://bryforge.github.io/phase1/wiki/security.html">
+  <meta property="og:title" content="Phase1 Security Model // Bryforge Docs">
+  <meta property="og:description" content="Safe-mode, host trust, browser boundaries, secrets policy, and public non-claim boundaries for Phase1.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://bryforge.github.io/phase1/wiki/security.html">
+  <meta property="og:image" content="https://bryforge.github.io/phase1/assets/phase1-nobackground.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Phase1 Security Model">
+  <meta name="twitter:description" content="Safe-mode, host trust, browser boundaries, secrets policy, and audit visibility for Phase1.">
+  <meta name="twitter:image" content="https://bryforge.github.io/phase1/assets/phase1-nobackground.png">
+  <link rel="stylesheet" href="./docs.css?v=phase1-wiki-security-v1">
+  <link rel="stylesheet" href="../site/phase1-eye-candy-boost.css?v=phase1-eye-candy-boost-v1">
+  <link rel="stylesheet" href="../site/phase1-starlight-motion.css?v=phase1-starlight-motion-v1">
+  <link rel="stylesheet" href="../site/phase1-starlight-premium.css?v=phase1-starlight-premium-v1">
+  <link rel="stylesheet" href="../site/phase1-starlight-depth.css?v=phase1-starlight-depth-v1">
+  <link rel="stylesheet" href="../site/phase1-spectrum-buttons.css?v=phase1-spectrum-buttons-v1">
+  <link rel="stylesheet" href="../site/phase1-spectrum-solid.css?v=phase1-spectrum-solid-v1">
+  <link rel="stylesheet" href="../site/phase1-public-pages-align.css?v=phase1-public-pages-align-v1">
+  <link rel="stylesheet" href="../site/phase1-public-pages-refine.css?v=phase1-public-pages-refine-v1">
+</head>
+<body>
+  <div class="phase-starfield" aria-hidden="true"><span class="phase-starfield__drift"></span></div>
+  <canvas id="docs-space" aria-hidden="true"></canvas>
+  <div class="docs-aura docs-aura-a" aria-hidden="true"></div>
+  <div class="docs-aura docs-aura-b" aria-hidden="true"></div>
+
+  <div class="docs-shell">
+    <aside class="docs-sidebar" aria-label="Phase1 security navigation">
+      <a class="docs-brand" href="../">
+        <span class="brand-dot"></span>
+        <span>PHASE1</span>
+      </a>
+      <p class="sidebar-label">Security model</p>
+      <nav>
+        <a href="./">Wiki Hub</a>
+        <a href="commands.html">Command Reference</a>
+        <a href="../status.html">Status</a>
+        <a href="#summary">Model Summary</a>
+        <a href="#safe-mode">Safe Mode</a>
+        <a href="#host-trust">Host Trust</a>
+        <a href="#browser-boundary">Browser Boundary</a>
+        <a href="#secrets-policy">Secrets Policy</a>
+        <a href="#audit-visibility">Audit Visibility</a>
+        <a href="#operator-checklist">Checklist</a>
+        <a href="#non-claims">Non-claims</a>
+      </nav>
+      <a class="sidebar-button" href="https://github.com/Bryforge/phase1" target="_blank" rel="noopener noreferrer">Open GitHub</a>
+    </aside>
+
+    <main class="docs-main">
+      <section class="docs-hero panel" id="top">
+        <div>
+          <p class="eyebrow">safe defaults · explicit trust · visible boundaries</p>
+          <h1>Phase1 Security Model</h1>
+          <p class="hero-text">
+            Phase1 treats security as part of the operator interface. The goal is to make safe mode, host trust, browser boundaries, and audit visibility clear instead of hidden.
+          </p>
+          <div class="search-wrap" role="search">
+            <label for="docs-search">Search security docs</label>
+            <input id="docs-search" type="search" placeholder="Search safe mode, host trust, browser, secrets, audit..." autocomplete="off">
+          </div>
+        </div>
+        <img src="../assets/phase1-nobackground.png" alt="Phase1 logo" class="hero-logo">
+      </section>
+
+      <section class="quick-links" aria-label="Security quick links">
+        <a class="quick-card" href="#safe-mode" data-search="safe mode default posture guard">
+          <span>01</span><strong>Safe mode</strong><small>Default posture.</small>
+        </a>
+        <a class="quick-card" href="#host-trust" data-search="host trust tools guarded explicit">
+          <span>02</span><strong>Host trust</strong><small>Explicit controls.</small>
+        </a>
+        <a class="quick-card" href="#secrets-policy" data-search="secrets tokens passwords keys privacy">
+          <span>03</span><strong>Secrets</strong><small>No token requirement.</small>
+        </a>
+        <a class="quick-card" href="#non-claims" data-search="non claims production readiness hardware validated daily driver">
+          <span>04</span><strong>Boundary</strong><small>No overclaims.</small>
+        </a>
+      </section>
+
+      <section class="doc-section panel" id="summary" data-search="security model summary safe defaults visible boundaries operator interface">
+        <p class="eyebrow">model summary</p>
+        <h2>Security should be visible to the operator.</h2>
+        <p>Phase1 is designed as a Rust virtual OS console with safety information exposed through the shell and docs. The model is simple: default to guarded behavior, require explicit trust for host-backed workflows, and describe limitations clearly.</p>
+        <div class="card-grid">
+          <article><h3>Default guardrails</h3><p>Safe-mode behavior should be the starting posture, not an optional afterthought.</p></article>
+          <article><h3>Explicit trust</h3><p>Host-backed tools should be intentional and visible to the operator.</p></article>
+          <article><h3>No inflated claims</h3><p>Docs should separate implemented features, planned features, and security aspirations.</p></article>
+        </div>
+      </section>
+
+      <section class="doc-section panel" id="safe-mode" data-search="safe mode default posture guarded host tools private contained">
+        <p class="eyebrow">safe mode</p>
+        <h2>Safe mode is the expected starting state.</h2>
+        <p>Safe mode keeps Phase1 focused on contained learning and inspection workflows. It is meant to reduce surprise by avoiding silent host execution and keeping powerful behaviors behind clearer operator choices.</p>
+        <div class="command-grid">
+          <article><kbd>security</kbd><p>Use this command family to inspect current safety posture and guidance.</p></article>
+          <article><kbd>audit</kbd><p>Audit views are intended to show visible records of important events where supported.</p></article>
+          <article><kbd>help</kbd><p>Use the local build help output to see which safety-related commands are available.</p></article>
+        </div>
+      </section>
+
+      <section class="doc-section panel" id="host-trust" data-search="host trust guarded tools execute storage git rust cargo explicit capability">
+        <p class="eyebrow">host trust</p>
+        <h2>Host-backed workflows must feel intentional.</h2>
+        <p>Some planned workflows, such as storage, Git, Rust builds, and host-tool execution, may require access outside the virtual shell. These paths should be visibly guarded and should not require disabling all security to test a feature.</p>
+        <ul class="clean-list">
+          <li>Host-backed tools should be labeled clearly.</li>
+          <li>Trust decisions should be explicit and reversible where practical.</li>
+          <li>Capability metadata should explain what a command can do.</li>
+          <li>Testing workflows should be guarded, not blocked by vague behavior.</li>
+        </ul>
+      </section>
+
+      <section class="doc-section panel" id="browser-boundary" data-search="browser network http html safe scheme stripped active content loopback">
+        <p class="eyebrow">browser boundary</p>
+        <h2>The guarded browser should not behave like a hidden web runtime.</h2>
+        <p>Phase1 browser workflows are meant to be terminal-first and inspectable. The docs should make clear which schemes are allowed, whether active content is stripped, how loopback fallbacks behave, and what network data is exposed.</p>
+        <div class="card-grid">
+          <article><h3>Scheme restrictions</h3><p>Document supported URL schemes and blocked behavior plainly.</p></article>
+          <article><h3>Active content</h3><p>Scripts and dynamic content should not silently run in unsafe ways.</p></article>
+          <article><h3>Operator visibility</h3><p>Network output should be visible, searchable, and easy to inspect.</p></article>
+        </div>
+      </section>
+
+      <section class="doc-section panel" id="secrets-policy" data-search="secrets passwords tokens private keys api keys credentials privacy">
+        <p class="eyebrow">secrets policy</p>
+        <h2>Normal Phase1 use should not require secrets.</h2>
+        <p>Visitors should not need to paste passwords, private keys, tokens, or personal credentials into Phase1 for ordinary use. If a future workflow needs credentials, the docs should describe that boundary explicitly before the feature is presented as ready.</p>
+        <ul class="clean-list">
+          <li>Do not ask users for private keys or account passwords for normal workflows.</li>
+          <li>Keep token-based integrations out of the default quick start.</li>
+          <li>Document any credential requirement before the command is promoted.</li>
+          <li>Prefer local, inspectable, no-secret workflows for demos and tutorials.</li>
+        </ul>
+      </section>
+
+      <section class="doc-section panel" id="audit-visibility" data-search="audit visibility logs process table proc status generated system view">
+        <p class="eyebrow">audit + visibility</p>
+        <h2>Safety depends on being able to see what happened.</h2>
+        <p>Audit logs, process views, generated system paths, and status indicators help users understand what the virtual console is doing. These are usability features and safety features at the same time.</p>
+        <div class="command-grid">
+          <article><kbd>ps</kbd><p>Inspect simulated process table state where available.</p></article>
+          <article><kbd>/proc</kbd><p>Explore generated system views in the virtual filesystem.</p></article>
+          <article><kbd>status</kbd><p>Review public roadmap and project status boundaries.</p></article>
+          <article><kbd>roadmap</kbd><p>Separate implemented behavior from planned behavior.</p></article>
+        </div>
+      </section>
+
+      <section class="doc-section panel" id="operator-checklist" data-search="checklist operator safe mode trust command browser storage runtime">
+        <p class="eyebrow">operator checklist</p>
+        <h2>Before using a powerful workflow, ask five questions.</h2>
+        <ol class="timeline-list">
+          <li><strong>Is safe mode on?</strong> Start from the guarded posture.</li>
+          <li><strong>Does this command touch the host?</strong> Identify host-backed behavior before running it.</li>
+          <li><strong>Does this require a secret?</strong> Avoid passwords, private keys, or tokens unless a future doc explicitly explains the boundary.</li>
+          <li><strong>Can I inspect the result?</strong> Prefer workflows that expose logs, status, or files.</li>
+          <li><strong>Is this implemented or planned?</strong> Check the wiki, command reference, and status page.</li>
+        </ol>
+      </section>
+
+      <section class="doc-section panel" id="non-claims" data-search="non claims production ready daily driver hardware validated security hardened cryptographic complete installer">
+        <p class="eyebrow">non-claims</p>
+        <h2>What this page does not claim.</h2>
+        <p>This page describes the intended Phase1 safety model and documentation boundaries. It does not claim Phase1 is production-ready, installer-ready, daily-driver ready, hardware-validated, security-hardened, cryptographically complete, or a complete operating system.</p>
+        <p><a class="coffee-link" href="./">Back to Wiki Hub</a></p>
+      </section>
+    </main>
+  </div>
+
+  <script src="./docs.js?v=phase1-wiki-security-v1"></script>
+</body>
+</html>
