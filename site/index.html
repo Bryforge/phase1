@@ -11,25 +11,25 @@
   <meta name="googlebot" content="index, follow, max-image-preview:large">
   <meta name="theme-color" content="#050711">
   <link rel="canonical" href="https://bryforge.github.io/phase1/">
-  <link rel="icon" type="image/svg+xml" href="./assets/phase1-mark.svg">
-  <link rel="apple-touch-icon" href="./assets/phase1-mark.svg">
+  <link rel="icon" type="image/svg+xml" href="./assets/phase1-logo.svg">
+  <link rel="apple-touch-icon" href="./assets/phase1-logo.svg">
   <meta property="og:title" content="phase1 by Bryforge // Secure Rust Virtual OS Console">
   <meta property="og:description" content="A secure, private, open-source virtual OS console and advanced operator kernel built in Rust by Chase Bryan / Bryforge.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://bryforge.github.io/phase1/">
   <meta property="og:site_name" content="phase1 by Bryforge">
-  <meta property="og:image" content="https://bryforge.github.io/phase1/assets/phase1-mark.svg">
-  <meta property="og:image:secure_url" content="https://bryforge.github.io/phase1/assets/phase1-mark.svg">
+  <meta property="og:image" content="https://bryforge.github.io/phase1/assets/phase1-logo.svg">
+  <meta property="og:image:secure_url" content="https://bryforge.github.io/phase1/assets/phase1-logo.svg">
   <meta property="og:image:type" content="image/svg+xml">
   <meta property="og:image:width" content="1024">
   <meta property="og:image:height" content="1024">
-  <meta property="og:image:alt" content="Phase1 standalone metallic logo mark">
+  <meta property="og:image:alt" content="Phase1 logo">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="phase1 by Bryforge // Secure Rust Virtual OS Console">
   <meta name="twitter:description" content="A secure, private, open-source Rust virtual OS console with a simulated kernel, VFS, audit log, guarded browser, wiki, and safe-by-default shell.">
-  <meta name="twitter:image" content="https://bryforge.github.io/phase1/assets/phase1-mark.svg">
-  <meta name="twitter:image:alt" content="Phase1 standalone metallic logo mark">
-  <link rel="image_src" href="https://bryforge.github.io/phase1/assets/phase1-mark.svg">
+  <meta name="twitter:image" content="https://bryforge.github.io/phase1/assets/phase1-logo.svg">
+  <meta name="twitter:image:alt" content="Phase1 logo">
+  <link rel="image_src" href="https://bryforge.github.io/phase1/assets/phase1-logo.svg">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -39,7 +39,7 @@
         "@id": "https://bryforge.github.io/phase1/#organization",
         "name": "Bryforge",
         "url": "https://bryforge.github.io/phase1/",
-        "logo": "https://bryforge.github.io/phase1/assets/phase1-mark.svg",
+        "logo": "https://bryforge.github.io/phase1/assets/phase1-logo.svg",
         "founder": {
           "@id": "https://bryforge.github.io/phase1/#chase-bryan"
         },
@@ -89,7 +89,7 @@
   }
   </script>
   <link rel="stylesheet" href="./site/styles.css?v=logo-svg-v1">
-  <link rel="stylesheet" href="./site/button-fix.css?v=phase1-mark-v2">
+  <link rel="stylesheet" href="./site/button-fix.css?v=phase1-mark-v3">
   <style id="founder-profile-inline-guard">
     #founder .profile-label {
       display: none !important;
@@ -102,6 +102,28 @@
     #founder .founder-copy h2::before {
       content: none !important;
       display: none !important;
+    }
+
+    .phase-logo-mark {
+      position: relative;
+      z-index: 2;
+      display: block;
+      width: min(78%, 360px);
+      height: auto;
+      aspect-ratio: 1 / 1;
+      overflow: visible;
+      filter: drop-shadow(0 0 26px rgba(126, 178, 255, 0.58)) drop-shadow(0 0 72px rgba(85, 136, 255, 0.26));
+    }
+
+    .phase-logo-mark .phase-mark-panel {
+      fill: url(#phase-mark-steel);
+      stroke: url(#phase-mark-edge);
+      stroke-width: 4;
+    }
+
+    .phase-logo-mark .phase-mark-side {
+      fill: url(#phase-mark-steel);
+      opacity: 0.96;
     }
   
 .status-callout {
@@ -202,7 +224,36 @@
           <div class="orbit orbit-two" aria-hidden="true"></div>
           <div class="orbit orbit-three" aria-hidden="true"></div>
           <div class="logo-glass">
-            <img class="phase-logo" src="./assets/phase1-mark.svg?v=phase1-mark-v2" alt="Standalone metallic Phase1 mark">
+            <svg class="phase-logo-mark" viewBox="0 0 1024 1024" role="img" aria-labelledby="phase-mark-title phase-mark-desc">
+              <title id="phase-mark-title">Standalone Phase1 logo mark</title>
+              <desc id="phase-mark-desc">A metallic standalone Phase1 logo mark on a black field.</desc>
+              <defs>
+                <linearGradient id="phase-mark-steel" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#ffffff"></stop>
+                  <stop offset="0.2" stop-color="#eef7ff"></stop>
+                  <stop offset="0.48" stop-color="#9ebef0"></stop>
+                  <stop offset="0.72" stop-color="#f9fcff"></stop>
+                  <stop offset="1" stop-color="#6f96db"></stop>
+                </linearGradient>
+                <linearGradient id="phase-mark-edge" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#f8fdff"></stop>
+                  <stop offset="0.5" stop-color="#b6d2ff"></stop>
+                  <stop offset="1" stop-color="#4d86ff"></stop>
+                </linearGradient>
+                <radialGradient id="phase-mark-halo" cx="50%" cy="50%" r="56%">
+                  <stop offset="0" stop-color="#7fb2ff" stop-opacity="0.36"></stop>
+                  <stop offset="0.46" stop-color="#294d9f" stop-opacity="0.12"></stop>
+                  <stop offset="1" stop-color="#000000" stop-opacity="0"></stop>
+                </radialGradient>
+              </defs>
+              <rect width="1024" height="1024" rx="120" fill="#000000"></rect>
+              <circle cx="512" cy="512" r="456" fill="url(#phase-mark-halo)"></circle>
+              <g transform="translate(207 106) scale(2.04)">
+                <path class="phase-mark-panel" d="M105 286 V84 L226 30 V93 L161 122 V238 Z"></path>
+                <path class="phase-mark-panel" d="M196 224 V122 L302 76 V180 L246 204 V149 L226 158 V213 Z"></path>
+                <path class="phase-mark-side" d="M333 62 L282 84 V219 L333 196 Z"></path>
+              </g>
+            </svg>
           </div>
           <div class="system-card system-card-one" aria-hidden="true"><span>SAFE MODE</span><strong>ON</strong></div>
           <div class="system-card system-card-two" aria-hidden="true"><span>HOST TRUST</span><strong>GUARDED</strong></div>
@@ -414,7 +465,7 @@
     </footer>
   </header>
 
-  <script src="./site/button-fix.js?v=phase1-mark-v2"></script>
+  <script src="./site/button-fix.js?v=phase1-mark-v3"></script>
   <script src="./site/site.js?v=logo-svg-v1"></script>
 </body>
 </html>
