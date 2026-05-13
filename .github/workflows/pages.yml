@@ -5,14 +5,6 @@ on:
     branches:
       - main
       - edge/stable
-    paths:
-      - "site/**"
-      - "docs/community/CONTACT.md"
-      - "docs/project/WIKI_ROADMAP.md"
-      - "wiki/**"
-      - "assets/**"
-      - ".nojekyll"
-      - ".github/workflows/pages.yml"
   workflow_dispatch:
 
 permissions:
@@ -32,6 +24,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Generate public status marker
+        run: |
+          set -eu
+          python3 scripts/update-public-status.py
 
       - name: Build static site artifact
         run: |
