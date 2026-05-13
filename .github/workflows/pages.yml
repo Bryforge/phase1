@@ -42,6 +42,20 @@ jobs:
           cp -R site/. _site/
           cp -R site/. _site/site/
 
+          # Hard cache-bust the final visual overhaul without forcing local users
+          # to fight stale browser CSS while the source stays simple.
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('_site/index.html')
+          s = p.read_text()
+          s = s.replace('button-fix.css?v=phase1-alive-buttons-v6', 'button-fix.css?v=phase1-visual-overhaul-v2')
+          s = s.replace('button-fix.js?v=phase1-alive-buttons-v6', 'button-fix.js?v=phase1-visual-overhaul-v2')
+          script = '<script src="./site/visual-overhaul.js?v=phase1-visual-overhaul-v1"></script>'
+          if script not in s:
+              s = s.replace('</body>', f'{script}</body>')
+          p.write_text(s)
+          PY
+
           if [ -f docs/community/CONTACT.md ]; then
             cp docs/community/CONTACT.md _site/CONTACT.md
           else
@@ -65,6 +79,8 @@ jobs:
           test -f _site/status.html
           test -f _site/status.json
           test -f _site/status-badge.json
+          test -f _site/site/visual-overhaul.css
+          test -f _site/site/visual-overhaul.js
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
