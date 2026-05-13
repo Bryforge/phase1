@@ -43,10 +43,10 @@ fn base1_b3_uefi_proof_help_documents_usage_marker_display_and_boundaries() {
     for text in [
         "usage: sh scripts/base1-b3-uefi-proof.sh --build [--run|--check] [--fullscreen]",
         "Builds a local B3 UEFI proof image under build/",
-        "displays the fitted Phase1 word-mark splash",
+        "displays the Phase1 word-mark splash when supported",
         "emits a serial proof marker",
-        "GRUB searches for the font on the FAT image before loading it",
-        "enables gfxterm so menu/text glyphs render correctly",
+        "Linux dependencies:",
+        "qemu-system-x86_64, grub-mkstandalone, mtools, ovmf, timeout",
         "--build",
         "--run",
         "--check",
@@ -116,9 +116,12 @@ fn base1_b3_uefi_proof_uses_expected_artifacts_and_splash_fitting() {
         ">/dev/null 2>&1",
         "EFI/BOOT/BOOTX64.EFI",
         "x86_64-elf-grub-mkstandalone",
+        "grub-mkstandalone",
         "mformat",
+        "mmd",
         "mcopy",
         "edk2-x86_64-code.fd",
+        "OVMF_CODE.fd",
         "qemu-system-x86_64",
     ] {
         assert!(
@@ -133,6 +136,8 @@ fn base1_b3_uefi_proof_searches_root_before_loading_font_and_keeps_menu_overlay(
     let script = std::fs::read_to_string(SCRIPT).expect("B3 UEFI proof source");
 
     for text in [
+        "if [ -z \"${BASH_VERSION:-}\" ]; then",
+        "exec bash \"$0\" \"$@\"",
         "MARKER=${BASE1_B3_MARKER:-phase1 6.0.0 ready}",
         "serial --unit=0 --speed=115200",
         "GRUB_FONT=\"$WORK_DIR/boot/grub/fonts/phase1.pf2\"",
@@ -145,7 +150,6 @@ fn base1_b3_uefi_proof_searches_root_before_loading_font_and_keeps_menu_overlay(
         "echo \"base1 b3 uefi proof start\"",
         "echo \"$MARKER\"",
         "echo \"emulator-only evidence; no installer; no hardware-validation claim\"",
-        "display: root searched before font load; visible serial disabled",
         "-serial null",
         "b3-serial.log",
         "b3-summary.env",
