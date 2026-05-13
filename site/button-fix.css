@@ -2,12 +2,14 @@
 @import url("./bryforge-aligned.css?v=phase1-bryforge-aligned-v2");
 @import url("./phase1-polish-77.css?v=phase1-polish-77-v1");
 @import url("./phase1-orange-spectrum.css?v=phase1-orange-spectrum-v1");
+@import url("./phase1-orange-premium.css?v=phase1-orange-premium-v1");
 
 /* Phase1 CSS loader.
    Keep this thin: final-design.css establishes the cleaned Phase1 system,
    bryforge-aligned.css applies the Bryforge homepage glow/button language,
    phase1-polish-77.css cleans up mobile/layout consistency,
-   and phase1-orange-spectrum.css removes rainbow and keeps the spectrum of orange only. */
+   phase1-orange-spectrum.css removes rainbow,
+   and phase1-orange-premium.css finishes the orange-only spectrum. */
 
 .logo-stage,
 .logo-stage::before,
