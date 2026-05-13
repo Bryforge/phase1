@@ -24,6 +24,7 @@
 @import url("./phase1-first-view-mobile.css?v=phase1-first-view-mobile-v1");
 @import url("./phase1-first-view-balance.css?v=phase1-first-view-balance-v1");
 @import url("./phase1-atmospheric-field.css?v=phase1-atmospheric-field-v1");
+@import url("./phase1-no-grid-lines.css?v=phase1-no-grid-lines-v1");
 
 .logo-stage,.logo-stage::before,.orbit,.orbit::before,.orbit::after,.aurora,.scanlines,.noise,#space,.rainbow-space-field,.orbital-system-field,.phase-starfield{pointer-events:none!important}
 .nav,.nav a,.nav-toggle,.hero-copy,.hero-actions,.button,.footer-links a,.hero-status-panel a,.quick-commands button,.terminal-form button{position:relative;z-index:50;pointer-events:auto;touch-action:manipulation}
