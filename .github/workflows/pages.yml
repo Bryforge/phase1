@@ -46,6 +46,7 @@ jobs:
           p = Path('_site/index.html')
           s = p.read_text()
           cache = 'phase1-banner-overhaul-v1'
+          structure = 'phase1-structure-recovery-v1'
           previous = [
               'phase1-nobackground-v2', 'phase1-superb-overhaul-v1', 'phase1-final-design-v1',
               'phase1-bryforge-aligned-v1', 'phase1-orange-rainbow-v1', 'phase1-polish-77-v1',
@@ -59,9 +60,12 @@ jobs:
               s = s.replace(f'button-fix.js?v={old}', f'button-fix.js?v={cache}')
               s = s.replace(f'site.js?v={old}', f'site.js?v={cache}')
               s = s.replace(f'official-phase1-logo-{old.replace("phase1-", "")}', 'official-phase1-logo-banner-overhaul-v1')
-          css = f'<link rel="stylesheet" href="./site/phase1-banner-overhaul.css?v={cache}">'
-          if css not in s:
-              s = s.replace('</head>', f'  {css}\n</head>')
+          for css in [
+              f'<link rel="stylesheet" href="./site/phase1-banner-overhaul.css?v={cache}">',
+              f'<link rel="stylesheet" href="./site/phase1-structure-recovery.css?v={structure}">',
+          ]:
+              if css not in s:
+                  s = s.replace('</head>', f'  {css}\n</head>')
           # Keep only the official recovery extras. Do not inject older experiment layers.
           p.write_text(s)
           PY
@@ -81,7 +85,9 @@ jobs:
           test -f _site/status.json
           test -f _site/status-badge.json
           test -f _site/site/phase1-banner-overhaul.css
+          test -f _site/site/phase1-structure-recovery.css
           grep -q 'phase1-banner-overhaul.css?v=phase1-banner-overhaul-v1' _site/index.html
+          grep -q 'phase1-structure-recovery.css?v=phase1-structure-recovery-v1' _site/index.html
           grep -q 'button-fix.css?v=phase1-banner-overhaul-v1' _site/index.html
 
       - name: Configure Pages
