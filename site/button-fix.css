@@ -14,48 +14,9 @@
 @import url("./phase1-computer-joy.css?v=phase1-computer-joy-v1");
 @import url("./phase1-machine-harmony.css?v=phase1-machine-harmony-v1");
 @import url("./phase1-public-polish.css?v=phase1-public-polish-v1");
+@import url("./phase1-presentation-10.css?v=phase1-presentation-10-v1");
 
-/* Phase1 CSS loader.
-   Recovery direction: consistent, banner-inspired public site with official Phase1 identity.
-   Keep this layer focused and avoid stacking old experiments on top of the public design. */
-
-.logo-stage,
-.logo-stage::before,
-.orbit,
-.orbit::before,
-.orbit::after,
-.aurora,
-.scanlines,
-.noise,
-#space,
-.rainbow-space-field,
-.orbital-system-field,
-.phase-starfield {
-  pointer-events: none !important;
-}
-
-.nav,
-.nav a,
-.nav-toggle,
-.hero-copy,
-.hero-actions,
-.button,
-.footer-links a,
-.hero-status-panel a,
-.quick-commands button,
-.terminal-form button {
-  position: relative;
-  z-index: 50;
-  pointer-events: auto;
-  touch-action: manipulation;
-}
-
-.profile-label { display: none !important; }
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    scroll-behavior: auto !important;
-  }
-}
+.logo-stage,.logo-stage::before,.orbit,.orbit::before,.orbit::after,.aurora,.scanlines,.noise,#space,.rainbow-space-field,.orbital-system-field,.phase-starfield{pointer-events:none!important}
+.nav,.nav a,.nav-toggle,.hero-copy,.hero-actions,.button,.footer-links a,.hero-status-panel a,.quick-commands button,.terminal-form button{position:relative;z-index:50;pointer-events:auto;touch-action:manipulation}
+.profile-label{display:none!important}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}}
