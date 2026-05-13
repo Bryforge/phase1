@@ -1,8 +1,8 @@
 # Phase1 big verification latest report
 
-Generated UTC: 2026-05-13T23:28:19Z
+Generated UTC: 2026-05-13T23:30:41Z
 Source branch: edge/stable
-Source commit: 55d3b4bdace3f2ee34374bc9ff0e027e37da6f81
+Source commit: ab77a4e824acef9c0b3d640b899d9be0d5424fa2
 Host: X200
 Host kernel: Linux X200 6.8.0-110-generic #110trisquel35 SMP PREEMPT_DYNAMIC Wed Apr 15 21:32:36 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux
 
@@ -13,8 +13,8 @@ Host kernel: Linux X200 6.8.0-110-generic #110trisquel35 SMP PREEMPT_DYNAMIC Wed
 | Result | pass |
 | Steps | 15 |
 | Failed steps | 0 |
-| Verification start UTC | 2026-05-13T23:24:51Z |
-| Verification end UTC | 2026-05-13T23:25:21Z |
+| Verification start UTC | 2026-05-13T23:30:11Z |
+| Verification end UTC | 2026-05-13T23:30:41Z |
 | Source summary | build/phase1-big-verify/summary.env |
 | Source report | build/phase1-big-verify/report.md |
 | Source log | build/phase1-big-verify/phase1-big-verify.log |
@@ -29,9 +29,9 @@ No failed steps recorded.
 
 # Phase1 big verification report
 
-Start UTC: 2026-05-13T23:24:51Z
-End UTC: 2026-05-13T23:25:21Z
-Head: 4e2e8af614b027d37f4cd4a52e277d613c32002f
+Start UTC: 2026-05-13T23:30:11Z
+End UTC: 2026-05-13T23:30:41Z
+Head: ab77a4e824acef9c0b3d640b899d9be0d5424fa2
 Result: pass
 Steps run: 15
 Failed steps: 0
@@ -42,13 +42,7 @@ Summary: build/phase1-big-verify/summary.env
 ## Git status after run
 
 ```text
- M README.md
  M docs/os/B3_X200_EMULATOR_EVIDENCE_REPORT.md
- M docs/repo/EDGE.md
- M docs/wiki/Current-Status.md
- M docs/wiki/Repository-Model.md
- M tests/base1_root_compatibility_map_docs.rs
- M tests/readme_navigation_reorganization_links.rs
 ```
 
 ## Non-claims
