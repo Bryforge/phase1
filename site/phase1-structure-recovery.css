@@ -1,0 +1,438 @@
+/* Phase1 structure recovery pass.
+   This layer fixes composition after the banner-inspired reset:
+   - cleaner above-the-fold hierarchy
+   - fewer cramped elements
+   - consistent white button text
+   - demo/features/status/founder/support sections feel like one product site
+   - mobile no longer feels like a long noisy poster */
+
+:root {
+  --sr-max: 1180px;
+  --sr-panel: rgba(5, 9, 20, .86);
+  --sr-panel-strong: rgba(6, 11, 23, .94);
+  --sr-line: rgba(210, 229, 255, .18);
+  --sr-line-hot: rgba(103, 212, 255, .44);
+  --sr-text: #f7fbff;
+  --sr-muted: #b9c8dc;
+  --sr-blue: #58c9ff;
+  --sr-orange: #ff8b2b;
+  --sr-action: linear-gradient(90deg, #57d9ff, #468cff, #7a5cff, #ff4e33, #ff9b2d);
+}
+
+.site-shell {
+  width: min(var(--sr-max), calc(100% - 32px)) !important;
+  margin: 0 auto !important;
+}
+
+.status-callout {
+  width: min(var(--sr-max), calc(100% - 32px)) !important;
+  padding: 0 !important;
+}
+
+.nav {
+  position: sticky !important;
+  top: 10px !important;
+  z-index: 80 !important;
+  width: 100% !important;
+  padding: 14px 18px !important;
+  min-height: 68px !important;
+}
+
+.brand {
+  gap: 12px !important;
+  font-size: 1rem !important;
+  text-transform: lowercase !important;
+}
+
+.brand-pip {
+  width: 18px !important;
+  height: 18px !important;
+  box-shadow: 0 0 18px rgba(88,201,255,.30), 0 0 24px rgba(255,139,43,.20) !important;
+}
+
+.nav-links {
+  gap: 4px !important;
+}
+
+.nav-links a,
+.footer-links a {
+  padding: 10px 12px !important;
+  border-radius: 999px !important;
+  color: rgba(247,251,255,.86) !important;
+}
+
+.nav-links a:hover,
+.footer-links a:hover {
+  color: #fff !important;
+  background: rgba(255,255,255,.07) !important;
+}
+
+.hero {
+  width: 100% !important;
+  margin-top: 14px !important;
+  grid-template-columns: minmax(0, 1.08fr) minmax(320px, .82fr) !important;
+  gap: clamp(22px, 4vw, 58px) !important;
+  align-items: center !important;
+  padding: clamp(36px, 5vw, 68px) clamp(24px, 5vw, 64px) clamp(34px, 5vw, 62px) !important;
+}
+
+.hero-copy {
+  display: grid !important;
+  gap: 18px !important;
+  align-content: center !important;
+}
+
+.hero .eyebrow {
+  margin: 0 0 4px !important;
+}
+
+.hero h1 {
+  margin: 0 !important;
+  max-width: 820px !important;
+  font-size: clamp(3.15rem, 7.2vw, 6.9rem) !important;
+  letter-spacing: -.082em !important;
+}
+
+.hero-text {
+  margin: 0 !important;
+  max-width: 720px !important;
+}
+
+.hero-actions {
+  margin-top: 4px !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.button,
+.hero-status-panel a,
+.quick-commands button,
+.terminal-form button {
+  min-height: 46px !important;
+  padding: 13px 18px !important;
+  border-radius: 999px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #fff !important;
+  line-height: 1 !important;
+}
+
+.hero-command {
+  margin-top: 2px !important;
+  width: min(100%, 730px) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 13px 16px !important;
+  border-radius: 18px !important;
+  overflow: hidden !important;
+}
+
+.hero-command code {
+  display: block !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.metric-strip {
+  width: min(100%, 730px) !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  margin-top: 0 !important;
+}
+
+.metric-strip div {
+  min-height: 70px !important;
+  padding: 14px !important;
+  border-radius: 16px !important;
+}
+
+.metric-strip strong {
+  display: block !important;
+  color: #fff !important;
+  font-size: .98rem !important;
+  margin-bottom: 3px !important;
+}
+
+.metric-strip span {
+  color: var(--sr-muted) !important;
+  font-size: .82rem !important;
+}
+
+.hero-status-panel {
+  width: min(100%, 730px) !important;
+  margin-top: 0 !important;
+  padding: 18px !important;
+  border-radius: 18px !important;
+}
+
+.hero-status-panel .status-pill,
+.status-pill {
+  display: inline-flex !important;
+  width: auto !important;
+  padding: 7px 10px !important;
+  border-radius: 999px !important;
+  background: rgba(88,201,255,.11) !important;
+  border: 1px solid rgba(88,201,255,.22) !important;
+}
+
+.hero-status-panel strong {
+  display: block !important;
+  margin-top: 10px !important;
+  color: #fff !important;
+  font-size: 1.04rem !important;
+}
+
+.hero-status-panel p {
+  margin: 8px 0 12px !important;
+}
+
+.logo-stage {
+  justify-self: center !important;
+  width: 100% !important;
+  min-height: clamp(360px, 42vw, 560px) !important;
+}
+
+.logo-glass {
+  width: min(100%, 520px) !important;
+  transform: translateZ(0) !important;
+}
+
+.system-card {
+  z-index: 5 !important;
+  backdrop-filter: blur(20px) saturate(1.12) !important;
+}
+
+.terminal-section,
+.features,
+.roadmap,
+.founder,
+.support-grid,
+.footer {
+  width: 100% !important;
+  margin-top: clamp(42px, 6vw, 78px) !important;
+}
+
+.section-heading {
+  max-width: 860px !important;
+  margin-bottom: 24px !important;
+}
+
+.section-heading.centered {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
+}
+
+.section-heading h2,
+.founder-copy h2,
+.support-card h2 {
+  margin-top: 6px !important;
+  font-size: clamp(2.15rem, 4.4vw, 4.6rem) !important;
+  line-height: .98 !important;
+  letter-spacing: -.065em !important;
+}
+
+.section-heading p,
+.founder-copy p,
+.support-card p {
+  max-width: 760px !important;
+}
+
+.terminal {
+  border-radius: 26px !important;
+  overflow: hidden !important;
+}
+
+.terminal-topbar {
+  min-height: 54px !important;
+  padding: 0 18px !important;
+}
+
+.terminal-output {
+  min-height: 220px !important;
+  max-height: 440px !important;
+  overflow: auto !important;
+}
+
+.quick-commands {
+  padding: 0 18px 18px !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+}
+
+.feature-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 18px !important;
+}
+
+.feature-card {
+  min-height: 260px !important;
+  padding: 24px !important;
+  border-radius: 24px !important;
+}
+
+.feature-card h3 {
+  margin-top: 18px !important;
+  font-size: clamp(1.45rem, 2vw, 2rem) !important;
+  letter-spacing: -.045em !important;
+}
+
+.feature-card p {
+  margin-bottom: 0 !important;
+}
+
+.roadmap {
+  padding: clamp(26px, 5vw, 54px) !important;
+  border-radius: 32px !important;
+}
+
+.timeline {
+  display: grid !important;
+  gap: 14px !important;
+}
+
+.timeline li {
+  border-radius: 20px !important;
+  padding: 20px !important;
+}
+
+.founder {
+  display: grid !important;
+  grid-template-columns: minmax(180px, .28fr) minmax(0, .72fr) !important;
+  gap: clamp(26px, 4vw, 54px) !important;
+  align-items: center !important;
+  padding: clamp(26px, 5vw, 54px) !important;
+  border-radius: 32px !important;
+}
+
+.avatar-ring {
+  width: min(100%, 230px) !important;
+  aspect-ratio: 1 / 1 !important;
+  margin: 0 auto !important;
+}
+
+.bryforge-card {
+  margin-top: 22px !important;
+  border-radius: 22px !important;
+}
+
+.support-grid {
+  display: grid !important;
+  grid-template-columns: minmax(0, .72fr) minmax(260px, .28fr) !important;
+  gap: 18px !important;
+  align-items: stretch !important;
+}
+
+.support-card {
+  border-radius: 28px !important;
+  padding: clamp(24px, 4vw, 42px) !important;
+}
+
+.support-card-mini {
+  display: grid !important;
+  gap: 12px !important;
+}
+
+.support-card-mini span {
+  border-radius: 16px !important;
+  min-height: 58px !important;
+}
+
+.footer {
+  margin-bottom: 28px !important;
+  border-radius: 24px !important;
+  padding: 22px !important;
+}
+
+@media (max-width: 980px) {
+  .site-shell,
+  .status-callout {
+    width: min(100% - 22px, var(--sr-max)) !important;
+  }
+
+  .hero {
+    grid-template-columns: 1fr !important;
+    padding-top: 28px !important;
+  }
+
+  .logo-stage {
+    order: -1 !important;
+    min-height: 330px !important;
+  }
+
+  .logo-glass {
+    width: min(100%, 430px) !important;
+  }
+
+  .feature-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .founder,
+  .support-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 680px) {
+  .status-callout__link {
+    font-size: .88rem !important;
+  }
+
+  .nav {
+    border-radius: 18px !important;
+  }
+
+  .hero {
+    border-radius: 24px !important;
+    padding: 22px 16px 28px !important;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.6rem, 14.2vw, 4.25rem) !important;
+    line-height: .94 !important;
+  }
+
+  .hero-text {
+    font-size: .98rem !important;
+  }
+
+  .hero-actions {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  .hero-command code {
+    white-space: normal !important;
+    line-height: 1.45 !important;
+  }
+
+  .metric-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .feature-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .feature-card {
+    min-height: auto !important;
+  }
+
+  .terminal-form {
+    grid-template-columns: 1fr !important;
+  }
+
+  .terminal-form span {
+    display: none !important;
+  }
+}
