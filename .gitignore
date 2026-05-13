@@ -52,3 +52,15 @@ build/*
 phase1.log*
 
 # Phase1 runtime logs
+
+# Generated evidence artifacts - never commit
+/docs/base1/evidence/build-artifacts/
+/docs/base1/evidence/**/*.img
+/docs/base1/evidence/**/*.raw
+/docs/base1/evidence/**/*.tar
+/docs/base1/evidence/**/*.iso
+/docs/base1/evidence/**/vmlinuz
+/docs/base1/evidence/**/initrd.img
+/docs/base1/evidence/**/BOOTX64.EFI
+/docs/base1/evidence/**/*.pf2
+/docs/base1/evidence/**/*.png

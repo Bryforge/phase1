@@ -1,7 +1,7 @@
 # Base1 evidence
 
-Place reviewed Base1 evidence reports here.
+Reviewed Base1 evidence reports belong here.
 
-Do not commit generated disk images, raw disks, tarballs, kernels, initrds, EFI binaries, fonts, or generated screenshots here.
+Generated disk images, raw disks, tarballs, kernels, initrds, EFI binaries, fonts, screenshots, and generated build output must stay out of Git history.
 
-Generated build output belongs in local build/ and remains ignored.
+Local generated output belongs in build/ and remains ignored.
