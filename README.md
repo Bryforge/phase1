@@ -1,5 +1,7 @@
 # Phase1
 
+> [Live project status](https://bryforge.github.io/phase1/status.html) · [status.json](https://bryforge.github.io/phase1/status.json) · current roadmap estimate: **61%**
+
 <p align="center">
   <a href="https://bryforge.github.io/phase1/">
     <img src="assets/phase1_base_fyr_banner1.png" alt="Phase1 Base1 Fyr public banner" width="780">

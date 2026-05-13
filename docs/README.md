@@ -98,3 +98,9 @@ Use narrow, testable statements. Do not claim that Phase1 is secure, hardened, b
 ## Archive
 
 - [`archive/README.md`](archive/README.md) — preserved older root notes, historical checkpoints, and legacy update notes moved out of the repository root.
+
+## Public status
+
+- [Project status](status/PROJECT_STATUS.md)
+- [Live status page](https://bryforge.github.io/phase1/status.html)
+- [Live JSON marker](https://bryforge.github.io/phase1/status.json)
