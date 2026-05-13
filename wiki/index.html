@@ -12,14 +12,22 @@
   <meta property="og:description" content="The public docs and roadmap hub for Phase1, the Rust-powered advanced operator kernel by Bryforge.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://bryforge.github.io/phase1/wiki/">
-  <meta property="og:image" content="https://bryforge.github.io/phase1/assets/phase1-banner.svg">
+  <meta property="og:image" content="https://bryforge.github.io/phase1/assets/phase1-nobackground.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Phase1 Wiki // Bryforge Docs Hub">
   <meta name="twitter:description" content="Quick start, command index, boot profiles, runtimes, tutorials, and public roadmap for Phase1.">
-  <meta name="twitter:image" content="https://bryforge.github.io/phase1/assets/phase1-banner.svg">
-  <link rel="stylesheet" href="./docs.css">
+  <meta name="twitter:image" content="https://bryforge.github.io/phase1/assets/phase1-nobackground.png">
+  <link rel="stylesheet" href="./docs.css?v=phase1-public-pages-align-v1">
+  <link rel="stylesheet" href="../site/phase1-eye-candy-boost.css?v=phase1-eye-candy-boost-v1">
+  <link rel="stylesheet" href="../site/phase1-starlight-motion.css?v=phase1-starlight-motion-v1">
+  <link rel="stylesheet" href="../site/phase1-starlight-premium.css?v=phase1-starlight-premium-v1">
+  <link rel="stylesheet" href="../site/phase1-starlight-depth.css?v=phase1-starlight-depth-v1">
+  <link rel="stylesheet" href="../site/phase1-spectrum-buttons.css?v=phase1-spectrum-buttons-v1">
+  <link rel="stylesheet" href="../site/phase1-spectrum-solid.css?v=phase1-spectrum-solid-v1">
+  <link rel="stylesheet" href="../site/phase1-public-pages-align.css?v=phase1-public-pages-align-v1">
 </head>
 <body>
+  <div class="phase-starfield" aria-hidden="true"><span class="phase-starfield__drift"></span></div>
   <canvas id="docs-space" aria-hidden="true"></canvas>
   <div class="docs-aura docs-aura-a" aria-hidden="true"></div>
   <div class="docs-aura docs-aura-b" aria-hidden="true"></div>
@@ -32,6 +40,8 @@
       </a>
       <p class="sidebar-label">Docs hub</p>
       <nav>
+        <a href="../">Phase1 Home</a>
+        <a href="../status.html">Status</a>
         <a href="#quick-start">Quick Start</a>
         <a href="#boot">Boot Profiles</a>
         <a href="#commands">Command Index</a>
@@ -61,7 +71,7 @@
             <input id="docs-search" type="search" placeholder="Search commands, boot, storage, browser, Bryforge..." autocomplete="off">
           </div>
         </div>
-        <img src="../assets/phase1-banner.svg" alt="Phase1 neon rainbow logo" class="hero-logo">
+        <img src="../assets/phase1-nobackground.png" alt="Phase1 logo" class="hero-logo">
       </section>
 
       <section class="quick-links" aria-label="Docs quick links">
@@ -74,8 +84,8 @@
         <a class="quick-card" href="#languages" data-search="language runtime rust python javascript typescript go java wasm">
           <span>03</span><strong>Runtimes</strong><small>Language roadmap.</small>
         </a>
-        <a class="quick-card" href="#bryforge" data-search="Bryforge startup software development company Chase Bryan">
-          <span>04</span><strong>Bryforge</strong><small>Company profile.</small>
+        <a class="quick-card" href="../status.html" data-search="status roadmap progress public marker">
+          <span>04</span><strong>Status</strong><small>Live roadmap signal.</small>
         </a>
       </section>
 
@@ -83,7 +93,7 @@
         <p class="eyebrow">quick start</p>
         <h2>Boot Phase1 in minutes.</h2>
         <div class="code-card"><code>git clone https://github.com/Bryforge/phase1.git<br>cd phase1<br>cargo run</code></div>
-        <p>Inside Phase1, start with <code>help</code>, <code>wiki</code>, <code>security</code>, <code>sysinfo</code>, and <code>roadmap</code>. The website docs mirror the in-system wiki and provide a public front door for new operators.</p>
+        <p>Inside Phase1, start with <code>help</code>, <code>wiki</code>, <code>security</code>, <code>sysinfo</code>, and <code>roadmap</code>. The website docs mirror the in-system wiki and connect to the public status marker.</p>
       </section>
 
       <section id="boot" class="doc-section panel" data-search="boot profiles safe mode shield trust host storage browser network">
@@ -134,7 +144,7 @@
       <section id="updates" class="doc-section panel" data-search="updates release notes stable edge version migration quality audit">
         <p class="eyebrow">release story pages</p>
         <h2>Stable, edge, and migration notes.</h2>
-        <p>The website roadmap now includes release story cards for stable and edge builds, migration notes, version comparison, quality score updates, and audit links.</p>
+        <p>The website roadmap includes release story cards for stable and edge builds, migration notes, version comparison, quality score updates, and audit links. The status page remains the public signal for estimated roadmap progress.</p>
       </section>
 
       <section id="troubleshooting" class="doc-section panel" data-search="troubleshooting errors pages deploy github pages safe mode cargo rust terminal">
@@ -170,21 +180,9 @@
         <p>Support helps fund continued work on Phase1, public docs, runtime support, safe storage/Git tooling, and future Bryforge software.</p>
         <a class="coffee-link" href="https://www.buymeacoffee.com/bryforge" target="_blank" rel="noopener noreferrer">☕ Buy me a coffee</a>
       </section>
-
-      <section class="doc-section panel" data-search="roadmap designs docs navigation search demos releases website front door">
-        <p class="eyebrow">implemented roadmap design</p>
-        <h2>What changed from roadmap to website.</h2>
-        <ol class="timeline-list">
-          <li><strong>Docs rail:</strong> persistent wiki navigation for the main public docs areas.</li>
-          <li><strong>Search:</strong> client-side filtering for sections and command cards.</li>
-          <li><strong>Command cards:</strong> visual command index starter design.</li>
-          <li><strong>Demo roadmap:</strong> tutorial and release story spaces are now part of the page layout.</li>
-          <li><strong>Company/support:</strong> Bryforge and sponsorship are integrated into the docs hub.</li>
-        </ol>
-      </section>
     </main>
   </div>
 
-  <script src="./docs.js"></script>
+  <script src="./docs.js?v=phase1-public-pages-align-v1"></script>
 </body>
 </html>
