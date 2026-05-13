@@ -1,6 +1,6 @@
 # Phase1
 
-> [Live project status](https://bryforge.github.io/phase1/status.html) · [status.json](https://bryforge.github.io/phase1/status.json) · current roadmap estimate: **61%**
+> [Live project status](https://bryforge.github.io/phase1/status.html) · [status.json](https://bryforge.github.io/phase1/status.json) · current roadmap estimate: **62%**
 
 <p align="center">
   <a href="https://bryforge.github.io/phase1/">
