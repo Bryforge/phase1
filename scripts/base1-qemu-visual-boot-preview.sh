@@ -2,6 +2,10 @@
 # Build and optionally run the Phase1/Base1 visual boot preview in QEMU.
 # Showcase-only: writes local build artifacts under build/ and makes no boot-readiness claim.
 
+if [ -z "${BASH_VERSION:-}" ]; then
+  exec bash "$0" "$@"
+fi
+
 set -euo pipefail
 
 usage() {
