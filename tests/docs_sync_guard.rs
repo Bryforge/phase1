@@ -7,22 +7,27 @@ fn read(path: &str) -> String {
 #[test]
 fn docs_sync_script_and_outputs_are_present() {
     let script = read("scripts/update-docs.py");
-    assert!(script.contains("base/v4.2.0"));
-    assert!(script.contains("edge/stable"));
-    assert!(script.contains("upsert(\"README.md\", \"repo-model\""));
-    assert!(script.contains("docs/wiki/Repository-Model.md"));
-    assert!(script.contains("docs/wiki/Current-Status.md"));
+    assert!(script.contains("base/v5.0.0"), "{script}");
+    assert!(script.contains("v6.0.0"), "{script}");
+    assert!(script.contains("edge/stable"), "{script}");
+    assert!(
+        script.contains("upsert(\"README.md\", \"repo-model\""),
+        "{script}"
+    );
+    assert!(script.contains("docs/repo/EDGE.md"), "{script}");
+    assert!(script.contains("docs/wiki/Repository-Model.md"), "{script}");
+    assert!(script.contains("docs/wiki/Current-Status.md"), "{script}");
+    assert!(
+        script.contains("root-level generated notes are intentionally not created"),
+        "{script}"
+    );
 }
 
 #[test]
-fn generated_docs_preserve_stable_base_and_edge_path() {
+fn generated_docs_preserve_current_stable_base_edge_version_and_edge_path() {
     let docs = [
         "README.md",
-        "docs/repo/REPO_DOCTRINE.md",
-        "docs/repo/EDGE_STABLE_CHECKPOINT.md",
-        "docs/project/FEATURE_STATUS.md",
         "docs/repo/EDGE.md",
-        "docs/project/WIKI_ROADMAP.md",
         "docs/wiki/Repository-Model.md",
         "docs/wiki/Current-Status.md",
     ];
@@ -30,12 +35,36 @@ fn generated_docs_preserve_stable_base_and_edge_path() {
     for path in docs {
         let body = read(path);
         assert!(
-            body.contains("base/v4.2.0"),
-            "{path} lost the frozen stable base"
+            body.contains("base/v5.0.0"),
+            "{path} lost the current stable base"
         );
         assert!(
             body.contains("edge/stable"),
             "{path} lost the active edge path"
+        );
+    }
+
+    let readme = read("README.md");
+    assert!(
+        readme.contains("Current edge version: `v6.0.0`"),
+        "README lost v6 current status: {readme}"
+    );
+}
+
+#[test]
+fn old_root_generated_docs_are_not_required_or_regenerated() {
+    let script = read("scripts/update-docs.py");
+
+    for old_root_path in [
+        "EDGE_STABLE_CHECKPOINT.md",
+        "FEATURE_STATUS.md",
+        "REPO_DOCTRINE.md",
+        "WIKI_ROADMAP.md",
+    ] {
+        let old_upsert = format!("upsert(\"{old_root_path}\"");
+        assert!(
+            !script.contains(&old_upsert),
+            "update-docs.py should not regenerate old root note {old_root_path}: {script}"
         );
     }
 }
