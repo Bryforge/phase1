@@ -1367,3 +1367,5 @@ h1,
   line-height: 1.06;
   padding-bottom: 0.08em;
 }
+
+.logo-glass .phase-logo-image{position:relative;z-index:2;display:block;width:min(82%,420px);height:auto;object-fit:contain;filter:drop-shadow(0 0 28px rgba(126,178,255,.58)) drop-shadow(0 0 72px rgba(85,136,255,.28));}
