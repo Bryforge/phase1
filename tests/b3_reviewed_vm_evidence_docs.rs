@@ -18,7 +18,8 @@ fn b3_reviewed_vm_evidence_defines_scope_and_purpose() {
     assert_contains(&doc, "B3 UEFI proof");
     assert_contains(&doc, "kernel/initrd handoff");
     assert_contains(&doc, "GNU/Linux stage");
-    assert_contains(&doc, "OpenBSD stage");
+    assert_contains(&doc, "OpenBSD launch stage");
+    assert_contains(&doc, "X200 emulator evidence report");
 }
 
 #[test]
@@ -37,6 +38,7 @@ fn b3_reviewed_vm_evidence_lists_required_inputs() {
         "docs/os/B3_OPENBSD_SERIAL_LIMITATION.md",
         "build/base1-b3-vm-validation/b3-validation-scaffold.env",
         "build/base1-b3-vm-validation/b3-log-bundle-review.env",
+        "docs/os/B3_X200_EMULATOR_EVIDENCE_REPORT.md",
     ] {
         assert_contains(&doc, expected);
     }
@@ -49,9 +51,14 @@ fn b3_reviewed_vm_evidence_preserves_pass_markers() {
         "BASE1_B2_TEST_SUITE_RESULT=pass",
         "BASE1_B2_TEST_SUITE_FAILED_COUNT=0",
         "BASE1_B3_EVIDENCE_STATE=evidence-present",
-        "BASE1_B3_EVIDENCE_SUMMARY_COUNT=4",
+        "BASE1_B3_EVIDENCE_SUMMARY_COUNT=3",
+        "BASE1_B3_UEFI_SUMMARY_PRESENT=yes",
+        "BASE1_B3_HANDOFF_SUMMARY_PRESENT=yes",
+        "BASE1_B3_GNULINUX_SUMMARY_PRESENT=yes",
         "BASE1_B3_LOG_REVIEW_RESULT=pass",
         "BASE1_B3_LOG_REVIEW_CLAIM=not_claimed",
+        "BASE1_B3_LOG_REVIEW_OPENBSD_SUMMARY_PRESENT=yes",
+        "BASE1_B3_LOG_REVIEW_OPENBSD_LOG_PRESENT=yes",
         "reviewed_vm_evidence",
         "not_claimed",
     ] {
