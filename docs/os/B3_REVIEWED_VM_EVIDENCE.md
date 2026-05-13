@@ -26,6 +26,7 @@ This is not a hardware boot claim, installer claim, recovery-complete claim, har
 - B3 VM validation scaffold: `build/base1-b3-vm-validation/b3-validation-scaffold.env`
 - B3 log-bundle review: `build/base1-b3-vm-validation/b3-log-bundle-review.env`
 - X200 emulator evidence report: `docs/os/B3_X200_EMULATOR_EVIDENCE_REPORT.md`
+- Latest big verification report: `docs/reports/PHASE1_BIG_VERIFY_LATEST.md`
 
 ## Reviewed result
 
@@ -34,10 +35,11 @@ The local B3 review result is pass when:
 - `BASE1_B2_TEST_SUITE_RESULT=pass`;
 - `BASE1_B2_TEST_SUITE_FAILED_COUNT=0`;
 - `BASE1_B3_EVIDENCE_STATE=evidence-present`;
-- `BASE1_B3_EVIDENCE_SUMMARY_COUNT=3`;
+- `BASE1_B3_EVIDENCE_SUMMARY_COUNT=4`;
 - `BASE1_B3_UEFI_SUMMARY_PRESENT=yes`;
 - `BASE1_B3_HANDOFF_SUMMARY_PRESENT=yes`;
 - `BASE1_B3_GNULINUX_SUMMARY_PRESENT=yes`;
+- `BASE1_B3_OPENBSD_SUMMARY_PRESENT=yes`;
 - `BASE1_B3_LOG_REVIEW_RESULT=pass`;
 - `BASE1_B3_LOG_REVIEW_CLAIM=not_claimed`;
 - `BASE1_B3_LOG_REVIEW_OPENBSD_SUMMARY_PRESENT=yes`;
@@ -55,13 +57,15 @@ The X200 reviewed report records:
 - `B3 UEFI proof`: `pass`;
 - `B3 kernel/initrd handoff`: `pass`;
 - `B3 GNU/Linux stage`: `pass`;
-- `B3 OpenBSD stage`: launch evidence, with serial limitation documented separately.
+- `B3 OpenBSD stage`: launch evidence, with serial limitation documented separately;
+- `B3 log bundle review`: `pass`;
+- `Phase1 big verify`: `pass`, 15 steps, 0 failed.
 
 The public evidence report path is `docs/os/B3_X200_EMULATOR_EVIDENCE_REPORT.md`.
 
 ## Interpretation boundary
 
-Reviewed VM evidence means the local VM evidence bundle is present and reviewable.
+Reviewed VM evidence means the local VM evidence bundle is present, internally consistent, and reviewable.
 
 It does not mean Base1 is bootable on physical hardware.
 
