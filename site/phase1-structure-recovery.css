@@ -19,6 +19,39 @@
   --sr-action: linear-gradient(90deg, #57d9ff, #468cff, #7a5cff, #ff4e33, #ff9b2d);
 }
 
+/* Critical public-render safeguard. The old visual stack used reveal animations that
+   defaulted content to opacity:0. The recovered site must fail open even if JS,
+   cache, or observer setup is unavailable. */
+.reveal,
+.reveal.is-visible,
+.hero,
+.hero-copy,
+.logo-stage,
+.terminal-section,
+.features,
+.roadmap,
+.founder,
+.support-grid,
+.footer {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+}
+
+.hero-copy,
+.logo-stage,
+.hero-copy > *,
+.logo-stage > *,
+.terminal-section > *,
+.features > *,
+.roadmap > *,
+.founder > *,
+.support-grid > *,
+.footer > * {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
 .site-shell {
   width: min(var(--sr-max), calc(100% - 32px)) !important;
   margin: 0 auto !important;
@@ -70,6 +103,7 @@
 .hero {
   width: 100% !important;
   margin-top: 14px !important;
+  display: grid !important;
   grid-template-columns: minmax(0, 1.08fr) minmax(320px, .82fr) !important;
   gap: clamp(22px, 4vw, 58px) !important;
   align-items: center !important;
