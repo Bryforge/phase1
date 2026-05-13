@@ -1,0 +1,373 @@
+/* Phase1 starlight motion pass.
+   Removes the visible background matrix and keeps a premium moving starfield.
+   Adds soft cinematic motion, glow, and consistency across homepage/status panels. */
+
+:root {
+  --sl-bg: #010208;
+  --sl-panel: rgba(5, 9, 20, .82);
+  --sl-panel-strong: rgba(5, 9, 20, .92);
+  --sl-line: rgba(232, 245, 255, .17);
+  --sl-cyan: #7df7ff;
+  --sl-blue: #50c8ff;
+  --sl-violet: #9c7dff;
+  --sl-pink: #ff6fec;
+  --sl-orange: #ff8d2f;
+  --sl-gold: #ffd76c;
+  --sl-green: #85ff9f;
+}
+
+html,
+body {
+  background: var(--sl-bg) !important;
+}
+
+body {
+  background:
+    radial-gradient(circle at 16% 12%, rgba(80, 200, 255, .16), transparent 24rem),
+    radial-gradient(circle at 88% 18%, rgba(255, 141, 47, .13), transparent 28rem),
+    radial-gradient(circle at 52% 104%, rgba(156, 125, 255, .12), transparent 34rem),
+    linear-gradient(180deg, #010208 0%, #030714 44%, #010208 100%) !important;
+}
+
+/* Remove legacy matrix-grid backgrounds. */
+body::before {
+  content: "" !important;
+  position: fixed !important;
+  inset: 0 !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+  opacity: .40 !important;
+  background:
+    radial-gradient(circle at 24% 20%, rgba(80, 200, 255, .12), transparent 26rem),
+    radial-gradient(circle at 76% 28%, rgba(255, 141, 47, .10), transparent 30rem),
+    radial-gradient(circle at 50% 78%, rgba(156, 125, 255, .085), transparent 32rem) !important;
+  background-size: auto !important;
+  animation: sl-ambient-drift 42s ease-in-out infinite alternate !important;
+  mask-image: none !important;
+}
+
+body::after {
+  display: none !important;
+}
+
+/* Actual moving/glowing starfield layer. */
+.phase-starfield {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 1 !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
+  opacity: .98 !important;
+  mix-blend-mode: screen !important;
+}
+
+.phase-starfield::before,
+.phase-starfield::after,
+.phase-starfield__drift,
+.phase-starfield__drift::before,
+.phase-starfield__drift::after {
+  content: "" !important;
+  position: absolute !important;
+  pointer-events: none !important;
+}
+
+.phase-starfield::before {
+  inset: -18% !important;
+  background:
+    radial-gradient(circle at 7% 12%, rgba(125,247,255,.95) 0 1.45px, transparent 4.1px),
+    radial-gradient(circle at 15% 72%, rgba(255,215,108,.86) 0 1.3px, transparent 4px),
+    radial-gradient(circle at 24% 30%, rgba(255,111,236,.80) 0 1.24px, transparent 3.9px),
+    radial-gradient(circle at 36% 82%, rgba(133,255,159,.76) 0 1.22px, transparent 3.9px),
+    radial-gradient(circle at 47% 16%, rgba(156,125,255,.90) 0 1.35px, transparent 4px),
+    radial-gradient(circle at 58% 56%, rgba(80,200,255,.86) 0 1.25px, transparent 3.9px),
+    radial-gradient(circle at 68% 27%, rgba(255,141,47,.92) 0 1.45px, transparent 4.1px),
+    radial-gradient(circle at 79% 76%, rgba(125,247,255,.78) 0 1.24px, transparent 3.9px),
+    radial-gradient(circle at 89% 18%, rgba(255,111,236,.74) 0 1.2px, transparent 3.9px),
+    radial-gradient(circle at 96% 64%, rgba(255,215,108,.80) 0 1.32px, transparent 4px) !important;
+  filter: drop-shadow(0 0 8px rgba(125,247,255,.46)) drop-shadow(0 0 11px rgba(255,141,47,.22)) !important;
+  animation: sl-star-drift-a 64s linear infinite, sl-star-pulse 8s ease-in-out infinite !important;
+}
+
+.phase-starfield::after {
+  inset: -14% !important;
+  background:
+    radial-gradient(circle at 12% 44%, rgba(255,255,255,.70) 0 1px, transparent 3px),
+    radial-gradient(circle at 20% 10%, rgba(80,200,255,.60) 0 1px, transparent 3px),
+    radial-gradient(circle at 31% 50%, rgba(255,255,255,.52) 0 1px, transparent 3px),
+    radial-gradient(circle at 42% 70%, rgba(255,141,47,.50) 0 1px, transparent 3px),
+    radial-gradient(circle at 52% 86%, rgba(255,255,255,.52) 0 1px, transparent 3px),
+    radial-gradient(circle at 70% 8%, rgba(255,255,255,.54) 0 1px, transparent 3px),
+    radial-gradient(circle at 85% 46%, rgba(125,247,255,.54) 0 1px, transparent 3px),
+    radial-gradient(circle at 92% 86%, rgba(156,125,255,.52) 0 1px, transparent 3px) !important;
+  opacity: .76 !important;
+  filter: drop-shadow(0 0 6px rgba(255,255,255,.24)) !important;
+  animation: sl-star-drift-b 86s linear infinite reverse, sl-star-pulse-soft 11s ease-in-out infinite !important;
+}
+
+.phase-starfield__drift {
+  inset: -22% !important;
+  background:
+    radial-gradient(circle at 6% 92%, rgba(125,247,255,.44) 0 1.25px, transparent 4px),
+    radial-gradient(circle at 19% 22%, rgba(255,141,47,.44) 0 1.25px, transparent 4px),
+    radial-gradient(circle at 43% 36%, rgba(255,111,236,.38) 0 1.1px, transparent 4px),
+    radial-gradient(circle at 62% 72%, rgba(133,255,159,.40) 0 1.1px, transparent 4px),
+    radial-gradient(circle at 86% 28%, rgba(80,200,255,.44) 0 1.25px, transparent 4px) !important;
+  opacity: .70 !important;
+  animation: sl-star-drift-c 105s linear infinite, sl-star-pulse-soft 14s ease-in-out infinite !important;
+}
+
+/* Eye-candy comet glints, slow and sparse. */
+.phase-starfield__drift::before,
+.phase-starfield__drift::after {
+  width: 220px !important;
+  height: 1px !important;
+  border-radius: 999px !important;
+  background: linear-gradient(90deg, transparent, rgba(125,247,255,.0), rgba(125,247,255,.80), rgba(255,255,255,.88), transparent) !important;
+  filter: drop-shadow(0 0 10px rgba(125,247,255,.38)) drop-shadow(0 0 14px rgba(255,141,47,.18)) !important;
+  transform: rotate(-18deg) translateX(-130vw) !important;
+  opacity: 0 !important;
+}
+
+.phase-starfield__drift::before {
+  top: 18% !important;
+  left: -20% !important;
+  animation: sl-comet-a 22s ease-in-out infinite !important;
+}
+
+.phase-starfield__drift::after {
+  top: 64% !important;
+  left: -25% !important;
+  width: 170px !important;
+  animation: sl-comet-b 31s ease-in-out infinite 7s !important;
+}
+
+.site-shell,
+.status-callout,
+.status-shell {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* Remove gridded panel fills from older layers; keep clean glass and starfield behind it. */
+.hero,
+.feature-card,
+.roadmap,
+.founder,
+.support-card,
+.terminal,
+.footer,
+.hero-status-panel,
+.metric-strip div,
+.bryforge-card,
+.timeline li,
+.status-nav,
+.status-hero,
+.status-card,
+.status-metrics,
+.status-footer,
+.metric {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(125,247,255,.075), transparent 18rem),
+    radial-gradient(circle at 86% 24%, rgba(255,141,47,.060), transparent 20rem),
+    linear-gradient(145deg, rgba(6, 10, 22, .88), rgba(255,255,255,.045)) !important;
+  background-size: auto !important;
+  border-color: var(--sl-line) !important;
+  box-shadow:
+    0 30px 96px rgba(0,0,0,.62),
+    0 0 34px rgba(125,247,255,.095),
+    0 0 38px rgba(255,141,47,.070),
+    inset 0 1px 0 rgba(255,255,255,.11) !important;
+}
+
+.hero::before {
+  opacity: .18 !important;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(125,247,255,.15), transparent 42%),
+    radial-gradient(circle at 54% 56%, rgba(255,141,47,.11), transparent 58%) !important;
+  border: 0 !important;
+}
+
+.hero::after,
+.feature-card::after,
+.terminal::after,
+.roadmap::after,
+.founder::after,
+.support-card::after,
+.status-hero::after,
+.status-card::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 1 !important;
+  pointer-events: none !important;
+  border-radius: inherit !important;
+  background: linear-gradient(115deg, transparent 0%, rgba(255,255,255,.050) 42%, rgba(125,247,255,.090) 49%, rgba(255,141,47,.060) 55%, transparent 100%) !important;
+  transform: translateX(-120%) skewX(-10deg) !important;
+  opacity: .54 !important;
+  animation: sl-panel-sheen 20s ease-in-out infinite !important;
+}
+
+.hero > *,
+.feature-card > *,
+.terminal > *,
+.roadmap > *,
+.founder > *,
+.support-card > *,
+.status-hero > *,
+.status-card > * {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* Consistent button treatment across homepage + status page. */
+.button,
+.nav-links a,
+.status-callout__link,
+.hero-status-panel a,
+.quick-commands button,
+.terminal-form button,
+.footer-links a,
+.status-links a,
+.status-button {
+  color: #fff !important;
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(180deg, rgba(8, 14, 29, .82), rgba(4, 8, 18, .66)) padding-box,
+    var(--sl-border, linear-gradient(90deg, var(--sl-cyan), var(--sl-violet), var(--sl-orange))) border-box !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.10),
+    0 0 18px var(--sl-shadow, rgba(125,247,255,.18)),
+    inset 0 1px 0 rgba(255,255,255,.22) !important;
+}
+
+.button::before,
+.nav-links a::before,
+.status-callout__link::before,
+.hero-status-panel a::before,
+.quick-commands button::before,
+.terminal-form button::before,
+.footer-links a::before,
+.status-links a::before,
+.status-button::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: -4px !important;
+  z-index: -1 !important;
+  border-radius: inherit !important;
+  pointer-events: none !important;
+  background: var(--sl-edge, linear-gradient(90deg, rgba(125,247,255,.52), rgba(255,141,47,.40))) !important;
+  filter: blur(5.5px) !important;
+  opacity: .66 !important;
+}
+
+.button-primary,
+.status-callout__link,
+.status-links a.primary {
+  --sl-border: linear-gradient(90deg, var(--sl-cyan), var(--sl-blue), var(--sl-violet), var(--sl-orange), var(--sl-gold));
+  --sl-edge: linear-gradient(90deg, rgba(125,247,255,.70), rgba(80,200,255,.45), rgba(255,141,47,.52));
+  --sl-shadow: rgba(80,200,255,.23);
+}
+.button-secondary,
+.quick-commands button {
+  --sl-border: linear-gradient(90deg, var(--sl-cyan), var(--sl-violet), var(--sl-pink));
+  --sl-edge: linear-gradient(90deg, rgba(125,247,255,.56), rgba(156,125,255,.50), rgba(255,111,236,.40));
+  --sl-shadow: rgba(156,125,255,.20);
+}
+.button-ghost,
+.footer-links a,
+.status-links a:not(.primary) {
+  --sl-border: linear-gradient(90deg, rgba(255,255,255,.52), var(--sl-cyan), rgba(255,255,255,.40));
+  --sl-edge: linear-gradient(90deg, rgba(255,255,255,.34), rgba(125,247,255,.42));
+  --sl-shadow: rgba(255,255,255,.12);
+}
+.button-status,
+.hero-status-panel a,
+.terminal-form button {
+  --sl-border: linear-gradient(90deg, var(--sl-green), var(--sl-cyan), var(--sl-blue));
+  --sl-edge: linear-gradient(90deg, rgba(133,255,159,.54), rgba(125,247,255,.50), rgba(80,200,255,.38));
+  --sl-shadow: rgba(133,255,159,.18);
+}
+.button-coffee {
+  --sl-border: linear-gradient(90deg, var(--sl-gold), var(--sl-orange), var(--sl-pink));
+  --sl-edge: linear-gradient(90deg, rgba(255,215,108,.58), rgba(255,141,47,.52), rgba(255,111,236,.36));
+  --sl-shadow: rgba(255,141,47,.20);
+}
+
+.button:hover,
+.nav-links a:hover,
+.status-callout__link:hover,
+.hero-status-panel a:hover,
+.quick-commands button:hover,
+.terminal-form button:hover,
+.footer-links a:hover,
+.status-links a:hover,
+.status-button:hover {
+  color: #fff !important;
+  transform: translateY(-1px) !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.16),
+    0 0 28px var(--sl-shadow, rgba(125,247,255,.22)),
+    inset 0 1px 0 rgba(255,255,255,.26) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before,
+  .phase-starfield::before,
+  .phase-starfield::after,
+  .phase-starfield__drift,
+  .phase-starfield__drift::before,
+  .phase-starfield__drift::after,
+  .hero::after,
+  .feature-card::after,
+  .terminal::after,
+  .roadmap::after,
+  .founder::after,
+  .support-card::after,
+  .status-hero::after,
+  .status-card::after { animation: none !important; }
+}
+
+@keyframes sl-ambient-drift {
+  0% { transform: translate3d(0,0,0) scale(1); opacity: .34; }
+  100% { transform: translate3d(1.4%, -1.2%, 0) scale(1.04); opacity: .48; }
+}
+
+@keyframes sl-star-pulse {
+  0%, 100% { opacity: .62; }
+  50% { opacity: 1; }
+}
+
+@keyframes sl-star-pulse-soft {
+  0%, 100% { opacity: .44; }
+  50% { opacity: .82; }
+}
+
+@keyframes sl-star-drift-a {
+  to { transform: translate3d(5%, 4%, 0) scale(1.04); }
+}
+
+@keyframes sl-star-drift-b {
+  to { transform: translate3d(-5%, 3%, 0) scale(1.03); }
+}
+
+@keyframes sl-star-drift-c {
+  to { transform: translate3d(3%, -4%, 0) scale(1.05); }
+}
+
+@keyframes sl-comet-a {
+  0%, 52%, 100% { opacity: 0; transform: rotate(-18deg) translateX(-130vw); }
+  58% { opacity: .82; }
+  74% { opacity: 0; transform: rotate(-18deg) translateX(150vw); }
+}
+
+@keyframes sl-comet-b {
+  0%, 62%, 100% { opacity: 0; transform: rotate(-16deg) translateX(-130vw); }
+  68% { opacity: .62; }
+  83% { opacity: 0; transform: rotate(-16deg) translateX(150vw); }
+}
+
+@keyframes sl-panel-sheen {
+  0%, 38%, 100% { transform: translateX(-120%) skewX(-10deg); opacity: 0; }
+  48% { opacity: .58; }
+  65% { transform: translateX(120%) skewX(-10deg); opacity: 0; }
+}
