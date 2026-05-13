@@ -1,0 +1,279 @@
+/* Phase1 machine harmony pass.
+   Next refinement after "computer joy": less visual noise, more ordered machine elegance,
+   stronger progress/status treatments, and more coherent public-product polish. */
+
+:root {
+  --mh-bg: #010208;
+  --mh-panel: rgba(4, 8, 18, .92);
+  --mh-panel-soft: rgba(8, 13, 26, .82);
+  --mh-line: rgba(214, 244, 255, .15);
+  --mh-line-soft: rgba(214, 244, 255, .07);
+  --mh-text: #fbfdff;
+  --mh-muted: #cfdaec;
+  --mh-cyan: #7df7ff;
+  --mh-blue: #50c8ff;
+  --mh-violet: #9c7dff;
+  --mh-pink: #ff6fec;
+  --mh-orange: #ff8d2f;
+  --mh-gold: #ffd76c;
+  --mh-green: #85ff9f;
+  --mh-spectrum: linear-gradient(90deg, #7df7ff, #50c8ff, #9c7dff, #ff6fec, #ff8d2f, #ffd76c, #85ff9f);
+}
+
+body {
+  color: var(--mh-text) !important;
+  background:
+    radial-gradient(circle at 10% 8%, rgba(125,247,255,.13), transparent 24rem),
+    radial-gradient(circle at 92% 17%, rgba(255,141,47,.11), transparent 28rem),
+    radial-gradient(circle at 50% 110%, rgba(156,125,255,.10), transparent 35rem),
+    linear-gradient(180deg, #010208 0%, #020511 48%, #010208 100%) !important;
+}
+
+/* A computer-friendly field: ordered signal points, not noisy glitter. */
+.phase-starfield {
+  opacity: .90 !important;
+}
+
+.phase-starfield::before {
+  opacity: .76 !important;
+  filter: drop-shadow(0 0 6px rgba(125,247,255,.28)) drop-shadow(0 0 8px rgba(255,141,47,.13)) !important;
+}
+
+.phase-starfield::after,
+.phase-starfield__drift {
+  opacity: .48 !important;
+}
+
+/* Overall composition rhythm. */
+.site-shell,
+.status-shell {
+  max-width: 1220px !important;
+}
+
+.hero,
+.status-hero {
+  min-height: auto !important;
+  border-radius: clamp(28px, 3vw, 40px) !important;
+  background:
+    radial-gradient(circle at 18% 16%, rgba(125,247,255,.105), transparent 25rem),
+    radial-gradient(circle at 86% 24%, rgba(255,141,47,.082), transparent 28rem),
+    linear-gradient(145deg, rgba(4,8,18,.94), rgba(255,255,255,.045)) !important;
+  border-color: rgba(235,248,255,.18) !important;
+}
+
+.nav,
+.status-nav,
+.status-callout__link,
+.hero,
+.status-hero,
+.terminal,
+.feature-card,
+.roadmap,
+.founder,
+.support-card,
+.footer,
+.status-card,
+.status-metrics,
+.status-footer,
+.metric,
+.hero-status-panel,
+.metric-strip div,
+.bryforge-card,
+.timeline li {
+  box-shadow:
+    0 26px 90px rgba(0,0,0,.60),
+    0 0 22px rgba(125,247,255,.060),
+    0 0 28px rgba(255,141,47,.043),
+    inset 0 1px 0 rgba(255,255,255,.10) !important;
+}
+
+/* Interior circuit traces are now calmer, aligned, and less busy. */
+.hero,
+.status-hero,
+.terminal,
+.feature-card,
+.roadmap,
+.founder,
+.support-card,
+.footer,
+.status-card,
+.metric,
+.hero-status-panel,
+.metric-strip div,
+.bryforge-card,
+.timeline li {
+  background:
+    linear-gradient(90deg, transparent 0 31px, rgba(125,247,255,.030) 32px, transparent 33px 100%),
+    radial-gradient(circle at 18% 14%, rgba(125,247,255,.058), transparent 18rem),
+    radial-gradient(circle at 86% 24%, rgba(255,141,47,.045), transparent 20rem),
+    linear-gradient(145deg, var(--mh-panel-soft), rgba(255,255,255,.034)) !important;
+  background-size: 64px 64px, auto, auto, auto !important;
+}
+
+/* Progress bars: make status feel engineered. */
+.status-progress,
+.hero-status-panel,
+.metric-strip div {
+  overflow: hidden !important;
+}
+
+.status-progress {
+  height: 12px !important;
+  border-radius: 999px !important;
+  background:
+    linear-gradient(180deg, rgba(1,3,8,.86), rgba(8,12,22,.76)) padding-box,
+    linear-gradient(90deg, rgba(125,247,255,.20), rgba(255,141,47,.16)) border-box !important;
+  border: 1px solid transparent !important;
+  box-shadow: inset 0 1px 4px rgba(0,0,0,.55), 0 0 12px rgba(125,247,255,.060) !important;
+}
+
+.status-progress span,
+.status-progress > span {
+  display: block !important;
+  height: 100% !important;
+  border-radius: inherit !important;
+  background: var(--mh-spectrum) !important;
+  background-size: 240% 100% !important;
+  box-shadow: 0 0 16px rgba(125,247,255,.22), 0 0 12px rgba(255,141,47,.12) !important;
+  animation: mh-progress-flow 11s ease-in-out infinite !important;
+}
+
+/* Status/project cards: cleaner hierarchy. */
+.project-title strong,
+.status-percent strong,
+.metric strong,
+.metric-strip strong {
+  color: #fff !important;
+  text-shadow: 0 0 14px rgba(125,247,255,.12), 0 1px 1px rgba(0,0,0,.48) !important;
+}
+
+.status-percent {
+  border: 1px solid rgba(235,248,255,.15) !important;
+}
+
+/* Terminal area: make the demo feel like a live system. */
+.terminal-topbar,
+.terminal-form,
+.hero-command {
+  border-color: rgba(214,244,255,.12) !important;
+}
+
+.terminal-title,
+.prompt {
+  color: rgba(125,247,255,.95) !important;
+  text-shadow: 0 0 10px rgba(125,247,255,.18) !important;
+}
+
+.terminal-output::selection,
+.hero-command code::selection {
+  background: rgba(125,247,255,.22) !important;
+}
+
+/* Buttons: preserve solid rest state and make hover the "joy" moment. */
+.button,
+.hero-actions a,
+.hero-actions button,
+.roadmap-actions a,
+.nav-links a,
+.status-callout__link,
+.hero-status-panel a,
+.quick-commands button,
+.terminal-form button,
+.footer-links a,
+.status-links a,
+.status-button,
+.terminal button,
+button[type="submit"] {
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.055),
+    0 0 7px rgba(125,247,255,.055),
+    inset 0 1px 0 rgba(255,255,255,.125),
+    inset 0 -1px 0 rgba(0,0,0,.44) !important;
+}
+
+.button::before,
+.hero-actions a::before,
+.hero-actions button::before,
+.roadmap-actions a::before,
+.nav-links a::before,
+.status-callout__link::before,
+.hero-status-panel a::before,
+.quick-commands button::before,
+.terminal-form button::before,
+.footer-links a::before,
+.status-links a::before,
+.status-button::before,
+.terminal button::before,
+button[type="submit"]::before {
+  opacity: .28 !important;
+  filter: blur(3.8px) saturate(1.02) !important;
+}
+
+.button:hover,
+.hero-actions a:hover,
+.hero-actions button:hover,
+.roadmap-actions a:hover,
+.nav-links a:hover,
+.status-callout__link:hover,
+.hero-status-panel a:hover,
+.quick-commands button:hover,
+.terminal-form button:hover,
+.footer-links a:hover,
+.status-links a:hover,
+.status-button:hover,
+.terminal button:hover,
+button[type="submit"]:hover,
+.button:focus-visible,
+.hero-actions a:focus-visible,
+.nav-links a:focus-visible,
+.status-callout__link:focus-visible,
+.status-links a:focus-visible {
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.12),
+    0 0 15px rgba(125,247,255,.16),
+    0 0 22px rgba(156,125,255,.13),
+    0 0 30px rgba(255,141,47,.10),
+    inset 0 1px 0 rgba(255,255,255,.18),
+    inset 0 -1px 0 rgba(0,0,0,.38) !important;
+}
+
+/* Reduce corner ticks so they feel expensive, not busy. */
+.hero::before,
+.status-hero::before,
+.terminal::before,
+.feature-card::before,
+.status-card::before {
+  opacity: .22 !important;
+  animation-duration: 9s !important;
+}
+
+/* Logo stage refinement. */
+.logo-glass {
+  border-color: rgba(235,248,255,.16) !important;
+  box-shadow:
+    0 0 0 1px rgba(235,248,255,.14),
+    0 0 48px rgba(125,247,255,.13),
+    0 0 50px rgba(255,141,47,.09),
+    inset 0 0 58px rgba(255,255,255,.044) !important;
+}
+
+@media (max-width: 680px) {
+  .hero,
+  .status-hero,
+  .feature-card,
+  .terminal,
+  .roadmap,
+  .founder,
+  .support-card,
+  .status-card {
+    background-image:
+      radial-gradient(circle at 18% 14%, rgba(125,247,255,.055), transparent 16rem),
+      radial-gradient(circle at 86% 24%, rgba(255,141,47,.045), transparent 18rem),
+      linear-gradient(145deg, rgba(8,13,26,.84), rgba(255,255,255,.034)) !important;
+  }
+}
+
+@keyframes mh-progress-flow {
+  0%, 100% { background-position: 0% 50%; filter: saturate(1.02); }
+  50% { background-position: 100% 50%; filter: saturate(1.16); }
+}
