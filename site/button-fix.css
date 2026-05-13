@@ -1,6 +1,5 @@
-/* Phase1 public-site final visual consistency guard.
-   Loads after styles.css. Keep this file focused on interaction safety,
-   official logo routing, and consistent rainbow/glass treatment. */
+/* Phase1 final visual and interaction guard.
+   Loaded after styles.css. Keeps the site alive, glowing, consistent, and cache-bustable. */
 
 .nav,
 .hero,
@@ -17,21 +16,6 @@
   isolation: isolate;
 }
 
-.nav,
-.nav a,
-.hero-copy,
-.hero-actions,
-.button,
-.nav-toggle,
-.footer-links a,
-.hero-status-panel a {
-  position: relative;
-  z-index: 50;
-  pointer-events: auto;
-  -webkit-tap-highlight-color: rgba(35, 247, 255, 0.28);
-  touch-action: manipulation;
-}
-
 .logo-stage,
 .logo-stage::before,
 .orbit,
@@ -41,26 +25,70 @@
 .phase-logo-image,
 .aurora,
 .scanlines,
+.noise,
 #space {
   pointer-events: none !important;
 }
 
+.nav,
+.nav a,
+.nav-toggle,
+.hero-copy,
+.hero-actions,
 .button,
-.nav-links a,
 .footer-links a,
 .hero-status-panel a {
-  cursor: pointer;
-  user-select: none;
+  position: relative;
+  z-index: 50;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: rgba(35, 247, 255, 0.28);
+  touch-action: manipulation;
 }
 
-.button:active,
-.nav-links a:active,
-.footer-links a:active,
-.hero-status-panel a:active {
-  transform: translateY(1px) scale(0.99);
+/* Lift the whole first view so the full command box is visible on laptop screens. */
+.status-callout {
+  margin: 8px auto 10px !important;
 }
 
-/* Shared premium glass surface: hero, founder, Bryforge, support, status, roadmap cards. */
+.site-shell {
+  padding-top: 4px !important;
+}
+
+.nav {
+  top: 8px !important;
+}
+
+.hero {
+  margin-top: 10px !important;
+  padding-top: clamp(24px, 4.8vw, 52px) !important;
+  padding-bottom: clamp(24px, 4.8vw, 52px) !important;
+  transform: translateY(-8px);
+}
+
+.hero-actions {
+  margin: 20px 0 14px !important;
+}
+
+.hero-command {
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr) !important;
+  width: min(100%, 720px) !important;
+  max-width: 100% !important;
+  overflow: visible !important;
+  white-space: normal !important;
+  box-shadow:
+    0 0 34px rgba(83, 255, 133, 0.16),
+    0 0 48px rgba(35, 247, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+}
+
+.hero-command code {
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+}
+
+/* Shared rainbow glass, with moving sheen across the cards. */
 .glass-panel,
 .status-callout__link,
 .feature-card,
@@ -69,6 +97,7 @@
 .hero-status-panel,
 .metric-strip div,
 .timeline li {
+  position: relative;
   border: 1px solid rgba(255, 255, 255, 0.22) !important;
   background:
     linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03)),
@@ -102,12 +131,13 @@
 .hero-status-panel::before {
   content: "";
   position: absolute;
-  inset: -2px;
+  inset: -20%;
   pointer-events: none;
   background:
-    linear-gradient(110deg, transparent 0%, rgba(35, 247, 255, 0.18) 35%, rgba(255, 61, 242, 0.17) 54%, transparent 78%),
+    linear-gradient(115deg, transparent 0%, rgba(35, 247, 255, 0.18) 34%, rgba(255, 61, 242, 0.18) 52%, transparent 76%),
     radial-gradient(circle at 72% 44%, rgba(255, 61, 242, 0.22), transparent 34rem) !important;
   opacity: 0.95;
+  animation: phase-card-sheen 9s ease-in-out infinite alternate;
 }
 
 .hero::after,
@@ -117,15 +147,16 @@
 .hero-status-panel::after {
   content: "";
   position: absolute;
-  left: -20%;
-  right: -20%;
-  bottom: -70px;
-  height: 125px;
+  left: -25%;
+  right: -25%;
+  bottom: -78px;
+  height: 135px;
   pointer-events: none;
-  background: linear-gradient(90deg, var(--red), var(--yellow), var(--green), var(--cyan), var(--magenta));
+  background: linear-gradient(90deg, var(--red), var(--yellow), var(--green), var(--cyan), var(--magenta), var(--red));
+  background-size: 260% 100%;
   filter: blur(44px);
-  opacity: 0.24;
-  animation: rainbow-shift 7s linear infinite;
+  opacity: 0.28;
+  animation: phase-rainbow-flow 6s linear infinite;
 }
 
 .hero-copy,
@@ -140,6 +171,123 @@
   z-index: 2;
 }
 
+/* Alive buttons: moving gradient, moving light sweep, hover lift, and status pulse. */
+.button,
+.nav-status-link,
+.status-callout__link,
+.hero-status-panel a,
+.quick-commands button,
+.terminal-form button {
+  position: relative !important;
+  overflow: hidden !important;
+  isolation: isolate;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease,
+    filter 180ms ease !important;
+}
+
+.button::before,
+.nav-status-link::before,
+.status-callout__link::before,
+.hero-status-panel a::before,
+.quick-commands button::before,
+.terminal-form button::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -55% -40%;
+  background:
+    linear-gradient(115deg, transparent 18%, rgba(255, 255, 255, 0.48) 42%, transparent 62%),
+    radial-gradient(circle at 30% 50%, rgba(255, 255, 255, 0.26), transparent 34%);
+  transform: translateX(-62%) rotate(7deg);
+  animation: phase-button-sheen 2.35s ease-in-out infinite;
+  opacity: 0.82;
+}
+
+.button::after,
+.nav-status-link::after,
+.status-callout__link::after,
+.hero-status-panel a::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  right: 13px;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--green);
+  box-shadow: 0 0 16px var(--green), 0 0 30px rgba(83, 255, 133, 0.62);
+  transform: translateY(-50%);
+  animation: phase-live-pulse 1.25s ease-in-out infinite;
+}
+
+.button span,
+.button,
+.nav-status-link,
+.status-callout__link span,
+.hero-status-panel a {
+  position: relative;
+  z-index: 1;
+}
+
+.button-primary,
+.button-coffee,
+.button-status,
+.nav-status-link,
+.status-callout__link {
+  color: #07101b !important;
+  font-weight: 950 !important;
+  background: linear-gradient(90deg, #ff8a3d, #ff3df2, #23f7ff, #53ff85, #ffe95c, #ff8a3d) !important;
+  background-size: 320% 100% !important;
+  animation: phase-rainbow-flow 3.6s linear infinite, phase-button-breathe 2.8s ease-in-out infinite !important;
+  box-shadow:
+    0 0 34px rgba(35, 247, 255, 0.26),
+    0 0 58px rgba(255, 61, 242, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.38) !important;
+}
+
+.button-secondary,
+.button-ghost,
+.hero-status-panel a,
+.quick-commands button,
+.terminal-form button,
+.support-card-mini span {
+  color: var(--text) !important;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035)) padding-box,
+    linear-gradient(90deg, var(--cyan), var(--magenta), var(--yellow), var(--green), var(--cyan)) border-box !important;
+  background-size: 100% 100%, 260% 100% !important;
+  border: 1px solid transparent !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 0 34px rgba(35, 247, 255, 0.11) !important;
+  animation: phase-border-flow 4.2s linear infinite !important;
+}
+
+.button:hover,
+.button:focus-visible,
+.nav-status-link:hover,
+.nav-status-link:focus-visible,
+.status-callout__link:hover,
+.status-callout__link:focus-visible,
+.hero-status-panel a:hover,
+.hero-status-panel a:focus-visible,
+.quick-commands button:hover,
+.quick-commands button:focus-visible,
+.terminal-form button:hover,
+.terminal-form button:focus-visible {
+  transform: translateY(-3px) scale(1.025) !important;
+  filter: saturate(1.18) brightness(1.08);
+  box-shadow:
+    0 0 44px rgba(35, 247, 255, 0.42),
+    0 0 88px rgba(255, 61, 242, 0.22),
+    0 18px 46px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.34) !important;
+}
+
 /* Consistent heading treatment and no clipped descenders. */
 h1,
 .section-heading h2,
@@ -150,11 +298,11 @@ h1,
   padding-bottom: 0.12em !important;
   line-height: 1.04 !important;
   background: linear-gradient(90deg, #ff4438, #ffe85f, #54ff7a, #29f8ff, #5d85ff, #ff3df2, #ff4438) !important;
-  background-size: 220% 100% !important;
+  background-size: 260% 100% !important;
   -webkit-background-clip: text !important;
   background-clip: text !important;
   color: transparent !important;
-  animation: rainbow-shift 7s linear infinite !important;
+  animation: phase-rainbow-flow 6s linear infinite !important;
 }
 
 h1 {
@@ -168,7 +316,7 @@ h1 {
   text-shadow: 0 0 22px rgba(35, 247, 255, 0.72) !important;
 }
 
-/* Official Phase1 hero logo. Hide stale img rendering and draw the known asset cleanly. */
+/* Official Phase1 hero logo. */
 .logo-glass {
   position: relative !important;
   display: grid !important;
@@ -198,7 +346,7 @@ h1 {
   width: min(76%, 360px);
   aspect-ratio: 1 / 1;
   margin: auto;
-  background: url("../assets/phase1-nobackground.png?v=official-phase1-logo-v5") center / contain no-repeat;
+  background: url("../assets/phase1-nobackground.png?v=official-phase1-logo-v6") center / contain no-repeat;
   filter:
     drop-shadow(0 0 28px rgba(170, 205, 255, 0.72))
     drop-shadow(0 0 76px rgba(85, 136, 255, 0.34));
@@ -216,9 +364,14 @@ h1 {
 }
 
 .logo-stage::before {
-  opacity: 0.92 !important;
-  filter: blur(26px) saturate(1.25) !important;
+  opacity: 0.96 !important;
+  filter: blur(24px) saturate(1.32) !important;
+  animation: spin 10s linear infinite, phase-orbit-breathe 3.5s ease-in-out infinite !important;
 }
+
+.orbit-one { animation: spin 12s linear infinite !important; }
+.orbit-two { animation: spin-reverse 9s linear infinite !important; }
+.orbit-three { animation: spin 6.5s linear infinite !important; }
 
 .system-card {
   background: rgba(4, 8, 18, 0.82) !important;
@@ -227,54 +380,19 @@ h1 {
 }
 
 .system-card strong,
-.terminal-status {
+.terminal-status,
+.prompt {
   color: var(--green) !important;
   text-shadow: 0 0 16px rgba(83, 255, 133, 0.72) !important;
 }
 
-/* Founder profile must match the rest of the rainbow glass visual system. */
-.profile-label {
-  display: none !important;
-}
-
-.founder-copy > .eyebrow {
-  display: block !important;
-}
-
-.founder-copy h2::before {
-  content: none !important;
-  display: none !important;
-}
+.profile-label { display: none !important; }
+.founder-copy > .eyebrow { display: block !important; }
+.founder-copy h2::before { content: none !important; display: none !important; }
 
 .avatar-ring {
   background: conic-gradient(var(--red), var(--yellow), var(--green), var(--cyan), var(--blue), var(--magenta), var(--red)) !important;
   box-shadow: 0 0 48px rgba(35, 247, 255, 0.3), 0 0 82px rgba(255, 61, 242, 0.18) !important;
-}
-
-/* Buttons and status links keep the bright electric sheen. */
-.button-primary,
-.button-coffee,
-.button-status,
-.nav-status-link,
-.status-callout__link {
-  background: linear-gradient(90deg, #ff8a3d, #ff3df2, #23f7ff, #53ff85, #ffe95c, #ff8a3d) !important;
-  background-size: 260% 100% !important;
-  animation: rainbow-shift 5s linear infinite !important;
-  box-shadow: 0 0 42px rgba(35, 247, 255, 0.26), 0 0 70px rgba(255, 61, 242, 0.12) !important;
-}
-
-.nav-status-link,
-.status-callout__link {
-  color: #07101b !important;
-  font-weight: 950 !important;
-}
-
-.button-secondary,
-.button-ghost,
-.support-card-mini span {
-  background: rgba(255, 255, 255, 0.07) !important;
-  border-color: rgba(255, 255, 255, 0.18) !important;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 0 34px rgba(35, 247, 255, 0.08) !important;
 }
 
 .hero-copy,
@@ -291,134 +409,116 @@ h1 {
   hyphens: none;
 }
 
+@keyframes phase-rainbow-flow {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 260% 50%; }
+}
+
+@keyframes phase-button-sheen {
+  0%, 12% { transform: translateX(-72%) rotate(7deg); opacity: 0; }
+  30%, 64% { opacity: 0.88; }
+  100% { transform: translateX(72%) rotate(7deg); opacity: 0; }
+}
+
+@keyframes phase-live-pulse {
+  0%, 100% { transform: translateY(-50%) scale(0.78); opacity: 0.72; }
+  50% { transform: translateY(-50%) scale(1.28); opacity: 1; }
+}
+
+@keyframes phase-button-breathe {
+  0%, 100% { filter: saturate(1.05) brightness(1); }
+  50% { filter: saturate(1.25) brightness(1.08); }
+}
+
+@keyframes phase-border-flow {
+  0% { background-position: 0 0, 0% 50%; }
+  100% { background-position: 0 0, 260% 50%; }
+}
+
+@keyframes phase-card-sheen {
+  0% { transform: translateX(-8%) translateY(-3%); opacity: 0.7; }
+  100% { transform: translateX(8%) translateY(3%); opacity: 1; }
+}
+
+@keyframes phase-orbit-breathe {
+  0%, 100% { opacity: 0.72; transform: scale(0.985); }
+  50% { opacity: 1; transform: scale(1.02); }
+}
+
 @media (min-width: 861px) and (max-width: 1280px) {
-  .site-shell {
-    width: min(100% - 32px, 1180px) !important;
-    padding-top: 4px !important;
-  }
-
-  .nav {
-    top: 8px !important;
-    gap: 10px !important;
-    padding: 12px 14px !important;
-  }
-
-  .nav-links {
-    gap: 4px !important;
-    font-size: 0.86rem !important;
-  }
-
-  .nav-links a {
-    padding: 7px 8px !important;
-  }
-
+  .status-callout { margin: 6px auto 8px !important; }
+  .site-shell { width: min(100% - 32px, 1180px) !important; padding-top: 2px !important; }
+  .nav { top: 6px !important; gap: 10px !important; padding: 12px 14px !important; }
+  .nav-links { gap: 4px !important; font-size: 0.86rem !important; }
+  .nav-links a { padding: 7px 8px !important; }
   .hero {
     grid-template-columns: minmax(0, 1fr) minmax(300px, 0.82fr) !important;
-    gap: clamp(24px, 4vw, 46px) !important;
-    margin-top: 22px !important;
-    padding: clamp(30px, 4.4vw, 52px) !important;
+    gap: clamp(22px, 3.4vw, 42px) !important;
+    margin-top: 8px !important;
+    padding: clamp(24px, 3.8vw, 46px) !important;
+    transform: translateY(-12px);
   }
-
-  h1 {
-    font-size: clamp(3.35rem, 5.05vw, 4.55rem) !important;
-    letter-spacing: -0.055em !important;
-    text-wrap: balance;
-  }
-
-  .hero-text {
-    max-width: 600px !important;
-    font-size: 1.04rem !important;
-    line-height: 1.64 !important;
-  }
-
-  .logo-stage {
-    min-height: min(54vw, 480px) !important;
-  }
-
-  .logo-glass {
-    width: min(100%, 455px) !important;
-    border-radius: 36px !important;
-  }
-
-  .logo-glass::after {
-    width: min(74%, 320px) !important;
-  }
+  h1 { font-size: clamp(3.35rem, 5.05vw, 4.55rem) !important; letter-spacing: -0.055em !important; text-wrap: balance; }
+  .hero-text { max-width: 600px !important; font-size: 1.04rem !important; line-height: 1.58 !important; }
+  .hero-actions { gap: 12px !important; margin: 18px 0 12px !important; }
+  .hero-command { font-size: 0.86rem !important; padding: 10px 12px !important; }
+  .metric-strip { margin-top: 16px !important; }
+  .hero-status-panel { margin-top: 14px !important; }
+  .logo-stage { min-height: min(50vw, 440px) !important; }
+  .logo-glass { width: min(100%, 430px) !important; border-radius: 36px !important; }
+  .logo-glass::after { width: min(74%, 305px) !important; }
 }
 
 @media (min-width: 861px) and (max-width: 1120px) {
-  .hero {
-    grid-template-columns: 1fr !important;
-    align-items: start !important;
-  }
-
-  .logo-stage {
-    min-height: auto !important;
-    padding-block: 14px 4px !important;
-  }
-
-  .logo-glass {
-    width: min(78vw, 520px) !important;
-  }
+  .hero { grid-template-columns: 1fr !important; align-items: start !important; }
+  .logo-stage { min-height: auto !important; padding-block: 10px 4px !important; }
+  .logo-glass { width: min(74vw, 500px) !important; }
 }
 
 @media (max-width: 860px) {
+  .status-callout { margin: 8px auto 8px !important; }
+  .site-shell { padding-top: 0 !important; }
+  .hero { margin-top: 8px !important; padding: 20px !important; transform: translateY(-8px); }
   h1,
   .section-heading h2,
   .founder-copy h2,
-  .support-card h2 {
-    overflow-wrap: normal !important;
-    word-break: normal !important;
-    hyphens: none !important;
-    text-wrap: balance;
-  }
-
-  h1 {
-    font-size: clamp(2.05rem, 11vw, 3.35rem) !important;
-    line-height: 1.04 !important;
-    letter-spacing: -0.045em !important;
-  }
-
+  .support-card h2 { overflow-wrap: normal !important; word-break: normal !important; hyphens: none !important; text-wrap: balance; }
+  h1 { font-size: clamp(2.05rem, 11vw, 3.35rem) !important; line-height: 1.04 !important; letter-spacing: -0.045em !important; }
   .section-heading h2,
-  .support-card h2 {
-    font-size: clamp(1.8rem, 8vw, 2.7rem) !important;
-    line-height: 1.1 !important;
-    letter-spacing: -0.035em !important;
-  }
-
-  .founder-copy h2 {
-    font-size: clamp(1.7rem, 7.4vw, 2.45rem) !important;
-    line-height: 1.12 !important;
-    letter-spacing: -0.025em !important;
-  }
-
+  .support-card h2 { font-size: clamp(1.8rem, 8vw, 2.7rem) !important; line-height: 1.1 !important; letter-spacing: -0.035em !important; }
+  .founder-copy h2 { font-size: clamp(1.7rem, 7.4vw, 2.45rem) !important; line-height: 1.12 !important; letter-spacing: -0.025em !important; }
   .feature-card,
   .bryforge-card,
   .support-card,
-  .timeline li {
-    padding: 18px !important;
-  }
-
-  .logo-glass {
-    width: min(82vw, 430px) !important;
-    padding: clamp(34px, 10vw, 58px) !important;
-  }
-
-  .logo-glass::after {
-    width: min(72%, 280px) !important;
-  }
+  .timeline li { padding: 18px !important; }
+  .logo-glass { width: min(82vw, 430px) !important; padding: clamp(34px, 10vw, 58px) !important; }
+  .logo-glass::after { width: min(72%, 280px) !important; }
+  .hero-command { font-size: 0.82rem !important; }
 }
 
 @media (max-width: 420px) {
-  .site-shell {
-    width: min(100% - 16px, 720px) !important;
-  }
+  .site-shell { width: min(100% - 16px, 720px) !important; }
+  .hero { padding: 18px !important; }
+  h1 { font-size: clamp(1.9rem, 10vw, 2.7rem) !important; letter-spacing: -0.032em !important; }
+}
 
-  .hero {
-    padding: 20px !important;
-  }
-
-  h1 {
-    font-size: clamp(1.9rem, 10vw, 2.7rem) !important;
-    letter-spacing: -0.032em !important;
+@media (prefers-reduced-motion: reduce) {
+  .button,
+  .button::before,
+  .button::after,
+  .nav-status-link,
+  .status-callout__link,
+  .hero::before,
+  .hero::after,
+  .founder::before,
+  .founder::after,
+  .support-card::before,
+  .support-card::after,
+  .bryforge-card::before,
+  .bryforge-card::after,
+  .hero-status-panel::before,
+  .hero-status-panel::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
   }
 }
