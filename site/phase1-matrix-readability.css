@@ -1,0 +1,233 @@
+/* Phase1 matrix readability pass.
+   Focus: reduce clipping, improve above-the-fold fit, remove stray side labels,
+   strengthen the nested grid style, and keep the hero usable on laptop screens. */
+
+:root {
+  --read-grid-a: rgba(94, 216, 255, .14);
+  --read-grid-b: rgba(255, 139, 43, .11);
+  --read-grid-c: rgba(255, 255, 255, .052);
+  --read-glow-blue: rgba(94, 216, 255, .16);
+  --read-glow-orange: rgba(255, 139, 43, .13);
+}
+
+/* Remove the stray BUILD / EXECUTE side rail for now. It was visually interesting,
+   but on real browser chrome it reads as clipped broken text. */
+.hero-copy::before {
+  content: none !important;
+  display: none !important;
+}
+
+body {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(43, 141, 255, .15), transparent 26rem),
+    radial-gradient(circle at 82% 22%, rgba(255, 122, 24, .13), transparent 28rem),
+    linear-gradient(180deg, #02040a 0%, #050914 46%, #03040b 100%) !important;
+}
+
+body::before {
+  background:
+    linear-gradient(90deg, var(--read-grid-c) 1px, transparent 1px),
+    linear-gradient(0deg, var(--read-grid-c) 1px, transparent 1px),
+    linear-gradient(90deg, transparent 0 49.5%, var(--read-grid-a) 50%, transparent 50.5% 100%),
+    linear-gradient(0deg, transparent 0 49.5%, var(--read-grid-b) 50%, transparent 50.5% 100%) !important;
+  background-size: 48px 48px, 48px 48px, 192px 192px, 192px 192px !important;
+  opacity: .38 !important;
+}
+
+.status-callout {
+  margin-top: 8px !important;
+  margin-bottom: 8px !important;
+}
+
+.status-callout__link {
+  width: 100% !important;
+  min-height: 38px !important;
+  padding: 8px 14px !important;
+  color: #fff !important;
+  text-align: center !important;
+  box-shadow: 0 0 18px rgba(94, 216, 255, .18), 0 0 20px rgba(255, 139, 43, .13) !important;
+}
+
+.nav {
+  min-height: 56px !important;
+  padding: 9px 14px !important;
+  margin-bottom: 10px !important;
+}
+
+.nav-links a {
+  padding: 8px 10px !important;
+  color: #fff !important;
+  font-size: .9rem !important;
+}
+
+.hero {
+  margin-top: 10px !important;
+  grid-template-columns: minmax(0, 1fr) minmax(270px, .68fr) !important;
+  gap: clamp(18px, 3vw, 40px) !important;
+  padding: clamp(22px, 3.5vw, 44px) clamp(22px, 4vw, 52px) !important;
+  background:
+    linear-gradient(90deg, rgba(94,216,255,.075) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255,139,43,.052) 1px, transparent 1px),
+    radial-gradient(circle at 18% 22%, rgba(43,141,255,.18), transparent 22rem),
+    radial-gradient(circle at 82% 32%, rgba(255,122,24,.15), transparent 24rem),
+    linear-gradient(105deg, rgba(4,8,18,.96), rgba(7,12,24,.92) 54%, rgba(9,6,7,.90)) !important;
+  background-size: 44px 44px, 44px 44px, 100% 100%, 100% 100%, 100% 100% !important;
+}
+
+.hero::before {
+  width: min(46vw, 560px) !important;
+  height: min(46vw, 560px) !important;
+  right: -12% !important;
+  top: -22% !important;
+  opacity: .36 !important;
+}
+
+.hero-copy {
+  gap: clamp(10px, 1.35vw, 15px) !important;
+}
+
+.hero .eyebrow {
+  font-size: clamp(.66rem, .72vw, .78rem) !important;
+  letter-spacing: .18em !important;
+}
+
+.hero h1 {
+  max-width: min(100%, 700px) !important;
+  font-size: clamp(2.35rem, min(5.05vw, 7.25vh), 5.15rem) !important;
+  line-height: .985 !important;
+  letter-spacing: -.055em !important;
+  text-wrap: balance !important;
+}
+
+.hero-text {
+  max-width: 620px !important;
+  font-size: clamp(.92rem, 1vw, 1.04rem) !important;
+  line-height: 1.46 !important;
+}
+
+.hero-actions {
+  gap: 8px !important;
+}
+
+.button,
+.hero-status-panel a,
+.quick-commands button,
+.terminal-form button {
+  min-height: 38px !important;
+  padding: 9px 13px !important;
+  color: #fff !important;
+  font-size: .88rem !important;
+  text-shadow: 0 1px 8px rgba(0,0,0,.42) !important;
+}
+
+.hero-command {
+  max-width: 620px !important;
+  padding: 9px 12px !important;
+  border-radius: 14px !important;
+  font-size: clamp(.72rem, .80vw, .86rem) !important;
+}
+
+.hero-command code {
+  white-space: nowrap !important;
+}
+
+.metric-strip,
+.hero-status-panel {
+  max-width: 620px !important;
+}
+
+.metric-strip div {
+  min-height: 50px !important;
+  padding: 9px 11px !important;
+}
+
+.metric-strip strong {
+  font-size: .90rem !important;
+}
+
+.metric-strip span {
+  font-size: .76rem !important;
+}
+
+.hero-status-panel {
+  padding: 12px !important;
+}
+
+.hero-status-panel p {
+  font-size: .86rem !important;
+  line-height: 1.42 !important;
+}
+
+.logo-stage {
+  min-height: clamp(250px, 27vw, 410px) !important;
+}
+
+.logo-glass {
+  width: min(92%, 410px) !important;
+  border-radius: 26px !important;
+}
+
+.phase-logo-image,
+.logo-glass img {
+  width: min(37%, 170px) !important;
+}
+
+.logo-stage::after {
+  bottom: 15px !important;
+  font-size: clamp(.82rem, 1.45vw, 1.18rem) !important;
+}
+
+.system-card {
+  transform: scale(.74) !important;
+}
+
+/* Short laptop screens: make the hero fit the public browser viewport. */
+@media (max-height: 820px) and (min-width: 900px) {
+  .site-shell { width: min(1180px, calc(100% - 40px)) !important; }
+  .status-callout__link { min-height: 32px !important; padding: 6px 12px !important; font-size: .82rem !important; }
+  .nav { min-height: 48px !important; padding-top: 7px !important; padding-bottom: 7px !important; }
+  .hero {
+    grid-template-columns: minmax(0, 1fr) minmax(240px, .60fr) !important;
+    gap: 16px !important;
+    padding: 18px 34px !important;
+  }
+  .hero h1 {
+    font-size: clamp(2.05rem, min(4.55vw, 6.65vh), 4.55rem) !important;
+    line-height: 1 !important;
+  }
+  .hero-text { font-size: .86rem !important; line-height: 1.38 !important; }
+  .hero-actions { gap: 7px !important; }
+  .button { min-height: 32px !important; padding: 7px 11px !important; font-size: .80rem !important; }
+  .hero-command { padding: 7px 10px !important; font-size: .74rem !important; }
+  .metric-strip { gap: 7px !important; }
+  .metric-strip div { min-height: 44px !important; padding: 7px 9px !important; }
+  .hero-status-panel { padding: 10px !important; }
+  .hero-status-panel p { display: none !important; }
+  .logo-stage { min-height: 225px !important; }
+  .logo-glass { width: min(90%, 360px) !important; }
+}
+
+@media (max-width: 980px) {
+  .hero {
+    grid-template-columns: 1fr !important;
+  }
+  .hero h1 {
+    font-size: clamp(2.45rem, 11vw, 4.65rem) !important;
+  }
+  .logo-stage {
+    min-height: 260px !important;
+  }
+}
+
+@media (max-width: 680px) {
+  .hero h1 {
+    font-size: clamp(2.2rem, 12.2vw, 3.75rem) !important;
+    line-height: 1 !important;
+  }
+  .hero-command code {
+    white-space: normal !important;
+  }
+  .logo-stage {
+    min-height: 220px !important;
+  }
+}
