@@ -24,7 +24,7 @@ These paths should remain stable for users, contributors, and existing links:
 | `docs/base1/SCRIPT_COMPATIBILITY_PLAN.md` | Script compatibility plan. |
 | `docs/base1/LINK_CHECK_STRATEGY.md` | Link-check strategy. |
 | `docs/base1/REORGANIZATION_READINESS.md` | Reorganization readiness checklist. |
-| `docs/base1/RELEASE_ARCHIVE_MAP.md` | Root compatibility map. |
+| `docs/base1/RELEASE_ARCHIVE_MAP.md` | Release archive map. |
 
 ## Core docs layout
 
@@ -62,7 +62,7 @@ docs/base1/RELEASE_ARCHIVE_MAP.md
 
 Organized release/checkpoint browsing lives under `docs/base1/releases/`.
 
-Root-level checkpoint notes remain compatibility paths.
+Former root-level checkpoint names remain documented in `docs/base1/RELEASE_ARCHIVE_MAP.md`, but the current repository does not require root-level release files to exist.
 
 ```text
 docs/base1/releases/README.md
@@ -126,9 +126,10 @@ Do not move or rename tests unless `docs/base1/TEST_INVENTORY.md` and related te
 
 ## Compatibility policy
 
-Compatibility paths remain valid even after organized mirrors are added. In particular:
+Compatibility paths remain valid even after organized archives are added. In particular:
 
-- Root release/checkpoint notes stay available.
+- Organized release/checkpoint archives stay available.
+- Former root-level release/checkpoint filenames remain documented in the archive map.
 - Existing script paths stay available.
 - Existing Cargo integration test discovery stays available.
 - Existing public documentation links stay recoverable.
