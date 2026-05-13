@@ -1,8 +1,9 @@
-@import url("./final-design.css?v=phase1-final-design-v1");
+@import url("./final-design.css?v=phase1-final-design-v2");
+@import url("./bryforge-aligned.css?v=phase1-bryforge-aligned-v1");
 
-/* Phase1 final CSS loader.
-   Previous visual patches were fighting each other. Keep this layer intentionally thin
-   so final-design.css is the single coherent homepage design system. */
+/* Phase1 CSS loader.
+   Keep this thin: final-design.css establishes the cleaned Phase1 system,
+   then bryforge-aligned.css applies the Bryforge homepage glow/button language. */
 
 .logo-stage,
 .logo-stage::before,
@@ -32,7 +33,6 @@
   touch-action: manipulation;
 }
 
-.logo-glass::after { content: none !important; }
 .profile-label { display: none !important; }
 
 @media (prefers-reduced-motion: reduce) {
