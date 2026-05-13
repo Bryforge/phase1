@@ -57,6 +57,76 @@ body::after {
   animation: boost-star-breathe 12s ease-in-out infinite !important;
 }
 
+/* Real starfield overlay. The body pseudo-elements were too easy to hide under old layers;
+   this explicit fixed overlay makes the glow/motion visible and consistent across pages. */
+.phase-starfield {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 1 !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
+  opacity: .96 !important;
+  mix-blend-mode: screen !important;
+}
+
+.phase-starfield::before,
+.phase-starfield::after,
+.phase-starfield__drift {
+  content: "" !important;
+  position: absolute !important;
+  inset: -18% !important;
+  pointer-events: none !important;
+}
+
+.phase-starfield::before {
+  background:
+    radial-gradient(circle at 8% 12%, rgba(125,247,255,.95) 0 1.4px, transparent 4px),
+    radial-gradient(circle at 15% 72%, rgba(255,215,108,.85) 0 1.3px, transparent 4px),
+    radial-gradient(circle at 24% 30%, rgba(255,111,236,.78) 0 1.2px, transparent 3.8px),
+    radial-gradient(circle at 37% 82%, rgba(133,255,159,.78) 0 1.2px, transparent 3.8px),
+    radial-gradient(circle at 46% 16%, rgba(156,125,255,.86) 0 1.3px, transparent 4px),
+    radial-gradient(circle at 58% 56%, rgba(80,200,255,.82) 0 1.2px, transparent 3.8px),
+    radial-gradient(circle at 68% 27%, rgba(255,141,47,.90) 0 1.4px, transparent 4px),
+    radial-gradient(circle at 79% 76%, rgba(125,247,255,.78) 0 1.2px, transparent 3.8px),
+    radial-gradient(circle at 89% 18%, rgba(255,111,236,.76) 0 1.2px, transparent 3.8px),
+    radial-gradient(circle at 96% 64%, rgba(255,215,108,.78) 0 1.3px, transparent 4px) !important;
+  filter: drop-shadow(0 0 8px rgba(125,247,255,.42)) drop-shadow(0 0 10px rgba(255,141,47,.20)) !important;
+  animation: phase-stars-drift-a 52s linear infinite, phase-stars-pulse 9s ease-in-out infinite !important;
+}
+
+.phase-starfield::after {
+  background:
+    radial-gradient(circle at 12% 44%, rgba(255,255,255,.68) 0 1px, transparent 3px),
+    radial-gradient(circle at 20% 10%, rgba(80,200,255,.58) 0 1px, transparent 3px),
+    radial-gradient(circle at 31% 50%, rgba(255,255,255,.50) 0 1px, transparent 3px),
+    radial-gradient(circle at 42% 70%, rgba(255,141,47,.48) 0 1px, transparent 3px),
+    radial-gradient(circle at 52% 86%, rgba(255,255,255,.50) 0 1px, transparent 3px),
+    radial-gradient(circle at 70% 8%, rgba(255,255,255,.52) 0 1px, transparent 3px),
+    radial-gradient(circle at 85% 46%, rgba(125,247,255,.52) 0 1px, transparent 3px),
+    radial-gradient(circle at 92% 86%, rgba(156,125,255,.50) 0 1px, transparent 3px) !important;
+  opacity: .72 !important;
+  filter: drop-shadow(0 0 6px rgba(255,255,255,.22)) !important;
+  animation: phase-stars-drift-b 78s linear infinite reverse, phase-stars-pulse 12s ease-in-out infinite !important;
+}
+
+.phase-starfield__drift {
+  background:
+    radial-gradient(circle at 6% 92%, rgba(125,247,255,.42) 0 1.2px, transparent 4px),
+    radial-gradient(circle at 19% 22%, rgba(255,141,47,.42) 0 1.2px, transparent 4px),
+    radial-gradient(circle at 43% 36%, rgba(255,111,236,.35) 0 1.1px, transparent 4px),
+    radial-gradient(circle at 62% 72%, rgba(133,255,159,.38) 0 1.1px, transparent 4px),
+    radial-gradient(circle at 86% 28%, rgba(80,200,255,.42) 0 1.2px, transparent 4px) !important;
+  opacity: .64 !important;
+  animation: phase-stars-drift-c 96s linear infinite, phase-stars-pulse 15s ease-in-out infinite !important;
+}
+
+.site-shell,
+.status-callout,
+.status-shell {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
 .hero,
 .nav,
 .status-callout__link,
@@ -69,7 +139,12 @@ body::after {
 .hero-status-panel,
 .metric-strip div,
 .bryforge-card,
-.timeline li {
+.timeline li,
+.status-nav,
+.status-hero,
+.status-card,
+.status-metrics,
+.status-footer {
   box-shadow:
     0 28px 96px rgba(0, 0, 0, .62),
     0 0 36px rgba(125, 247, 255, .105),
@@ -87,7 +162,9 @@ body::after {
 .hero-status-panel a,
 .quick-commands button,
 .terminal-form button,
-.footer-links a {
+.footer-links a,
+.status-links a,
+.status-button {
   color: #fff !important;
   font-weight: 850 !important;
   letter-spacing: .012em !important;
@@ -103,14 +180,17 @@ body::after {
 .hero-status-panel a::before,
 .quick-commands button::before,
 .terminal-form button::before,
-.footer-links a::before {
+.footer-links a::before,
+.status-links a::before,
+.status-button::before {
   inset: -4px !important;
   opacity: .72 !important;
   filter: blur(5.5px) !important;
 }
 
 .button-primary,
-.status-callout__link {
+.status-callout__link,
+.status-links a.primary {
   --boost-shadow: rgba(80,200,255,.25);
   --ec-edge: linear-gradient(90deg, rgba(125,247,255,.72), rgba(80,200,255,.48), rgba(255,141,47,.55));
 }
@@ -120,7 +200,8 @@ body::after {
   --ec-edge: linear-gradient(90deg, rgba(125,247,255,.58), rgba(156,125,255,.54), rgba(255,111,236,.44));
 }
 .button-ghost,
-.footer-links a {
+.footer-links a,
+.status-links a:not(.primary) {
   --boost-shadow: rgba(255,255,255,.14);
   --ec-edge: linear-gradient(90deg, rgba(255,255,255,.42), rgba(125,247,255,.50), rgba(255,255,255,.30));
 }
@@ -148,10 +229,30 @@ body::after {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  body::after { animation: none !important; }
+  body::after,
+  .phase-starfield::before,
+  .phase-starfield::after,
+  .phase-starfield__drift { animation: none !important; }
 }
 
 @keyframes boost-star-breathe {
   0%,100% { opacity: .72; }
   50% { opacity: 1; }
+}
+
+@keyframes phase-stars-pulse {
+  0%, 100% { opacity: .64; }
+  50% { opacity: 1; }
+}
+
+@keyframes phase-stars-drift-a {
+  to { transform: translate3d(4%, 5%, 0) scale(1.04); }
+}
+
+@keyframes phase-stars-drift-b {
+  to { transform: translate3d(-5%, 3%, 0) scale(1.03); }
+}
+
+@keyframes phase-stars-drift-c {
+  to { transform: translate3d(3%, -4%, 0) scale(1.05); }
 }
