@@ -1,18 +1,20 @@
 # Phase1 User Manual
 
-![Edge](https://img.shields.io/badge/edge-v4.1.0--dev-00d8ff) ![Stable](https://img.shields.io/badge/stable-v4.0.0-39ff88) ![Previous Stable](https://img.shields.io/badge/previous%20stable-v3.10.9-7f8cff) ![Base](https://img.shields.io/badge/compatibility-v3.6.0-7f8cff)
+![Edge](https://img.shields.io/badge/edge-v6.0.0-00d8ff) ![Stable](https://img.shields.io/badge/stable-v5.0.0-39ff88) ![Previous Stable](https://img.shields.io/badge/previous%20stable-v4.4.0-7f8cff) ![Compatibility](https://img.shields.io/badge/compatibility-v3.6.0-7f8cff) ![Base1](https://img.shields.io/badge/Base1-foundation-ff8a00) ![Fyr](https://img.shields.io/badge/Fyr-native%20language-ff5a00)
 
-Welcome to the Phase1 manual. This wiki source distinguishes the stable `v4.0.0` release point from the bleeding-edge `v4.1.0-dev` development line.
+Welcome to the Phase1 manual. This wiki source tracks the current `edge/stable` development line, the current stable base, the Base1 host-foundation track, and the Fyr native-language track.
 
-| Track | Version | Use it for |
+| Track | Current value | Use it for |
 | --- | --- | --- |
-| Edge | `v4.1.0-dev` | Development beyond v4.0.0, experiments, integration work, and pre-release validation |
-| Stable | `v4.0.0` | Current stable usage, public demos, website, docs, release notes, and the `v4.0.0` tag target |
-| Previous stable | `v3.10.9` | Previous stable reference usage and compatibility checks |
-| Compatibility base | `v3.6.0` | Historical stable comparison shown by some in-app version checks |
+| Edge | `v6.0.0` | Active development, v6 UI/help polish, wiki updates, Base1 planning, Fyr growth, and validation work. |
+| Stable | `v5.0.0` | Release-qualified demos, public-facing stable references, and safer checkpoint work. |
+| Previous stable | `v4.4.0` | Compatibility comparison against the prior stable line. |
+| Compatibility base | `v3.6.0` | Historical comparison point shown by older in-app version checks. |
+| Base1 | `foundation` | Long-term secure host layer for boot, recovery, installer, storage, rollback, and hardware validation. |
+| Fyr | `native language` | Phase1-owned scripting and automation language surface. |
 
-> [!NOTE]
-> GitHub renders these manual callouts with colored accents. This manual intentionally avoids emojis and uses clear command blocks instead.
+> [!IMPORTANT]
+> Phase1 is a terminal-first virtual operating-system console. Base1 is the staged host-foundation path toward real boot and recovery work. This wiki must not describe Phase1 as a hardened drop-in replacement for Linux, macOS, or Windows until boot images, recovery evidence, update paths, audits, and hardware validation exist.
 
 ## Start here
 
@@ -28,27 +30,37 @@ Welcome to the Phase1 manual. This wiki source distinguishes the stable `v4.0.0`
 10. [Publish to GitHub Wiki](10-Publish-to-GitHub-Wiki.md)
 11. [Tutorials](11-Tutorials.md)
 12. [In-System Wiki](12-In-System-Wiki.md)
-13. [v4 Stable Manual](12-v4-Edge-Manual.md)
+13. [Base1 OS Track](13-Base1-OS-Track.md)
+14. [Fyr Native Language](14-Fyr-Native-Language.md)
+15. [Legacy v4 Reference](12-v4-Edge-Manual.md)
 
 ## What Phase1 is
 
-Phase1 is a terminal-first virtual OS and advanced operator console written in Rust. It includes a simulated kernel, virtual filesystem, process table, audit log, guarded browser, guarded network inspection, language runtime manager, storage helper, update protocol, modal editor, Base1 secure-host foundation, and Neo Tokyo style terminal interface.
+Phase1 is a Rust-built, terminal-first virtual OS console created by Chase Bryan / Bryforge. It combines a futuristic operator surface with practical systems ideas: a simulated kernel, virtual filesystem, process table, audit log, command metadata, guarded host access, storage helpers, local learning, the Fyr native language, Nested Phase1 metadata-control, and a long-term operating-system track through Base1.
+
+Phase1 is useful for learning, experimentation, terminal workflows, documentation, and staged OS design. It is not a current hardened sandbox, kernel, or daily-driver operating-system replacement.
 
 ## Core rules
 
 > [!IMPORTANT]
-> Phase1 starts secure by default. Host-backed tools are blocked until SHIELD is off and TRUST HOST is enabled.
+> Phase1 starts secure by default. Host-backed tools require explicit trust gates. Do not enter tokens, private keys, account passwords, recovery codes, or other secrets into demos, issues, logs, wiki examples, or screenshots.
 
 > [!TIP]
-> TRY THIS
+> TRY THIS INSIDE PHASE1
 >
 > ```text
 > help
-> cat readme.txt
+> help ui
+> help flows
 > wiki
 > wiki-quick
+> version
 > version --compare
 > security
+> capabilities
+> sysinfo
+> nest status
+> nest tree
 > roadmap
 > ```
 
@@ -57,32 +69,43 @@ Phase1 is a terminal-first virtual OS and advanced operator console written in R
 | Goal | Command |
 | --- | --- |
 | Show command map | `help` |
+| Show modern launch pad | `help ui` |
+| Show workflow deck | `help flows` |
 | Read in-system guide | `cat readme.txt` |
 | Open in-system wiki index | `wiki` |
 | Open in-system wiki quick start | `wiki-quick` |
 | Check current version | `version` |
-| Compare stable and previous lines | `version --compare` |
+| Compare release lines | `version --compare` |
 | Inspect security posture | `security` |
+| Inspect command gates | `capabilities` |
 | Show dashboard | `dash` |
 | Show system info | `sysinfo` |
 | Edit quickly | `ned notes.txt` |
-| Edit with avim | `avim hello.py` |
-| Run browser reader | `browser example.com` |
-| Show language support | `lang support` |
+| Edit with AVIM | `avim hello.fyr` |
+| Run Fyr script | `fyr run hello.fyr` |
+| Inspect nested contexts | `nest status` |
+| Show nested topology | `nest tree` |
 | Show update protocol | `update protocol` |
 
-## Tutorial paths
+## Reader paths
 
 | Path | Best first page |
 | --- | --- |
 | New user | [Quick Start](01-Quick-Start.md) |
-| v4 stable | [v4 Stable Manual](12-v4-Edge-Manual.md) |
-| In-system wiki commands | [In-System Wiki](12-In-System-Wiki.md) |
-| Operator commands | [Command Manual](04-Command-Manual.md) |
-| Python/Rust/C | [Language Runtimes](07-Language-Runtimes.md) |
-| Browser/network | [Browser and Networking](06-Browser-and-Networking.md) |
+| Current release model | [Version Guide](02-Version-Guide.md) |
+| In-system manual commands | [In-System Wiki](12-In-System-Wiki.md) |
+| Operator command reference | [Command Manual](04-Command-Manual.md) |
+| Python/Rust/C/WASI-lite | [Language Runtimes](07-Language-Runtimes.md) |
+| Browser and network tools | [Browser and Networking](06-Browser-and-Networking.md) |
+| Base1 boot/recovery path | [Base1 OS Track](13-Base1-OS-Track.md) |
+| Fyr scripting path | [Fyr Native Language](14-Fyr-Native-Language.md) |
 | Full guided labs | [Tutorials](11-Tutorials.md) |
+| Native GitHub Wiki publish flow | [Publish to GitHub Wiki](10-Publish-to-GitHub-Wiki.md) |
+
+## Public wiki source rule
+
+The reviewable wiki source lives in `docs/wiki/`. Publish those files to the native GitHub Wiki only after the source changes are reviewed and validation-sensitive docs stay aligned with the repository README, in-system `wiki-*` pages, release metadata, and website links.
 
 ## Manual maintenance rule
 
-When the Cargo package version changes, update this manual version matrix, README status, in-system `wiki-*` pages, website demo output, release workflow examples, and release metadata tests together. Stable release branches must avoid `-dev` suffixes; edge branches must keep the `-dev` suffix visible.
+When the Cargo package version, stable base, branch model, public asset path, command behavior, or Base1/Fyr status changes, update the README, this manual, in-system `wiki-*` pages, website demo output, release workflow examples, and release metadata tests together. Stable release branches must avoid unsupported edge claims; edge docs must label experimental or host-backed behavior clearly.
