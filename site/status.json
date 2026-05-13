@@ -1,13 +1,13 @@
 {
   "name": "Phase1 public project status",
   "status_kind": "estimated roadmap progress",
-  "last_updated_utc": "2026-05-13T20:36:00Z",
+  "last_updated_utc": "2026-05-13T21:12:00Z",
   "repository": "Bryforge/phase1",
   "branch": "edge/stable",
-  "commit": "0a7693f99fc560a4a787cb158bf00c3c43d103cf",
-  "overall_estimated_completion_percent": 62,
-  "public_state": "active edge development with published wiki and clean public link surface",
-  "important_boundary": "Percentages are planning estimates, not production-readiness or security-hardening claims.",
+  "commit": "4ed7344d099063a288b1839f8f7441e4a4dec02f",
+  "overall_estimated_completion_percent": 63,
+  "public_state": "active edge development with published wiki, clean public link surface, and B3 GNU/Linux emulator evidence present",
+  "important_boundary": "Percentages are planning estimates, not production-readiness or security-hardening claims. B3 GNU/Linux emulator evidence is present, but full B3 validation remains not claimed.",
   "projects": [
     {
       "name": "Phase1 operator console",
@@ -23,15 +23,15 @@
     },
     {
       "name": "Base1 secure host / OS track",
-      "estimated_completion_percent": 31,
-      "state": "documentation, dry-run scripts, release archives, validation gates, recovery planning, x86_64 boot planning, and wiki guardrails exist",
-      "next_milestone": "advance from dry-run/read-only evidence to B3 VM boot validation and hardware evidence"
+      "estimated_completion_percent": 34,
+      "state": "documentation, dry-run scripts, release archives, validation gates, recovery planning, x86_64 boot planning, wiki guardrails, and B3 GNU/Linux emulator stage evidence are present; full B3 remains not claimed",
+      "next_milestone": "add B3 UEFI proof and kernel/initrd handoff evidence, then promote a reviewed validation report without over-claiming"
     },
     {
       "name": "X200 / Libreboot hardware path",
-      "estimated_completion_percent": 38,
-      "state": "USB staging, framebuffer proof paths, recovery notes, and safety gates exist; hardware success remains evidence-bound",
-      "next_milestone": "capture repeatable physical boot evidence without strengthening claims early"
+      "estimated_completion_percent": 40,
+      "state": "X200 Linux-libre host can stage local kernel/initrd into B3 GNU/Linux emulator evidence; USB staging, framebuffer proof paths, recovery notes, and safety gates remain evidence-bound",
+      "next_milestone": "capture repeatable physical boot evidence and keep emulator, USB, and hardware claims separated"
     },
     {
       "name": "Security and crypto policy",
@@ -41,9 +41,9 @@
     },
     {
       "name": "Website and public docs",
-      "estimated_completion_percent": 84,
-      "state": "public site, status page, status JSON, badge endpoint, native GitHub Wiki, refreshed source wiki, organized docs, asset policy, Pages routing, and clean public link checks are in place",
-      "next_milestone": "keep public status generated from repository state and feed B3 VM evidence into the docs when validation lands"
+      "estimated_completion_percent": 85,
+      "state": "public site, status page, status JSON, badge endpoint, native GitHub Wiki, refreshed source wiki, organized docs, asset policy, Pages routing, clean public link checks, and B3 evidence status wording are in place",
+      "next_milestone": "publish reviewed B3 evidence docs after UEFI and handoff evidence are complete"
     },
     {
       "name": "Repository organization",
@@ -114,6 +114,7 @@
     "not daily-driver ready",
     "not hardware-validated across targets",
     "not a hardened sandbox",
-    "not cryptographically complete"
+    "not cryptographically complete",
+    "B3 GNU/Linux emulator evidence is not full B3 completion"
   ]
 }
