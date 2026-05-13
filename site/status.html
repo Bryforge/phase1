@@ -4,96 +4,79 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Phase1 Project Status</title>
-  <meta name="description" content="Public Phase1, Base1, Fyr, and Bryforge project status marker.">
-  <style>
-    :root {
-      color-scheme: dark;
-      --bg: #05080d;
-      --card: #0b1420;
-      --line: #1b3548;
-      --text: #e7f7ff;
-      --muted: #8fb2c2;
-      --cyan: #00d8ff;
-      --green: #39ff88;
-      --orange: #ff8a00;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      background: radial-gradient(circle at 20% 0%, #102536 0, transparent 38%), var(--bg);
-      color: var(--text);
-      line-height: 1.55;
-    }
-    main { width: min(1080px, calc(100% - 32px)); margin: 0 auto; padding: 40px 0 64px; }
-    a { color: var(--cyan); }
-    .hero, .card {
-      position: relative;
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      background: color-mix(in srgb, var(--card) 88%, transparent);
-      box-shadow: 0 0 36px rgba(0, 216, 255, 0.08);
-      overflow: hidden;
-    }
-    .hero { padding: 28px; margin-bottom: 18px; }
-    h1 { margin: 0 0 10px; font-size: clamp(2rem, 5vw, 4rem); letter-spacing: -0.06em; }
-    .meta { color: var(--muted); margin: 0; }
-    .overall { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center; margin-top: 24px; }
-    .percent { font-size: clamp(2.8rem, 9vw, 6rem); color: var(--green); font-weight: 800; line-height: 1; }
-    .bar { height: 18px; border-radius: 999px; overflow: hidden; background: #07111a; border: 1px solid var(--line); }
-    .bar > span { display: block; height: 100%; width: var(--p, 0%); background: linear-gradient(90deg, var(--cyan), var(--green)); }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 18px; }
-    .card { padding: 18px; }
-    .project-title { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
-    h2 { font-size: 1.05rem; margin: 0; }
-    .small { color: var(--muted); font-size: 0.92rem; }
-    .warn { border-color: color-mix(in srgb, var(--orange) 45%, var(--line)); }
-    footer { margin-top: 24px; color: var(--muted); font-size: 0.9rem; }
-  </style>
-  <link rel="stylesheet" href="./site/phase1-rainbow-space.css?v=phase1-rainbow-space-v2">
-  <link rel="stylesheet" href="./site/rainbow-space-motion.css?v=phase1-rainbow-space-v2">
-  <link rel="stylesheet" href="./phase1-rainbow-space.css?v=phase1-rainbow-space-v2">
-  <link rel="stylesheet" href="./rainbow-space-motion.css?v=phase1-rainbow-space-v2">
+  <meta name="description" content="Public Phase1, Base1, Fyr, and Bryforge project status marker with roadmap estimates and repository organization metrics.">
+  <meta name="theme-color" content="#03050b">
+  <link rel="icon" type="image/png" href="./assets/phase1-nobackground.png">
+  <link rel="apple-touch-icon" href="./assets/phase1-nobackground.png">
+  <link rel="stylesheet" href="./status-dashboard.css?v=phase1-status-dashboard-v1">
 </head>
 <body>
-  <main>
-    <section class="hero">
-      <h1>Phase1 status</h1>
-      <p class="meta" id="summary">Loading public project marker…</p>
-      <div class="overall">
-        <div>
-          <div class="bar"><span id="overall-bar"></span></div>
-          <p class="small">Overall estimated roadmap completion</p>
-        </div>
-        <div class="percent" id="overall-percent">--%</div>
+  <main class="status-shell">
+    <nav class="status-nav" aria-label="Status navigation">
+      <a class="status-brand" href="index.html" aria-label="Back to Phase1 home">
+        <img src="./assets/phase1-nobackground.png" alt="">
+        <span>phase1 status</span>
+      </a>
+      <div class="status-links">
+        <a class="primary" href="index.html">Phase1 home</a>
+        <a href="status.json">status.json</a>
+        <a href="status-badge.json">badge</a>
+        <a href="https://github.com/Bryforge/phase1">GitHub</a>
+      </div>
+    </nav>
+
+    <section class="status-hero" aria-labelledby="status-title">
+      <div>
+        <p class="eyebrow">live public marker</p>
+        <h1 id="status-title">Phase1 roadmap status.</h1>
+        <p class="meta" id="summary">Loading public project marker…</p>
+        <div class="status-progress" aria-label="Overall estimated completion"><span id="overall-bar"></span></div>
+      </div>
+      <div class="status-percent" aria-label="Overall estimated roadmap completion">
+        <strong id="overall-percent">--%</strong>
+        <span>roadmap</span>
       </div>
     </section>
 
-    <section class="card warn">
-      <strong>Boundary:</strong>
-      <span id="boundary">Percentages are planning estimates, not production-readiness claims.</span>
+    <section class="status-card status-boundary" aria-label="Status boundary">
+      <p class="eyebrow">boundary</p>
+      <h2>Planning estimate, not a production claim.</h2>
+      <p class="small" id="boundary">Percentages are planning estimates, not production-readiness claims.</p>
     </section>
 
-    <section class="grid" id="projects"></section>
+    <section class="status-metrics" id="metrics" aria-label="Repository organization metrics">
+      <div class="metric"><strong id="root-file-count">--</strong><span>root files</span></div>
+      <div class="metric"><strong id="root-dir-count">--</strong><span>top-level folders</span></div>
+      <div class="metric"><strong id="build-file-count">--</strong><span>tracked build files</span></div>
+      <div class="metric"><strong id="artifact-count">--</strong><span>generated artifacts</span></div>
+    </section>
 
-    <footer>
-      Source: <a href="status.json">status.json</a> · Badge endpoint: <a href="status-badge.json">status-badge.json</a> ·
-      <a href="../docs/status/PROJECT_STATUS.md">status notes</a>
+    <section class="status-grid" id="projects" aria-label="Project status cards"></section>
+
+    <footer class="status-footer">
+      <span id="commit-line">Source: status.json</span>
+      <span><a href="../docs/status/PROJECT_STATUS.md">status notes</a> · <a href="index.html">phase1 home</a></span>
     </footer>
   </main>
 
   <script>
     function text(value) { return value == null ? "" : String(value); }
+
+    function setText(id, value) {
+      const node = document.getElementById(id);
+      if (node) node.textContent = text(value);
+    }
+
     function projectCard(project) {
       const pct = Number(project.estimated_completion_percent || 0);
       const article = document.createElement("article");
-      article.className = "card";
+      article.className = "status-card";
       article.innerHTML = `
         <div class="project-title">
           <h2></h2>
           <strong>${pct}%</strong>
         </div>
-        <div class="bar" style="margin: 12px 0 14px"><span style="--p:${pct}%"></span></div>
+        <div class="status-progress" style="margin: 14px 0 16px"><span style="--p:${pct}%"></span></div>
         <p class="small state"></p>
         <p class="small next"></p>
       `;
@@ -107,18 +90,22 @@
       .then((response) => response.json())
       .then((status) => {
         const overall = Number(status.overall_estimated_completion_percent || 0);
-        document.getElementById("overall-percent").textContent = `${overall}%`;
+        setText("overall-percent", `${overall}%`);
         document.getElementById("overall-bar").style.setProperty("--p", `${overall}%`);
-        document.getElementById("summary").textContent = `${status.public_state || "active"} · ${status.branch || "edge/stable"} · updated ${status.last_updated_utc || "unknown"}`;
-        document.getElementById("boundary").textContent = status.important_boundary || "Percentages are planning estimates.";
+        setText("summary", `${status.public_state || "active"} · ${status.branch || "edge/stable"} · updated ${status.last_updated_utc || "unknown"}`);
+        setText("boundary", status.important_boundary || "Percentages are planning estimates.");
+        const metrics = status.repository_organization_metrics || {};
+        setText("root-file-count", metrics.root_file_count ?? "--");
+        setText("root-dir-count", metrics.root_directory_count ?? "--");
+        setText("build-file-count", metrics.tracked_build_file_count ?? "--");
+        setText("artifact-count", metrics.generated_artifact_count ?? "--");
+        setText("commit-line", status.commit ? `Source: ${status.repository || "Bryforge/phase1"} @ ${status.commit.slice(0, 7)}` : "Source: status.json");
         const grid = document.getElementById("projects");
         grid.replaceChildren(...(status.projects || []).map(projectCard));
       })
       .catch((error) => {
-        document.getElementById("summary").textContent = `Could not load status.json: ${error}`;
+        setText("summary", `Could not load status.json: ${error}`);
       });
   </script>
-  <script src="./site/rainbow-space-motion.js?v=phase1-rainbow-space-v2"></script>
-  <script src="./rainbow-space-motion.js?v=phase1-rainbow-space-v2"></script>
 </body>
 </html>
