@@ -1,0 +1,137 @@
+/* Phase1 homepage CTA hierarchy pass.
+   Small final homepage polish: make the first view feel more intentional by
+   prioritizing Clone & run and Try the console without changing the accepted look. */
+
+:root {
+  --cta-white: #fbfdff;
+  --cta-muted: #dbe6f4;
+  --cta-cyan: #7df7ff;
+  --cta-blue: #50c8ff;
+  --cta-violet: #9c7dff;
+  --cta-pink: #ff6fec;
+  --cta-orange: #ff8d2f;
+  --cta-gold: #ffd76c;
+  --cta-green: #85ff9f;
+  --cta-spectrum: linear-gradient(115deg, #7df7ff, #50c8ff, #9c7dff, #ff6fec, #ff8d2f, #ffd76c, #85ff9f);
+}
+
+.hero-copy .eyebrow {
+  color: rgba(214, 252, 255, .96) !important;
+  text-shadow: 0 0 12px rgba(125,247,255,.20) !important;
+}
+
+.hero-text {
+  max-width: 64ch !important;
+  color: var(--cta-muted) !important;
+  font-weight: 560 !important;
+}
+
+/* Clear CTA hierarchy: first two are product actions, rest are supporting links. */
+.hero-actions {
+  align-items: center !important;
+  gap: 10px !important;
+  margin-top: clamp(22px, 3vw, 30px) !important;
+  margin-bottom: 18px !important;
+}
+
+.hero-actions .button {
+  min-height: 46px !important;
+  padding-inline: 18px !important;
+  border-radius: 18px !important;
+  letter-spacing: .015em !important;
+}
+
+.hero-actions .button-primary,
+.hero-actions .button-secondary {
+  min-height: 50px !important;
+  padding-inline: 22px !important;
+  font-size: 1rem !important;
+  border-radius: 20px !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.070),
+    0 0 14px rgba(125,247,255,.12),
+    0 0 18px rgba(255,141,47,.08),
+    inset 0 1px 0 rgba(255,255,255,.16),
+    inset 0 -1px 0 rgba(0,0,0,.44) !important;
+}
+
+.hero-actions .button-primary {
+  background:
+    linear-gradient(180deg, rgba(9,16,30,.88), rgba(4,7,15,.78)) padding-box,
+    var(--cta-spectrum) border-box !important;
+  background-size: 100% 100%, 260% 260% !important;
+  color: #fff !important;
+  animation: phase1-cta-flow 18s ease-in-out infinite !important;
+}
+
+.hero-actions .button-secondary {
+  color: #fff !important;
+  background:
+    linear-gradient(180deg, rgba(6,12,24,.88), rgba(3,7,15,.76)) padding-box,
+    linear-gradient(115deg, rgba(125,247,255,.70), rgba(80,200,255,.54), rgba(156,125,255,.46), rgba(255,141,47,.44)) border-box !important;
+}
+
+.hero-actions .button-ghost,
+.hero-actions .button-status,
+.hero-actions .button-coffee {
+  min-height: 42px !important;
+  padding-inline: 15px !important;
+  opacity: .92 !important;
+}
+
+.hero-actions .button-coffee {
+  opacity: .82 !important;
+}
+
+.hero-actions .button:hover,
+.hero-actions .button:focus-visible {
+  transform: translateY(-2px) !important;
+}
+
+.hero-command {
+  margin-top: 4px !important;
+}
+
+.hero-status-panel {
+  margin-top: 2px !important;
+}
+
+@media (max-width: 760px) {
+  .hero-actions {
+    grid-template-columns: 1fr 1fr !important;
+    display: grid !important;
+  }
+
+  .hero-actions .button {
+    min-height: 44px !important;
+    padding-inline: 12px !important;
+    font-size: .92rem !important;
+  }
+
+  .hero-actions .button-primary,
+  .hero-actions .button-secondary {
+    min-height: 48px !important;
+    font-size: .96rem !important;
+  }
+
+  .hero-actions .button-status,
+  .hero-actions .button-coffee,
+  .hero-actions .button-ghost {
+    min-height: 42px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .hero-actions {
+    gap: 8px !important;
+  }
+
+  .hero-actions .button {
+    font-size: .86rem !important;
+  }
+}
+
+@keyframes phase1-cta-flow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
