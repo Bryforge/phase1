@@ -1041,3 +1041,82 @@ h1,
     transform: none;
   }
 }
+
+/* Public status finish pass */
+.nav-status-link {
+  color: var(--green) !important;
+  border: 1px solid rgba(83, 255, 133, 0.28);
+  background: rgba(83, 255, 133, 0.08);
+}
+
+.button-status {
+  color: #06101c;
+  background: linear-gradient(90deg, var(--green), var(--cyan));
+  border-color: rgba(83, 255, 133, 0.55);
+  box-shadow: 0 0 38px rgba(83, 255, 133, 0.22);
+}
+
+.hero-status-panel {
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: 22px;
+  border: 1px solid rgba(83, 255, 133, 0.28);
+  background:
+    linear-gradient(145deg, rgba(83, 255, 133, 0.105), rgba(35, 247, 255, 0.055)),
+    rgba(0, 0, 0, 0.22);
+  box-shadow: 0 0 48px rgba(83, 255, 133, 0.10);
+}
+
+.hero-status-panel strong,
+.hero-status-panel a,
+.status-pill {
+  display: inline-flex;
+}
+
+.status-pill {
+  margin-bottom: 10px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  color: #06101c;
+  background: linear-gradient(90deg, var(--green), var(--cyan));
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+}
+
+.hero-status-panel strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 1.05rem;
+}
+
+.hero-status-panel p {
+  margin-bottom: 12px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.hero-status-panel a {
+  color: var(--green);
+  font-weight: 900;
+  text-decoration: none;
+}
+
+@media (max-width: 760px) {
+  .status-callout {
+    margin-top: 10px;
+  }
+
+  .status-callout__link {
+    font-size: 0.9rem;
+  }
+
+  h1 {
+    font-size: clamp(2.45rem, 15vw, 4.8rem);
+  }
+
+  .hero {
+    margin-top: 18px;
+  }
+}
