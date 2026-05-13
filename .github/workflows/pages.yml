@@ -70,6 +70,7 @@ jobs:
           test -f _site/status-badge.json
           test -f _site/wiki/index.html
           test -f _site/wiki/commands.html
+          test -f _site/wiki/security.html
           test -f _site/wiki/docs.css
           test -f _site/wiki/docs.js
           test -f _site/site/button-fix.css
@@ -81,6 +82,8 @@ jobs:
           grep -q 'site.js?v=phase1-mobile-nav-fix-v1' _site/index.html
           grep -q 'mobile-nav-fix.js?v=phase1-mobile-nav-fix-v1' _site/index.html
           grep -q 'commands.html' _site/wiki/index.html
+          grep -q 'security.html' _site/wiki/index.html
+          grep -q 'Phase1 Security Model' _site/wiki/security.html
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
