@@ -14,17 +14,17 @@ Use this index as the source of truth for current asset filenames before linking
 | Asset | Path | Purpose |
 | --- | --- | --- |
 | Phase1/Base1/Fyr public banner | `assets/phase1_base_fyr_banner1.png` | Main public repository/banner image. |
-| Phase1 boot splash | `assets/phase1-splash.png` | Current PNG boot-splash visual for Phase1. |
+| Phase1 clean SVG logo | `assets/phase1-logo.svg` | Current clean transparent SVG logo for website hero and public UI. |
 | Fyr symbol | `assets/fyr_symbol.png` | Current standalone Fyr visual symbol. |
 | Fyr word mark | `assets/fyr_word.png` | Current Fyr word mark with symbol styling. |
 
-## Phase1 splash status
+## Phase1 logo status
 
-The current Phase1 boot splash uses:
+The current clean Phase1 website logo uses:
 
-- [`phase1-splash.png`](phase1-splash.png)
+- [`phase1-logo.svg`](phase1-logo.svg)
 
-Older references to `phase1-splash.svg` are outdated for the public README boot splash component and should be replaced with the current PNG asset above.
+The older `phase1-splash.png` raster splash should not be used in the homepage hero.
 
 ## Fyr asset status
 

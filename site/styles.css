@@ -1340,3 +1340,30 @@ h1,
 .logo-glass {
   overflow: hidden;
 }
+
+/* Logo SVG hero cleanup */
+.logo-glass {
+  background:
+    radial-gradient(circle at 50% 48%, rgba(35, 247, 255, 0.08), transparent 62%),
+    rgba(0, 0, 0, 0.14);
+}
+
+.phase-logo {
+  display: block;
+  width: 100%;
+  max-width: 480px;
+  aspect-ratio: 14 / 4;
+  object-fit: contain;
+  padding: clamp(18px, 3vw, 34px);
+  border-radius: 28px;
+  mix-blend-mode: normal;
+  filter: drop-shadow(0 0 34px rgba(85, 136, 255, 0.42));
+}
+
+/* Prevent descenders like the g in Bryforge from being clipped */
+.support-card h2,
+.founder-copy h2,
+.section-heading h2 {
+  line-height: 1.06;
+  padding-bottom: 0.08em;
+}

@@ -54,7 +54,7 @@ jobs:
             printf "optional wiki roadmap doc not present; skipping roadmap copy\n"
           fi
 
-          for asset in assets/phase1-banner.svg assets/phase1-splash.png assets/phase1_base_fyr_banner1.png; do
+          for asset in assets/phase1-banner.svg assets/phase1-logo.svg assets/phase1_base_fyr_banner1.png; do
             if [ -f "$asset" ]; then
               cp "$asset" "_site/assets/$(basename "$asset")"
             else
