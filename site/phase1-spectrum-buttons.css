@@ -1,0 +1,283 @@
+/* Phase1 spectrum button system.
+   Matches the founder/profile rainbow ring direction: dark interior, bright white text,
+   living spectral rim, soft outer glow, and a subtle moving sheen. */
+
+:root {
+  --phase-btn-bg: rgba(5, 8, 18, .88);
+  --phase-btn-bg-2: rgba(11, 15, 29, .94);
+  --phase-spectrum: linear-gradient(
+    115deg,
+    #6ff7ff 0%,
+    #7ab8ff 10%,
+    #8d7dff 22%,
+    #d86bff 35%,
+    #ff5ec7 48%,
+    #ff6d8a 58%,
+    #ff8a57 68%,
+    #ffb84c 78%,
+    #ffe36b 88%,
+    #9dff8f 100%
+  );
+}
+
+.button,
+.hero-actions a,
+.hero-actions button,
+.roadmap-actions a,
+.nav-links a,
+.status-callout__link,
+.hero-status-panel a,
+.quick-commands button,
+.terminal-form button,
+.footer-links a,
+.status-links a,
+.status-button,
+.terminal button,
+button[type="submit"] {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: .45rem !important;
+  color: #fff !important;
+  min-height: 2.62rem !important;
+  padding: .82rem 1.18rem !important;
+  border-radius: 999px !important;
+  border: 1px solid transparent !important;
+  text-decoration: none !important;
+  font-weight: 850 !important;
+  letter-spacing: .012em !important;
+  line-height: 1 !important;
+  isolation: isolate !important;
+  overflow: visible !important;
+  cursor: pointer !important;
+  background:
+    linear-gradient(180deg, var(--phase-btn-bg-2), var(--phase-btn-bg)) padding-box,
+    var(--phase-spectrum) border-box !important;
+  background-size: 100% 100%, 320% 320% !important;
+  text-shadow:
+    0 1px 1px rgba(0,0,0,.66),
+    0 0 8px rgba(255,255,255,.12) !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.055),
+    0 0 16px rgba(111,247,255,.16),
+    0 0 24px rgba(216,107,255,.13),
+    0 0 34px rgba(255,138,87,.11),
+    inset 0 1px 0 rgba(255,255,255,.13) !important;
+  animation: phase-spectrum-shift 10s ease-in-out infinite !important;
+  transition:
+    transform .18s ease,
+    box-shadow .22s ease,
+    filter .22s ease !important;
+}
+
+.button::before,
+.hero-actions a::before,
+.hero-actions button::before,
+.roadmap-actions a::before,
+.nav-links a::before,
+.status-callout__link::before,
+.hero-status-panel a::before,
+.quick-commands button::before,
+.terminal-form button::before,
+.footer-links a::before,
+.status-links a::before,
+.status-button::before,
+.terminal button::before,
+button[type="submit"]::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: -3px !important;
+  border-radius: inherit !important;
+  z-index: -2 !important;
+  pointer-events: none !important;
+  background: var(--phase-spectrum) !important;
+  background-size: 320% 320% !important;
+  filter: blur(9px) saturate(1.22) !important;
+  opacity: .70 !important;
+  animation:
+    phase-spectrum-shift 10s ease-in-out infinite,
+    phase-spectrum-breathe 5.8s ease-in-out infinite !important;
+}
+
+.button::after,
+.hero-actions a::after,
+.hero-actions button::after,
+.roadmap-actions a::after,
+.nav-links a::after,
+.status-callout__link::after,
+.hero-status-panel a::after,
+.quick-commands button::after,
+.terminal-form button::after,
+.footer-links a::after,
+.status-links a::after,
+.status-button::after,
+.terminal button::after,
+button[type="submit"]::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  border-radius: inherit !important;
+  pointer-events: none !important;
+  z-index: -1 !important;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(255,255,255,.04) 20%,
+    rgba(255,255,255,.20) 45%,
+    rgba(255,255,255,.05) 70%,
+    transparent 100%
+  ) !important;
+  mix-blend-mode: screen !important;
+  transform: translateX(-120%) skewX(-18deg) !important;
+  opacity: .36 !important;
+  animation: phase-button-sheen 6.4s linear infinite !important;
+}
+
+.button span,
+.hero-actions a span,
+.hero-actions button span,
+.roadmap-actions a span,
+.nav-links a span,
+.status-callout__link span,
+.hero-status-panel a span,
+.quick-commands button span,
+.terminal-form button span,
+.footer-links a span,
+.status-links a span,
+.status-button span,
+.terminal button span,
+button[type="submit"] span {
+  position: relative !important;
+  z-index: 2 !important;
+  color: #fff !important;
+}
+
+.button:hover,
+.hero-actions a:hover,
+.hero-actions button:hover,
+.roadmap-actions a:hover,
+.nav-links a:hover,
+.status-callout__link:hover,
+.hero-status-panel a:hover,
+.quick-commands button:hover,
+.terminal-form button:hover,
+.footer-links a:hover,
+.status-links a:hover,
+.status-button:hover,
+.terminal button:hover,
+button[type="submit"]:hover,
+.button:focus-visible,
+.hero-actions a:focus-visible,
+.hero-actions button:focus-visible,
+.roadmap-actions a:focus-visible,
+.nav-links a:focus-visible,
+.status-callout__link:focus-visible,
+.hero-status-panel a:focus-visible,
+.quick-commands button:focus-visible,
+.terminal-form button:focus-visible,
+.footer-links a:focus-visible,
+.status-links a:focus-visible,
+.status-button:focus-visible,
+.terminal button:focus-visible,
+button[type="submit"]:focus-visible {
+  color: #fff !important;
+  transform: translateY(-2px) scale(1.012) !important;
+  outline: none !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.12),
+    0 0 22px rgba(111,247,255,.22),
+    0 0 34px rgba(216,107,255,.20),
+    0 0 48px rgba(255,138,87,.18),
+    inset 0 1px 0 rgba(255,255,255,.18) !important;
+}
+
+.button:hover::before,
+.hero-actions a:hover::before,
+.hero-actions button:hover::before,
+.roadmap-actions a:hover::before,
+.nav-links a:hover::before,
+.status-callout__link:hover::before,
+.hero-status-panel a:hover::before,
+.quick-commands button:hover::before,
+.terminal-form button:hover::before,
+.footer-links a:hover::before,
+.status-links a:hover::before,
+.status-button:hover::before,
+.terminal button:hover::before,
+button[type="submit"]:hover::before,
+.button:focus-visible::before,
+.nav-links a:focus-visible::before,
+.status-callout__link:focus-visible::before {
+  opacity: .92 !important;
+  filter: blur(11px) saturate(1.34) !important;
+}
+
+.button:active,
+.hero-actions a:active,
+.hero-actions button:active,
+.roadmap-actions a:active,
+.nav-links a:active,
+.status-callout__link:active,
+.hero-status-panel a:active,
+.quick-commands button:active,
+.terminal-form button:active,
+.footer-links a:active,
+.status-links a:active,
+.status-button:active,
+.terminal button:active,
+button[type="submit"]:active {
+  transform: translateY(0) scale(.995) !important;
+}
+
+.hero-actions a:nth-child(1),
+.roadmap-actions a:nth-child(1),
+.status-links a:nth-child(1) { animation-delay: 0s !important; }
+.hero-actions a:nth-child(2),
+.roadmap-actions a:nth-child(2),
+.status-links a:nth-child(2) { animation-delay: -1.6s !important; }
+.hero-actions a:nth-child(3),
+.status-links a:nth-child(3) { animation-delay: -3.2s !important; }
+.hero-actions a:nth-child(4),
+.status-links a:nth-child(4) { animation-delay: -4.8s !important; }
+.hero-actions a:nth-child(5) { animation-delay: -6.4s !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  .button,
+  .button::before,
+  .button::after,
+  .hero-actions a,
+  .hero-actions a::before,
+  .hero-actions a::after,
+  .nav-links a,
+  .nav-links a::before,
+  .nav-links a::after,
+  .status-callout__link,
+  .status-callout__link::before,
+  .status-callout__link::after,
+  .status-links a,
+  .status-links a::before,
+  .status-links a::after {
+    animation: none !important;
+  }
+}
+
+@keyframes phase-spectrum-shift {
+  0% { background-position: 0% 50%; filter: hue-rotate(0deg) saturate(1.12); }
+  25% { background-position: 50% 50%; filter: hue-rotate(16deg) saturate(1.20); }
+  50% { background-position: 100% 50%; filter: hue-rotate(34deg) saturate(1.26); }
+  75% { background-position: 50% 50%; filter: hue-rotate(16deg) saturate(1.20); }
+  100% { background-position: 0% 50%; filter: hue-rotate(0deg) saturate(1.12); }
+}
+
+@keyframes phase-spectrum-breathe {
+  0%, 100% { opacity: .62; transform: scale(1); }
+  50% { opacity: .98; transform: scale(1.018); }
+}
+
+@keyframes phase-button-sheen {
+  0% { transform: translateX(-125%) skewX(-18deg); opacity: 0; }
+  14% { opacity: .22; }
+  48% { opacity: .30; }
+  100% { transform: translateX(220%) skewX(-18deg); opacity: 0; }
+}
