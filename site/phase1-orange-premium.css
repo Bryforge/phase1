@@ -1,0 +1,273 @@
+/* Phase1 premium orange-spectrum finish.
+   No rainbow. No cyan/pink/blue as design language. This is a deeper orange family:
+   black glass, ember, tangerine, amber, gold, peach, cream, copper, and living forge sheen. */
+
+:root {
+  --po-black: #020100;
+  --po-graphite: #100805;
+  --po-panel: rgba(18, 10, 6, 0.84);
+  --po-panel-2: rgba(255, 221, 168, 0.055);
+  --po-text: #fff6e6;
+  --po-muted: #d8b18a;
+  --po-soft: #9b775b;
+  --po-brown: #351006;
+  --po-rust: #8e2a06;
+  --po-ember: #ff3c08;
+  --po-flame: #ff5d12;
+  --po-tangerine: #ff7b16;
+  --po-orange: #ff9425;
+  --po-amber: #ffb342;
+  --po-gold: #ffd36b;
+  --po-peach: #ffe0ad;
+  --po-cream: #fff6dc;
+  --po-line: rgba(255, 189, 96, .20);
+  --po-line-hot: rgba(255, 147, 37, .58);
+  --po-hot: 0 0 34px rgba(255, 93, 18, .31), 0 0 72px rgba(255, 147, 37, .19), 0 0 118px rgba(255, 211, 107, .10);
+  --po-card: 0 36px 132px rgba(0,0,0,.64), 0 0 56px rgba(255,93,18,.14), 0 0 96px rgba(255,179,66,.08);
+  --po-spectrum: linear-gradient(90deg, #451204, #8e2a06, #ff3c08, #ff5d12, #ff7b16, #ff9425, #ffb342, #ffd36b, #ffe0ad, #fff6dc, #ffd36b, #ff9425, #ff5d12, #451204);
+  --po-heading: linear-gradient(90deg, #fff6dc, #ffe0ad, #ffd36b, #ffb342, #ff9425, #ff5d12, #ff3c08, #ff9425, #fff6dc);
+  --po-button: linear-gradient(90deg, #fff6dc, #ffd36b, #ffb342, #ff9425, #ff7b16, #ff5d12, #ff3c08, #ff7b16, #ffd36b, #fff6dc);
+  --po-glass: radial-gradient(circle at 18% 8%, rgba(255, 93, 18, .18), transparent 22rem), radial-gradient(circle at 84% 20%, rgba(255, 179, 66, .13), transparent 24rem), radial-gradient(circle at 50% 94%, rgba(142, 42, 6, .20), transparent 26rem), linear-gradient(145deg, rgba(18, 10, 6, .86), rgba(255, 221, 168, .052));
+}
+
+body {
+  background:
+    radial-gradient(circle at 8% 4%, rgba(255, 93, 18, .22), transparent 30rem),
+    radial-gradient(circle at 88% 8%, rgba(255, 179, 66, .13), transparent 28rem),
+    radial-gradient(circle at 22% 76%, rgba(142, 42, 6, .20), transparent 26rem),
+    radial-gradient(circle at 70% 90%, rgba(255, 123, 22, .10), transparent 30rem),
+    linear-gradient(180deg, #020100 0%, #090403 50%, #020100 100%) !important;
+}
+
+body::before {
+  background-image:
+    linear-gradient(rgba(255,179,66,.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,123,22,.06) 1px, transparent 1px),
+    radial-gradient(circle, rgba(255,211,107,.55) 0 1px, transparent 1.7px),
+    radial-gradient(circle, rgba(255,93,18,.32) 0 1px, transparent 1.8px) !important;
+  background-size: 64px 64px, 64px 64px, 150px 150px, 238px 238px !important;
+  opacity: .13 !important;
+  animation: po-grid-drift 44s linear infinite !important;
+}
+
+body::after {
+  background:
+    radial-gradient(circle at 12% 16%, rgba(255,93,18,.18), transparent 24rem),
+    radial-gradient(circle at 82% 74%, rgba(255,179,66,.10), transparent 24rem),
+    linear-gradient(116deg, transparent 0%, rgba(255,246,220,.035) 35%, rgba(255,147,37,.12) 50%, rgba(255,93,18,.08) 60%, transparent 74%) !important;
+  animation: po-atmosphere 15s ease-in-out infinite alternate !important;
+}
+
+#space { opacity: .62 !important; filter: sepia(.54) saturate(1.55) hue-rotate(-22deg) contrast(1.08) brightness(.96) !important; }
+.aurora { filter: blur(82px) sepia(.46) saturate(1.5) hue-rotate(-22deg) !important; opacity: .095 !important; }
+.noise { opacity: .042 !important; }
+.scanlines { opacity: .014 !important; }
+
+.status-callout__link,
+.nav-status-link,
+.button-primary,
+.button-coffee,
+.button-status,
+.live-pill,
+.support-card-mini span,
+.avatar-ring,
+.brand-pip {
+  background-image: var(--po-button) !important;
+  background-size: 320% 100% !important;
+  color: #120602 !important;
+  text-shadow: 0 1px 0 rgba(255,255,255,.22) !important;
+  box-shadow: var(--po-hot), inset 0 1px 0 rgba(255,246,220,.42) !important;
+  animation: po-flow 6.4s linear infinite, po-button-breathe 3.1s ease-in-out infinite !important;
+}
+
+.button-secondary,
+.button-ghost,
+.quick-commands button,
+.terminal-form button,
+.hero-status-panel a,
+.footer-links .nav-status-link {
+  color: var(--po-cream) !important;
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(rgba(18,10,6,.88), rgba(255,221,168,.06)) padding-box,
+    var(--po-spectrum) border-box !important;
+  background-size: 100% 100%, 320% 100% !important;
+  animation: po-border-flow 8s linear infinite !important;
+  box-shadow: 0 0 24px rgba(255,93,18,.14), 0 0 54px rgba(255,179,66,.08) !important;
+}
+
+.button::before,
+.status-callout__link::before,
+.nav-status-link::before,
+.hero-status-panel a::before,
+.quick-commands button::before,
+.terminal-form button::before {
+  background: linear-gradient(110deg, transparent 0%, rgba(255,246,220,0) 32%, rgba(255,246,220,.56) 47%, rgba(255,179,66,.42) 55%, rgba(255,93,18,.20) 64%, transparent 78%) !important;
+  animation: po-button-sheen 3.05s ease-in-out infinite !important;
+}
+
+.nav,
+.status-callout__link,
+.glass-panel,
+.hero,
+.feature-card,
+.bryforge-card,
+.support-card,
+.metric-strip div,
+.timeline li,
+.hero-status-panel,
+.terminal,
+.footer,
+.founder,
+.roadmap {
+  border-color: var(--po-line) !important;
+  background: var(--po-glass) !important;
+  box-shadow: var(--po-card), inset 0 1px 0 rgba(255,246,220,.08) !important;
+}
+
+.hero {
+  overflow: hidden !important;
+  border-radius: clamp(30px, 4vw, 48px) !important;
+}
+
+.hero::before,
+.roadmap::before,
+.founder::before,
+.support-card::before,
+.terminal::before,
+.feature-card::before,
+.bryforge-card::before,
+.hero-status-panel::before,
+.timeline li::before,
+.metric-strip div::before {
+  background:
+    linear-gradient(112deg, transparent 0%, rgba(255,246,220,.03) 27%, rgba(255,147,37,.16) 43%, rgba(255,93,18,.13) 56%, rgba(255,211,107,.09) 67%, transparent 80%),
+    radial-gradient(circle at 76% 34%, rgba(255,93,18,.15), transparent 24rem) !important;
+  opacity: .78 !important;
+  animation: po-panel-sheen 9.2s ease-in-out infinite !important;
+}
+
+.feature-card::after,
+.bryforge-card::after,
+.support-card::after,
+.founder::after,
+.hero::after,
+.terminal::after,
+.roadmap::after,
+.hero-status-panel::after {
+  background: linear-gradient(120deg, transparent 0%, rgba(255,246,220,.038) 34%, rgba(255,147,37,.15) 48%, rgba(255,93,18,.10) 59%, transparent 74%) !important;
+  opacity: .56 !important;
+  animation: po-panel-sheen 10s ease-in-out infinite reverse !important;
+}
+
+h1,
+.section-heading h2,
+.founder-copy h2,
+.support-card h2,
+.bryforge-card h3,
+.feature-card h3,
+.roadmap h3 {
+  background-image: var(--po-heading) !important;
+  background-size: 320% 100% !important;
+  animation: po-flow 10s linear infinite !important;
+  text-shadow: 0 0 22px rgba(255,93,18,.10) !important;
+}
+
+.hero h1 { letter-spacing: -0.078em !important; }
+
+.eyebrow,
+.card-kicker,
+.timeline-status,
+.status-pill,
+.terminal-status {
+  color: var(--po-gold) !important;
+  text-shadow: 0 0 18px rgba(255,179,66,.58), 0 0 44px rgba(255,93,18,.24) !important;
+}
+
+.hero-text,
+.section-heading p,
+.feature-card p,
+.bryforge-card p,
+.founder-copy p,
+.hero-status-panel p,
+.support-card p,
+.timeline p,
+.terminal p,
+.footer {
+  color: var(--po-muted) !important;
+}
+
+.hero-command,
+.terminal-output {
+  background: rgba(8,4,2,.58) !important;
+  border-color: rgba(255,147,37,.24) !important;
+  box-shadow: inset 0 0 28px rgba(0,0,0,.42), 0 0 34px rgba(255,93,18,.12), 0 0 52px rgba(255,179,66,.06) !important;
+}
+
+.logo-glass {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255,147,37,.24), transparent 18rem),
+    radial-gradient(circle at 36% 62%, rgba(255,93,18,.16), transparent 16rem),
+    radial-gradient(circle at 66% 26%, rgba(255,211,107,.10), transparent 16rem),
+    linear-gradient(145deg, rgba(4,2,1,.98), rgba(30,13,5,.88)) !important;
+  border-color: rgba(255,190,96,.20) !important;
+  box-shadow: inset 0 0 0 1px rgba(255,246,220,.06), inset 0 0 82px rgba(255,93,18,.11), 0 0 76px rgba(255,93,18,.18), 0 0 108px rgba(255,179,66,.09) !important;
+}
+
+.logo-glass::before {
+  background: conic-gradient(from 0deg, #451204, #8e2a06, #ff3c08, #ff5d12, #ff7b16, #ff9425, #ffb342, #ffd36b, #ffe0ad, #fff6dc, #ffd36b, #ff9425, #ff3c08, #451204) !important;
+  opacity: .43 !important;
+  filter: blur(24px) saturate(1.18) !important;
+}
+
+.phase-logo-image,
+.logo-glass img {
+  filter: sepia(.18) saturate(1.14) contrast(1.08) drop-shadow(0 0 22px rgba(255,211,107,.22)) drop-shadow(0 0 42px rgba(255,93,18,.22)) !important;
+}
+
+.orbit-one { border-top-color: var(--po-ember) !important; border-right-color: var(--po-gold) !important; }
+.orbit-two { border-bottom-color: var(--po-amber) !important; border-left-color: var(--po-rust) !important; }
+.orbit-three { border-top-color: var(--po-tangerine) !important; border-bottom-color: var(--po-peach) !important; }
+
+.system-card,
+.window-lights span,
+.feature-icon,
+.star,
+.shooting-star {
+  filter: sepia(.52) saturate(1.45) hue-rotate(-18deg) !important;
+}
+
+.metric-strip div,
+.hero-status-panel { backdrop-filter: blur(26px) saturate(1.1) !important; }
+
+.button:hover,
+.status-callout__link:hover,
+.nav-status-link:hover,
+.hero-status-panel a:hover,
+.quick-commands button:hover,
+.terminal-form button:hover,
+.feature-card:hover,
+.bryforge-card:hover,
+.support-card:hover,
+.hero-status-panel:hover,
+.metric-strip div:hover,
+.timeline li:hover {
+  border-color: var(--po-line-hot) !important;
+  box-shadow: 0 42px 150px rgba(0,0,0,.66), 0 0 86px rgba(255,93,18,.28), 0 0 118px rgba(255,179,66,.13), inset 0 1px 0 rgba(255,246,220,.12) !important;
+}
+
+::selection { background: rgba(255,123,22,.40) !important; color: var(--po-cream) !important; }
+
+@media (max-width: 920px) {
+  .hero { padding: clamp(18px, 5vw, 28px) !important; }
+  .hero h1 { line-height: .92 !important; }
+  .logo-glass { box-shadow: inset 0 0 0 1px rgba(255,246,220,.06), inset 0 0 62px rgba(255,93,18,.10), 0 0 58px rgba(255,93,18,.16) !important; }
+}
+
+@keyframes po-flow { to { background-position: 320% 50%; } }
+@keyframes po-border-flow { to { background-position: 0 0, 320% 50%; } }
+@keyframes po-button-breathe { 0%,100% { filter: saturate(1) brightness(1); } 50% { filter: saturate(1.2) brightness(1.08); } }
+@keyframes po-button-sheen { 0%, 34% { transform: translateX(-132%); opacity: 0; } 48% { opacity: .64; } 76%, 100% { transform: translateX(132%); opacity: 0; } }
+@keyframes po-panel-sheen { 0%,100% { transform: translateX(-4%) translateY(-1%); opacity: .34; } 50% { transform: translateX(4%) translateY(1%); opacity: .72; } }
+@keyframes po-atmosphere { 0% { filter: saturate(1) brightness(1); } 100% { filter: saturate(1.16) brightness(1.035); } }
+@keyframes po-grid-drift { to { background-position: 64px 64px, 64px 64px, 240px 170px, 360px 260px; } }
