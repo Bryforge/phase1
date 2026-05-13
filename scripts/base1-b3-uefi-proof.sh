@@ -2,8 +2,13 @@
 # Base1 B3 UEFI proof-of-life path.
 #
 # Builds a local UEFI FAT image that boots in QEMU through OVMF/GRUB,
-# displays the fitted Phase1 word-mark splash, emits a serial readiness marker,
-# and writes local evidence logs. This is emulator-only evidence.
+# displays the fitted Phase1 word-mark splash when supported, emits a serial
+# readiness marker, and writes local evidence logs. This is emulator-only
+# evidence.
+
+if [ -z "${BASH_VERSION:-}" ]; then
+  exec bash "$0" "$@"
+fi
 
 set -euo pipefail
 
@@ -12,7 +17,7 @@ usage() {
 usage: sh scripts/base1-b3-uefi-proof.sh --build [--run|--check] [--fullscreen]
 
 Builds a local B3 UEFI proof image under build/. The image is bootable in QEMU,
-displays the fitted Phase1 word-mark splash, and emits a serial proof marker.
+displays the Phase1 word-mark splash when supported, and emits a serial proof marker.
 
 Options:
   --build       Build build/base1-b3-uefi-proof.img.
@@ -25,11 +30,8 @@ Options:
 Marker:
   phase1 6.0.0 ready
 
-Display behavior:
-  Visible QEMU runs show the splash plus readable GRUB proof text. The build
-  prefers GRUB's unicode.pf2 font, then falls back to a generated monospaced
-  font. GRUB searches for the font on the FAT image before loading it, then
-  enables gfxterm so menu/text glyphs render correctly.
+Linux dependencies:
+  qemu-system-x86_64, grub-mkstandalone, mtools, ovmf, timeout
 
 Non-claims:
   This is QEMU/OVMF proof-of-life only. It does not make Base1 installer-ready,
@@ -94,6 +96,26 @@ SPLASH_WIDTH=1024
 SPLASH_HEIGHT=768
 SPLASH_MAX_EDGE=560
 
+grub_standalone() {
+  if have x86_64-elf-grub-mkstandalone; then
+    printf 'x86_64-elf-grub-mkstandalone\n'
+  elif have grub-mkstandalone; then
+    printf 'grub-mkstandalone\n'
+  else
+    printf '\n'
+  fi
+}
+
+grub_mkfont() {
+  if have x86_64-elf-grub-mkfont; then
+    printf 'x86_64-elf-grub-mkfont\n'
+  elif have grub-mkfont; then
+    printf 'grub-mkfont\n'
+  else
+    printf '\n'
+  fi
+}
+
 qemu_share() {
   if have brew; then
     brew --prefix qemu 2>/dev/null | sed 's:$:/share/qemu:'
@@ -107,13 +129,31 @@ grub_prefix() {
 }
 
 ovmf_code() {
-  local share
+  local share found
   share=$(qemu_share || true)
   if [ -n "$share" ] && [ -f "$share/edk2-x86_64-code.fd" ]; then
     printf '%s\n' "$share/edk2-x86_64-code.fd"
     return 0
   fi
-  find /opt/homebrew /usr/local -name 'edk2-x86_64-code.fd' -o -name 'OVMF_CODE.fd' 2>/dev/null | head -n 1
+
+  for candidate in \
+    /usr/share/OVMF/OVMF_CODE.fd \
+    /usr/share/OVMF/OVMF_CODE_4M.fd \
+    /usr/share/ovmf/OVMF.fd \
+    /usr/share/ovmf/x64/OVMF_CODE.fd \
+    /usr/share/edk2-ovmf/x64/OVMF_CODE.fd \
+    /usr/share/qemu/OVMF.fd
+  do
+    if [ -f "$candidate" ]; then
+      printf '%s\n' "$candidate"
+      return 0
+    fi
+  done
+
+  found=$(find /opt/homebrew /usr/local /usr/share /usr/lib -name 'edk2-x86_64-code.fd' -o -name 'OVMF_CODE.fd' -o -name 'OVMF_CODE_4M.fd' -o -name 'OVMF.fd' 2>/dev/null | head -n 1 || true)
+  if [ -n "$found" ] && [ -f "$found" ]; then
+    printf '%s\n' "$found"
+  fi
 }
 
 timeout_bin() {
@@ -127,11 +167,14 @@ timeout_bin() {
 }
 
 generate_splash() {
-  have sips || fail 'missing sips; macOS sips is used to fit the splash'
   [ -f "$SPLASH_SOURCE" ] || fail "missing splash asset: $SPLASH_SOURCE"
-  sips -Z "$SPLASH_MAX_EDGE" "$SPLASH_SOURCE" --out "$SPLASH_FIT" >/dev/null 2>&1
-  sips --padToHeightWidth "$SPLASH_HEIGHT" "$SPLASH_WIDTH" --padColor 000000 \
-    "$SPLASH_FIT" --out "$SPLASH" >/dev/null 2>&1
+  if have sips; then
+    sips -Z "$SPLASH_MAX_EDGE" "$SPLASH_SOURCE" --out "$SPLASH_FIT" >/dev/null 2>&1
+    sips --padToHeightWidth "$SPLASH_HEIGHT" "$SPLASH_WIDTH" --padColor 000000 \
+      "$SPLASH_FIT" --out "$SPLASH" >/dev/null 2>&1
+  else
+    cp "$SPLASH_SOURCE" "$SPLASH"
+  fi
 }
 
 copy_grub_unicode_font() {
@@ -144,7 +187,19 @@ copy_grub_unicode_font() {
       return 0
     fi
   fi
-  found=$(find /opt/homebrew /usr/local -path '*grub*' -name 'unicode.pf2' 2>/dev/null | head -n 1 || true)
+
+  for candidate in \
+    /usr/share/grub/unicode.pf2 \
+    /boot/grub/fonts/unicode.pf2 \
+    /usr/lib/grub/unicode.pf2
+  do
+    if [ -f "$candidate" ]; then
+      cp "$candidate" "$GRUB_FONT"
+      return 0
+    fi
+  done
+
+  found=$(find /opt/homebrew /usr/local /usr/share /usr/lib /boot/grub -path '*grub*' -name 'unicode.pf2' 2>/dev/null | head -n 1 || true)
   if [ -n "$found" ] && [ -f "$found" ]; then
     cp "$found" "$GRUB_FONT"
     return 0
@@ -158,14 +213,17 @@ generate_font() {
     return 0
   fi
 
-  mkfont=$(command -v x86_64-elf-grub-mkfont || command -v grub-mkfont || true)
-  [ -n "$mkfont" ] || fail 'missing grub-mkfont and unicode.pf2; install x86_64-elf-grub'
+  mkfont=$(grub_mkfont)
+  [ -n "$mkfont" ] || fail 'missing grub-mkfont and unicode.pf2; install grub tools'
 
   for font_src in \
-    "/System/Library/Fonts/Monaco.ttf" \
-    "/System/Library/Fonts/Menlo.ttc" \
+    /usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf \
+    /usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf \
+    /usr/share/fonts/truetype/freefont/FreeMono.ttf \
+    /System/Library/Fonts/Monaco.ttf \
+    /System/Library/Fonts/Menlo.ttc \
     "/System/Library/Fonts/Supplemental/Courier New.ttf" \
-    "/System/Library/Fonts/Supplemental/Arial.ttf"
+    /System/Library/Fonts/Supplemental/Arial.ttf
   do
     if [ -f "$font_src" ]; then
       if "$mkfont" -s 24 -o "$GRUB_FONT" "$font_src" >/dev/null 2>&1; then
@@ -196,12 +254,8 @@ serial --unit=0 --speed=115200 --word=8 --parity=no --stop=1
 
 set gfxmode=1024x768,auto
 set gfxpayload=keep
-
-# Find the FAT image before loading external files from /boot/grub. Without this
-# root search, loadfont can fail and GRUB falls back to broken box glyphs.
 search --file /boot/grub/fonts/phase1.pf2 --set=root
 
-# Load a known-good GRUB font before enabling gfxterm/menu rendering.
 if loadfont /boot/grub/fonts/phase1.pf2; then
   true
 else
@@ -229,10 +283,12 @@ EOF
 }
 
 build_image() {
-  have x86_64-elf-grub-mkstandalone || fail 'missing x86_64-elf-grub-mkstandalone; try: brew install x86_64-elf-grub'
-  have mformat || fail 'missing mformat; try: brew install mtools'
-  have mmd || fail 'missing mmd; try: brew install mtools'
-  have mcopy || fail 'missing mcopy; try: brew install mtools'
+  local standalone
+  standalone=$(grub_standalone)
+  [ -n "$standalone" ] || fail 'missing grub-mkstandalone; install grub-efi-amd64-bin or grub tools'
+  have mformat || fail 'missing mformat; install mtools'
+  have mmd || fail 'missing mmd; install mtools'
+  have mcopy || fail 'missing mcopy; install mtools'
   have truncate || fail 'missing truncate'
 
   rm -rf "$WORK_DIR"
@@ -241,7 +297,7 @@ build_image() {
   generate_font
   write_grub_config
 
-  x86_64-elf-grub-mkstandalone \
+  "$standalone" \
     -O x86_64-efi \
     -o "$WORK_DIR/EFI/BOOT/BOOTX64.EFI" \
     --modules="part_gpt part_msdos fat all_video gfxterm png font search search_fs_file serial terminal" \
@@ -259,26 +315,31 @@ build_image() {
 
   printf 'base1_b3_uefi_proof: built %s\n' "$IMG"
   printf 'marker: %s\n' "$MARKER"
-  printf 'splash: assets/phase1_word.png fitted to %sx%s max edge %s\n' "$SPLASH_WIDTH" "$SPLASH_HEIGHT" "$SPLASH_MAX_EDGE"
-  printf 'display: root searched before font load; visible serial disabled\n'
+  printf 'splash: assets/phase1_word.png\n'
   printf 'boot_readiness_claim: no\n'
 }
 
 qemu_common_args() {
   local ovmf
   ovmf=$(ovmf_code)
-  [ -n "$ovmf" ] && [ -f "$ovmf" ] || fail 'missing UEFI firmware edk2-x86_64-code.fd; try: brew install qemu'
+  [ -n "$ovmf" ] && [ -f "$ovmf" ] || fail 'missing UEFI firmware; install ovmf'
   [ -f "$IMG" ] || fail "missing image: $IMG; run --build first"
   printf '%s\n' "$ovmf"
 }
 
 run_visible() {
-  have qemu-system-x86_64 || fail 'missing qemu-system-x86_64; try: brew install qemu'
-  local ovmf fullscreen_arg
+  have qemu-system-x86_64 || fail 'missing qemu-system-x86_64; install qemu-system-x86'
+  local ovmf fullscreen_arg display_args
   ovmf=$(qemu_common_args)
   fullscreen_arg=""
+  display_args="-display default"
   if [ "$FULLSCREEN" = yes ]; then
     fullscreen_arg="-full-screen"
+  fi
+  if [ "$(uname -s 2>/dev/null || true)" = Darwin ]; then
+    display_args="-display cocoa,zoom-to-fit=on"
+  elif [ -n "${DISPLAY:-}" ]; then
+    display_args="-display gtk"
   fi
   # shellcheck disable=SC2086
   qemu-system-x86_64 \
@@ -291,14 +352,14 @@ run_visible() {
     -device usb-storage,drive=phase1usb,bootindex=1 \
     -boot menu=off \
     -vga std \
-    -display cocoa,zoom-to-fit=on \
+    $display_args \
     -serial null \
     $fullscreen_arg \
     -net none
 }
 
 run_check() {
-  have qemu-system-x86_64 || fail 'missing qemu-system-x86_64; try: brew install qemu'
+  have qemu-system-x86_64 || fail 'missing qemu-system-x86_64; install qemu-system-x86'
   local ovmf tbin rc result
   ovmf=$(qemu_common_args)
   tbin=$(timeout_bin)
