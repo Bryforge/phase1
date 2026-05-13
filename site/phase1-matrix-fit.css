@@ -1,0 +1,266 @@
+/* Phase1 matrix-fit pass.
+   Purpose: make the hero readable on real screens, restore a nested grid/matrix feel,
+   and stop giant words/side labels from clipping out of the public viewport. */
+
+:root {
+  --mx-grid-blue: rgba(94, 216, 255, .125);
+  --mx-grid-orange: rgba(255, 139, 43, .105);
+  --mx-grid-faint: rgba(210, 229, 255, .065);
+  --mx-code: rgba(207, 232, 255, .34);
+  --mx-panel: rgba(4, 8, 18, .88);
+}
+
+html,
+body {
+  min-height: 100% !important;
+}
+
+body {
+  background:
+    radial-gradient(circle at 18% 16%, rgba(43, 141, 255, .16), transparent 28rem),
+    radial-gradient(circle at 84% 20%, rgba(255, 122, 24, .14), transparent 30rem),
+    linear-gradient(180deg, #02040a 0%, #050914 48%, #020308 100%) !important;
+}
+
+body::before {
+  opacity: .42 !important;
+  background:
+    linear-gradient(90deg, var(--mx-grid-faint) 1px, transparent 1px),
+    linear-gradient(0deg, var(--mx-grid-faint) 1px, transparent 1px),
+    linear-gradient(90deg, transparent 0 49.7%, var(--mx-grid-blue) 50%, transparent 50.3% 100%),
+    linear-gradient(0deg, transparent 0 49.7%, var(--mx-grid-orange) 50%, transparent 50.3% 100%),
+    radial-gradient(circle at 20% 28%, rgba(94,216,255,.12), transparent 28rem),
+    radial-gradient(circle at 82% 34%, rgba(255,139,43,.10), transparent 26rem) !important;
+  background-size: 56px 56px, 56px 56px, 224px 224px, 224px 224px, 100% 100%, 100% 100% !important;
+  mask-image: linear-gradient(180deg, rgba(0,0,0,.95), rgba(0,0,0,.58) 66%, transparent 100%) !important;
+  animation: p1-matrix-drift 110s linear infinite !important;
+}
+
+body::after {
+  content: "" !important;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 118px, rgba(94,216,255,.045) 119px, transparent 121px),
+    repeating-linear-gradient(0deg, transparent 0 118px, rgba(255,139,43,.035) 119px, transparent 121px) !important;
+  opacity: .32 !important;
+  mix-blend-mode: screen !important;
+}
+
+.site-shell {
+  padding-bottom: 36px !important;
+}
+
+.status-callout {
+  margin-top: 12px !important;
+  margin-bottom: 10px !important;
+}
+
+.nav {
+  margin-bottom: 12px !important;
+}
+
+/* The previous faux-planet dominated the viewport. Replace it with a nested matrix
+   panel that fits the Phase1 design language and leaves the text readable. */
+.hero {
+  position: relative !important;
+  min-height: auto !important;
+  max-height: none !important;
+  overflow: hidden !important;
+  align-items: center !important;
+  padding-top: clamp(30px, 4.1vw, 58px) !important;
+  padding-bottom: clamp(30px, 4.1vw, 58px) !important;
+  background:
+    linear-gradient(90deg, rgba(43,141,255,.10) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255,255,255,.045) 1px, transparent 1px),
+    radial-gradient(circle at 20% 24%, rgba(43,141,255,.20), transparent 24rem),
+    radial-gradient(circle at 80% 34%, rgba(255,122,24,.16), transparent 25rem),
+    linear-gradient(105deg, rgba(4,8,18,.96), rgba(7,12,24,.91) 54%, rgba(12,7,6,.88)) !important;
+  background-size: 52px 52px, 52px 52px, 100% 100%, 100% 100%, 100% 100% !important;
+}
+
+.hero::before {
+  right: -18% !important;
+  top: -36% !important;
+  width: min(58vw, 700px) !important;
+  height: min(58vw, 700px) !important;
+  background:
+    linear-gradient(90deg, rgba(94,216,255,.16) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255,139,43,.11) 1px, transparent 1px),
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,.06), rgba(43,141,255,.16) 18%, rgba(255,122,24,.12) 46%, transparent 68%) !important;
+  background-size: 42px 42px, 42px 42px, 100% 100% !important;
+  border: 1px solid rgba(210,229,255,.08) !important;
+  opacity: .50 !important;
+  filter: none !important;
+}
+
+.hero::after {
+  right: -10% !important;
+  top: 7% !important;
+  width: min(56vw, 720px) !important;
+  height: min(30vw, 360px) !important;
+  opacity: .34 !important;
+}
+
+.hero-copy {
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+/* Keep the side command rail, but do not let it clip at the edge of the viewport. */
+.hero-copy::before {
+  left: 0 !important;
+  top: -34px !important;
+  transform: none !important;
+  font-size: clamp(.58rem, .76vw, .72rem) !important;
+  line-height: 2.05 !important;
+  letter-spacing: .16em !important;
+  opacity: .28 !important;
+  color: var(--mx-code) !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+}
+
+.hero .eyebrow,
+.hero h1,
+.hero-text,
+.hero-actions,
+.hero-command,
+.metric-strip,
+.hero-status-panel {
+  position: relative !important;
+  z-index: 3 !important;
+}
+
+.hero h1 {
+  max-width: min(100%, 780px) !important;
+  font-size: clamp(2.85rem, min(6.15vw, 8.9vh), 6.2rem) !important;
+  line-height: .94 !important;
+  letter-spacing: clamp(-.082em, -.7vw, -.055em) !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+}
+
+.hero-text {
+  max-width: min(100%, 680px) !important;
+  font-size: clamp(.98rem, 1.08vw, 1.12rem) !important;
+}
+
+.hero-actions {
+  gap: 10px !important;
+}
+
+.button {
+  min-height: 42px !important;
+  padding: 11px 16px !important;
+}
+
+.hero-command {
+  max-width: min(100%, 690px) !important;
+  padding: 11px 14px !important;
+}
+
+.metric-strip {
+  max-width: min(100%, 690px) !important;
+}
+
+.hero-status-panel {
+  max-width: min(100%, 690px) !important;
+}
+
+.logo-stage {
+  min-height: clamp(320px, 34vw, 500px) !important;
+}
+
+.logo-glass {
+  width: min(96%, 500px) !important;
+  background:
+    linear-gradient(90deg, rgba(94,216,255,.08) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255,139,43,.07) 1px, transparent 1px),
+    radial-gradient(circle at 26% 45%, rgba(43,141,255,.26), transparent 36%),
+    radial-gradient(circle at 76% 52%, rgba(255,122,24,.27), transparent 35%),
+    linear-gradient(145deg, rgba(3,5,12,.95), rgba(10,16,32,.88)) !important;
+  background-size: 34px 34px, 34px 34px, 100% 100%, 100% 100%, 100% 100% !important;
+}
+
+.phase-logo-image,
+.logo-glass img {
+  width: min(42%, 218px) !important;
+}
+
+.logo-stage::after {
+  bottom: 22px !important;
+  font-size: clamp(1.05rem, 2.2vw, 1.7rem) !important;
+}
+
+.system-card {
+  transform: scale(.92) !important;
+}
+
+@media (max-height: 820px) and (min-width: 900px) {
+  .status-callout { margin-top: 8px !important; margin-bottom: 8px !important; }
+  .nav { min-height: 58px !important; padding-top: 10px !important; padding-bottom: 10px !important; }
+  .hero { padding-top: 24px !important; padding-bottom: 24px !important; }
+  .hero h1 { font-size: clamp(2.55rem, min(5.55vw, 8vh), 5.35rem) !important; line-height: .95 !important; }
+  .hero-copy { gap: 12px !important; }
+  .hero-text { font-size: .98rem !important; line-height: 1.46 !important; }
+  .button { min-height: 38px !important; padding: 9px 14px !important; }
+  .hero-command { padding: 9px 12px !important; }
+  .metric-strip div { min-height: 58px !important; padding: 10px 12px !important; }
+  .hero-status-panel { padding: 14px !important; }
+  .logo-stage { min-height: 300px !important; }
+}
+
+@media (max-width: 1080px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, .72fr) !important;
+    gap: 24px !important;
+  }
+  .hero h1 {
+    font-size: clamp(2.65rem, 6.7vw, 5.7rem) !important;
+  }
+}
+
+@media (max-width: 960px) {
+  .hero {
+    grid-template-columns: 1fr !important;
+  }
+  .hero::before {
+    right: -45% !important;
+    top: -10% !important;
+    width: 110vw !important;
+    height: 110vw !important;
+  }
+  .hero h1 {
+    max-width: 100% !important;
+    font-size: clamp(2.9rem, 12.2vw, 5.3rem) !important;
+  }
+  .hero-copy::before {
+    display: none !important;
+  }
+}
+
+@media (max-width: 680px) {
+  .status-callout,
+  .site-shell {
+    width: min(100% - 20px, var(--sr-max)) !important;
+  }
+  .hero h1 {
+    font-size: clamp(2.55rem, 13.7vw, 4.25rem) !important;
+    line-height: .96 !important;
+    letter-spacing: -.06em !important;
+  }
+  .hero .eyebrow {
+    font-size: .70rem !important;
+    letter-spacing: .18em !important;
+  }
+  .logo-stage {
+    min-height: 286px !important;
+  }
+}
+
+@keyframes p1-matrix-drift {
+  to { background-position: 56px 56px, 56px 56px, 224px 224px, 224px 224px, 0 0, 0 0; }
+}
