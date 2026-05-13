@@ -1,0 +1,245 @@
+/* Phase1 public polish pass.
+   This layer targets the remaining public-facing rough edges:
+   - refine the SECURE / PRIVATE / POWERFUL / OPEN module
+   - make the page feel more premium and less blocky
+   - keep the spectrum alive but disciplined
+   - improve cross-section consistency toward a 10/10 public image
+*/
+
+:root {
+  --pp-bg: #010208;
+  --pp-panel: rgba(5, 9, 20, .90);
+  --pp-panel-soft: rgba(8, 13, 26, .78);
+  --pp-line: rgba(230, 247, 255, .16);
+  --pp-line-strong: rgba(230, 247, 255, .22);
+  --pp-text: #fbfdff;
+  --pp-muted: #d0dbea;
+  --pp-cyan: #7df7ff;
+  --pp-blue: #50c8ff;
+  --pp-violet: #9c7dff;
+  --pp-pink: #ff6fec;
+  --pp-orange: #ff8d2f;
+  --pp-gold: #ffd76c;
+  --pp-green: #85ff9f;
+  --pp-spectrum: linear-gradient(115deg, #7df7ff, #50c8ff, #9c7dff, #ff6fec, #ff8d2f, #ffd76c, #85ff9f);
+}
+
+/* Keep the page dark, premium, and readable. */
+body {
+  color: var(--pp-text) !important;
+  background:
+    radial-gradient(circle at 12% 9%, rgba(125,247,255,.12), transparent 24rem),
+    radial-gradient(circle at 91% 18%, rgba(255,141,47,.10), transparent 28rem),
+    radial-gradient(circle at 50% 110%, rgba(156,125,255,.10), transparent 36rem),
+    linear-gradient(180deg, #010208 0%, #020611 48%, #010208 100%) !important;
+}
+
+/* More graceful top-level spacing. */
+.site-shell {
+  gap: clamp(26px, 3vw, 44px) !important;
+}
+
+.hero,
+.status-hero {
+  border-radius: clamp(30px, 3vw, 44px) !important;
+}
+
+/* Refine the visual center. */
+.logo-stage {
+  transform: translateZ(0) !important;
+}
+
+.logo-glass {
+  border-radius: clamp(28px, 3vw, 40px) !important;
+  background:
+    radial-gradient(circle at 50% 44%, rgba(125,247,255,.14), transparent 34%),
+    radial-gradient(circle at 70% 58%, rgba(255,141,47,.12), transparent 43%),
+    linear-gradient(145deg, rgba(2,6,15,.96), rgba(255,255,255,.048)) !important;
+}
+
+.system-card {
+  background:
+    linear-gradient(180deg, rgba(2,5,12,.92), rgba(8,12,24,.82)) padding-box,
+    linear-gradient(90deg, rgba(125,247,255,.34), rgba(255,141,47,.24)) border-box !important;
+  border: 1px solid transparent !important;
+  box-shadow:
+    0 14px 38px rgba(0,0,0,.50),
+    0 0 18px rgba(125,247,255,.10),
+    inset 0 1px 0 rgba(255,255,255,.12) !important;
+}
+
+/* Refine the SECURE / PRIVATE / POWERFUL / OPEN module into a values console. */
+.support-card-mini {
+  align-content: center !important;
+  gap: 13px !important;
+  padding: clamp(24px, 3vw, 34px) !important;
+  min-height: 100% !important;
+  background:
+    radial-gradient(circle at 20% 14%, rgba(125,247,255,.095), transparent 14rem),
+    radial-gradient(circle at 86% 28%, rgba(255,141,47,.075), transparent 17rem),
+    linear-gradient(145deg, rgba(4,8,18,.92), rgba(255,255,255,.040)) !important;
+  border: 1px solid rgba(230,247,255,.16) !important;
+  box-shadow:
+    0 28px 88px rgba(0,0,0,.58),
+    0 0 26px rgba(125,247,255,.070),
+    0 0 28px rgba(255,141,47,.045),
+    inset 0 1px 0 rgba(255,255,255,.10) !important;
+}
+
+.support-card-mini::before {
+  content: "core values" !important;
+  display: block !important;
+  margin-bottom: 2px !important;
+  color: rgba(180,246,255,.90) !important;
+  font-size: .72rem !important;
+  font-weight: 900 !important;
+  letter-spacing: .22em !important;
+  text-transform: uppercase !important;
+  text-shadow: 0 0 10px rgba(125,247,255,.16) !important;
+}
+
+.support-card-mini span {
+  position: relative !important;
+  display: grid !important;
+  grid-template-columns: 22px 1fr !important;
+  align-items: center !important;
+  min-height: 52px !important;
+  padding: 12px 16px !important;
+  border-radius: 18px !important;
+  color: #fff !important;
+  background:
+    linear-gradient(180deg, rgba(8,13,27,.86), rgba(3,7,16,.78)) padding-box,
+    var(--pp-spectrum) border-box !important;
+  background-size: 100% 100%, 260% 260% !important;
+  border: 1px solid transparent !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.050),
+    0 0 10px rgba(125,247,255,.070),
+    inset 0 1px 0 rgba(255,255,255,.13),
+    inset 0 -1px 0 rgba(0,0,0,.42) !important;
+  text-align: left !important;
+  text-transform: uppercase !important;
+  letter-spacing: .13em !important;
+  font-weight: 950 !important;
+  animation: pp-spectrum-drift 18s ease-in-out infinite !important;
+  overflow: hidden !important;
+}
+
+.support-card-mini span::before {
+  content: "" !important;
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 999px !important;
+  background: var(--pp-spectrum) !important;
+  background-size: 260% 260% !important;
+  box-shadow: 0 0 10px rgba(125,247,255,.28), 0 0 8px rgba(255,141,47,.16) !important;
+  animation: pp-spectrum-drift 18s ease-in-out infinite, pp-node-breathe 6s ease-in-out infinite !important;
+}
+
+.support-card-mini span::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: -2px !important;
+  z-index: -1 !important;
+  border-radius: inherit !important;
+  background: var(--pp-spectrum) !important;
+  background-size: 260% 260% !important;
+  filter: blur(7px) saturate(1.12) !important;
+  opacity: .26 !important;
+  animation: pp-spectrum-drift 18s ease-in-out infinite !important;
+}
+
+.support-card-mini span:nth-child(2) { animation-delay: 0s !important; }
+.support-card-mini span:nth-child(3) { animation-delay: -3s !important; }
+.support-card-mini span:nth-child(4) { animation-delay: -6s !important; }
+.support-card-mini span:nth-child(5) { animation-delay: -9s !important; }
+
+.support-card-mini span:hover::after {
+  opacity: .52 !important;
+  filter: blur(9px) saturate(1.24) !important;
+}
+
+/* Cards: make the system feel unified with the values module. */
+.feature-card,
+.bryforge-card,
+.hero-status-panel,
+.metric-strip div,
+.timeline li,
+.status-card,
+.metric {
+  border-color: rgba(230,247,255,.15) !important;
+}
+
+.feature-icon {
+  background: var(--pp-spectrum) !important;
+  background-size: 260% 260% !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+  filter: drop-shadow(0 0 10px rgba(125,247,255,.16)) !important;
+  animation: pp-spectrum-drift 18s ease-in-out infinite !important;
+}
+
+/* Tone down always-on button glow one more notch, preserve interaction. */
+.button::before,
+.hero-actions a::before,
+.hero-actions button::before,
+.roadmap-actions a::before,
+.nav-links a::before,
+.status-callout__link::before,
+.hero-status-panel a::before,
+.quick-commands button::before,
+.terminal-form button::before,
+.footer-links a::before,
+.status-links a::before,
+.status-button::before,
+.terminal button::before,
+button[type="submit"]::before {
+  opacity: .24 !important;
+  filter: blur(3.4px) saturate(1.02) !important;
+}
+
+.button:hover::before,
+.hero-actions a:hover::before,
+.hero-actions button:hover::before,
+.roadmap-actions a:hover::before,
+.nav-links a:hover::before,
+.status-callout__link:hover::before,
+.hero-status-panel a:hover::before,
+.quick-commands button:hover::before,
+.terminal-form button:hover::before,
+.footer-links a:hover::before,
+.status-links a:hover::before,
+.status-button:hover::before,
+.terminal button:hover::before,
+button[type="submit"]:hover::before,
+.button:focus-visible::before,
+.nav-links a:focus-visible::before,
+.status-callout__link:focus-visible::before {
+  opacity: .74 !important;
+  filter: blur(7px) saturate(1.20) !important;
+}
+
+/* Better mobile treatment for the support values module. */
+@media (max-width: 760px) {
+  .support-card-mini {
+    padding: 18px !important;
+    gap: 10px !important;
+  }
+  .support-card-mini span {
+    min-height: 46px !important;
+    border-radius: 15px !important;
+    padding: 10px 13px !important;
+    font-size: .78rem !important;
+  }
+}
+
+@keyframes pp-spectrum-drift {
+  0%, 100% { background-position: 0% 50%; filter: hue-rotate(0deg) saturate(1.02); }
+  50% { background-position: 100% 50%; filter: hue-rotate(22deg) saturate(1.12); }
+}
+
+@keyframes pp-node-breathe {
+  0%, 100% { opacity: .70; transform: scale(.92); }
+  50% { opacity: 1; transform: scale(1.08); }
+}
