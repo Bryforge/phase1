@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Phase1 Wiki // Bryforge Docs Hub</title>
-  <meta name="description" content="Phase1 wiki and docs hub by Bryforge: quick start, command reference, security model, boot profiles, VFS, browser safety, runtimes, updates, tutorials, sponsorship, and Bryforge information.">
+  <meta name="description" content="Phase1 wiki and docs hub by Bryforge: quick start, command reference, security model, storage and VFS, boot profiles, browser safety, runtimes, updates, tutorials, sponsorship, and Bryforge information.">
   <meta name="robots" content="index, follow, max-image-preview:large">
   <meta name="theme-color" content="#050711">
   <link rel="canonical" href="https://bryforge.github.io/phase1/wiki/">
@@ -15,9 +15,9 @@
   <meta property="og:image" content="https://bryforge.github.io/phase1/assets/phase1-nobackground.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Phase1 Wiki // Bryforge Docs Hub">
-  <meta name="twitter:description" content="Quick start, command reference, security model, boot profiles, runtimes, tutorials, and public roadmap for Phase1.">
+  <meta name="twitter:description" content="Quick start, command reference, security model, storage/VFS, runtimes, tutorials, and public roadmap for Phase1.">
   <meta name="twitter:image" content="https://bryforge.github.io/phase1/assets/phase1-nobackground.png">
-  <link rel="stylesheet" href="./docs.css?v=phase1-wiki-security-v1">
+  <link rel="stylesheet" href="./docs.css?v=phase1-wiki-storage-v1">
   <link rel="stylesheet" href="../site/phase1-eye-candy-boost.css?v=phase1-eye-candy-boost-v1">
   <link rel="stylesheet" href="../site/phase1-starlight-motion.css?v=phase1-starlight-motion-v1">
   <link rel="stylesheet" href="../site/phase1-starlight-premium.css?v=phase1-starlight-premium-v1">
@@ -45,6 +45,7 @@
         <a href="../status.html">Status</a>
         <a href="commands.html">Command Reference</a>
         <a href="security.html">Security Model</a>
+        <a href="storage.html">Storage + VFS</a>
         <a href="#quick-start">Quick Start</a>
         <a href="#boot">Boot Profiles</a>
         <a href="#commands">Command Index</a>
@@ -66,12 +67,12 @@
           <p class="eyebrow">public wiki · operator docs · roadmap designs</p>
           <h1>Phase1 Wiki Hub</h1>
           <p class="hero-text">
-            The public documentation center for Phase1: quick start, command reference, security model, VFS workflows,
+            The public documentation center for Phase1: quick start, command reference, security model, storage and VFS,
             browser safety, runtime support, tutorials, Bryforge, sponsorship, and the path toward a complete website wiki.
           </p>
           <div class="search-wrap" role="search">
             <label for="docs-search">Search Phase1 docs</label>
-            <input id="docs-search" type="search" placeholder="Search commands, security, boot, storage, browser, Bryforge..." autocomplete="off">
+            <input id="docs-search" type="search" placeholder="Search commands, security, storage, boot, browser, Bryforge..." autocomplete="off">
           </div>
         </div>
         <img src="../assets/phase1-nobackground.png" alt="Phase1 logo" class="hero-logo">
@@ -87,11 +88,14 @@
         <a class="quick-card" href="security.html" data-search="security safe mode host trust browser secrets audit boundary">
           <span>03</span><strong>Security</strong><small>Review the safety model.</small>
         </a>
+        <a class="quick-card" href="storage.html" data-search="storage vfs files host boundary git rust persistence">
+          <span>04</span><strong>Storage</strong><small>VFS and workspace model.</small>
+        </a>
         <a class="quick-card" href="#languages" data-search="language runtime rust python javascript typescript go java wasm">
-          <span>04</span><strong>Runtimes</strong><small>Language roadmap.</small>
+          <span>05</span><strong>Runtimes</strong><small>Language roadmap.</small>
         </a>
         <a class="quick-card" href="../status.html" data-search="status roadmap progress public marker">
-          <span>05</span><strong>Status</strong><small>Live roadmap signal.</small>
+          <span>06</span><strong>Status</strong><small>Live roadmap signal.</small>
         </a>
       </section>
 
@@ -130,10 +134,11 @@
         <p><a class="coffee-link" href="commands.html">Open full command reference →</a></p>
       </section>
 
-      <section id="files" class="doc-section panel" data-search="files vfs home proc dev var log persistent state history">
+      <section id="files" class="doc-section panel" data-search="files vfs home proc dev var log persistent state history storage workspace">
         <p class="eyebrow">files + VFS</p>
         <h2>Designed like a learning OS workspace.</h2>
-        <p>Phase1 models a virtual filesystem with home files, generated system views, process data, logs, and optional persistence. The website docs will expand this into a visual VFS map and file workflow tutorials.</p>
+        <p>Phase1 models a virtual filesystem with home files, generated system views, process data, logs, and optional persistence. The storage page expands this into a dedicated VFS model, path guide, host boundary, and Git/Rust workspace roadmap.</p>
+        <p><a class="coffee-link" href="storage.html">Open Storage + VFS guide →</a></p>
       </section>
 
       <section id="browser" class="doc-section panel" data-search="browser network safety http https credentials scripts sandbox safe mode">
@@ -193,6 +198,6 @@
     </main>
   </div>
 
-  <script src="./docs.js?v=phase1-wiki-security-v1"></script>
+  <script src="./docs.js?v=phase1-wiki-storage-v1"></script>
 </body>
 </html>
