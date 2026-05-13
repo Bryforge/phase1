@@ -1,0 +1,375 @@
+/* Phase1 7.7 -> 8.x polish pass.
+   Goal: preserve the orange/rainbow living feel while making the site cleaner,
+   more consistent, and more usable on phone-width screenshots. */
+
+:root {
+  --p1-card-radius: clamp(24px, 4vw, 42px);
+  --p1-pad: clamp(22px, 5.4vw, 70px);
+  --p1-rainbow-live: linear-gradient(90deg, #ff4d2e, #ff7a21, #ffb347, #f8ff63, #6dff83, #31f7ff, #7c7dff, #ff49e6, #ff4d2e);
+  --p1-orange-live: linear-gradient(90deg, #fff7e8, #ffcf66, #ff8a2c, #ff4b2f, #ff39d4, #24f4ff, #fff7e8);
+  --p1-panel-live:
+    radial-gradient(circle at 18% 8%, rgba(255, 122, 33, .16), transparent 22rem),
+    radial-gradient(circle at 84% 20%, rgba(255, 73, 230, .10), transparent 22rem),
+    radial-gradient(circle at 56% 92%, rgba(49, 247, 255, .07), transparent 24rem),
+    linear-gradient(145deg, rgba(15, 13, 18, .86), rgba(255, 255, 255, .052));
+}
+
+.site-shell {
+  width: min(1260px, calc(100vw - 28px)) !important;
+}
+
+.status-callout {
+  width: min(1260px, calc(100vw - 28px)) !important;
+  padding: 0 !important;
+}
+
+.status-callout__link {
+  min-height: 54px !important;
+  padding: 12px 18px !important;
+  line-height: 1.18 !important;
+  white-space: normal !important;
+  text-align: left !important;
+}
+
+.nav {
+  width: 100% !important;
+  background: var(--p1-panel-live) !important;
+}
+
+.nav-links a,
+.footer-links a {
+  border-radius: 999px !important;
+  padding: 9px 12px !important;
+}
+
+.hero {
+  position: relative !important;
+  min-height: clamp(640px, 82vh, 820px) !important;
+  padding: var(--p1-pad) !important;
+  background:
+    radial-gradient(circle at 16% 12%, rgba(255, 122, 33, .18), transparent 28rem),
+    radial-gradient(circle at 82% 22%, rgba(255, 73, 230, .12), transparent 26rem),
+    radial-gradient(circle at 60% 78%, rgba(49, 247, 255, .08), transparent 30rem),
+    linear-gradient(145deg, rgba(12, 13, 18, .86), rgba(255,255,255,.04)) !important;
+}
+
+.hero h1 {
+  font-size: clamp(3.25rem, 7.45vw, 7.4rem) !important;
+  letter-spacing: -0.085em !important;
+  line-height: .875 !important;
+  max-width: 900px !important;
+  text-wrap: balance !important;
+}
+
+.hero-text {
+  max-width: 780px !important;
+  font-size: clamp(1.02rem, 1.55vw, 1.18rem) !important;
+}
+
+.hero-actions {
+  margin-top: 22px !important;
+}
+
+.button,
+.status-callout__link,
+.nav-status-link,
+.quick-commands button,
+.terminal-form button,
+.hero-status-panel a {
+  background-size: 280% 100% !important;
+  animation: p1-live-flow 5.8s linear infinite, p1-soft-pulse 2.9s ease-in-out infinite !important;
+}
+
+.button-secondary,
+.button-ghost,
+.quick-commands button,
+.terminal-form button,
+.hero-status-panel a {
+  background:
+    linear-gradient(rgba(12,13,16,.84), rgba(255,255,255,.06)) padding-box,
+    var(--p1-rainbow-live) border-box !important;
+  background-size: 100% 100%, 280% 100% !important;
+  color: #fff !important;
+}
+
+.button-primary,
+.button-coffee,
+.button-status,
+.status-callout__link,
+.nav-status-link {
+  background-image: var(--p1-orange-live) !important;
+  color: #09070a !important;
+}
+
+.hero-command {
+  max-width: min(100%, 760px) !important;
+  white-space: nowrap !important;
+  overflow-x: auto !important;
+  scrollbar-width: none !important;
+}
+
+.hero-command::-webkit-scrollbar { display: none !important; }
+
+.metric-strip {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+  max-width: min(100%, 760px) !important;
+}
+
+.metric-strip div,
+.hero-status-panel,
+.feature-card,
+.bryforge-card,
+.support-card,
+.terminal,
+.founder,
+.roadmap,
+.timeline li {
+  background: var(--p1-panel-live) !important;
+  border-color: rgba(255,255,255,.13) !important;
+}
+
+.hero-status-panel {
+  max-width: min(100%, 760px) !important;
+  padding: 18px 20px !important;
+}
+
+.logo-stage {
+  align-self: center !important;
+  min-height: clamp(360px, 46vw, 510px) !important;
+}
+
+.logo-glass {
+  width: min(100%, 430px) !important;
+  min-height: min(430px, 78vw) !important;
+  aspect-ratio: 1 / 1 !important;
+  border-radius: clamp(28px, 4vw, 42px) !important;
+}
+
+.phase-logo-image,
+.logo-glass img {
+  width: min(78%, 330px) !important;
+  max-height: 72% !important;
+  object-fit: contain !important;
+}
+
+.logo-glass::before {
+  opacity: .42 !important;
+  filter: blur(24px) saturate(1.18) !important;
+}
+
+.system-card {
+  font-size: clamp(.62rem, 1.2vw, .76rem) !important;
+  padding: 12px 14px !important;
+}
+
+.system-card-top { top: clamp(16px, 3vw, 28px) !important; left: clamp(14px, 3vw, 28px) !important; }
+.system-card-bottom { right: clamp(14px, 3vw, 28px) !important; bottom: clamp(14px, 3vw, 28px) !important; }
+
+.section-heading,
+.founder,
+.support,
+.features,
+.project-section,
+.roadmap,
+.terminal-section {
+  margin-top: clamp(44px, 8vw, 96px) !important;
+}
+
+.section-heading h2,
+.founder-copy h2,
+.support-card h2 {
+  line-height: .96 !important;
+  text-wrap: balance !important;
+}
+
+.founder,
+.support-card,
+.bryforge-card,
+.feature-card,
+.terminal,
+.roadmap {
+  border-radius: var(--p1-card-radius) !important;
+}
+
+.feature-card::after,
+.bryforge-card::after,
+.support-card::after,
+.founder::after,
+.hero::after,
+.terminal::after,
+.roadmap::after,
+.hero-status-panel::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  pointer-events: none !important;
+  border-radius: inherit !important;
+  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,.055) 35%, rgba(255,138,44,.12) 48%, rgba(255,73,230,.07) 57%, transparent 72%) !important;
+  opacity: .48 !important;
+  mix-blend-mode: screen !important;
+  animation: p1-panel-sheen 9s ease-in-out infinite !important;
+}
+
+.support-grid,
+.founder-grid,
+.project-grid,
+.feature-grid,
+.manifesto-grid {
+  gap: clamp(16px, 2.8vw, 28px) !important;
+}
+
+.footer {
+  margin-top: clamp(38px, 6vw, 72px) !important;
+}
+
+@media (max-width: 920px) {
+  .site-shell,
+  .status-callout {
+    width: min(100vw - 18px, 760px) !important;
+  }
+
+  .status-callout__link {
+    min-height: 50px !important;
+    padding: 11px 14px !important;
+    font-size: .98rem !important;
+  }
+
+  .nav {
+    border-radius: 28px !important;
+    padding: 14px !important;
+  }
+
+  .hero {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 22px !important;
+    padding: 22px !important;
+    min-height: auto !important;
+    border-radius: 32px !important;
+  }
+
+  .logo-stage {
+    order: 0 !important;
+    min-height: 280px !important;
+  }
+
+  .logo-glass {
+    width: min(100%, 310px) !important;
+    min-height: 310px !important;
+    padding: 28px !important;
+  }
+
+  .phase-logo-image,
+  .logo-glass img {
+    width: min(76%, 230px) !important;
+  }
+
+  .hero-copy {
+    order: 1 !important;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.95rem, 11.7vw, 4.9rem) !important;
+    line-height: .91 !important;
+    letter-spacing: -0.075em !important;
+  }
+
+  .hero-text {
+    font-size: 1rem !important;
+    line-height: 1.58 !important;
+  }
+
+  .hero-actions {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+
+  .button,
+  .hero-status-panel a,
+  .quick-commands button,
+  .terminal-form button {
+    min-height: 46px !important;
+    padding: 0 12px !important;
+    font-size: .93rem !important;
+  }
+
+  .hero-command {
+    margin-top: 14px !important;
+    max-width: 100% !important;
+  }
+
+  .metric-strip {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+
+  .metric-strip div,
+  .hero-status-panel {
+    padding: 14px !important;
+  }
+
+  .section-heading,
+  .founder,
+  .support,
+  .features,
+  .project-section,
+  .roadmap,
+  .terminal-section {
+    margin-top: 42px !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .site-shell,
+  .status-callout {
+    width: calc(100vw - 14px) !important;
+  }
+
+  .hero {
+    padding: 18px !important;
+    border-radius: 28px !important;
+  }
+
+  .logo-stage {
+    min-height: 245px !important;
+  }
+
+  .logo-glass {
+    width: 235px !important;
+    min-height: 235px !important;
+    padding: 20px !important;
+  }
+
+  .system-card {
+    transform: scale(.82) !important;
+    transform-origin: center !important;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.55rem, 12.6vw, 3.9rem) !important;
+  }
+
+  .hero-actions {
+    grid-template-columns: 1fr !important;
+  }
+
+  .metric-strip {
+    grid-template-columns: 1fr !important;
+  }
+
+  .founder,
+  .support-card,
+  .bryforge-card,
+  .feature-card,
+  .terminal,
+  .roadmap {
+    border-radius: 24px !important;
+  }
+}
+
+@keyframes p1-live-flow { to { background-position: 280% 50%; } }
+@keyframes p1-soft-pulse { 0%,100% { filter: brightness(1) saturate(1); } 50% { filter: brightness(1.08) saturate(1.16); } }
+@keyframes p1-panel-sheen { 0%,100% { transform: translateX(-4%); opacity: .28; } 50% { transform: translateX(4%); opacity: .62; } }
