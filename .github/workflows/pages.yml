@@ -40,36 +40,38 @@ jobs:
           cp -R site/. _site/
           cp -R site/. _site/site/
 
-          # Force the calm rainbow-space Phase1 visual layer with slow glowing motion on Pages.
+          # Force the orbital-authority Phase1 visual layer on Pages.
           python3 - <<'PY'
           from pathlib import Path
           p = Path('_site/index.html')
           s = p.read_text()
-          cache = 'phase1-rainbow-space-v3'
+          cache = 'phase1-rainbow-space-v4'
           previous = [
               'phase1-nobackground-v2', 'phase1-superb-overhaul-v1', 'phase1-final-design-v1',
               'phase1-bryforge-aligned-v1', 'phase1-orange-rainbow-v1', 'phase1-polish-77-v1',
               'phase1-orange-spectrum-v1', 'phase1-orange-premium-v1', 'phase1-orange-elite-v1',
-              'phase1-rainbow-space-v1', 'phase1-rainbow-space-v2'
+              'phase1-rainbow-space-v1', 'phase1-rainbow-space-v2', 'phase1-rainbow-space-v3'
           ]
           for old in previous:
               s = s.replace(f'styles.css?v={old}', f'styles.css?v={cache}')
               s = s.replace(f'button-fix.css?v={old}', f'button-fix.css?v={cache}')
               s = s.replace(f'button-fix.js?v={old}', f'button-fix.js?v={cache}')
               s = s.replace(f'site.js?v={old}', f'site.js?v={cache}')
-              s = s.replace(f'official-phase1-logo-{old.replace("phase1-", "")}', 'official-phase1-logo-rainbow-space-v3')
+              s = s.replace(f'official-phase1-logo-{old.replace("phase1-", "")}', 'official-phase1-logo-rainbow-space-v4')
           for css in [
               f'<link rel="stylesheet" href="./site/final-design.css?v={cache}">',
               f'<link rel="stylesheet" href="./site/bryforge-aligned.css?v={cache}">',
               f'<link rel="stylesheet" href="./site/phase1-polish-77.css?v={cache}">',
               f'<link rel="stylesheet" href="./site/phase1-rainbow-space.css?v={cache}">',
               f'<link rel="stylesheet" href="./site/rainbow-space-motion.css?v={cache}">',
+              f'<link rel="stylesheet" href="./site/phase1-orbital-authority.css?v={cache}">',
           ]:
               if css not in s:
                   s = s.replace('</head>', f'  {css}\n</head>')
           for script in [
               f'<script src="./site/visual-overhaul.js?v={cache}"></script>',
               f'<script src="./site/rainbow-space-motion.js?v={cache}"></script>',
+              f'<script src="./site/orbital-authority.js?v={cache}"></script>',
           ]:
               if script not in s:
                   s = s.replace('</body>', f'{script}</body>')
@@ -93,10 +95,10 @@ jobs:
           test -f _site/site/phase1-rainbow-space.css
           test -f _site/site/rainbow-space-motion.css
           test -f _site/site/rainbow-space-motion.js
-          test -f _site/rainbow-space-motion.css
-          test -f _site/rainbow-space-motion.js
-          grep -q 'rainbow-space-motion.css?v=phase1-rainbow-space-v3' _site/index.html
-          grep -q 'rainbow-space-motion.js?v=phase1-rainbow-space-v3' _site/index.html
+          test -f _site/site/phase1-orbital-authority.css
+          test -f _site/site/orbital-authority.js
+          grep -q 'phase1-orbital-authority.css?v=phase1-rainbow-space-v4' _site/index.html
+          grep -q 'orbital-authority.js?v=phase1-rainbow-space-v4' _site/index.html
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
