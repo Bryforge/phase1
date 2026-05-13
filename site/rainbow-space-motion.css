@@ -1,0 +1,138 @@
+/* Real rainbow-space motion layer: visible glowing stars + recurring shooting stars.
+   This is intentionally separate from the glass UI so the background feels alive. */
+
+.rainbow-space-field {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 14%, rgba(48, 247, 255, .12), transparent 24rem),
+    radial-gradient(circle at 82% 18%, rgba(255, 72, 220, .10), transparent 24rem),
+    radial-gradient(circle at 58% 86%, rgba(255, 156, 53, .08), transparent 28rem);
+  mix-blend-mode: screen;
+}
+
+.rainbow-space-field::before,
+.rainbow-space-field::after {
+  content: "";
+  position: absolute;
+  inset: -12%;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,.95) 0 1px, transparent 1.8px),
+    radial-gradient(circle, rgba(48,247,255,.72) 0 1px, transparent 1.9px),
+    radial-gradient(circle, rgba(255,72,220,.60) 0 1px, transparent 1.8px),
+    radial-gradient(circle, rgba(255,230,107,.52) 0 1px, transparent 1.8px);
+  background-size: 160px 160px, 230px 230px, 310px 310px, 410px 410px;
+  opacity: .28;
+  animation: rs-deep-star-drift 74s linear infinite;
+}
+
+.rainbow-space-field::after {
+  opacity: .18;
+  filter: blur(.6px);
+  animation-duration: 112s;
+  animation-direction: reverse;
+}
+
+.rs-star {
+  position: absolute;
+  width: var(--s, 2px);
+  height: var(--s, 2px);
+  left: var(--x, 50%);
+  top: var(--y, 50%);
+  border-radius: 999px;
+  background: var(--c, #fff);
+  opacity: var(--o, .78);
+  box-shadow:
+    0 0 calc(var(--s, 2px) * 6) var(--c, #fff),
+    0 0 calc(var(--s, 2px) * 14) color-mix(in srgb, var(--c, #fff) 48%, transparent);
+  animation: rs-twinkle var(--d, 4s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+
+.rs-star.big {
+  box-shadow:
+    0 0 calc(var(--s, 3px) * 8) var(--c, #fff),
+    0 0 calc(var(--s, 3px) * 22) color-mix(in srgb, var(--c, #fff) 58%, transparent),
+    0 0 calc(var(--s, 3px) * 42) color-mix(in srgb, var(--c, #fff) 24%, transparent);
+}
+
+.rs-shooting-star {
+  position: absolute;
+  left: var(--x, 20%);
+  top: var(--y, 20%);
+  width: var(--w, 190px);
+  height: 2px;
+  border-radius: 999px;
+  transform: rotate(var(--r, -34deg));
+  transform-origin: left center;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.98), var(--c1, #30f7ff), var(--c2, #ff48dc), transparent);
+  filter: drop-shadow(0 0 10px var(--c1, #30f7ff)) drop-shadow(0 0 22px var(--c2, #ff48dc));
+  animation: rs-shoot var(--d, 7s) linear infinite;
+  animation-delay: var(--delay, 0s);
+}
+
+.rs-shooting-star::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  transform: translateY(-50%);
+  background: #fff;
+  box-shadow: 0 0 16px #fff, 0 0 28px var(--c1, #30f7ff), 0 0 46px var(--c2, #ff48dc);
+}
+
+.site-shell,
+.status-callout,
+body > main,
+.nav,
+.footer,
+.hero,
+.glass-panel,
+.card,
+.feature-card,
+.support-card,
+.founder,
+.terminal,
+.roadmap {
+  position: relative;
+  z-index: 2;
+}
+
+@keyframes rs-deep-star-drift {
+  to { transform: translate3d(-4%, 6%, 0); }
+}
+
+@keyframes rs-twinkle {
+  0%, 100% { transform: scale(.78); opacity: calc(var(--o, .78) * .48); }
+  38% { transform: scale(1.28); opacity: var(--o, .78); }
+  64% { transform: scale(.92); opacity: calc(var(--o, .78) * .66); }
+}
+
+@keyframes rs-shoot {
+  0%, 12% { opacity: 0; transform: translate3d(-22vw, -6vh, 0) rotate(var(--r, -34deg)); }
+  18% { opacity: .95; }
+  42% { opacity: .96; }
+  58%, 100% { opacity: 0; transform: translate3d(118vw, 58vh, 0) rotate(var(--r, -34deg)); }
+}
+
+@media (max-width: 720px) {
+  .rainbow-space-field::before,
+  .rainbow-space-field::after { opacity: .22; }
+  .rs-shooting-star { width: calc(var(--w, 190px) * .72); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rainbow-space-field,
+  .rainbow-space-field::before,
+  .rainbow-space-field::after,
+  .rs-star,
+  .rs-shooting-star { animation: none !important; }
+  .rs-shooting-star { display: none !important; }
+}
