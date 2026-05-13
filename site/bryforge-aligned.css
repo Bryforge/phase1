@@ -1,0 +1,446 @@
+/* Phase1 Bryforge-aligned visual pass.
+   Mirrors the Bryforge homepage feel: clean dark forge glass, living gold/ember buttons,
+   neon Phase1 accents, animated sheen, and consistent card treatment throughout. */
+
+:root {
+  --bf-bg: #030305;
+  --bf-panel: rgba(12, 13, 16, 0.76);
+  --bf-panel-soft: rgba(255, 255, 255, 0.055);
+  --bf-text: #f1f3f7;
+  --bf-muted: #a7afbd;
+  --bf-dim: #69707d;
+  --bf-steel: #e8edf5;
+  --bf-ember: #ff6a28;
+  --bf-gold: #f4b860;
+  --bf-cyan: #23f7ff;
+  --bf-green: #54ff7a;
+  --bf-pink: #ff3df2;
+  --bf-blue: #7a8cff;
+  --bf-line: rgba(255, 255, 255, 0.12);
+  --bf-line-hot: rgba(244, 184, 96, 0.38);
+  --bf-shadow: 0 36px 140px rgba(0, 0, 0, 0.58), 0 0 65px rgba(255, 106, 40, 0.08), 0 0 80px rgba(35, 247, 255, 0.055);
+  --bf-button: linear-gradient(90deg, #e8edf5, #f4b860, #ff6a28, #23f7ff, #ff3df2, #e8edf5);
+  --bf-phase: linear-gradient(90deg, #ff4438, #ffe85f, #54ff7a, #29f8ff, #5d85ff, #ff3df2, #ff4438);
+}
+
+html,
+body { background: var(--bf-bg) !important; }
+
+body {
+  color: var(--bf-text) !important;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+  background:
+    radial-gradient(circle at 16% 10%, rgba(255, 106, 40, 0.15), transparent 27rem),
+    radial-gradient(circle at 84% 0%, rgba(122, 140, 255, 0.13), transparent 29rem),
+    radial-gradient(circle at 54% 86%, rgba(35, 247, 255, 0.08), transparent 31rem),
+    linear-gradient(180deg, #020203 0%, #07080b 52%, #030305 100%) !important;
+}
+
+body::before {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.055) 1px, transparent 1px),
+    radial-gradient(circle, rgba(244,184,96,0.55) 0 1px, transparent 1.6px),
+    radial-gradient(circle, rgba(35,247,255,0.34) 0 1px, transparent 1.7px) !important;
+  background-size: 62px 62px, 62px 62px, 145px 145px, 215px 215px !important;
+  opacity: 0.12 !important;
+  mask-image: radial-gradient(circle at center, black, transparent 84%) !important;
+}
+
+body::after {
+  background:
+    radial-gradient(circle at 10% 16%, rgba(255,106,40,.12), transparent 24rem),
+    radial-gradient(circle at 86% 72%, rgba(122,140,255,.10), transparent 27rem),
+    linear-gradient(115deg, transparent 0%, rgba(255,255,255,.035) 45%, transparent 55%) !important;
+  opacity: .82 !important;
+}
+
+#space { opacity: .62 !important; filter: saturate(1.06) contrast(1.05) !important; }
+.aurora { opacity: .10 !important; filter: blur(72px) saturate(1.05) !important; }
+.scanlines { opacity: .018 !important; }
+.noise { opacity: .05 !important; }
+
+.site-shell {
+  width: min(1220px, calc(100% - 32px)) !important;
+  padding: 10px 0 44px !important;
+}
+
+.status-callout {
+  max-width: 1220px !important;
+  margin: 12px auto 8px !important;
+  padding: 0 16px !important;
+}
+
+.nav,
+.status-callout__link,
+.glass-panel,
+.feature-card,
+.bryforge-card,
+.support-card,
+.support-card-mini span,
+.metric-strip div,
+.timeline li,
+.hero-status-panel,
+.terminal,
+.footer {
+  border: 1px solid var(--bf-line) !important;
+  background:
+    linear-gradient(145deg, rgba(12, 13, 16, 0.82), rgba(255, 255, 255, 0.04)),
+    radial-gradient(circle at 78% 36%, rgba(255, 106, 40, 0.075), transparent 26rem) !important;
+  box-shadow: var(--bf-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(28px) saturate(1.05) !important;
+}
+
+.nav {
+  top: 14px !important;
+  padding: 14px 16px !important;
+  border-radius: 26px !important;
+}
+
+.brand {
+  letter-spacing: .1em !important;
+  text-transform: uppercase !important;
+  color: var(--bf-text) !important;
+}
+
+.brand-pip {
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 12px !important;
+  background: linear-gradient(135deg, var(--bf-steel), var(--bf-gold), var(--bf-ember)) !important;
+  box-shadow: 0 0 28px rgba(255, 106, 40, 0.25), 0 0 42px rgba(35, 247, 255, 0.08) !important;
+}
+
+.nav-links a,
+.footer-links a {
+  color: var(--bf-muted) !important;
+  transition: color 180ms ease, background 180ms ease, transform 180ms ease, box-shadow 180ms ease !important;
+}
+
+.nav-links a:hover,
+.footer-links a:hover {
+  color: var(--bf-text) !important;
+  background: rgba(255, 255, 255, 0.075) !important;
+  transform: translateY(-1px) !important;
+}
+
+.hero {
+  min-height: 720px !important;
+  margin-top: 28px !important;
+  padding: clamp(28px, 6.6vw, 76px) !important;
+  border-radius: 42px !important;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 0.72fr) !important;
+  gap: clamp(26px, 5vw, 70px) !important;
+  overflow: hidden !important;
+}
+
+.hero::before,
+.roadmap::before,
+.support-card::before,
+.founder::before,
+.terminal::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: -1px !important;
+  pointer-events: none !important;
+  background:
+    linear-gradient(115deg, transparent, rgba(255,255,255,0.08), transparent 42%),
+    radial-gradient(circle at 78% 36%, rgba(255, 106, 40, 0.15), transparent 28rem) !important;
+  opacity: .82 !important;
+  mix-blend-mode: screen !important;
+  animation: bf-sheen 7s ease-in-out infinite !important;
+}
+
+.hero-copy,
+.logo-stage,
+.founder-profile,
+.founder-copy,
+.support-card > *,
+.terminal > *,
+.roadmap > *,
+.hero-status-panel > * {
+  position: relative !important;
+  z-index: 3 !important;
+}
+
+.eyebrow,
+.card-kicker,
+.timeline-status,
+.status-pill {
+  color: var(--bf-gold) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.26em !important;
+  font-size: 0.76rem !important;
+  font-weight: 850 !important;
+  text-shadow: 0 0 20px rgba(244,184,96,.34) !important;
+}
+
+.status-pill,
+.live-pill,
+.hero-status-panel .status-pill {
+  color: var(--bf-cyan) !important;
+  text-shadow: 0 0 20px rgba(35, 247, 255, 0.7) !important;
+}
+
+h1,
+.section-heading h2,
+.founder-copy h2,
+.support-card h2,
+.bryforge-card h3 {
+  background: linear-gradient(90deg, #ffffff, #aeb7c8, #ff8a3d, #f4b860, #ffffff) !important;
+  background-size: 220% 100% !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+  animation: bf-steel-flow 11s linear infinite !important;
+  text-transform: uppercase !important;
+  overflow: visible !important;
+  padding-bottom: .12em !important;
+}
+
+.hero h1 {
+  max-width: 860px !important;
+  margin-bottom: 22px !important;
+  font-size: clamp(3.2rem, 7.8vw, 7.7rem) !important;
+  line-height: 0.86 !important;
+  letter-spacing: -0.09em !important;
+}
+
+.hero-text,
+.section-heading p,
+.smoke-card p,
+.project-feature p,
+.manifesto p,
+.support p,
+.feature-card p,
+.bryforge-card p,
+.founder-copy p,
+.hero-status-panel p {
+  color: var(--bf-muted) !important;
+  line-height: 1.76 !important;
+}
+
+.hero-actions,
+.project-actions {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 13px !important;
+  margin-top: 26px !important;
+}
+
+.button,
+.status-callout__link,
+.nav-status-link,
+.hero-status-panel a,
+.quick-commands button,
+.terminal-form button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 48px !important;
+  padding: 0 18px !important;
+  border-radius: 999px !important;
+  text-decoration: none !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.02em !important;
+  touch-action: manipulation !important;
+  position: relative !important;
+  overflow: hidden !important;
+  isolation: isolate !important;
+}
+
+.button-primary,
+.button-coffee,
+.button-status,
+.status-callout__link,
+.nav-status-link {
+  color: #08090c !important;
+  background: var(--bf-button) !important;
+  background-size: 240% 100% !important;
+  animation: bf-steel-flow 6.5s linear infinite, bf-glow-pulse 2.8s ease-in-out infinite !important;
+  box-shadow: 0 0 28px rgba(255,106,40,.25), 0 0 46px rgba(244,184,96,.16), 0 0 70px rgba(35,247,255,.09) !important;
+}
+
+.button-secondary,
+.button-ghost,
+.hero-status-panel a,
+.quick-commands button,
+.terminal-form button {
+  color: var(--bf-text) !important;
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(rgba(12,13,16,.78), rgba(255,255,255,.055)) padding-box,
+    linear-gradient(90deg, rgba(255,255,255,.16), rgba(244,184,96,.42), rgba(35,247,255,.24), rgba(255,61,242,.22)) border-box !important;
+  box-shadow: 0 0 28px rgba(255,255,255,.05), 0 0 42px rgba(255,106,40,.09) !important;
+}
+
+.button::before,
+.status-callout__link::before,
+.nav-status-link::before,
+.hero-status-panel a::before,
+.quick-commands button::before,
+.terminal-form button::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: -1 !important;
+  background: linear-gradient(115deg, transparent 0%, rgba(255,255,255,.38) 48%, transparent 58%) !important;
+  transform: translateX(-125%) !important;
+  opacity: .0 !important;
+  animation: bf-button-sheen 3.2s ease-in-out infinite !important;
+}
+
+.button:hover,
+.status-callout__link:hover,
+.nav-status-link:hover,
+.hero-status-panel a:hover,
+.quick-commands button:hover,
+.terminal-form button:hover {
+  transform: translateY(-3px) scale(1.025) !important;
+  filter: brightness(1.08) saturate(1.12) !important;
+  box-shadow: 0 16px 48px rgba(0,0,0,.42), 0 0 42px rgba(255,106,40,.28), 0 0 72px rgba(35,247,255,.14) !important;
+}
+
+.hero-command {
+  margin-top: 18px !important;
+  border-radius: 18px !important;
+  background: rgba(0,0,0,0.34) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  box-shadow: inset 0 0 24px rgba(0,0,0,.32), 0 0 34px rgba(35,247,255,.08) !important;
+}
+
+.metric-strip div,
+.hero-status-panel {
+  border-radius: 18px !important;
+  background: rgba(0,0,0,0.24) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+}
+
+.logo-stage {
+  min-height: 500px !important;
+  display: grid !important;
+  place-items: center !important;
+}
+
+.logo-glass {
+  position: relative !important;
+  display: grid !important;
+  place-items: center !important;
+  width: min(100%, 430px) !important;
+  min-height: 430px !important;
+  padding: 34px !important;
+  border-radius: 34px !important;
+  overflow: hidden !important;
+  isolation: isolate !important;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(35, 247, 255, 0.12), transparent 18rem),
+    radial-gradient(circle at 35% 60%, rgba(255, 61, 242, 0.12), transparent 16rem),
+    linear-gradient(145deg, rgba(3, 4, 8, 0.96), rgba(18, 20, 28, 0.82)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05), inset 0 0 70px rgba(35,247,255,0.06), 0 0 60px rgba(35,247,255,0.08), 0 0 90px rgba(255,106,40,.10) !important;
+}
+
+.logo-glass::before {
+  content: "" !important;
+  position: absolute !important;
+  width: 92% !important;
+  aspect-ratio: 1 !important;
+  border-radius: 50% !important;
+  background: conic-gradient(from 0deg, #ff4438, #ffe85f, #54ff7a, #29f8ff, #5d85ff, #ff3df2, #ff4438) !important;
+  filter: blur(28px) !important;
+  opacity: 0.34 !important;
+  animation: bf-phase-spin 18s linear infinite !important;
+  z-index: -2 !important;
+}
+
+.logo-glass::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: linear-gradient(115deg, transparent 0%, rgba(255,255,255,.14) 45%, transparent 52%) !important;
+  opacity: .14 !important;
+  mix-blend-mode: screen !important;
+  transform: translateX(-55%) !important;
+  animation: bf-button-sheen 6s ease-in-out infinite !important;
+  pointer-events: none !important;
+}
+
+.phase-logo-image,
+.logo-glass img {
+  position: relative !important;
+  z-index: 4 !important;
+  width: min(86%, 360px) !important;
+  filter: saturate(1.18) contrast(1.08) drop-shadow(0 0 26px rgba(35,247,255,.28)) drop-shadow(0 0 48px rgba(255,61,242,.16)) !important;
+  mix-blend-mode: screen !important;
+  animation: bf-phase-float 5.5s ease-in-out infinite !important;
+}
+
+.orbit {
+  border-color: rgba(255,255,255,.16) !important;
+  box-shadow: 0 0 28px rgba(35,247,255,.12) !important;
+}
+
+.orbit-one { border-top-color: #29f8ff !important; border-right-color: #ff3df2 !important; }
+.orbit-two { border-bottom-color: #ffe85f !important; border-left-color: #54ff7a !important; }
+.orbit-three { border-top-color: #ff4438 !important; border-bottom-color: #5d85ff !important; }
+
+.system-card {
+  color: rgba(245,251,255,.88) !important;
+  background: rgba(0,0,0,.44) !important;
+  border: 1px solid rgba(255,255,255,.12) !important;
+  font-family: ui-monospace, "SFMono-Regular", monospace !important;
+  letter-spacing: .12em !important;
+}
+
+.feature-card,
+.bryforge-card,
+.support-card,
+.roadmap,
+.founder,
+.terminal {
+  border-radius: 28px !important;
+}
+
+.feature-card:hover,
+.bryforge-card:hover,
+.support-card:hover,
+.hero-status-panel:hover,
+.metric-strip div:hover,
+.timeline li:hover {
+  transform: translateY(-4px) !important;
+  border-color: var(--bf-line-hot) !important;
+  box-shadow: 0 36px 140px rgba(0,0,0,.58), 0 0 64px rgba(255,106,40,.13), 0 0 72px rgba(35,247,255,.08) !important;
+}
+
+.support-card-mini span,
+.avatar-ring {
+  background: var(--bf-button) !important;
+  background-size: 240% 100% !important;
+  animation: bf-steel-flow 7s linear infinite !important;
+  box-shadow: 0 0 28px rgba(255,106,40,.2), 0 0 42px rgba(35,247,255,.08) !important;
+}
+
+.footer { color: var(--bf-dim) !important; }
+
+@media (min-width: 921px) and (max-width: 1280px) {
+  .hero { min-height: 650px !important; padding: clamp(26px, 5vw, 58px) !important; }
+  .logo-stage { min-height: 430px !important; }
+  .logo-glass { width: min(100%, 390px) !important; min-height: 390px !important; }
+  .hero h1 { font-size: clamp(3.2rem, 6.5vw, 6.2rem) !important; }
+}
+
+@media (max-width: 920px) {
+  .site-shell { width: min(100% - 20px, 720px) !important; padding-top: 8px !important; }
+  .nav { position: relative !important; top: 0 !important; align-items: flex-start !important; }
+  .hero { grid-template-columns: 1fr !important; min-height: auto !important; padding: 28px !important; border-radius: 32px !important; }
+  .logo-stage { order: -1 !important; min-height: 360px !important; }
+  .logo-glass { width: min(100%, 360px) !important; min-height: 360px !important; }
+  .hero h1 { font-size: clamp(3.0rem, 13vw, 4.9rem) !important; }
+}
+
+@keyframes bf-steel-flow { to { background-position: 240% 0; } }
+@keyframes bf-glow-pulse { 0%,100% { filter: brightness(1) saturate(1); } 50% { filter: brightness(1.08) saturate(1.18); } }
+@keyframes bf-button-sheen { 0%, 36% { transform: translateX(-125%); opacity: 0; } 50% { opacity: .42; } 72%, 100% { transform: translateX(125%); opacity: 0; } }
+@keyframes bf-sheen { 0%,100% { opacity: .42; transform: translateX(-3%); } 50% { opacity: .82; transform: translateX(3%); } }
+@keyframes bf-phase-spin { to { transform: rotate(360deg); } }
+@keyframes bf-phase-float { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-10px) scale(1.018); } }
