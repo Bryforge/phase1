@@ -1,13 +1,13 @@
 {
   "name": "Phase1 public project status",
   "status_kind": "estimated roadmap progress",
-  "last_updated_utc": "2026-05-13T21:42:00Z",
+  "last_updated_utc": "2026-05-13T22:18:00Z",
   "repository": "Bryforge/phase1",
   "branch": "edge/stable",
-  "commit": "74c3c97e2ff2f6e95d3aa4ea1156eeaf83953b41",
-  "overall_estimated_completion_percent": 65,
-  "public_state": "active edge development with published wiki, clean public link surface, and B3 emulator evidence set present",
-  "important_boundary": "Percentages are planning estimates, not production-readiness or security-hardening claims. B3 GNU/Linux, UEFI, and kernel/initrd handoff emulator evidence are present, but full B3 validation remains not claimed until a reviewed validation report exists.",
+  "commit": "a1aa2b0ecc3c28ea16791b661fa50181f56bd7ee",
+  "overall_estimated_completion_percent": 66,
+  "public_state": "active edge development with published wiki, clean public link surface, and reviewed B3 VM evidence present",
+  "important_boundary": "Percentages are planning estimates, not production-readiness or security-hardening claims. Reviewed B3 VM evidence is present, but physical hardware boot, installer, recovery, hardening, release-candidate, and daily-driver readiness remain not claimed.",
   "projects": [
     {
       "name": "Phase1 operator console",
@@ -23,15 +23,15 @@
     },
     {
       "name": "Base1 secure host / OS track",
-      "estimated_completion_percent": 38,
-      "state": "documentation, dry-run scripts, release archives, validation gates, recovery planning, x86_64 boot planning, wiki guardrails, B3 GNU/Linux emulator evidence, B3 UEFI emulator proof, and B3 kernel/initrd handoff evidence are present; full B3 remains not claimed",
-      "next_milestone": "promote a reviewed B3 validation report without over-claiming, then move toward recovery and physical hardware evidence"
+      "estimated_completion_percent": 40,
+      "state": "B2 focused test-suite evidence passed, B3 GNU/Linux emulator evidence passed, B3 UEFI proof passed, B3 kernel/initrd handoff passed, OpenBSD launch evidence is present, and B3 log-bundle review passed; claim remains not_claimed",
+      "next_milestone": "begin B4 recovery validation while keeping installer, hardware, hardening, release-candidate, and daily-driver claims out of scope"
     },
     {
       "name": "X200 / Libreboot hardware path",
-      "estimated_completion_percent": 42,
-      "state": "X200 Linux-libre host can stage local kernel/initrd into B3 GNU/Linux emulator evidence, run B3 UEFI proof, and produce B3 kernel/initrd handoff evidence; USB staging, framebuffer proof paths, recovery notes, and safety gates remain evidence-bound",
-      "next_milestone": "capture repeatable physical boot evidence and keep emulator, USB, and hardware claims separated"
+      "estimated_completion_percent": 44,
+      "state": "X200 Linux-libre host generated reviewed B3 VM evidence across GNU/Linux staging, UEFI proof, kernel/initrd handoff, and OpenBSD launch evidence; physical boot evidence remains separate and not claimed",
+      "next_milestone": "capture repeatable physical boot evidence and keep emulator, USB, recovery, and hardware claims separated"
     },
     {
       "name": "Security and crypto policy",
@@ -41,9 +41,9 @@
     },
     {
       "name": "Website and public docs",
-      "estimated_completion_percent": 87,
-      "state": "public site, status page, status JSON, badge endpoint, native GitHub Wiki, refreshed source wiki, organized docs, asset policy, Pages routing, clean public link checks, and B3 emulator evidence-set status wording are in place",
-      "next_milestone": "publish the reviewed B3 validation report and keep public claims evidence-bound"
+      "estimated_completion_percent": 88,
+      "state": "public site, status page, status JSON, badge endpoint, native GitHub Wiki, refreshed source wiki, organized docs, asset policy, Pages routing, clean public link checks, X200 evidence report, and reviewed B3 VM evidence wording are in place",
+      "next_milestone": "publish B4 recovery validation status and keep public claims evidence-bound"
     },
     {
       "name": "Repository organization",
@@ -115,6 +115,6 @@
     "not hardware-validated across targets",
     "not a hardened sandbox",
     "not cryptographically complete",
-    "B3 emulator evidence set is not full B3 completion without a reviewed validation report"
+    "reviewed B3 VM evidence is not physical hardware boot validation"
   ]
 }
