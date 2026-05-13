@@ -75,11 +75,11 @@ Current public asset filenames are documented in [`../../assets/README.md`](../.
 Current key assets:
 
 - [`../../assets/phase1_base_fyr_banner1.png`](../../assets/phase1_base_fyr_banner1.png) — public Phase1/Base1/Fyr banner.
-- [`../../assets/phase1-splash.png`](../../assets/phase1-splash.png) — current Phase1 boot splash PNG.
+- [`../../assets/phase1_word.png`](../../assets/phase1_word.png) — current Phase1 word-mark/splash PNG.
 - [`../../assets/fyr_symbol.png`](../../assets/fyr_symbol.png) — current standalone Fyr symbol.
 - [`../../assets/fyr_word.png`](../../assets/fyr_word.png) — current Fyr word mark.
 
-Older references to `assets/phase1-splash.svg` are outdated for the public README boot splash component. Older references to `assets/fyr-flame.svg` are outdated and should not be used for current Fyr branding.
+Older references to `assets/phase1-splash.png`, `assets/phase1-splash.svg`, and `assets/phase1-logo.svg` are outdated for the public Phase1 word-mark/splash component. Older references to `assets/fyr-flame.svg` are outdated and should not be used for current Fyr branding.
 
 Use consistent naming for Phase1, Base1, and Fyr assets.
 
