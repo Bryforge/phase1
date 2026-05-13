@@ -1,12 +1,18 @@
 # Tutorials
 
-![Tutorials](https://img.shields.io/badge/tutorials-TRY%20THIS-00d8ff) ![Stable](https://img.shields.io/badge/stable-v4.0.0-39ff88) ![Previous Stable](https://img.shields.io/badge/previous%20stable-v3.10.9-7f8cff)
+![Tutorials](https://img.shields.io/badge/tutorials-TRY%20THIS-00d8ff) ![Edge](https://img.shields.io/badge/edge-v6.0.0-00d8ff) ![Stable](https://img.shields.io/badge/stable-v5.0.0-39ff88) ![Safe Defaults](https://img.shields.io/badge/safe%20defaults-on-39ff88)
 
 These tutorials are designed for a new Phase1 user. Run them in order or jump to the workflow you need.
 
 ## Tutorial 1: First boot and orientation
 
 Start Phase1:
+
+```bash
+sh phase1
+```
+
+Alternative Rust-native start:
 
 ```bash
 cargo run
@@ -23,19 +29,26 @@ At the boot selector:
 >
 > ```text
 > help
+> help ui
+> help flows
 > version
 > version --compare
 > cat readme.txt
+> wiki
+> wiki-quick
 > security
+> capabilities
 > sysinfo
 > ```
 
 You should understand:
 
 - what version is running
+- whether safe mode is active
 - whether SHIELD is on
 - whether TRUST HOST is on
 - where the built-in quick start lives
+- which commands require host access
 
 ## Tutorial 2: Create a small virtual filesystem lab
 
@@ -69,7 +82,53 @@ Expected ideas:
 - pipeline filters can process VFS content
 - `/home` is the normal workspace
 
-## Tutorial 3: Use AVIM to write Python
+## Tutorial 3: Write and run Fyr
+
+Create a simple Fyr script:
+
+```text
+echo 'fn main() -> i32 { print("hello from Fyr"); return 0; }' > hello.fyr
+fyr run hello.fyr
+```
+
+Expected output:
+
+```text
+hello from Fyr
+```
+
+Use AVIM for a slightly larger script:
+
+```text
+avim math.fyr
+```
+
+In AVIM:
+
+```text
+i
+fn main() -> i32 {
+    let answer = 40 + 2;
+    print(answer);
+    return 0;
+}
+Esc
+:wq
+```
+
+Run it:
+
+```text
+fyr run math.fyr
+```
+
+Expected output:
+
+```text
+42
+```
+
+## Tutorial 4: Use AVIM to write Python
 
 Start Phase1 with host runtimes enabled:
 
@@ -104,7 +163,10 @@ Alternative run path:
 lang run python hello.py
 ```
 
-## Tutorial 4: Use AVIM to write Rust
+> [!IMPORTANT]
+> Python execution is host-backed. Use it only after you understand SHIELD, TRUST HOST, and safe mode.
+
+## Tutorial 5: Use AVIM to write Rust
 
 Start runtime mode:
 
@@ -135,7 +197,7 @@ Run it:
 lang run rust main.rs
 ```
 
-## Tutorial 5: Inspect browser output
+## Tutorial 6: Inspect browser output
 
 Start runtime mode:
 
@@ -165,7 +227,7 @@ Look for:
 - readable extracted text
 - indexed link list
 
-## Tutorial 6: Inspect network state
+## Tutorial 7: Inspect network state
 
 Start runtime mode:
 
@@ -191,7 +253,7 @@ Look for:
 - WiFi summary where supported
 - safe denial messages when a command is intentionally blocked
 
-## Tutorial 7: Use dashboard and audit tools
+## Tutorial 8: Use dashboard, audit, and nested context tools
 
 > [!TIP]
 > TRY THIS
@@ -202,6 +264,12 @@ Look for:
 > audit
 > opslog status
 > opslog tail
+> nest status
+> nest spawn lab
+> nest list
+> nest tree
+> nest inspect lab
+> nest destroy lab
 > ```
 
 You should see:
@@ -212,8 +280,9 @@ You should see:
 - network safety summary
 - latest audit event
 - local operations log status
+- nested metadata contexts and topology
 
-## Tutorial 8: Simulate process and hardware commands
+## Tutorial 9: Simulate process and hardware commands
 
 > [!TIP]
 > TRY THIS
@@ -234,7 +303,7 @@ You should see:
 
 This tutorial is educational. The process and hardware commands are simulated and audited.
 
-## Tutorial 9: Enable persistence
+## Tutorial 10: Enable persistence
 
 At boot selector:
 
@@ -268,18 +337,36 @@ phase1.history
 > [!CAUTION]
 > Do not store secrets in persistent VFS files.
 
-## Tutorial 10: Run the full validation loop
+## Tutorial 11: Run Base1 read-only and dry-run checks
+
+Base1 checks should stay read-only or dry-run until implementation, review, and validation support stronger action.
+
+```bash
+sh scripts/base1-x86_64-detect.sh --dry-run
+sh scripts/base1-b2-assembly-dry-run.sh --dry-run --profile x86_64-vm-validation
+sh scripts/base1-preflight.sh
+sh scripts/base1-install-dry-run.sh --dry-run --target /dev/example
+sh scripts/base1-recovery-dry-run.sh --dry-run
+```
+
+Expected idea:
+
+```text
+no host disk writes are required for these checks
+```
+
+## Tutorial 12: Run the full validation loop
 
 From the host:
 
 ```bash
-git pull origin master
+git fetch origin
+git status
 cargo fmt --all -- --check
 cargo check --all-targets
 cargo clippy --all-targets -- -D warnings
 cargo test --all-targets
-cargo audit
-cargo deny check
+sh scripts/quality-check.sh quick
 cargo run
 ```
 
@@ -290,39 +377,45 @@ format passes
 compile passes
 clippy passes
 tests pass
-audit passes
-dependency policy passes
+quality gate passes
 Phase1 boots
 shutdown reports the current package version
 ```
 
-## Tutorial 11: Prepare a stable release
+## Tutorial 13: Prepare release-facing documentation
 
 From the host:
 
 ```bash
 git status
 git log -1 --oneline
-cargo fmt --all -- --check
-cargo check --all-targets
-cargo clippy --all-targets -- -D warnings
-cargo test --all-targets
-cargo audit
-cargo deny check
+cargo metadata --no-deps --format-version 1 | grep '"version"'
+sh scripts/quality-check.sh quick
 ```
 
-For a stable build, remove `-dev`, update docs and in-system wiki fixtures, validate again, commit, tag, and push.
+Then check that these surfaces agree:
 
-Current stable target:
+```text
+README.md
+docs/wiki/Home.md
+docs/wiki/02-Version-Guide.md
+docs/wiki/08-Updates-Releases-and-Validation.md
+site/site.js
+plugins/wiki-version.wasi
+plugins/wiki-updates.wasi
+```
+
+For stable release-facing docs, avoid edge-only claims. For Base1 docs, keep claims tied to evidence. For Fyr docs, only use examples supported by current language behavior.
+
+## Tutorial 14: Publish manual pages to the native wiki
+
+Only do this after GitHub Wiki support exists for the repository and the source docs have been reviewed.
 
 ```bash
-git tag v4.0.0
-git push origin v4.0.0
+scripts/publish-wiki.sh
 ```
 
-## Tutorial 12: Publish manual pages to the native wiki
-
-Only do this after GitHub Wiki support exists for the repository.
+Manual equivalent:
 
 ```bash
 cd ..
@@ -330,7 +423,7 @@ git clone https://github.com/Bryforge/phase1.wiki.git phase1.wiki
 rsync -av --delete phase1/docs/wiki/ phase1.wiki/
 cd phase1.wiki
 git add .
-git commit -m "Update Phase1 user manual for v4.0.0"
+git commit -m "Update Phase1 user manual"
 git push origin master
 ```
 
