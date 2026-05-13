@@ -1,24 +1,9 @@
 #!/usr/bin/env sh
 # Base1 B3 local GNU/Linux fast path.
 #
-# One-command helper for Linux hosts such as the X200. It stages the local
-# /boot kernel/initrd pair into the B3 emulator-prep handoff pipeline, runs the
-# bundle doctor, prints the guarded QEMU handoff plan by default, and refreshes
-# the B3 validation scaffold.
-#
-# Safe default:
-#   sh scripts/base1-b3-local-linux-fastpath.sh
-#
-# Optional QEMU execution:
-#   sh scripts/base1-b3-local-linux-fastpath.sh --check
-#
-# Boundaries:
-#   writes only under build/;
-#   does not install Base1;
-#   does not write disks;
-#   does not change host boot settings;
-#   does not validate physical hardware;
-#   does not prove hardening or daily-driver readiness.
+# One-command helper for Linux hosts such as the X200. It delegates boot-file
+# discovery to scripts/base1-b3-gnulinux-stage.sh, then runs the bundle doctor
+# and refreshes the B3 validation scaffold.
 
 set -eu
 
@@ -52,7 +37,6 @@ options:
 examples:
   git pull origin edge/stable
   sh scripts/base1-b3-local-linux-fastpath.sh
-
   sh scripts/base1-b3-local-linux-fastpath.sh --check --timeout 60
 
 non-claims:
@@ -146,14 +130,6 @@ esac
 need_file scripts/base1-b3-gnulinux-stage.sh
 need_file scripts/base1-emulator-doctor.sh
 need_file scripts/base1-b3-vm-validate.sh
-
-if ! ls "$BOOT_DIR"/vmlinuz "$BOOT_DIR"/vmlinuz-* "$BOOT_DIR"/bzImage "$BOOT_DIR"/kernel "$BOOT_DIR"/Image >/dev/null 2>&1; then
-  fail "no kernel found in $BOOT_DIR; provide --boot <dir> or copy a kernel/initrd pair there"
-fi
-
-if ! ls "$BOOT_DIR"/initrd.img "$BOOT_DIR"/initrd.img-* "$BOOT_DIR"/initramfs.img "$BOOT_DIR"/initramfs-* "$BOOT_DIR"/initrd "$BOOT_DIR"/initramfs >/dev/null 2>&1; then
-  fail "no initrd/initramfs found in $BOOT_DIR; provide --boot <dir> with matching initrd"
-fi
 
 case "$MODE" in
   prepare) MODE_FLAG=--prepare ;;
