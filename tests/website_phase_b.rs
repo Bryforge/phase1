@@ -23,7 +23,7 @@ fn homepage_preserves_project_identity_and_metadata() {
     assert_contains_all(
         &html,
         &[
-            "name\": \"phase1\"",
+            "\"name\":\"phase1\"",
             "Chase Bryan",
             "Bryforge",
             "GPL-3.0",
@@ -43,10 +43,9 @@ fn homepage_keeps_static_offline_friendly_dependency_posture_and_cache_busts_ass
     assert_contains_all(
         &html,
         &[
-            "./site/styles.css?v=4.0.0-stable-2",
-            "./site/button-fix.css?v=4.0.0-founder-profile-2",
-            "./site/button-fix.js?v=4.0.0-stable-2",
-            "./site/site.js?v=4.0.0-stable-2",
+            "./site/styles.css?v=phase1-final-background-v1",
+            "./site/button-fix.css?v=phase1-final-background-v1",
+            "./site/site.js?v=phase1-final-background-v1",
         ],
     );
     assert_not_contains_any(
@@ -57,6 +56,7 @@ fn homepage_keeps_static_offline_friendly_dependency_posture_and_cache_busts_ass
             "cdnjs.cloudflare.com",
             "jsdelivr.net",
             "https://fonts.googleapis.com",
+            "./site/button-fix.js",
         ],
     );
 }
@@ -69,10 +69,10 @@ fn homepage_has_inline_founder_profile_guard() {
         &[
             "founder-profile-inline-guard",
             "#founder .profile-label",
-            "#founder .founder-copy > .eyebrow",
+            "#founder .founder-copy>.eyebrow",
             "#founder .founder-copy h2::before",
-            "content: none !important",
-            "display: none !important",
+            "content:none!important",
+            "display:none!important",
         ],
     );
 }
@@ -95,21 +95,20 @@ fn styles_cover_terminal_roadmap_mobile_and_reveal_states() {
 }
 
 #[test]
-fn website_mobile_fix_prevents_fragmented_headings_and_duplicate_creator_labels() {
+fn website_mobile_fix_preserves_final_import_stack_pointer_guards_and_motion_safety() {
     let fix_css = read("site/button-fix.css");
     assert_contains_all(
         &fix_css,
         &[
-            "Founder-section cleanup",
-            "keep the real Founder profile label",
-            ".profile-label",
-            ".founder-copy > .eyebrow",
-            "content: none !important",
-            "display: none !important",
-            "overflow-wrap: normal",
-            "word-break: normal",
-            "text-wrap: balance",
-            "Mobile readability",
+            "phase1-final-background.css?v=phase1-final-background-v2",
+            "phase1-homepage-cta.css?v=phase1-homepage-cta-v1",
+            "phase1-mobile-nav-fix.css?v=phase1-mobile-nav-fix-v1",
+            ".phase-starfield{pointer-events:none!important}",
+            ".nav,.nav a,.nav-toggle,.hero-copy,.hero-actions,.button",
+            "touch-action:manipulation",
+            ".profile-label{display:none!important}",
+            "prefers-reduced-motion: reduce",
+            "scroll-behavior:auto!important",
         ],
     );
     assert_not_contains_any(
@@ -146,7 +145,8 @@ fn site_js_implements_canvas_terminal_progressive_enhancement_and_performance_gu
             "document.hidden",
             "startAnimation",
             "stopAnimation",
-            "desktop ? 180 : 210",
+            "desktop ? 16000 : 14000",
+            "desktop ? 110 : 90",
         ],
     );
     assert_not_contains_any(&js, &["edge: v4.3.0-dev"]);
