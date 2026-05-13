@@ -1,0 +1,326 @@
+/* Phase1 orbital authority layer.
+   Direction: premium public-sector utility + cosmic system. High readability first,
+   consistent fonts, white button text, solar-system background, slow subtle glow. */
+
+:root {
+  --oa-bg: #02040a;
+  --oa-ink: #f7fbff;
+  --oa-text: #eef5ff;
+  --oa-muted: #c8d3e3;
+  --oa-soft: #8f9eb5;
+  --oa-line: rgba(210, 229, 255, .20);
+  --oa-line-strong: rgba(220, 237, 255, .36);
+  --oa-glass: rgba(7, 12, 24, .84);
+  --oa-glass-strong: rgba(8, 14, 27, .92);
+  --oa-blue: #6db8ff;
+  --oa-cyan: #52f1ff;
+  --oa-violet: #9a7cff;
+  --oa-pink: #ff59d7;
+  --oa-amber: #ffb447;
+  --oa-gold: #ffe07a;
+  --oa-green: #6dff9a;
+  --oa-action: linear-gradient(90deg, #3adfff 0%, #6c8cff 26%, #a65dff 50%, #ff57d2 72%, #ffb347 100%);
+  --oa-title: linear-gradient(90deg, #ffffff 0%, #dff7ff 18%, #7cecff 36%, #8aa8ff 56%, #c080ff 74%, #fff4ca 100%);
+  --oa-panel: radial-gradient(circle at 14% 10%, rgba(82, 241, 255, .12), transparent 24rem), radial-gradient(circle at 88% 22%, rgba(154, 124, 255, .10), transparent 25rem), linear-gradient(145deg, rgba(8, 14, 27, .88), rgba(255, 255, 255, .045));
+  --oa-shadow: 0 34px 120px rgba(0, 0, 0, .72), 0 0 42px rgba(82, 241, 255, .10), 0 0 70px rgba(154, 124, 255, .08);
+}
+
+html,
+body {
+  background: var(--oa-bg) !important;
+}
+
+body,
+button,
+input,
+textarea,
+select,
+.button,
+.nav,
+.status-callout__link,
+.feature-card,
+.hero-status-panel,
+.metric-strip,
+.footer,
+.card {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+  letter-spacing: normal;
+}
+
+code,
+pre,
+.hero-command,
+.terminal,
+.terminal * {
+  font-family: "SFMono-Regular", "SF Mono", Consolas, "Liberation Mono", Menlo, monospace !important;
+}
+
+body {
+  color: var(--oa-text) !important;
+  background:
+    radial-gradient(circle at 82% 10%, rgba(255, 180, 71, .11), transparent 24rem),
+    radial-gradient(circle at 15% 20%, rgba(82, 241, 255, .12), transparent 26rem),
+    radial-gradient(circle at 75% 78%, rgba(154, 124, 255, .11), transparent 28rem),
+    linear-gradient(180deg, #02040a 0%, #050817 50%, #02040a 100%) !important;
+}
+
+/* Calm system background replaces low-quality meteors. */
+.rainbow-space-field {
+  opacity: .68 !important;
+  background:
+    radial-gradient(circle at 74% 18%, rgba(255, 224, 122, .16), transparent 4rem),
+    radial-gradient(circle at 74% 18%, rgba(255, 180, 71, .075), transparent 18rem),
+    radial-gradient(circle at 28% 76%, rgba(82, 241, 255, .08), transparent 26rem),
+    radial-gradient(circle at 86% 72%, rgba(154, 124, 255, .07), transparent 27rem) !important;
+}
+
+.rs-shooting-star { display: none !important; }
+
+.orbital-system-field {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: .86;
+  mix-blend-mode: screen;
+}
+
+.orbital-system-field::before {
+  content: "";
+  position: absolute;
+  inset: -10%;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,.72) 0 1px, transparent 1.6px),
+    radial-gradient(circle, rgba(82,241,255,.44) 0 1px, transparent 1.8px),
+    radial-gradient(circle, rgba(255,224,122,.34) 0 1px, transparent 1.8px);
+  background-size: 220px 220px, 340px 340px, 520px 520px;
+  opacity: .20;
+  animation: oa-star-drift 210s linear infinite;
+}
+
+.oa-sun,
+.oa-orbit,
+.oa-planet {
+  position: absolute;
+  border-radius: 999px;
+}
+
+.oa-sun {
+  width: clamp(120px, 12vw, 210px);
+  height: clamp(120px, 12vw, 210px);
+  right: 8vw;
+  top: 10vh;
+  background:
+    radial-gradient(circle at 38% 34%, #fff9d7 0 10%, #ffe07a 18%, #ffb447 38%, rgba(255, 105, 70, .45) 62%, transparent 72%);
+  filter: blur(.2px);
+  opacity: .36;
+  box-shadow: 0 0 70px rgba(255, 224, 122, .22), 0 0 180px rgba(255, 180, 71, .14);
+  animation: oa-sun-breathe 18s ease-in-out infinite;
+}
+
+.oa-orbit {
+  width: var(--size);
+  height: var(--size);
+  right: calc(8vw + var(--offset, 0px));
+  top: calc(10vh + var(--offset, 0px));
+  border: 1px solid rgba(210, 229, 255, .10);
+  transform: rotate(var(--tilt, -18deg));
+  opacity: .42;
+  animation: oa-orbit-fade 20s ease-in-out infinite;
+}
+
+.oa-planet {
+  width: var(--p, 8px);
+  height: var(--p, 8px);
+  left: 50%;
+  top: 0;
+  background: var(--color, #52f1ff);
+  box-shadow: 0 0 18px var(--color, #52f1ff), 0 0 42px color-mix(in srgb, var(--color, #52f1ff) 42%, transparent);
+  animation: oa-planet-pulse 12s ease-in-out infinite;
+}
+
+.nav,
+.status-callout__link,
+.glass-panel,
+.hero,
+.feature-card,
+.bryforge-card,
+.support-card,
+.metric-strip div,
+.timeline li,
+.hero-status-panel,
+.terminal,
+.footer,
+.founder,
+.roadmap,
+.card,
+body > main > .hero {
+  background: var(--oa-panel) !important;
+  border: 1px solid var(--oa-line) !important;
+  box-shadow: var(--oa-shadow), inset 0 1px 0 rgba(255,255,255,.09) !important;
+  backdrop-filter: blur(26px) saturate(1.10) !important;
+}
+
+.hero,
+body > main > .hero {
+  min-height: auto !important;
+  padding-top: clamp(42px, 5vw, 76px) !important;
+  padding-bottom: clamp(42px, 5vw, 76px) !important;
+}
+
+.hero h1,
+h1,
+.section-heading h2,
+.founder-copy h2,
+.support-card h2,
+.bryforge-card h3,
+.feature-card h3,
+.roadmap h3,
+body > main h1,
+body > main h2 {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.07em !important;
+  line-height: .92 !important;
+  background-image: var(--oa-title) !important;
+  background-size: 220% 100% !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+  animation: oa-title-flow 28s ease-in-out infinite !important;
+  text-wrap: balance;
+}
+
+.hero h1 {
+  font-size: clamp(3.15rem, 7.4vw, 7.2rem) !important;
+  max-width: 900px !important;
+}
+
+.hero-text,
+.section-heading p,
+.feature-card p,
+.bryforge-card p,
+.founder-copy p,
+.hero-status-panel p,
+.support-card p,
+.timeline p,
+.terminal p,
+.footer,
+.small,
+.meta,
+body > main p,
+body > main footer {
+  color: var(--oa-muted) !important;
+  font-weight: 520 !important;
+  line-height: 1.58 !important;
+}
+
+.eyebrow,
+.card-kicker,
+.timeline-status,
+.status-pill,
+.terminal-status,
+.live-pill {
+  color: #dff7ff !important;
+  text-shadow: 0 0 18px rgba(82,241,255,.34) !important;
+  letter-spacing: .18em !important;
+}
+
+.button,
+.button-primary,
+.button-secondary,
+.button-ghost,
+.button-status,
+.button-coffee,
+.status-callout__link,
+.nav-status-link,
+.support-card-mini span,
+.quick-commands button,
+.terminal-form button,
+.hero-status-panel a,
+.footer-links a {
+  color: #ffffff !important;
+  text-shadow: 0 1px 1px rgba(0,0,0,.58), 0 0 16px rgba(255,255,255,.14) !important;
+  font-weight: 850 !important;
+  letter-spacing: .01em !important;
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(rgba(8, 14, 27, .55), rgba(8, 14, 27, .36)) padding-box,
+    var(--oa-action) border-box !important;
+  background-size: 100% 100%, 220% 100% !important;
+  box-shadow: 0 0 22px rgba(82,241,255,.10), 0 0 36px rgba(154,124,255,.08), inset 0 1px 0 rgba(255,255,255,.20) !important;
+  animation: oa-button-flow 24s ease-in-out infinite !important;
+}
+
+.button-primary,
+.button-coffee,
+.button-status,
+.nav-status-link,
+.status-callout__link {
+  background:
+    linear-gradient(90deg, rgba(58,223,255,.78), rgba(108,140,255,.70), rgba(166,93,255,.72), rgba(255,87,210,.70), rgba(255,179,71,.75)) padding-box,
+    var(--oa-action) border-box !important;
+  color: #fff !important;
+}
+
+.button::before,
+.status-callout__link::before,
+.nav-status-link::before,
+.hero-status-panel a::before,
+.quick-commands button::before,
+.terminal-form button::before {
+  opacity: .28 !important;
+  animation-duration: 14s !important;
+}
+
+.hero-command,
+.terminal-output {
+  background: rgba(1, 3, 9, .72) !important;
+  border-color: rgba(210,229,255,.18) !important;
+  color: #f7fbff !important;
+}
+
+.metric-strip div,
+.hero-status-panel {
+  background: rgba(8, 14, 27, .74) !important;
+}
+
+.logo-glass {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(82,241,255,.16), transparent 18rem),
+    radial-gradient(circle at 62% 62%, rgba(255,180,71,.14), transparent 16rem),
+    linear-gradient(145deg, rgba(3,5,12,.98), rgba(10,16,32,.90)) !important;
+}
+
+.phase-logo-image,
+.logo-glass img {
+  filter: contrast(1.05) saturate(1.08) drop-shadow(0 0 18px rgba(255,255,255,.18)) drop-shadow(0 0 38px rgba(82,241,255,.18)) !important;
+}
+
+.feature-card:hover,
+.bryforge-card:hover,
+.support-card:hover,
+.hero-status-panel:hover,
+.metric-strip div:hover,
+.timeline li:hover,
+.card:hover,
+.button:hover,
+.status-callout__link:hover,
+.nav-status-link:hover {
+  border-color: var(--oa-line-strong) !important;
+  box-shadow: 0 38px 128px rgba(0,0,0,.70), 0 0 52px rgba(82,241,255,.15), 0 0 82px rgba(154,124,255,.10), inset 0 1px 0 rgba(255,255,255,.14) !important;
+}
+
+@media (max-width: 920px) {
+  .hero h1 { font-size: clamp(3.25rem, 15vw, 5.8rem) !important; line-height: .94 !important; }
+  .hero { padding-top: 28px !important; }
+  .orbital-system-field { opacity: .60; }
+}
+
+@keyframes oa-title-flow { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+@keyframes oa-button-flow { 0%,100% { background-position: 0 0, 0% 50%; } 50% { background-position: 0 0, 100% 50%; } }
+@keyframes oa-star-drift { to { transform: translate3d(-1.6%, 2.6%, 0); } }
+@keyframes oa-sun-breathe { 0%,100% { transform: scale(.98); opacity: .30; } 50% { transform: scale(1.04); opacity: .42; } }
+@keyframes oa-orbit-fade { 0%,100% { opacity: .28; } 50% { opacity: .46; } }
+@keyframes oa-planet-pulse { 0%,100% { transform: scale(.92); opacity: .72; } 50% { transform: scale(1.18); opacity: .98; } }
