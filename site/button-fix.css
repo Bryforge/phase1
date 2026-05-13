@@ -1,12 +1,13 @@
 @import url("./final-design.css?v=phase1-final-design-v2");
 @import url("./bryforge-aligned.css?v=phase1-bryforge-aligned-v2");
 @import url("./phase1-polish-77.css?v=phase1-polish-77-v1");
-@import url("./phase1-rainbow-space.css?v=phase1-rainbow-space-v3");
-@import url("./rainbow-space-motion.css?v=phase1-rainbow-space-v3");
+@import url("./phase1-rainbow-space.css?v=phase1-rainbow-space-v4");
+@import url("./rainbow-space-motion.css?v=phase1-rainbow-space-v4");
+@import url("./phase1-orbital-authority.css?v=phase1-rainbow-space-v4");
 
 /* Phase1 CSS loader.
-   The active direction is premium rainbow space: readable glass UI,
-   slow glowing stars, and calm recurring shooting stars. */
+   Active direction: premium, readable, public-sector useful, solar-system space design.
+   White button text, consistent fonts, calm glow, and no messy shooting-star streaks. */
 
 .logo-stage,
 .logo-stage::before,
@@ -17,7 +18,8 @@
 .scanlines,
 .noise,
 #space,
-.rainbow-space-field {
+.rainbow-space-field,
+.orbital-system-field {
   pointer-events: none !important;
 }
 
