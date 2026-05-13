@@ -47,12 +47,13 @@ jobs:
           s = p.read_text()
           cache = 'phase1-banner-overhaul-v1'
           structure = 'phase1-structure-recovery-v1'
+          matrix = 'phase1-matrix-fit-v1'
           previous = [
               'phase1-nobackground-v2', 'phase1-superb-overhaul-v1', 'phase1-final-design-v1',
               'phase1-bryforge-aligned-v1', 'phase1-orange-rainbow-v1', 'phase1-polish-77-v1',
               'phase1-orange-spectrum-v1', 'phase1-orange-premium-v1', 'phase1-orange-elite-v1',
               'phase1-rainbow-space-v1', 'phase1-rainbow-space-v2', 'phase1-rainbow-space-v3',
-              'phase1-rainbow-space-v4'
+              'phase1-rainbow-space-v4', 'phase1-visible-fix-v1'
           ]
           for old in previous:
               s = s.replace(f'styles.css?v={old}', f'styles.css?v={cache}')
@@ -63,6 +64,7 @@ jobs:
           for css in [
               f'<link rel="stylesheet" href="./site/phase1-banner-overhaul.css?v={cache}">',
               f'<link rel="stylesheet" href="./site/phase1-structure-recovery.css?v={structure}">',
+              f'<link rel="stylesheet" href="./site/phase1-matrix-fit.css?v={matrix}">',
           ]:
               if css not in s:
                   s = s.replace('</head>', f'  {css}\n</head>')
@@ -86,8 +88,10 @@ jobs:
           test -f _site/status-badge.json
           test -f _site/site/phase1-banner-overhaul.css
           test -f _site/site/phase1-structure-recovery.css
+          test -f _site/site/phase1-matrix-fit.css
           grep -q 'phase1-banner-overhaul.css?v=phase1-banner-overhaul-v1' _site/index.html
           grep -q 'phase1-structure-recovery.css?v=phase1-structure-recovery-v1' _site/index.html
+          grep -q 'phase1-matrix-fit.css?v=phase1-matrix-fit-v1' _site/index.html
           grep -q 'button-fix.css?v=phase1-banner-overhaul-v1' _site/index.html
 
       - name: Configure Pages
