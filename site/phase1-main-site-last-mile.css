@@ -1,0 +1,152 @@
+/* Phase1 main-site last-mile polish.
+   Tiny homepage-only refinement from the 9.5+ baseline.
+   Scope: improve premium feel without changing the accepted design system. */
+
+:root {
+  --lm-line: rgba(232, 248, 255, .19);
+  --lm-line-strong: rgba(232, 248, 255, .28);
+  --lm-muted: #d6e1f0;
+  --lm-cyan: #7df7ff;
+  --lm-orange: #ff8d2f;
+  --lm-spectrum: linear-gradient(115deg, #7df7ff, #50c8ff, #9c7dff, #ff6fec, #ff8d2f, #ffd76c, #85ff9f);
+}
+
+/* Last-mile: make the hero feel crisp and composed, not heavier. */
+.nav {
+  border-color: rgba(232, 248, 255, .18) !important;
+  box-shadow:
+    0 20px 62px rgba(0,0,0,.54),
+    0 0 18px rgba(125,247,255,.055),
+    inset 0 1px 0 rgba(255,255,255,.115) !important;
+}
+
+.hero {
+  border-color: var(--lm-line) !important;
+}
+
+.hero::before {
+  opacity: .19 !important;
+}
+
+.hero h1,
+#hero-title {
+  text-shadow:
+    0 0 16px rgba(125,247,255,.13),
+    0 0 18px rgba(255,141,47,.08),
+    0 2px 20px rgba(0,0,0,.42) !important;
+}
+
+.hero-text {
+  color: var(--lm-muted) !important;
+}
+
+/* Make the official logo stage feel more intentional while staying clean. */
+.logo-glass {
+  border-color: rgba(232, 248, 255, .21) !important;
+}
+
+.logo-glass::before {
+  opacity: .42 !important;
+}
+
+.phase-logo-image,
+.logo-glass img {
+  transform: translateZ(0) scale(1.012) !important;
+}
+
+/* Give CTAs a more expensive rest state and a cleaner hover. */
+.hero-actions a,
+.button,
+.hero-status-panel a,
+.quick-commands button,
+.terminal-form button,
+.footer-links a {
+  border-color: transparent !important;
+  color: #fff !important;
+}
+
+.hero-actions a::before,
+.button::before,
+.hero-status-panel a::before,
+.quick-commands button::before,
+.terminal-form button::before,
+.footer-links a::before {
+  opacity: .24 !important;
+  filter: blur(3.2px) saturate(1.05) !important;
+}
+
+.hero-actions a:hover::before,
+.button:hover::before,
+.hero-status-panel a:hover::before,
+.quick-commands button:hover::before,
+.terminal-form button:hover::before,
+.footer-links a:hover::before {
+  opacity: .72 !important;
+  filter: blur(6.2px) saturate(1.18) !important;
+}
+
+/* Cards: stronger hierarchy, still soft. */
+.feature-card,
+.terminal,
+.roadmap,
+.founder,
+.support-card,
+.hero-status-panel,
+.metric-strip div,
+.bryforge-card,
+.timeline li {
+  border-color: var(--lm-line) !important;
+}
+
+.feature-card:hover,
+.metric-strip div:hover,
+.timeline li:hover,
+.bryforge-card:hover {
+  border-color: var(--lm-line-strong) !important;
+}
+
+.feature-card p,
+.timeline p,
+.founder-copy p,
+.support-card p,
+.hero-status-panel p {
+  color: var(--lm-muted) !important;
+}
+
+/* Terminal: final readability lift. */
+.terminal-output {
+  line-height: 1.62 !important;
+  letter-spacing: .005em !important;
+}
+
+.terminal-form input {
+  color: #f8fdff !important;
+}
+
+/* Core values: keep it premium and contained. */
+.support-card-mini span {
+  min-height: 52px !important;
+}
+
+.support-card-mini span::after {
+  opacity: .22 !important;
+}
+
+.support-card-mini span:hover::after {
+  opacity: .46 !important;
+}
+
+/* Slightly improve mobile polish without changing layout. */
+@media (max-width: 720px) {
+  .nav {
+    border-radius: 18px !important;
+  }
+
+  .hero-actions {
+    gap: 10px !important;
+  }
+
+  .hero-command {
+    font-size: .86rem !important;
+  }
+}
