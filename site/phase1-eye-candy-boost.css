@@ -1,0 +1,157 @@
+/* Phase1 eye-candy boost pass.
+   Intentionally obvious visual lift after the eye-candy layer:
+   - richer black-space star sparkle
+   - more premium matrix glow
+   - consistent bright white button text
+   - very small, distinct color halos around button families
+*/
+
+:root {
+  --boost-white: #ffffff;
+  --boost-blue: #50c8ff;
+  --boost-cyan: #7df7ff;
+  --boost-violet: #9c7dff;
+  --boost-pink: #ff6fec;
+  --boost-orange: #ff8d2f;
+  --boost-gold: #ffd76c;
+  --boost-green: #85ff9f;
+}
+
+body {
+  background:
+    radial-gradient(circle at 16% 14%, rgba(80, 200, 255, .18), transparent 24rem),
+    radial-gradient(circle at 88% 18%, rgba(255, 141, 47, .16), transparent 28rem),
+    radial-gradient(circle at 48% 106%, rgba(156, 125, 255, .13), transparent 34rem),
+    linear-gradient(180deg, #010207 0%, #030713 48%, #010207 100%) !important;
+}
+
+body::before {
+  opacity: .84 !important;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.070) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255,255,255,.052) 1px, transparent 1px),
+    linear-gradient(90deg, transparent 0 calc(50% - 1px), rgba(125,247,255,.22) 50%, transparent calc(50% + 1px) 100%),
+    linear-gradient(0deg, transparent 0 calc(50% - 1px), rgba(255,141,47,.17) 50%, transparent calc(50% + 1px) 100%),
+    radial-gradient(circle at 22% 28%, rgba(80,200,255,.13), transparent 28rem),
+    radial-gradient(circle at 78% 34%, rgba(255,141,47,.11), transparent 28rem) !important;
+  background-size: 42px 42px, 42px 42px, 168px 168px, 168px 168px, 100% 100%, 100% 100% !important;
+}
+
+body::after {
+  opacity: .96 !important;
+  background:
+    radial-gradient(circle at 4% 10%, rgba(125,247,255,.95) 0 1.3px, transparent 3.5px),
+    radial-gradient(circle at 9% 47%, rgba(255,255,255,.70) 0 1px, transparent 2.8px),
+    radial-gradient(circle at 15% 78%, rgba(255,215,108,.88) 0 1.2px, transparent 3.4px),
+    radial-gradient(circle at 22% 24%, rgba(255,111,236,.82) 0 1.2px, transparent 3.5px),
+    radial-gradient(circle at 31% 61%, rgba(133,255,159,.78) 0 1.2px, transparent 3.4px),
+    radial-gradient(circle at 39% 15%, rgba(156,125,255,.88) 0 1.2px, transparent 3.6px),
+    radial-gradient(circle at 49% 88%, rgba(255,255,255,.58) 0 1px, transparent 2.8px),
+    radial-gradient(circle at 57% 48%, rgba(80,200,255,.82) 0 1.2px, transparent 3.4px),
+    radial-gradient(circle at 65% 20%, rgba(255,141,47,.90) 0 1.3px, transparent 3.6px),
+    radial-gradient(circle at 74% 74%, rgba(125,247,255,.76) 0 1.2px, transparent 3.4px),
+    radial-gradient(circle at 82% 36%, rgba(255,255,255,.55) 0 1px, transparent 2.8px),
+    radial-gradient(circle at 90% 14%, rgba(255,111,236,.76) 0 1.2px, transparent 3.4px),
+    radial-gradient(circle at 96% 68%, rgba(255,215,108,.78) 0 1.2px, transparent 3.5px) !important;
+  filter: drop-shadow(0 0 8px rgba(125,247,255,.40)) drop-shadow(0 0 10px rgba(255,141,47,.20)) !important;
+  animation: boost-star-breathe 12s ease-in-out infinite !important;
+}
+
+.hero,
+.nav,
+.status-callout__link,
+.feature-card,
+.roadmap,
+.founder,
+.support-card,
+.terminal,
+.footer,
+.hero-status-panel,
+.metric-strip div,
+.bryforge-card,
+.timeline li {
+  box-shadow:
+    0 28px 96px rgba(0, 0, 0, .62),
+    0 0 36px rgba(125, 247, 255, .105),
+    0 0 40px rgba(255, 141, 47, .075),
+    inset 0 1px 0 rgba(255, 255, 255, .12) !important;
+}
+
+.hero {
+  border-color: rgba(225,239,255,.22) !important;
+}
+
+.button,
+.nav-links a,
+.status-callout__link,
+.hero-status-panel a,
+.quick-commands button,
+.terminal-form button,
+.footer-links a {
+  color: #fff !important;
+  font-weight: 850 !important;
+  letter-spacing: .012em !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.10),
+    0 0 18px var(--boost-shadow, rgba(125,247,255,.18)),
+    inset 0 1px 0 rgba(255,255,255,.22) !important;
+}
+
+.button::before,
+.nav-links a::before,
+.status-callout__link::before,
+.hero-status-panel a::before,
+.quick-commands button::before,
+.terminal-form button::before,
+.footer-links a::before {
+  inset: -4px !important;
+  opacity: .72 !important;
+  filter: blur(5.5px) !important;
+}
+
+.button-primary,
+.status-callout__link {
+  --boost-shadow: rgba(80,200,255,.25);
+  --ec-edge: linear-gradient(90deg, rgba(125,247,255,.72), rgba(80,200,255,.48), rgba(255,141,47,.55));
+}
+.button-secondary,
+.quick-commands button {
+  --boost-shadow: rgba(156,125,255,.22);
+  --ec-edge: linear-gradient(90deg, rgba(125,247,255,.58), rgba(156,125,255,.54), rgba(255,111,236,.44));
+}
+.button-ghost,
+.footer-links a {
+  --boost-shadow: rgba(255,255,255,.14);
+  --ec-edge: linear-gradient(90deg, rgba(255,255,255,.42), rgba(125,247,255,.50), rgba(255,255,255,.30));
+}
+.button-status,
+.hero-status-panel a,
+.terminal-form button {
+  --boost-shadow: rgba(133,255,159,.20);
+  --ec-edge: linear-gradient(90deg, rgba(133,255,159,.58), rgba(125,247,255,.54), rgba(80,200,255,.42));
+}
+.button-coffee {
+  --boost-shadow: rgba(255,141,47,.22);
+  --ec-edge: linear-gradient(90deg, rgba(255,215,108,.62), rgba(255,141,47,.58), rgba(255,111,236,.42));
+}
+
+.hero h1 {
+  filter: drop-shadow(0 0 16px rgba(125,247,255,.13)) drop-shadow(0 0 18px rgba(255,141,47,.10)) !important;
+}
+
+.logo-glass {
+  box-shadow:
+    0 0 0 1px rgba(225,239,255,.18),
+    0 0 58px rgba(125,247,255,.20),
+    0 0 64px rgba(255,141,47,.14),
+    inset 0 0 60px rgba(255,255,255,.05) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::after { animation: none !important; }
+}
+
+@keyframes boost-star-breathe {
+  0%,100% { opacity: .72; }
+  50% { opacity: 1; }
+}
