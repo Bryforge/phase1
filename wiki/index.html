@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Phase1 Wiki // Bryforge Docs Hub</title>
-  <meta name="description" content="Phase1 wiki and docs hub by Bryforge: quick start, command reference, security model, storage and VFS, runtime roadmap, browser safety, updates, tutorials, sponsorship, and Bryforge information.">
+  <meta name="description" content="Phase1 wiki and docs hub by Bryforge: quick start, command reference, security model, storage and VFS, runtime roadmap, browser safety, troubleshooting, updates, tutorials, sponsorship, and Bryforge information.">
   <meta name="robots" content="index, follow, max-image-preview:large">
   <meta name="theme-color" content="#050711">
   <link rel="canonical" href="https://bryforge.github.io/phase1/wiki/">
@@ -15,9 +15,9 @@
   <meta property="og:image" content="https://bryforge.github.io/phase1/assets/phase1-nobackground.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Phase1 Wiki // Bryforge Docs Hub">
-  <meta name="twitter:description" content="Quick start, command reference, security model, storage/VFS, runtime roadmap, browser safety, tutorials, and public roadmap for Phase1.">
+  <meta name="twitter:description" content="Quick start, command reference, security model, storage/VFS, runtime roadmap, browser safety, troubleshooting, and public roadmap for Phase1.">
   <meta name="twitter:image" content="https://bryforge.github.io/phase1/assets/phase1-nobackground.png">
-  <link rel="stylesheet" href="./docs.css?v=phase1-wiki-browser-v1">
+  <link rel="stylesheet" href="./docs.css?v=phase1-wiki-troubleshooting-v1">
   <link rel="stylesheet" href="../site/phase1-eye-candy-boost.css?v=phase1-eye-candy-boost-v1">
   <link rel="stylesheet" href="../site/phase1-starlight-motion.css?v=phase1-starlight-motion-v1">
   <link rel="stylesheet" href="../site/phase1-starlight-premium.css?v=phase1-starlight-premium-v1">
@@ -48,6 +48,7 @@
         <a href="storage.html">Storage + VFS</a>
         <a href="runtime.html">Runtime Roadmap</a>
         <a href="browser.html">Browser Safety</a>
+        <a href="troubleshooting.html">Troubleshooting</a>
         <a href="#quick-start">Quick Start</a>
         <a href="#boot">Boot Profiles</a>
         <a href="#commands">Command Index</a>
@@ -70,11 +71,11 @@
           <h1>Phase1 Wiki Hub</h1>
           <p class="hero-text">
             The public documentation center for Phase1: quick start, command reference, security model, storage and VFS,
-            runtime roadmap, browser safety, tutorials, Bryforge, sponsorship, and the path toward a complete website wiki.
+            runtime roadmap, browser safety, troubleshooting, tutorials, Bryforge, sponsorship, and the path toward a complete website wiki.
           </p>
           <div class="search-wrap" role="search">
             <label for="docs-search">Search Phase1 docs</label>
-            <input id="docs-search" type="search" placeholder="Search commands, security, storage, runtime, browser, Bryforge..." autocomplete="off">
+            <input id="docs-search" type="search" placeholder="Search commands, security, storage, runtime, browser, troubleshooting..." autocomplete="off">
           </div>
         </div>
         <img src="../assets/phase1-nobackground.png" alt="Phase1 logo" class="hero-logo">
@@ -99,8 +100,11 @@
         <a class="quick-card" href="browser.html" data-search="browser network safety http html scheme loopback active content">
           <span>06</span><strong>Browser</strong><small>Network safety model.</small>
         </a>
+        <a class="quick-card" href="troubleshooting.html" data-search="troubleshooting cache mobile cargo safe mode status pages deploy">
+          <span>07</span><strong>Fix path</strong><small>Troubleshooting guide.</small>
+        </a>
         <a class="quick-card" href="../status.html" data-search="status roadmap progress public marker">
-          <span>07</span><strong>Status</strong><small>Live roadmap signal.</small>
+          <span>08</span><strong>Status</strong><small>Live roadmap signal.</small>
         </a>
       </section>
 
@@ -168,7 +172,7 @@
         <p>The website roadmap includes release story cards for stable and edge builds, migration notes, version comparison, quality score updates, and audit links. The status page remains the public signal for estimated roadmap progress.</p>
       </section>
 
-      <section id="troubleshooting" class="doc-section panel" data-search="troubleshooting errors pages deploy github pages safe mode cargo rust terminal">
+      <section id="troubleshooting" class="doc-section panel" data-search="troubleshooting errors pages deploy github pages safe mode cargo rust terminal cache mobile">
         <p class="eyebrow">troubleshooting</p>
         <h2>Common fixes, explained plainly.</h2>
         <ul class="clean-list">
@@ -177,6 +181,7 @@
           <li>Rust toolchain, Clippy, cargo-audit, and cargo-deny checks.</li>
           <li>Terminal display, mobile layout, and color fallback issues.</li>
         </ul>
+        <p><a class="coffee-link" href="troubleshooting.html">Open troubleshooting guide →</a></p>
       </section>
 
       <section id="tutorials" class="doc-section panel" data-search="tutorials lessons walkthroughs terminal os storage git rust browser language">
@@ -204,6 +209,6 @@
     </main>
   </div>
 
-  <script src="./docs.js?v=phase1-wiki-browser-v1"></script>
+  <script src="./docs.js?v=phase1-wiki-troubleshooting-v1"></script>
 </body>
 </html>
