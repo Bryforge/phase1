@@ -1,0 +1,252 @@
+/* Phase1 starlight depth pass.
+   Builds on the accepted premium starlight direction with more visual depth,
+   cleaner consistency, and subtle eye-candy motion without reintroducing matrix grids. */
+
+:root {
+  --sd-black: #010208;
+  --sd-text: #fbfdff;
+  --sd-muted: #cedbed;
+  --sd-cyan: #7df7ff;
+  --sd-blue: #50c8ff;
+  --sd-violet: #9c7dff;
+  --sd-pink: #ff6fec;
+  --sd-orange: #ff8d2f;
+  --sd-gold: #ffd76c;
+  --sd-green: #85ff9f;
+}
+
+body {
+  color: var(--sd-text) !important;
+  background:
+    radial-gradient(circle at 12% 10%, rgba(125,247,255,.17), transparent 22rem),
+    radial-gradient(circle at 90% 18%, rgba(255,141,47,.14), transparent 28rem),
+    radial-gradient(circle at 52% 110%, rgba(156,125,255,.14), transparent 35rem),
+    linear-gradient(180deg, #010208 0%, #020612 46%, #010208 100%) !important;
+}
+
+/* Soft nebula, no matrix grid. */
+body::before {
+  background:
+    radial-gradient(ellipse at 18% 18%, rgba(125,247,255,.13), transparent 32rem),
+    radial-gradient(ellipse at 78% 26%, rgba(255,141,47,.11), transparent 34rem),
+    radial-gradient(ellipse at 48% 78%, rgba(156,125,255,.09), transparent 38rem) !important;
+  opacity: .55 !important;
+  animation: sd-nebula-float 46s ease-in-out infinite alternate !important;
+}
+
+.phase-starfield {
+  opacity: 1 !important;
+}
+
+.phase-starfield::before {
+  animation: sd-star-drift-a 82s linear infinite, sd-star-pulse 11s ease-in-out infinite !important;
+}
+
+.phase-starfield::after {
+  opacity: .74 !important;
+  animation: sd-star-drift-b 110s linear infinite reverse, sd-star-pulse-soft 16s ease-in-out infinite !important;
+}
+
+.phase-starfield__drift {
+  opacity: .68 !important;
+  animation: sd-star-drift-c 132s linear infinite, sd-star-pulse-soft 19s ease-in-out infinite !important;
+}
+
+/* Add a very subtle orbital color wash behind the whole page. */
+.phase-starfield__drift::before {
+  width: min(62vw, 760px) !important;
+  height: min(62vw, 760px) !important;
+  left: 58% !important;
+  top: 7% !important;
+  border-radius: 50% !important;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(125,247,255,.00), rgba(125,247,255,.10) 34%, rgba(255,141,47,.07) 54%, transparent 70%) !important;
+  filter: blur(2px) !important;
+  opacity: .52 !important;
+  transform: none !important;
+  animation: sd-orbital-breathe 24s ease-in-out infinite !important;
+}
+
+.phase-starfield__drift::after {
+  width: 190px !important;
+  height: 1px !important;
+  top: 58% !important;
+  left: -20% !important;
+  border-radius: 999px !important;
+  background: linear-gradient(90deg, transparent, rgba(125,247,255,.85), rgba(255,255,255,.92), rgba(255,141,47,.34), transparent) !important;
+  opacity: 0 !important;
+  filter: drop-shadow(0 0 10px rgba(125,247,255,.40)) !important;
+  transform: rotate(-15deg) translateX(-120vw) !important;
+  animation: sd-comet 29s ease-in-out infinite 6s !important;
+}
+
+.hero,
+.status-hero,
+.feature-card,
+.terminal,
+.roadmap,
+.founder,
+.support-card,
+.status-card {
+  backdrop-filter: blur(22px) saturate(1.16) !important;
+}
+
+.hero,
+.status-hero {
+  background:
+    radial-gradient(circle at 18% 16%, rgba(125,247,255,.12), transparent 24rem),
+    radial-gradient(circle at 86% 24%, rgba(255,141,47,.10), transparent 27rem),
+    linear-gradient(145deg, rgba(6,10,22,.92), rgba(255,255,255,.055)) !important;
+  box-shadow:
+    0 36px 124px rgba(0,0,0,.68),
+    0 0 52px rgba(125,247,255,.12),
+    0 0 56px rgba(255,141,47,.085),
+    inset 0 1px 0 rgba(255,255,255,.14) !important;
+}
+
+.hero-status-panel,
+.metric-strip div,
+.feature-card,
+.roadmap,
+.founder,
+.support-card,
+.terminal,
+.footer,
+.status-card,
+.status-metrics,
+.status-footer,
+.metric {
+  border-color: rgba(238,248,255,.18) !important;
+}
+
+.status-callout__link,
+.nav,
+.status-nav {
+  box-shadow:
+    0 18px 58px rgba(0,0,0,.48),
+    0 0 28px rgba(125,247,255,.10),
+    0 0 32px rgba(255,141,47,.07),
+    inset 0 1px 0 rgba(255,255,255,.12) !important;
+}
+
+.hero h1,
+.status-hero h1 {
+  letter-spacing: clamp(-.062em, -.55vw, -.045em) !important;
+  text-shadow:
+    0 0 18px rgba(125,247,255,.13),
+    0 0 22px rgba(255,141,47,.09),
+    0 2px 18px rgba(0,0,0,.34) !important;
+}
+
+.hero-text,
+.section-heading p,
+.feature-card p,
+.founder-copy p,
+.support-card p,
+.hero-status-panel p,
+.timeline p,
+.small,
+.meta {
+  color: var(--sd-muted) !important;
+}
+
+/* Fine-tune buttons: consistent white text, visible but small outer halo. */
+.button,
+.nav-links a,
+.status-callout__link,
+.hero-status-panel a,
+.quick-commands button,
+.terminal-form button,
+.footer-links a,
+.status-links a,
+.status-button {
+  color: #fff !important;
+  text-shadow: 0 1px 1px rgba(0,0,0,.62), 0 0 10px rgba(255,255,255,.15) !important;
+}
+
+.button::before,
+.nav-links a::before,
+.status-callout__link::before,
+.hero-status-panel a::before,
+.quick-commands button::before,
+.terminal-form button::before,
+.footer-links a::before,
+.status-links a::before,
+.status-button::before {
+  inset: -3px !important;
+  opacity: .62 !important;
+  filter: blur(4.6px) !important;
+}
+
+.button:hover::before,
+.nav-links a:hover::before,
+.status-callout__link:hover::before,
+.hero-status-panel a:hover::before,
+.quick-commands button:hover::before,
+.terminal-form button:hover::before,
+.footer-links a:hover::before,
+.status-links a:hover::before,
+.status-button:hover::before {
+  opacity: .86 !important;
+  filter: blur(5.8px) !important;
+}
+
+.logo-stage {
+  filter: drop-shadow(0 0 30px rgba(125,247,255,.08)) drop-shadow(0 0 34px rgba(255,141,47,.06)) !important;
+}
+
+.logo-glass {
+  box-shadow:
+    0 0 0 1px rgba(238,248,255,.18),
+    0 0 60px rgba(125,247,255,.18),
+    0 0 62px rgba(255,141,47,.12),
+    inset 0 0 62px rgba(255,255,255,.052) !important;
+}
+
+@media (max-height: 820px) and (min-width: 900px) {
+  .hero h1 { font-size: clamp(2.05rem, min(4.35vw, 6.45vh), 4.45rem) !important; }
+  .phase-starfield { opacity: .88 !important; }
+}
+
+@media (max-width: 680px) {
+  .phase-starfield { opacity: .76 !important; }
+  .phase-starfield__drift::before { opacity: .34 !important; }
+}
+
+@keyframes sd-nebula-float {
+  0% { transform: translate3d(0,0,0) scale(1); opacity: .42; }
+  100% { transform: translate3d(1.2%, -1.4%, 0) scale(1.04); opacity: .58; }
+}
+
+@keyframes sd-star-pulse {
+  0%, 100% { opacity: .62; }
+  50% { opacity: 1; }
+}
+
+@keyframes sd-star-pulse-soft {
+  0%, 100% { opacity: .42; }
+  50% { opacity: .82; }
+}
+
+@keyframes sd-star-drift-a {
+  to { transform: translate3d(4%, 4%, 0) scale(1.035); }
+}
+
+@keyframes sd-star-drift-b {
+  to { transform: translate3d(-4%, 3%, 0) scale(1.03); }
+}
+
+@keyframes sd-star-drift-c {
+  to { transform: translate3d(3%, -3%, 0) scale(1.04); }
+}
+
+@keyframes sd-orbital-breathe {
+  0%, 100% { opacity: .32; transform: scale(.96); }
+  50% { opacity: .58; transform: scale(1.02); }
+}
+
+@keyframes sd-comet {
+  0%, 58%, 100% { opacity: 0; transform: rotate(-15deg) translateX(-120vw); }
+  64% { opacity: .74; }
+  80% { opacity: 0; transform: rotate(-15deg) translateX(145vw); }
+}
