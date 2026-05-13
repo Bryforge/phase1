@@ -40,12 +40,12 @@ jobs:
           cp -R site/. _site/
           cp -R site/. _site/site/
 
-          # Force the rainbow-space Phase1 visual layer on Pages.
+          # Force the rainbow-space Phase1 visual layer with visible star motion on Pages.
           python3 - <<'PY'
           from pathlib import Path
           p = Path('_site/index.html')
           s = p.read_text()
-          cache = 'phase1-rainbow-space-v1'
+          cache = 'phase1-rainbow-space-v2'
           replacements = {
               'styles.css?v=phase1-nobackground-v2': f'styles.css?v={cache}',
               'styles.css?v=phase1-superb-overhaul-v1': f'styles.css?v={cache}',
@@ -56,6 +56,7 @@ jobs:
               'styles.css?v=phase1-orange-spectrum-v1': f'styles.css?v={cache}',
               'styles.css?v=phase1-orange-premium-v1': f'styles.css?v={cache}',
               'styles.css?v=phase1-orange-elite-v1': f'styles.css?v={cache}',
+              'styles.css?v=phase1-rainbow-space-v1': f'styles.css?v={cache}',
               'button-fix.css?v=phase1-alive-buttons-v6': f'button-fix.css?v={cache}',
               'button-fix.css?v=phase1-visual-overhaul-v2': f'button-fix.css?v={cache}',
               'button-fix.css?v=phase1-superb-overhaul-v1': f'button-fix.css?v={cache}',
@@ -66,6 +67,7 @@ jobs:
               'button-fix.css?v=phase1-orange-spectrum-v1': f'button-fix.css?v={cache}',
               'button-fix.css?v=phase1-orange-premium-v1': f'button-fix.css?v={cache}',
               'button-fix.css?v=phase1-orange-elite-v1': f'button-fix.css?v={cache}',
+              'button-fix.css?v=phase1-rainbow-space-v1': f'button-fix.css?v={cache}',
               'button-fix.js?v=phase1-alive-buttons-v6': f'button-fix.js?v={cache}',
               'button-fix.js?v=phase1-visual-overhaul-v2': f'button-fix.js?v={cache}',
               'button-fix.js?v=phase1-superb-overhaul-v1': f'button-fix.js?v={cache}',
@@ -76,6 +78,7 @@ jobs:
               'button-fix.js?v=phase1-orange-spectrum-v1': f'button-fix.js?v={cache}',
               'button-fix.js?v=phase1-orange-premium-v1': f'button-fix.js?v={cache}',
               'button-fix.js?v=phase1-orange-elite-v1': f'button-fix.js?v={cache}',
+              'button-fix.js?v=phase1-rainbow-space-v1': f'button-fix.js?v={cache}',
               'site.js?v=phase1-nobackground-v2': f'site.js?v={cache}',
               'site.js?v=phase1-superb-overhaul-v1': f'site.js?v={cache}',
               'site.js?v=phase1-final-design-v1': f'site.js?v={cache}',
@@ -85,15 +88,17 @@ jobs:
               'site.js?v=phase1-orange-spectrum-v1': f'site.js?v={cache}',
               'site.js?v=phase1-orange-premium-v1': f'site.js?v={cache}',
               'site.js?v=phase1-orange-elite-v1': f'site.js?v={cache}',
-              'official-phase1-logo-v7': 'official-phase1-logo-rainbow-space-v1',
-              'official-phase1-logo-final-v1': 'official-phase1-logo-rainbow-space-v1',
-              'official-phase1-logo-final-v2': 'official-phase1-logo-rainbow-space-v1',
-              'official-phase1-logo-bryforge-v1': 'official-phase1-logo-rainbow-space-v1',
-              'official-phase1-logo-orange-rainbow-v1': 'official-phase1-logo-rainbow-space-v1',
-              'official-phase1-logo-polish-77-v1': 'official-phase1-logo-rainbow-space-v1',
-              'official-phase1-logo-orange-spectrum-v1': 'official-phase1-logo-rainbow-space-v1',
-              'official-phase1-logo-orange-premium-v1': 'official-phase1-logo-rainbow-space-v1',
-              'official-phase1-logo-orange-elite-v1': 'official-phase1-logo-rainbow-space-v1',
+              'site.js?v=phase1-rainbow-space-v1': f'site.js?v={cache}',
+              'official-phase1-logo-v7': 'official-phase1-logo-rainbow-space-v2',
+              'official-phase1-logo-final-v1': 'official-phase1-logo-rainbow-space-v2',
+              'official-phase1-logo-final-v2': 'official-phase1-logo-rainbow-space-v2',
+              'official-phase1-logo-bryforge-v1': 'official-phase1-logo-rainbow-space-v2',
+              'official-phase1-logo-orange-rainbow-v1': 'official-phase1-logo-rainbow-space-v2',
+              'official-phase1-logo-polish-77-v1': 'official-phase1-logo-rainbow-space-v2',
+              'official-phase1-logo-orange-spectrum-v1': 'official-phase1-logo-rainbow-space-v2',
+              'official-phase1-logo-orange-premium-v1': 'official-phase1-logo-rainbow-space-v2',
+              'official-phase1-logo-orange-elite-v1': 'official-phase1-logo-rainbow-space-v2',
+              'official-phase1-logo-rainbow-space-v1': 'official-phase1-logo-rainbow-space-v2',
           }
           for old, new in replacements.items():
               s = s.replace(old, new)
@@ -102,12 +107,16 @@ jobs:
               f'<link rel="stylesheet" href="./site/bryforge-aligned.css?v={cache}">',
               f'<link rel="stylesheet" href="./site/phase1-polish-77.css?v={cache}">',
               f'<link rel="stylesheet" href="./site/phase1-rainbow-space.css?v={cache}">',
+              f'<link rel="stylesheet" href="./site/rainbow-space-motion.css?v={cache}">',
           ]:
               if css not in s:
                   s = s.replace('</head>', f'  {css}\n</head>')
-          script = f'<script src="./site/visual-overhaul.js?v={cache}"></script>'
-          if script not in s:
-              s = s.replace('</body>', f'{script}</body>')
+          for script in [
+              f'<script src="./site/visual-overhaul.js?v={cache}"></script>',
+              f'<script src="./site/rainbow-space-motion.js?v={cache}"></script>',
+          ]:
+              if script not in s:
+                  s = s.replace('</body>', f'{script}</body>')
           p.write_text(s)
           PY
 
@@ -126,9 +135,12 @@ jobs:
           test -f _site/status.json
           test -f _site/status-badge.json
           test -f _site/site/phase1-rainbow-space.css
-          test -f _site/phase1-rainbow-space.css
-          test -f _site/site/visual-overhaul.js
-          grep -q 'phase1-rainbow-space.css?v=phase1-rainbow-space-v1' _site/index.html
+          test -f _site/site/rainbow-space-motion.css
+          test -f _site/site/rainbow-space-motion.js
+          test -f _site/rainbow-space-motion.css
+          test -f _site/rainbow-space-motion.js
+          grep -q 'rainbow-space-motion.css?v=phase1-rainbow-space-v2' _site/index.html
+          grep -q 'rainbow-space-motion.js?v=phase1-rainbow-space-v2' _site/index.html
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
