@@ -63,7 +63,9 @@ jobs:
           main_finish = 'phase1-main-site-finish-v1'
           last_mile = 'phase1-main-site-last-mile-v1'
           plus = 'phase1-main-site-95plus-v1'
+          main_refine = 'phase1-main-site-refine-v1'
           public_pages = 'phase1-public-pages-align-v1'
+          public_pages_refine = 'phase1-public-pages-refine-v1'
           status_polish = 'phase1-status-polish-v1'
           previous = [
               'phase1-nobackground-v2', 'phase1-superb-overhaul-v1', 'phase1-final-design-v1',
@@ -76,18 +78,19 @@ jobs:
               'phase1-starlight-motion-v1', 'phase1-starlight-premium-v1', 'phase1-starlight-depth-v1',
               'phase1-spectrum-buttons-v1', 'phase1-spectrum-solid-v1', 'phase1-computer-joy-v1',
               'phase1-machine-harmony-v1', 'phase1-public-polish-v1', 'phase1-presentation-10-v1',
-              'phase1-core-values-fix-v1', 'phase1-main-site-finish-v1', 'phase1-main-site-last-mile-v1'
+              'phase1-core-values-fix-v1', 'phase1-main-site-finish-v1', 'phase1-main-site-last-mile-v1',
+              'phase1-main-site-95plus-v1'
           ]
           def add_once(text, tag):
               return text if tag in text else text.replace('</head>', f'  {tag}\n</head>')
           p = Path('_site/index.html')
           s = p.read_text()
           for old in previous:
-              s = s.replace(f'styles.css?v={old}', f'styles.css?v={plus}')
-              s = s.replace(f'button-fix.css?v={old}', f'button-fix.css?v={plus}')
-              s = s.replace(f'site.js?v={old}', f'site.js?v={plus}')
-              s = s.replace(f'button-fix.js?v={old}', f'button-fix.js?v={plus}')
-              s = s.replace(f'official-phase1-logo-{old.replace("phase1-", "")}', 'official-phase1-logo-95plus-v1')
+              s = s.replace(f'styles.css?v={old}', f'styles.css?v={main_refine}')
+              s = s.replace(f'button-fix.css?v={old}', f'button-fix.css?v={main_refine}')
+              s = s.replace(f'site.js?v={old}', f'site.js?v={main_refine}')
+              s = s.replace(f'button-fix.js?v={old}', f'button-fix.js?v={main_refine}')
+              s = s.replace(f'official-phase1-logo-{old.replace("phase1-", "")}', 'official-phase1-logo-main-refine-v1')
           for css in [
               f'<link rel="stylesheet" href="./site/phase1-banner-overhaul.css?v={banner}">',
               f'<link rel="stylesheet" href="./site/phase1-structure-recovery.css?v={structure}">',
@@ -110,6 +113,7 @@ jobs:
               f'<link rel="stylesheet" href="./site/phase1-main-site-finish.css?v={main_finish}">',
               f'<link rel="stylesheet" href="./site/phase1-main-site-last-mile.css?v={last_mile}">',
               f'<link rel="stylesheet" href="./site/phase1-main-site-95plus.css?v={plus}">',
+              f'<link rel="stylesheet" href="./site/phase1-main-site-refine.css?v={main_refine}">',
           ]:
               s = add_once(s, css)
           p.write_text(s)
@@ -131,6 +135,7 @@ jobs:
                   f'<link rel="stylesheet" href="./site/phase1-presentation-10.css?v={presentation}">',
                   f'<link rel="stylesheet" href="./site/phase1-core-values-fix.css?v={core_fix}">',
                   f'<link rel="stylesheet" href="./site/phase1-public-pages-align.css?v={public_pages}">',
+                  f'<link rel="stylesheet" href="./site/phase1-public-pages-refine.css?v={public_pages_refine}">',
               ]:
                   t = add_once(t, css)
               sp.write_text(t)
@@ -156,15 +161,17 @@ jobs:
           test -f _site/site/phase1-main-site-finish.css
           test -f _site/site/phase1-main-site-last-mile.css
           test -f _site/site/phase1-main-site-95plus.css
+          test -f _site/site/phase1-main-site-refine.css
           test -f _site/site/phase1-public-pages-align.css
+          test -f _site/site/phase1-public-pages-refine.css
           test -f _site/wiki/index.html
           test -f _site/wiki/docs.css
           test -f _site/wiki/docs.js
-          grep -q 'phase1-main-site-95plus.css?v=phase1-main-site-95plus-v1' _site/index.html
-          grep -q 'button-fix.css?v=phase1-main-site-95plus-v1' _site/index.html
-          grep -q 'site.js?v=phase1-main-site-95plus-v1' _site/index.html
-          grep -q 'phase1-public-pages-align.css?v=phase1-public-pages-align-v1' _site/status.html
-          grep -q 'phase1-public-pages-align.css?v=phase1-public-pages-align-v1' _site/wiki/index.html
+          grep -q 'phase1-main-site-refine.css?v=phase1-main-site-refine-v1' _site/index.html
+          grep -q 'button-fix.css?v=phase1-main-site-refine-v1' _site/index.html
+          grep -q 'site.js?v=phase1-main-site-refine-v1' _site/index.html
+          grep -q 'phase1-public-pages-refine.css?v=phase1-public-pages-refine-v1' _site/status.html
+          grep -q 'phase1-public-pages-refine.css?v=phase1-public-pages-refine-v1' _site/wiki/index.html
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
