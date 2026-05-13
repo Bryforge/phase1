@@ -1,0 +1,19 @@
+/* Phase1 side rail fit fix.
+   Removes the clipped BUILD / EXECUTE / STORE / VERIFY / CONNECT side rail from
+   the first-view hero. It was decorative, but it was not fitting cleanly on
+   real screens and distracted from the homepage quality. */
+
+.hero-copy::before {
+  content: none !important;
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+.hero-copy {
+  overflow: visible !important;
+}
+
+.hero {
+  overflow: hidden !important;
+}
