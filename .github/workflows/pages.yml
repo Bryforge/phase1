@@ -54,6 +54,7 @@ jobs:
           starlight = 'phase1-starlight-motion-v1'
           premium = 'phase1-starlight-premium-v1'
           depth = 'phase1-starlight-depth-v1'
+          spectrum = 'phase1-spectrum-buttons-v1'
           status_polish = 'phase1-status-polish-v1'
           previous = [
               'phase1-nobackground-v2', 'phase1-superb-overhaul-v1', 'phase1-final-design-v1',
@@ -63,18 +64,18 @@ jobs:
               'phase1-rainbow-space-v4', 'phase1-visible-fix-v1', 'phase1-render-fix-v1',
               'phase1-matrix-fit-v1', 'phase1-matrix-polish-v1', 'phase1-matrix-readability-v1',
               'phase1-star-edge-polish-v1', 'phase1-eye-candy-v1', 'phase1-eye-candy-boost-v1',
-              'phase1-starlight-motion-v1', 'phase1-starlight-premium-v1'
+              'phase1-starlight-motion-v1', 'phase1-starlight-premium-v1', 'phase1-starlight-depth-v1'
           ]
           def add_once(text, tag):
               return text if tag in text else text.replace('</head>', f'  {tag}\n</head>')
           p = Path('_site/index.html')
           s = p.read_text()
           for old in previous:
-              s = s.replace(f'styles.css?v={old}', f'styles.css?v={depth}')
-              s = s.replace(f'button-fix.css?v={old}', f'button-fix.css?v={depth}')
-              s = s.replace(f'site.js?v={old}', f'site.js?v={depth}')
-              s = s.replace(f'button-fix.js?v={old}', f'button-fix.js?v={depth}')
-              s = s.replace(f'official-phase1-logo-{old.replace("phase1-", "")}', 'official-phase1-logo-starlight-depth-v1')
+              s = s.replace(f'styles.css?v={old}', f'styles.css?v={spectrum}')
+              s = s.replace(f'button-fix.css?v={old}', f'button-fix.css?v={spectrum}')
+              s = s.replace(f'site.js?v={old}', f'site.js?v={spectrum}')
+              s = s.replace(f'button-fix.js?v={old}', f'button-fix.js?v={spectrum}')
+              s = s.replace(f'official-phase1-logo-{old.replace("phase1-", "")}', 'official-phase1-logo-spectrum-buttons-v1')
           for css in [
               f'<link rel="stylesheet" href="./site/phase1-banner-overhaul.css?v={banner}">',
               f'<link rel="stylesheet" href="./site/phase1-structure-recovery.css?v={structure}">',
@@ -87,6 +88,7 @@ jobs:
               f'<link rel="stylesheet" href="./site/phase1-starlight-motion.css?v={starlight}">',
               f'<link rel="stylesheet" href="./site/phase1-starlight-premium.css?v={premium}">',
               f'<link rel="stylesheet" href="./site/phase1-starlight-depth.css?v={depth}">',
+              f'<link rel="stylesheet" href="./site/phase1-spectrum-buttons.css?v={spectrum}">',
           ]:
               s = add_once(s, css)
           p.write_text(s)
@@ -100,6 +102,7 @@ jobs:
                   f'<link rel="stylesheet" href="./site/phase1-starlight-premium.css?v={premium}">',
                   f'<link rel="stylesheet" href="./site/phase1-starlight-depth.css?v={depth}">',
                   f'<link rel="stylesheet" href="./site/phase1-status-polish.css?v={status_polish}">',
+                  f'<link rel="stylesheet" href="./site/phase1-spectrum-buttons.css?v={spectrum}">',
               ]:
                   t = add_once(t, css)
               sp.write_text(t)
@@ -131,10 +134,13 @@ jobs:
           test -f _site/site/phase1-starlight-premium.css
           test -f _site/site/phase1-starlight-depth.css
           test -f _site/site/phase1-status-polish.css
+          test -f _site/site/phase1-spectrum-buttons.css
           grep -q 'phase1-starlight-depth.css?v=phase1-starlight-depth-v1' _site/index.html
-          grep -q 'button-fix.css?v=phase1-starlight-depth-v1' _site/index.html
-          grep -q 'site.js?v=phase1-starlight-depth-v1' _site/index.html
+          grep -q 'phase1-spectrum-buttons.css?v=phase1-spectrum-buttons-v1' _site/index.html
+          grep -q 'button-fix.css?v=phase1-spectrum-buttons-v1' _site/index.html
+          grep -q 'site.js?v=phase1-spectrum-buttons-v1' _site/index.html
           grep -q 'phase1-status-polish.css?v=phase1-status-polish-v1' _site/status.html
+          grep -q 'phase1-spectrum-buttons.css?v=phase1-spectrum-buttons-v1' _site/status.html
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
