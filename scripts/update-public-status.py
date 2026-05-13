@@ -265,6 +265,7 @@ def write_markdown(status: dict[str, object]) -> None:
             "",
         ]
     )
+    text = "\n".join(line.rstrip() for line in text.splitlines()) + "\n"
     (ROOT / "docs/status/PROJECT_STATUS.md").write_text(text)
 
 

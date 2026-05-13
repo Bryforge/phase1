@@ -1,11 +1,11 @@
 {
   "name": "Phase1 public project status",
   "status_kind": "estimated roadmap progress",
-  "last_updated_utc": "2026-05-12T23:46:17Z",
+  "last_updated_utc": "2026-05-13T00:28:31Z",
   "repository": "Bryforge/phase1",
   "branch": "edge/stable",
-  "commit": "cd961319f9a4c7f4860c150c66e12176ad10e7ed",
-  "overall_estimated_completion_percent": 58,
+  "commit": "552b27db3fa14a3344cd8d90f7221afda3fb6a78",
+  "overall_estimated_completion_percent": 61,
   "public_state": "active edge development",
   "important_boundary": "Percentages are planning estimates, not production-readiness or security-hardening claims.",
   "projects": [
@@ -41,17 +41,73 @@
     },
     {
       "name": "Website and public docs",
-      "estimated_completion_percent": 73,
-      "state": "public site, organized docs, status routing, asset policy, and repository navigation are in place",
-      "next_milestone": "add live project status rendering from this JSON marker"
+      "estimated_completion_percent": 78,
+      "state": "public site, status page, status JSON, badge endpoint, organized docs, asset policy, and Pages routing are in place",
+      "next_milestone": "keep the Pages workflow generating public status from repository state"
     },
     {
       "name": "Repository organization",
-      "estimated_completion_percent": 92,
-      "state": "minimal root layout and organized docs folders are in place on edge/stable and black-phase1",
-      "next_milestone": "keep compatibility links and quality gates clean as new work lands"
+      "estimated_completion_percent": 100,
+      "state": "minimal root has 12 tracked files, 16 top-level folders, 0 unplanned root files, 0 tracked build files, and 0 root status duplicates",
+      "next_milestone": "keep generated artifacts out of Git and keep compatibility links clean as work lands"
     }
   ],
+  "repository_organization_metrics": {
+    "root_files": [
+      ".gitignore",
+      ".nojekyll",
+      "CONTRIBUTING.md",
+      "Cargo.lock",
+      "Cargo.toml",
+      "LICENSE",
+      "README.md",
+      "SECURITY.md",
+      "deny.toml",
+      "phase1",
+      "run-phase1-uefi.sh",
+      "start_phase1"
+    ],
+    "root_file_count": 12,
+    "root_directories": [
+      ".github",
+      "assets",
+      "base1",
+      "docs",
+      "examples",
+      "phase1-core",
+      "plugins",
+      "profiles",
+      "scripts",
+      "site",
+      "src",
+      "terminal",
+      "tests",
+      "tools",
+      "wiki",
+      "xtask"
+    ],
+    "root_directory_count": 16,
+    "expected_root_files": [
+      ".gitignore",
+      ".nojekyll",
+      "CONTRIBUTING.md",
+      "Cargo.lock",
+      "Cargo.toml",
+      "LICENSE",
+      "README.md",
+      "SECURITY.md",
+      "deny.toml",
+      "phase1",
+      "run-phase1-uefi.sh",
+      "start_phase1"
+    ],
+    "unplanned_root_files": [],
+    "missing_expected_root_files": [],
+    "tracked_build_file_count": 0,
+    "tracked_root_site_file_count": 0,
+    "root_status_duplicates": [],
+    "generated_artifact_count": 0
+  },
   "non_claims": [
     "not a production operating system",
     "not installer-ready",
