@@ -1,13 +1,8 @@
-@import url("./final-design.css?v=phase1-final-design-v2");
-@import url("./bryforge-aligned.css?v=phase1-bryforge-aligned-v2");
-@import url("./phase1-polish-77.css?v=phase1-polish-77-v1");
-@import url("./phase1-rainbow-space.css?v=phase1-rainbow-space-v4");
-@import url("./rainbow-space-motion.css?v=phase1-rainbow-space-v4");
-@import url("./phase1-orbital-authority.css?v=phase1-rainbow-space-v4");
+@import url("./phase1-banner-overhaul.css?v=phase1-banner-overhaul-v1");
 
 /* Phase1 CSS loader.
-   Active direction: premium, readable, public-sector useful, solar-system space design.
-   White button text, consistent fonts, calm glow, and no messy shooting-star streaks. */
+   Recovery direction: consistent, banner-inspired public site with official Phase1 identity.
+   Keep this layer focused and avoid stacking old experiments on top of the public design. */
 
 .logo-stage,
 .logo-stage::before,
