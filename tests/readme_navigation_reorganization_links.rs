@@ -21,7 +21,7 @@ fn readme_links_current_public_asset_components() {
 
     for asset in [
         "assets/phase1_base_fyr_banner1.png",
-        "assets/phase1-splash.png",
+        "assets/phase1_word.png",
         "assets/fyr_symbol.png",
         "assets/fyr_word.png",
     ] {
@@ -31,10 +31,12 @@ fn readme_links_current_public_asset_components() {
         );
     }
 
-    assert!(
-        !readme.contains("assets/phase1-splash.svg"),
-        "README should not reference the outdated Phase1 splash SVG: {readme}"
-    );
+    for outdated in ["assets/phase1-splash.svg", "assets/phase1-splash.png", "assets/phase1-logo.svg"] {
+        assert!(
+            !readme.contains(outdated),
+            "README should not reference outdated Phase1 asset {outdated}: {readme}"
+        );
+    }
 }
 
 #[test]
