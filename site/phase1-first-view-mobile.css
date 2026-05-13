@@ -1,0 +1,160 @@
+/* Phase1 first-view mobile polish.
+   Focus: the first screen people see on phones. Keep the accepted style, but make
+   the status callout, nav, hero logo chamber, and hero title feel more balanced. */
+
+:root {
+  --fvm-line: rgba(236, 250, 255, .22);
+  --fvm-muted: #dbe6f4;
+  --fvm-spectrum: linear-gradient(115deg, #7df7ff, #50c8ff, #9c7dff, #ff6fec, #ff8d2f, #ffd76c, #85ff9f);
+}
+
+/* Desktop gets only a tiny chamber polish. */
+.logo-stage .logo-glass {
+  max-width: 500px !important;
+}
+
+/* Mobile first impression: less vertical takeover, more immediate headline. */
+@media (max-width: 760px) {
+  .status-callout {
+    width: min(calc(100% - 20px), 760px) !important;
+    margin: 10px auto 12px !important;
+  }
+
+  .status-callout__link {
+    min-height: 54px !important;
+    padding: 10px 14px !important;
+    border-radius: 22px !important;
+    font-size: clamp(.88rem, 3.8vw, 1.02rem) !important;
+    line-height: 1.18 !important;
+    letter-spacing: -.01em !important;
+    text-align: center !important;
+  }
+
+  .nav {
+    min-height: 64px !important;
+    padding: 10px 12px !important;
+    margin-bottom: 12px !important;
+    border-radius: 22px !important;
+  }
+
+  .brand {
+    font-size: clamp(1.18rem, 5vw, 1.48rem) !important;
+    letter-spacing: .035em !important;
+  }
+
+  .brand-pip {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  .nav-toggle {
+    width: 54px !important;
+    height: 54px !important;
+    border-radius: 18px !important;
+  }
+
+  .hero {
+    padding: 18px 12px 28px !important;
+    gap: 18px !important;
+    border-radius: 26px !important;
+    min-height: auto !important;
+  }
+
+  .logo-stage {
+    min-height: clamp(236px, 56vw, 330px) !important;
+    width: min(100%, 370px) !important;
+    margin-inline: auto !important;
+  }
+
+  .logo-stage .logo-glass {
+    width: min(100%, 336px) !important;
+    max-width: 336px !important;
+    aspect-ratio: 1 / 1 !important;
+    border-radius: 26px !important;
+    box-shadow:
+      0 0 0 1px rgba(236,250,255,.13),
+      0 0 34px rgba(125,247,255,.12),
+      0 0 36px rgba(255,141,47,.085),
+      inset 0 0 54px rgba(255,255,255,.045),
+      inset 0 1px 0 rgba(255,255,255,.12) !important;
+  }
+
+  .logo-stage .logo-glass::before {
+    inset: 14px !important;
+    opacity: .62 !important;
+  }
+
+  .phase-logo-image,
+  .logo-stage .logo-glass img {
+    width: min(56%, 188px) !important;
+    transform: translateZ(0) scale(1) !important;
+  }
+
+  .system-card {
+    display: none !important;
+  }
+
+  .hero-copy {
+    gap: 12px !important;
+  }
+
+  .hero .eyebrow {
+    font-size: .73rem !important;
+    letter-spacing: .21em !important;
+    line-height: 1.35 !important;
+    margin-top: 2px !important;
+  }
+
+  .hero h1,
+  #hero-title {
+    font-size: clamp(2.15rem, 11.2vw, 3.45rem) !important;
+    line-height: 1.08 !important;
+    letter-spacing: -.034em !important;
+    max-width: 12.8ch !important;
+    padding-bottom: .16em !important;
+    margin-bottom: .08em !important;
+  }
+
+  .hero-text {
+    font-size: .98rem !important;
+    line-height: 1.62 !important;
+    color: var(--fvm-muted) !important;
+  }
+
+  .hero-actions {
+    gap: 9px !important;
+  }
+
+  .button,
+  .hero-actions a {
+    min-height: 46px !important;
+    border-radius: 16px !important;
+  }
+
+  .hero-command {
+    border-radius: 15px !important;
+    padding: 10px 12px !important;
+    font-size: .82rem !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .logo-stage {
+    min-height: clamp(220px, 58vw, 292px) !important;
+  }
+
+  .logo-stage .logo-glass {
+    width: min(100%, 308px) !important;
+    max-width: 308px !important;
+  }
+
+  .phase-logo-image,
+  .logo-stage .logo-glass img {
+    width: min(55%, 170px) !important;
+  }
+
+  .hero h1,
+  #hero-title {
+    font-size: clamp(2.05rem, 11.4vw, 3.0rem) !important;
+  }
+}
