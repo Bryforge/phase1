@@ -1,0 +1,104 @@
+/* Phase1 status polish pass.
+   Fixes the blown-out status nav bar and aligns the status page with the
+   accepted black starlight direction. */
+
+.status-shell {
+  padding-top: 14px !important;
+}
+
+.status-nav {
+  min-height: 58px !important;
+  padding: 11px 14px !important;
+  margin-bottom: 18px !important;
+  border-radius: 18px !important;
+  background:
+    radial-gradient(circle at 14% 18%, rgba(125,247,255,.055), transparent 16rem),
+    linear-gradient(145deg, rgba(3, 7, 17, .96), rgba(8, 12, 25, .90)) !important;
+  border: 1px solid rgba(235,247,255,.15) !important;
+  box-shadow:
+    0 18px 58px rgba(0,0,0,.60),
+    0 0 22px rgba(125,247,255,.075),
+    inset 0 1px 0 rgba(255,255,255,.09) !important;
+  backdrop-filter: blur(14px) saturate(1.05) !important;
+  overflow: visible !important;
+}
+
+.status-nav::before,
+.status-nav::after {
+  content: none !important;
+  display: none !important;
+}
+
+.status-brand {
+  color: #fff !important;
+  font-weight: 900 !important;
+  letter-spacing: .01em !important;
+  text-shadow: 0 1px 1px rgba(0,0,0,.7), 0 0 12px rgba(125,247,255,.12) !important;
+}
+
+.status-brand img {
+  width: 24px !important;
+  height: 24px !important;
+  filter: drop-shadow(0 0 8px rgba(125,247,255,.25)) !important;
+}
+
+.status-links {
+  gap: 9px !important;
+}
+
+.status-links a,
+.status-button {
+  min-height: 36px !important;
+  padding: 8px 12px !important;
+  color: #fff !important;
+  background:
+    linear-gradient(180deg, rgba(8, 14, 29, .80), rgba(4, 8, 18, .66)) padding-box,
+    linear-gradient(90deg, rgba(255,255,255,.30), rgba(125,247,255,.40), rgba(255,255,255,.26)) border-box !important;
+  border: 1px solid transparent !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.06),
+    0 0 14px rgba(125,247,255,.08),
+    inset 0 1px 0 rgba(255,255,255,.16) !important;
+}
+
+.status-links a.primary,
+.status-button.primary {
+  background:
+    linear-gradient(90deg, rgba(80,200,255,.80), rgba(156,125,255,.66), rgba(255,141,47,.70)) padding-box,
+    linear-gradient(90deg, #7df7ff, #9c7dff, #ff8d2f, #ffd76c) border-box !important;
+}
+
+.status-hero {
+  margin-top: 0 !important;
+}
+
+.status-percent {
+  background:
+    radial-gradient(circle at 42% 36%, rgba(133,255,159,.16), transparent 38%),
+    linear-gradient(145deg, rgba(2,6,14,.86), rgba(255,255,255,.045)) !important;
+  box-shadow:
+    inset 0 0 60px rgba(255,255,255,.045),
+    0 0 42px rgba(133,255,159,.10),
+    0 0 28px rgba(125,247,255,.08) !important;
+}
+
+.status-card,
+.metric,
+.status-footer,
+.status-metrics {
+  background:
+    radial-gradient(circle at 18% 14%, rgba(125,247,255,.050), transparent 15rem),
+    linear-gradient(145deg, rgba(4,8,18,.88), rgba(255,255,255,.035)) !important;
+}
+
+@media(max-width:640px) {
+  .status-nav {
+    border-radius: 16px !important;
+    padding: 12px !important;
+  }
+  .status-links a,
+  .status-button {
+    min-height: 34px !important;
+    padding: 7px 10px !important;
+  }
+}
