@@ -1,0 +1,283 @@
+/* Phase1 presentation 10 pass.
+   Public-facing polish after the values-module refinement:
+   - make the whole page feel like one product surface
+   - improve the support/founder/status/card consistency
+   - keep rainbow alive as controlled spectral signal
+   - avoid harsh always-on glow
+*/
+
+:root {
+  --p10-bg: #010208;
+  --p10-panel: rgba(5, 9, 20, .90);
+  --p10-panel-deep: rgba(3, 6, 15, .96);
+  --p10-line: rgba(232, 248, 255, .16);
+  --p10-line-strong: rgba(232, 248, 255, .22);
+  --p10-text: #fbfdff;
+  --p10-muted: #cfdaec;
+  --p10-cyan: #7df7ff;
+  --p10-blue: #50c8ff;
+  --p10-violet: #9c7dff;
+  --p10-pink: #ff6fec;
+  --p10-orange: #ff8d2f;
+  --p10-gold: #ffd76c;
+  --p10-green: #85ff9f;
+  --p10-spectrum: linear-gradient(115deg, #7df7ff, #50c8ff, #9c7dff, #ff6fec, #ff8d2f, #ffd76c, #85ff9f);
+}
+
+body {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(125,247,255,.115), transparent 24rem),
+    radial-gradient(circle at 92% 18%, rgba(255,141,47,.100), transparent 28rem),
+    radial-gradient(circle at 50% 112%, rgba(156,125,255,.100), transparent 36rem),
+    linear-gradient(180deg, #010208 0%, #020611 48%, #010208 100%) !important;
+}
+
+/* Calm the background enough that the content feels premium. */
+.phase-starfield {
+  opacity: .84 !important;
+}
+
+.phase-starfield::before {
+  opacity: .68 !important;
+}
+
+.phase-starfield::after,
+.phase-starfield__drift {
+  opacity: .40 !important;
+}
+
+.site-shell,
+.status-shell {
+  width: min(1220px, calc(100% - 32px)) !important;
+}
+
+/* One consistent panel language. */
+.hero,
+.status-hero,
+.nav,
+.status-nav,
+.status-callout__link,
+.terminal,
+.feature-card,
+.roadmap,
+.founder,
+.support-card,
+.footer,
+.status-card,
+.status-metrics,
+.status-footer,
+.metric,
+.hero-status-panel,
+.metric-strip div,
+.bryforge-card,
+.timeline li {
+  border-color: var(--p10-line) !important;
+  background:
+    radial-gradient(circle at 18% 14%, rgba(125,247,255,.058), transparent 17rem),
+    radial-gradient(circle at 86% 26%, rgba(255,141,47,.046), transparent 19rem),
+    linear-gradient(145deg, rgba(7,12,25,.84), rgba(255,255,255,.034)) !important;
+  box-shadow:
+    0 26px 92px rgba(0,0,0,.58),
+    0 0 20px rgba(125,247,255,.055),
+    0 0 24px rgba(255,141,47,.040),
+    inset 0 1px 0 rgba(255,255,255,.10) !important;
+}
+
+.hero,
+.status-hero {
+  background:
+    radial-gradient(circle at 16% 18%, rgba(125,247,255,.100), transparent 24rem),
+    radial-gradient(circle at 86% 28%, rgba(255,141,47,.082), transparent 28rem),
+    linear-gradient(145deg, rgba(4,8,18,.95), rgba(255,255,255,.046)) !important;
+  border-color: rgba(232,248,255,.19) !important;
+  box-shadow:
+    0 34px 118px rgba(0,0,0,.66),
+    0 0 34px rgba(125,247,255,.075),
+    0 0 38px rgba(255,141,47,.052),
+    inset 0 1px 0 rgba(255,255,255,.12) !important;
+}
+
+/* More graceful feature cards and status cards. */
+.feature-card,
+.status-card,
+.timeline li,
+.metric,
+.metric-strip div {
+  transition: transform .20s ease, border-color .20s ease, box-shadow .20s ease !important;
+}
+
+.feature-card:hover,
+.status-card:hover,
+.timeline li:hover,
+.metric:hover,
+.metric-strip div:hover {
+  transform: translateY(-2px) !important;
+  border-color: rgba(232,248,255,.24) !important;
+  box-shadow:
+    0 30px 96px rgba(0,0,0,.62),
+    0 0 28px rgba(125,247,255,.080),
+    0 0 28px rgba(255,141,47,.056),
+    inset 0 1px 0 rgba(255,255,255,.12) !important;
+}
+
+/* Values module: final public-facing version. */
+.support-grid {
+  align-items: stretch !important;
+}
+
+.support-card-mini {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 12px !important;
+  align-content: center !important;
+}
+
+.support-card-mini::before {
+  color: rgba(188,247,255,.92) !important;
+}
+
+.support-card-mini span {
+  min-height: 50px !important;
+  grid-template-columns: 20px 1fr auto !important;
+  column-gap: 12px !important;
+  background:
+    linear-gradient(180deg, rgba(7,12,25,.90), rgba(3,7,16,.80)) padding-box,
+    var(--p10-spectrum) border-box !important;
+  background-size: 100% 100%, 240% 240% !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.045),
+    0 0 8px rgba(125,247,255,.052),
+    inset 0 1px 0 rgba(255,255,255,.13),
+    inset 0 -1px 0 rgba(0,0,0,.42) !important;
+}
+
+.support-card-mini span::before {
+  width: 9px !important;
+  height: 9px !important;
+}
+
+.support-card-mini span::after {
+  opacity: .20 !important;
+  filter: blur(5px) saturate(1.08) !important;
+}
+
+.support-card-mini span:hover::after {
+  opacity: .44 !important;
+}
+
+.support-card-mini span:nth-child(2)::marker { content: none; }
+.support-card-mini span:nth-child(2)::before { background-position: 0% 50% !important; }
+.support-card-mini span:nth-child(3)::before { background-position: 30% 50% !important; }
+.support-card-mini span:nth-child(4)::before { background-position: 60% 50% !important; }
+.support-card-mini span:nth-child(5)::before { background-position: 90% 50% !important; }
+
+/* Founder profile and avatar: match the same spectral ring style. */
+.avatar-ring {
+  position: relative !important;
+  background:
+    linear-gradient(180deg, rgba(4,8,18,.96), rgba(7,12,25,.84)) padding-box,
+    var(--p10-spectrum) border-box !important;
+  background-size: 100% 100%, 260% 260% !important;
+  border: 2px solid transparent !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.05),
+    0 0 22px rgba(125,247,255,.10),
+    0 0 24px rgba(255,141,47,.07),
+    inset 0 1px 0 rgba(255,255,255,.12) !important;
+  animation: p10-spectrum-flow 20s ease-in-out infinite !important;
+}
+
+.avatar-ring::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: -5px !important;
+  z-index: -1 !important;
+  border-radius: inherit !important;
+  background: var(--p10-spectrum) !important;
+  background-size: 260% 260% !important;
+  filter: blur(10px) saturate(1.15) !important;
+  opacity: .26 !important;
+  animation: p10-spectrum-flow 20s ease-in-out infinite !important;
+}
+
+/* Status callout: subtle and solid, not shouty. */
+.status-callout__link {
+  background:
+    linear-gradient(180deg, rgba(6,10,22,.92), rgba(3,7,16,.84)) padding-box,
+    var(--p10-spectrum) border-box !important;
+  background-size: 100% 100%, 260% 260% !important;
+}
+
+/* Terminal polish. */
+.terminal-output,
+.terminal-form input,
+.hero-command code {
+  font-weight: 650 !important;
+}
+
+.quick-commands button {
+  min-height: 2.45rem !important;
+}
+
+/* Finish button balance: resting is solid; hover is rainbow. */
+.button::before,
+.hero-actions a::before,
+.hero-actions button::before,
+.roadmap-actions a::before,
+.nav-links a::before,
+.status-callout__link::before,
+.hero-status-panel a::before,
+.quick-commands button::before,
+.terminal-form button::before,
+.footer-links a::before,
+.status-links a::before,
+.status-button::before,
+.terminal button::before,
+button[type="submit"]::before {
+  opacity: .20 !important;
+  filter: blur(3px) saturate(1.02) !important;
+}
+
+.button:hover::before,
+.hero-actions a:hover::before,
+.hero-actions button:hover::before,
+.roadmap-actions a:hover::before,
+.nav-links a:hover::before,
+.status-callout__link:hover::before,
+.hero-status-panel a:hover::before,
+.quick-commands button:hover::before,
+.terminal-form button:hover::before,
+.footer-links a:hover::before,
+.status-links a:hover::before,
+.status-button:hover::before,
+.terminal button:hover::before,
+button[type="submit"]:hover::before,
+.button:focus-visible::before,
+.nav-links a:focus-visible::before,
+.status-callout__link:focus-visible::before {
+  opacity: .68 !important;
+  filter: blur(6px) saturate(1.18) !important;
+}
+
+@media (max-width: 860px) {
+  .support-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .support-card-mini {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  .support-card-mini::before {
+    grid-column: 1 / -1 !important;
+  }
+}
+
+@media (max-width: 540px) {
+  .support-card-mini {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@keyframes p10-spectrum-flow {
+  0%, 100% { background-position: 0% 50%; filter: hue-rotate(0deg) saturate(1.04); }
+  50% { background-position: 100% 50%; filter: hue-rotate(20deg) saturate(1.12); }
+}
