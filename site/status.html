@@ -5,12 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Phase1 Project Status</title>
   <meta name="description" content="Public Phase1, Base1, Fyr, and Bryforge project status marker with roadmap estimates and repository organization metrics.">
-  <meta name="theme-color" content="#03050b">
+  <meta name="theme-color" content="#01030a">
   <link rel="icon" type="image/png" href="./assets/phase1-nobackground.png">
   <link rel="apple-touch-icon" href="./assets/phase1-nobackground.png">
   <link rel="stylesheet" href="./status-dashboard.css?v=phase1-status-dashboard-v1">
+  <link rel="stylesheet" href="./site/phase1-eye-candy-boost.css?v=phase1-eye-candy-boost-v1">
 </head>
 <body>
+  <div class="phase-starfield" aria-hidden="true"><span class="phase-starfield__drift"></span></div>
   <main class="status-shell">
     <nav class="status-nav" aria-label="Status navigation">
       <a class="status-brand" href="index.html" aria-label="Back to Phase1 home">
@@ -61,31 +63,17 @@
 
   <script>
     function text(value) { return value == null ? "" : String(value); }
-
-    function setText(id, value) {
-      const node = document.getElementById(id);
-      if (node) node.textContent = text(value);
-    }
-
+    function setText(id, value) { const node = document.getElementById(id); if (node) node.textContent = text(value); }
     function projectCard(project) {
       const pct = Number(project.estimated_completion_percent || 0);
       const article = document.createElement("article");
       article.className = "status-card";
-      article.innerHTML = `
-        <div class="project-title">
-          <h2></h2>
-          <strong>${pct}%</strong>
-        </div>
-        <div class="status-progress" style="margin: 14px 0 16px"><span style="--p:${pct}%"></span></div>
-        <p class="small state"></p>
-        <p class="small next"></p>
-      `;
+      article.innerHTML = `<div class="project-title"><h2></h2><strong>${pct}%</strong></div><div class="status-progress" style="margin:14px 0 16px"><span style="--p:${pct}%"></span></div><p class="small state"></p><p class="small next"></p>`;
       article.querySelector("h2").textContent = text(project.name);
       article.querySelector(".state").textContent = text(project.state);
       article.querySelector(".next").textContent = "Next: " + text(project.next_milestone);
       return article;
     }
-
     fetch("status.json", { cache: "no-store" })
       .then((response) => response.json())
       .then((status) => {
@@ -103,9 +91,7 @@
         const grid = document.getElementById("projects");
         grid.replaceChildren(...(status.projects || []).map(projectCard));
       })
-      .catch((error) => {
-        setText("summary", `Could not load status.json: ${error}`);
-      });
+      .catch((error) => setText("summary", `Could not load status.json: ${error}`));
   </script>
 </body>
 </html>
