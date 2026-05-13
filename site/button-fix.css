@@ -133,7 +133,7 @@ h1 {
   width: min(78%, 360px) !important;
   height: auto !important;
   aspect-ratio: 1 / 1 !important;
-  content: url("../assets/phase1-mark.svg?v=phase1-mark-v1") !important;
+  content: url("../assets/phase1-nobackground.png?v=official-phase1-logo-v4") !important;
   object-fit: contain !important;
   border-radius: 0 !important;
   mix-blend-mode: normal !important;
@@ -355,3 +355,69 @@ h1 {
     gap: 10px !important;
   }
 }
+
+/* official Phase1 logo and rainbow-glass restoration v4 */
+.glass-panel,
+.status-callout__link,
+.feature-card,
+.bryforge-card,
+.support-card,
+.hero-status-panel,
+.metric-strip div,
+.timeline li {
+  border-color: rgba(255,255,255,.22) !important;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.11), rgba(255,255,255,.028)),
+    radial-gradient(circle at 16% 0%, rgba(255,61,242,.19), transparent 18rem),
+    radial-gradient(circle at 82% 20%, rgba(35,247,255,.17), transparent 20rem),
+    radial-gradient(circle at 42% 100%, rgba(83,255,133,.13), transparent 20rem) !important;
+  box-shadow:
+    0 34px 140px rgba(255,61,242,.17),
+    0 0 92px rgba(35,247,255,.13),
+    inset 0 1px 0 rgba(255,255,255,.17) !important;
+  backdrop-filter: blur(24px) saturate(1.28) !important;
+}
+
+.logo-glass {
+  position: relative !important;
+  overflow: hidden !important;
+  display: grid !important;
+  place-items: center !important;
+  background:
+    radial-gradient(circle at 50% 46%, rgba(126,178,255,.24), transparent 48%),
+    radial-gradient(circle at 20% 28%, rgba(35,247,255,.18), transparent 36%),
+    radial-gradient(circle at 76% 74%, rgba(255,61,242,.17), transparent 40%),
+    rgba(2,4,10,.78) !important;
+}
+
+.logo-glass::after {
+  content: "" !important;
+  position: relative !important;
+  z-index: 4 !important;
+  display: block !important;
+  width: min(76%, 360px) !important;
+  aspect-ratio: 1 / 1 !important;
+  background: url("../assets/phase1-nobackground.png?v=official-phase1-logo-v4") center / contain no-repeat !important;
+  filter:
+    drop-shadow(0 0 28px rgba(170,205,255,.72))
+    drop-shadow(0 0 76px rgba(85,136,255,.34)) !important;
+}
+
+.logo-glass img,
+.phase-logo,
+.phase-logo-image {
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  border: 0 !important;
+}
+
+h1,
+.section-heading h2,
+.founder-copy h2,
+.support-card h2,
+.bryforge-card h3 {
+  overflow: visible !important;
+  padding-bottom: .12em !important;
+}
+
