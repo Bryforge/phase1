@@ -1,12 +1,12 @@
 {
   "name": "Phase1 public project status",
   "status_kind": "estimated roadmap progress",
-  "last_updated_utc": "2026-05-13T00:28:31Z",
+  "last_updated_utc": "2026-05-13T20:36:00Z",
   "repository": "Bryforge/phase1",
   "branch": "edge/stable",
-  "commit": "552b27db3fa14a3344cd8d90f7221afda3fb6a78",
-  "overall_estimated_completion_percent": 61,
-  "public_state": "active edge development",
+  "commit": "0a7693f99fc560a4a787cb158bf00c3c43d103cf",
+  "overall_estimated_completion_percent": 62,
+  "public_state": "active edge development with published wiki and clean public link surface",
   "important_boundary": "Percentages are planning estimates, not production-readiness or security-hardening claims.",
   "projects": [
     {
@@ -24,8 +24,8 @@
     {
       "name": "Base1 secure host / OS track",
       "estimated_completion_percent": 31,
-      "state": "documentation, dry-run scripts, release archives, validation gates, recovery planning, and x86_64 boot planning exist",
-      "next_milestone": "advance from dry-run/read-only evidence to VM and hardware validation"
+      "state": "documentation, dry-run scripts, release archives, validation gates, recovery planning, x86_64 boot planning, and wiki guardrails exist",
+      "next_milestone": "advance from dry-run/read-only evidence to B3 VM boot validation and hardware evidence"
     },
     {
       "name": "X200 / Libreboot hardware path",
@@ -41,14 +41,14 @@
     },
     {
       "name": "Website and public docs",
-      "estimated_completion_percent": 78,
-      "state": "public site, status page, status JSON, badge endpoint, organized docs, asset policy, and Pages routing are in place",
-      "next_milestone": "keep the Pages workflow generating public status from repository state"
+      "estimated_completion_percent": 84,
+      "state": "public site, status page, status JSON, badge endpoint, native GitHub Wiki, refreshed source wiki, organized docs, asset policy, Pages routing, and clean public link checks are in place",
+      "next_milestone": "keep public status generated from repository state and feed B3 VM evidence into the docs when validation lands"
     },
     {
       "name": "Repository organization",
       "estimated_completion_percent": 100,
-      "state": "minimal root has 12 tracked files, 16 top-level folders, 0 unplanned root files, 0 tracked build files, and 0 root status duplicates",
+      "state": "minimal root has 12 tracked files, 16 top-level folders, 0 unplanned root files, 0 tracked build files, 0 root status duplicates, and clean Base1 link-check output",
       "next_milestone": "keep generated artifacts out of Git and keep compatibility links clean as work lands"
     }
   ],
