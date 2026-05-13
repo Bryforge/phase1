@@ -72,6 +72,7 @@ jobs:
           test -f _site/wiki/commands.html
           test -f _site/wiki/security.html
           test -f _site/wiki/storage.html
+          test -f _site/wiki/runtime.html
           test -f _site/wiki/docs.css
           test -f _site/wiki/docs.js
           test -f _site/site/button-fix.css
@@ -85,8 +86,10 @@ jobs:
           grep -q 'commands.html' _site/wiki/index.html
           grep -q 'security.html' _site/wiki/index.html
           grep -q 'storage.html' _site/wiki/index.html
+          grep -q 'runtime.html' _site/wiki/index.html
           grep -q 'Phase1 Security Model' _site/wiki/security.html
           grep -q 'Storage + VFS' _site/wiki/storage.html
+          grep -q 'Phase1 Runtime Roadmap' _site/wiki/runtime.html
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
