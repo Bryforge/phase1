@@ -61,17 +61,33 @@
   display: block !important;
 }
 
-.founder-copy h2 {
-  color: var(--text) !important;
-  background: none !important;
-  -webkit-background-clip: initial !important;
-  background-clip: initial !important;
-  animation: none !important;
-}
-
 .founder-copy h2::before {
   content: none !important;
   display: none !important;
+}
+
+/* Keep founder/profile and support cards in the same rainbow glass language as the rest of the site. */
+.founder,
+.bryforge-card,
+.support-card {
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.095), rgba(255, 255, 255, 0.03)),
+    radial-gradient(circle at 18% 0%, rgba(255, 61, 242, 0.18), transparent 16rem),
+    radial-gradient(circle at 78% 22%, rgba(35, 247, 255, 0.15), transparent 18rem),
+    radial-gradient(circle at 42% 100%, rgba(83, 255, 133, 0.12), transparent 18rem) !important;
+  box-shadow: var(--shadow-strong), inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+}
+
+.founder-copy h2,
+.bryforge-card h3,
+.support-card h2 {
+  background: linear-gradient(90deg, #ff4438, #ffe85f, #54ff7a, #29f8ff, #5d85ff, #ff3df2, #ff4438) !important;
+  background-size: 220% 100% !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+  animation: rainbow-shift 7s linear infinite !important;
 }
 
 /* Phase1 visual identity: the prompt cursor is intentionally blinking pink/magenta. */
@@ -82,6 +98,48 @@
   animation: blink 0.9s steps(2, start) infinite !important;
 }
 
+/* Stop descenders such as the g in Bryforge from being clipped. */
+h1,
+.section-heading h2,
+.founder-copy h2,
+.support-card h2,
+.bryforge-card h3 {
+  overflow: visible !important;
+  padding-bottom: 0.08em !important;
+  line-height: 1.05 !important;
+}
+
+h1 {
+  line-height: 0.94 !important;
+}
+
+/* The hero box uses the standalone Phase1 mark, not the wordmark/splash graphic. */
+.logo-glass {
+  width: min(100%, 520px) !important;
+  aspect-ratio: 1 / 1 !important;
+  padding: clamp(38px, 7vw, 76px) !important;
+  border-radius: 46px !important;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(126, 178, 255, 0.18), transparent 52%),
+    linear-gradient(145deg, rgba(0, 0, 0, 0.92), rgba(6, 10, 22, 0.88)) !important;
+  box-shadow:
+    0 0 90px rgba(126, 178, 255, 0.2),
+    0 30px 120px rgba(0, 0, 0, 0.48),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
+}
+
+.phase-logo {
+  display: block;
+  width: min(78%, 360px) !important;
+  height: auto !important;
+  aspect-ratio: 1 / 1 !important;
+  content: url("../assets/phase1-mark.svg?v=phase1-mark-v1") !important;
+  object-fit: contain !important;
+  border-radius: 0 !important;
+  mix-blend-mode: normal !important;
+  filter: drop-shadow(0 0 26px rgba(126, 178, 255, 0.58)) drop-shadow(0 0 72px rgba(85, 136, 255, 0.26)) !important;
+}
+
 /* MacBook / compact desktop layout fix: keep the hero from crushing the headline. */
 .hero-copy,
 .logo-stage,
@@ -89,11 +147,6 @@
 .nav-links,
 .phase-logo {
   min-width: 0;
-}
-
-.phase-logo {
-  display: block;
-  height: auto;
 }
 
 h1 {
@@ -137,7 +190,7 @@ h1 {
 
   h1 {
     font-size: clamp(3.35rem, 5.05vw, 4.55rem) !important;
-    line-height: 0.96 !important;
+    line-height: 0.98 !important;
     letter-spacing: -0.055em !important;
     text-wrap: balance;
   }
@@ -164,11 +217,11 @@ h1 {
 
   .logo-glass {
     width: min(100%, 455px) !important;
-    border-radius: 32px !important;
+    border-radius: 36px !important;
   }
 
   .phase-logo {
-    border-radius: 24px !important;
+    width: min(72%, 320px) !important;
   }
 
   .system-card {
@@ -188,7 +241,7 @@ h1 {
 
   h1 {
     font-size: clamp(3.1rem, 7.2vw, 5rem) !important;
-    line-height: 0.98 !important;
+    line-height: 1 !important;
   }
 
   .logo-stage {
@@ -223,20 +276,20 @@ h1 {
 
   h1 {
     font-size: clamp(2.05rem, 11vw, 3.35rem) !important;
-    line-height: 1.02 !important;
+    line-height: 1.04 !important;
     letter-spacing: -0.045em !important;
   }
 
   .section-heading h2,
   .support-card h2 {
     font-size: clamp(1.8rem, 8vw, 2.7rem) !important;
-    line-height: 1.08 !important;
+    line-height: 1.1 !important;
     letter-spacing: -0.035em !important;
   }
 
   .founder-copy h2 {
     font-size: clamp(1.7rem, 7.4vw, 2.45rem) !important;
-    line-height: 1.1 !important;
+    line-height: 1.12 !important;
     letter-spacing: -0.025em !important;
   }
 
@@ -263,6 +316,15 @@ h1 {
   .support-card,
   .timeline li {
     padding: 18px !important;
+  }
+
+  .logo-glass {
+    width: min(82vw, 430px) !important;
+    padding: clamp(34px, 10vw, 58px) !important;
+  }
+
+  .phase-logo {
+    width: min(70%, 280px) !important;
   }
 }
 
