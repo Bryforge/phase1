@@ -1,0 +1,148 @@
+/* Phase1 main-site 9.5+ polish.
+   Micro-pass only. Preserve the accepted design; tighten polish and interaction. */
+
+:root {
+  --p95-line: rgba(235, 250, 255, .20);
+  --p95-line-hot: rgba(235, 250, 255, .29);
+  --p95-muted: #d8e4f2;
+  --p95-cyan: #7df7ff;
+  --p95-orange: #ff8d2f;
+  --p95-spectrum: linear-gradient(115deg, #7df7ff, #50c8ff, #9c7dff, #ff6fec, #ff8d2f, #ffd76c, #85ff9f);
+}
+
+/* Small global finish: a touch more precision, not a redesign. */
+.hero,
+.nav,
+.feature-card,
+.terminal,
+.roadmap,
+.founder,
+.support-card,
+.footer,
+.hero-status-panel,
+.metric-strip div,
+.bryforge-card,
+.timeline li {
+  border-color: var(--p95-line) !important;
+}
+
+.hero {
+  box-shadow:
+    0 36px 126px rgba(0,0,0,.66),
+    0 0 38px rgba(125,247,255,.092),
+    0 0 42px rgba(255,141,47,.060),
+    inset 0 1px 0 rgba(255,255,255,.135),
+    inset 0 0 0 1px rgba(255,255,255,.018) !important;
+}
+
+.hero h1,
+#hero-title {
+  letter-spacing: clamp(-.050em, -.38vw, -.024em) !important;
+  line-height: 1.06 !important;
+  text-shadow:
+    0 0 16px rgba(125,247,255,.13),
+    0 0 18px rgba(255,141,47,.085),
+    0 2px 20px rgba(0,0,0,.44) !important;
+}
+
+.hero-text,
+.feature-card p,
+.timeline p,
+.founder-copy p,
+.support-card p,
+.hero-status-panel p {
+  color: var(--p95-muted) !important;
+}
+
+/* Logo stage: keep official logo crisp and premium. */
+.logo-glass {
+  border-color: rgba(235,250,255,.22) !important;
+  box-shadow:
+    0 0 0 1px rgba(235,250,255,.145),
+    0 0 58px rgba(125,247,255,.17),
+    0 0 62px rgba(255,141,47,.115),
+    inset 0 0 68px rgba(255,255,255,.055) !important;
+}
+
+.phase-logo-image,
+.logo-glass img {
+  filter:
+    saturate(1.13) contrast(1.08)
+    drop-shadow(0 0 18px rgba(255,255,255,.18))
+    drop-shadow(0 0 34px rgba(125,247,255,.20))
+    drop-shadow(0 0 34px rgba(255,141,47,.12)) !important;
+}
+
+/* Cards: more tactile hover without brightness creep. */
+.feature-card:hover,
+.timeline li:hover,
+.metric-strip div:hover,
+.bryforge-card:hover {
+  border-color: var(--p95-line-hot) !important;
+  box-shadow:
+    0 30px 94px rgba(0,0,0,.62),
+    0 0 24px rgba(125,247,255,.078),
+    0 0 26px rgba(255,141,47,.052),
+    inset 0 1px 0 rgba(255,255,255,.13) !important;
+}
+
+/* Buttons: keep resting clean, make hover feel alive but controlled. */
+.button::before,
+.hero-actions a::before,
+.hero-status-panel a::before,
+.quick-commands button::before,
+.terminal-form button::before,
+.footer-links a::before {
+  opacity: .23 !important;
+  filter: blur(3.2px) saturate(1.04) !important;
+}
+
+.button:hover::before,
+.hero-actions a:hover::before,
+.hero-status-panel a:hover::before,
+.quick-commands button:hover::before,
+.terminal-form button:hover::before,
+.footer-links a:hover::before {
+  opacity: .74 !important;
+  filter: blur(6.2px) saturate(1.19) !important;
+}
+
+.button:focus-visible,
+.hero-actions a:focus-visible,
+.nav-links a:focus-visible,
+.quick-commands button:focus-visible,
+.terminal-form button:focus-visible {
+  outline: 2px solid rgba(125,247,255,.55) !important;
+  outline-offset: 3px !important;
+}
+
+/* Terminal: slight contrast and rhythm improvement. */
+.terminal-output {
+  line-height: 1.64 !important;
+  background: rgba(0,0,0,.235) !important;
+}
+
+.hero-command code,
+.terminal-output,
+.terminal-form input {
+  text-rendering: geometricPrecision !important;
+}
+
+/* Core values: tiny fit and hover lift only. */
+.support-card-mini span {
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease !important;
+}
+
+.support-card-mini span:hover {
+  transform: translateY(-1px) !important;
+}
+
+@media (max-width: 720px) {
+  .hero {
+    border-radius: 26px !important;
+  }
+
+  .hero-text {
+    line-height: 1.68 !important;
+  }
+}
