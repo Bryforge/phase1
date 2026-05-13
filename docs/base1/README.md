@@ -2,7 +2,7 @@
 
 > **Status:** Roadmap and design index.
 >
-> **Validation:** Links to current Base1 design docs, dry-run scripts, inventory, test inventory, migration table, script compatibility plan, link-check strategy, post-reorganization layout, pre-move checklist, readiness checklist, reorganization verification report template, compatibility maps, validation runbook, validation report template, validation reports archive, preview stack runbook, preview checks, and future validation reports.
+> **Validation:** Links to current Base1 design docs, dry-run scripts, inventory, test inventory, migration table, script compatibility plan, link-check strategy, post-reorganization layout, pre-move checklist, readiness checklist, reorganization verification report template, release archive map, validation runbook, validation report template, validation reports archive, preview stack runbook, preview checks, and future validation reports.
 >
 > **Non-claims:** Base1 is not currently documented here as a released bootable daily-driver image, finished secure OS replacement, or destructive installer-ready system.
 
@@ -52,9 +52,11 @@ Base1 is the planned minimal host foundation for future Phase1-first bootable en
 - [`../../base1/ROADMAP.md`](../../base1/ROADMAP.md)
 - [`../os/ROADMAP.md`](../os/ROADMAP.md)
 
-## Compatibility rule
+## Release archive rule
 
-root-level Base1 checkpoint notes remain compatibility paths. Use [`RELEASE_ARCHIVE_MAP.md`](RELEASE_ARCHIVE_MAP.md) to see which root files mirror organized notes under [`releases/`](releases/).
+Base1 release/checkpoint notes are archived under [`releases/`](releases/). Former root-level checkpoint filenames are documented in [`RELEASE_ARCHIVE_MAP.md`](RELEASE_ARCHIVE_MAP.md) so older references can be mapped to the organized archive path.
+
+The current repository does not require root-level release files to exist.
 
 ## Inventory rule
 
@@ -128,7 +130,7 @@ Store future Base1 reports under [`validation/`](validation/) so evidence remain
 - [Base1 reorganization verification report template](REORGANIZATION_VERIFICATION_REPORT_TEMPLATE.md)
 - [Reorganization readiness checklist](REORGANIZATION_READINESS.md)
 - [Documentation organization plan](DOCUMENTATION_ORGANIZATION_PLAN.md)
-- [Root compatibility map](RELEASE_ARCHIVE_MAP.md)
+- [Release archive map](RELEASE_ARCHIVE_MAP.md)
 - [`base1/RECOVERY_USB_HARDWARE_SUMMARY.md`](../../base1/RECOVERY_USB_HARDWARE_SUMMARY.md) — Recovery USB hardware summary.
 - [`base1/RECOVERY_USB_IMAGE_COMMAND_INDEX.md`](../../base1/RECOVERY_USB_IMAGE_COMMAND_INDEX.md) — Recovery USB image command index.
 - [`base1/RECOVERY_USB_TARGET_COMMAND_INDEX.md`](../../base1/RECOVERY_USB_TARGET_COMMAND_INDEX.md) — Recovery USB target command index.
@@ -136,14 +138,4 @@ Store future Base1 reports under [`validation/`](validation/) so evidence remain
 - [`docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md`](releases/RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md) — Recovery USB target read-only checkpoint release notes.
 - [`base1/RECOVERY_USB_IMAGE_PROVENANCE.md`](../../base1/RECOVERY_USB_IMAGE_PROVENANCE.md) — Recovery USB image provenance.
 - [`base1/RECOVERY_USB_IMAGE_SUMMARY.md`](../../base1/RECOVERY_USB_IMAGE_SUMMARY.md) — Recovery USB image summary.
-
-## Base1 public compatibility path
-
-- [`docs/base1/RELEASE_ARCHIVE_MAP.md`](RELEASE_ARCHIVE_MAP.md) — Public path for the Base1 root compatibility map.
-
-## Root compatibility map public path
-
-- [`RELEASE_ARCHIVE_MAP.md`](RELEASE_ARCHIVE_MAP.md) — Base1 root compatibility map.
-- `docs/base1/RELEASE_ARCHIVE_MAP.md` — Public compatibility-map path.
-- [`docs/base1/RELEASE_ARCHIVE_MAP.md`](RELEASE_ARCHIVE_MAP.md) — Repository-root public path for the Base1 root compatibility map.
 - [`VALIDATION_REPORTS.md`](VALIDATION_REPORTS.md) — Base1 validation reports archive.
