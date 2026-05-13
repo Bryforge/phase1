@@ -31,7 +31,11 @@ fn readme_links_current_public_asset_components() {
         );
     }
 
-    for outdated in ["assets/phase1-splash.svg", "assets/phase1-splash.png", "assets/phase1-logo.svg"] {
+    for outdated in [
+        "assets/phase1-splash.svg",
+        "assets/phase1-splash.png",
+        "assets/phase1-logo.svg",
+    ] {
         assert!(
             !readme.contains(outdated),
             "README should not reference outdated Phase1 asset {outdated}: {readme}"

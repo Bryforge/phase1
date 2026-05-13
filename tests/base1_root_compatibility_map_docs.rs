@@ -1,7 +1,7 @@
 #[test]
 fn release_archive_map_lists_former_root_and_archived_paths() {
-    let doc = std::fs::read_to_string("docs/base1/RELEASE_ARCHIVE_MAP.md")
-        .expect("release archive map");
+    let doc =
+        std::fs::read_to_string("docs/base1/RELEASE_ARCHIVE_MAP.md").expect("release archive map");
 
     assert!(doc.contains("Base1 release archive map"), "{doc}");
     assert!(doc.contains("Former root path"), "{doc}");
@@ -33,10 +33,7 @@ fn release_archive_map_lists_former_root_and_archived_paths() {
         "docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md",
         "docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md",
     ] {
-        assert!(
-            doc.contains(path),
-            "missing archived path {path}: {doc}"
-        );
+        assert!(doc.contains(path), "missing archived path {path}: {doc}");
         assert!(
             std::path::Path::new(path).is_file(),
             "organized archive file missing: {path}"
@@ -85,7 +82,9 @@ fn integrity_gate_checks_release_archive_map_and_release_archives() {
         "{script}"
     );
     assert!(
-        script.contains("root Base1 release compatibility files are archived under docs/base1/releases"),
+        script.contains(
+            "root Base1 release compatibility files are archived under docs/base1/releases"
+        ),
         "{script}"
     );
     assert!(script.contains("writes: no"), "{script}");

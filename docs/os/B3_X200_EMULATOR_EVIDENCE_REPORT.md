@@ -1,9 +1,9 @@
 # B3 X200 emulator evidence report
 
 Status: local X200 emulator evidence report
-Generated UTC: 2026-05-13T21:59:16Z
+Generated UTC: 2026-05-13T23:25:21Z
 Source branch: edge/stable
-Source commit: d783223e2e9f6061b01038595991a6712810821b
+Source commit: 4e2e8af614b027d37f4cd4a52e277d613c32002f
 Host: X200
 Host kernel: Linux X200 6.8.0-110-generic #110trisquel35 SMP PREEMPT_DYNAMIC Wed Apr 15 21:32:36 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux
 
@@ -19,9 +19,9 @@ The report is intentionally conservative. It records emulator evidence only and 
 | B3 UEFI proof | yes | pass | 124 | phase1 6.0.0 ready |
 | B3 kernel/initrd handoff | yes | pass | 124 | Linux version |
 | B3 GNU/Linux stage | yes | pass | 124 | Linux version |
-| B3 OpenBSD stage | no | optional/not used | n/a | optional stage |
+| B3 OpenBSD stage | yes | optional/not used | n/a | optional stage |
 
-Evidence summary count: 3
+Evidence summary count: 4
 
 ## Local evidence paths
 
