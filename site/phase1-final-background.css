@@ -1,0 +1,207 @@
+/* Phase1 final background pass.
+   Loaded last. Removes every remaining visible grid/matrix line and replaces it
+   with a subtle smoky starfield that actually moves and glows. */
+
+:root {
+  --fb-panel: rgba(7, 12, 25, .86);
+  --fb-cyan: rgba(125, 247, 255, .13);
+  --fb-orange: rgba(255, 141, 47, .09);
+  --fb-violet: rgba(156, 125, 255, .08);
+}
+
+/* Absolute grid/matrix kill switch. */
+body::after,
+.hero::after,
+.logo-stage::after,
+.logo-stage::before,
+.logo-glass::after,
+.logo-glass::before,
+.orbit,
+.orbit::before,
+.orbit::after,
+.rainbow-space-field,
+.orbital-system-field,
+#space,
+.aurora,
+.scanlines,
+.noise {
+  content: none !important;
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  background: none !important;
+  background-image: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* No linear/repeating grid on the document background. */
+body::before {
+  content: "" !important;
+  display: block !important;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(125,247,255,.070), transparent 24rem),
+    radial-gradient(circle at 84% 18%, rgba(255,111,236,.050), transparent 30rem),
+    radial-gradient(circle at 48% 82%, rgba(255,141,47,.045), transparent 32rem),
+    linear-gradient(180deg, rgba(1,2,8,.96), rgba(2,6,14,.92) 46%, rgba(1,2,7,.98)) !important;
+  background-size: 100% 100% !important;
+  opacity: 1 !important;
+  filter: none !important;
+  mask-image: none !important;
+  animation: none !important;
+}
+
+/* Only dot-stars: no lines. */
+.phase-starfield {
+  display: block !important;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 1 !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
+  opacity: .72 !important;
+  mix-blend-mode: screen !important;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(125,247,255,.70) 0 1px, transparent 2.2px),
+    radial-gradient(circle at 78% 14%, rgba(255,255,255,.54) 0 1px, transparent 2.1px),
+    radial-gradient(circle at 64% 70%, rgba(255,141,47,.42) 0 1px, transparent 2.2px),
+    radial-gradient(circle at 28% 78%, rgba(156,125,255,.42) 0 1px, transparent 2.2px) !important;
+  background-size: 260px 260px, 390px 390px, 520px 520px, 330px 330px !important;
+  animation: phase1-final-star-drift 72s linear infinite, phase1-final-star-pulse 8s ease-in-out infinite !important;
+}
+
+.phase-starfield::before,
+.phase-starfield::after,
+.phase-starfield__drift {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  inset: -12% !important;
+  pointer-events: none !important;
+  opacity: .46 !important;
+  background:
+    radial-gradient(circle at 20% 26%, rgba(125,247,255,.58) 0 1px, transparent 2.1px),
+    radial-gradient(circle at 42% 20%, rgba(255,255,255,.40) 0 1px, transparent 2.1px),
+    radial-gradient(circle at 76% 38%, rgba(255,111,236,.34) 0 1px, transparent 2.1px),
+    radial-gradient(circle at 58% 82%, rgba(255,141,47,.34) 0 1px, transparent 2.1px) !important;
+  background-size: 310px 310px, 460px 460px, 610px 610px, 390px 390px !important;
+  filter: drop-shadow(0 0 5px rgba(125,247,255,.30)) drop-shadow(0 0 8px rgba(255,141,47,.14)) !important;
+  animation: phase1-final-star-drift-alt 96s linear infinite, phase1-final-star-pulse 6.5s ease-in-out infinite !important;
+}
+
+.phase-starfield::after {
+  opacity: .28 !important;
+  transform: scale(1.07) !important;
+  filter: blur(.25px) drop-shadow(0 0 8px rgba(156,125,255,.20)) !important;
+  animation-duration: 128s, 9s !important;
+}
+
+.phase-starfield__drift {
+  opacity: .34 !important;
+  animation-duration: 112s, 7.5s !important;
+}
+
+/* Repaint every visible panel without grid backgrounds. */
+.hero,
+.logo-stage .logo-glass,
+.logo-glass,
+.feature-card,
+.terminal,
+.roadmap,
+.founder,
+.support-card,
+.footer,
+.hero-status-panel,
+.metric-strip div,
+.bryforge-card,
+.timeline li,
+.glass-panel,
+.card {
+  background-image:
+    radial-gradient(circle at 18% 14%, rgba(125,247,255,.050), transparent 17rem),
+    radial-gradient(circle at 86% 24%, rgba(255,141,47,.038), transparent 19rem),
+    linear-gradient(145deg, var(--fb-panel), rgba(255,255,255,.038)) !important;
+  background-size: 100% 100% !important;
+}
+
+.hero {
+  background-image:
+    radial-gradient(circle at 54% 36%, var(--fb-cyan), transparent 26rem),
+    radial-gradient(circle at 88% 36%, var(--fb-orange), transparent 26rem),
+    radial-gradient(circle at 34% 78%, var(--fb-violet), transparent 28rem),
+    linear-gradient(145deg, rgba(4,8,18,.965), rgba(8,12,24,.90)) !important;
+}
+
+.hero::before {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  right: -28% !important;
+  top: -26% !important;
+  width: min(80vw, 780px) !important;
+  height: min(80vw, 780px) !important;
+  border-radius: 50% !important;
+  pointer-events: none !important;
+  background: radial-gradient(circle at 50% 50%, rgba(255,255,255,.042), rgba(125,247,255,.066) 22%, rgba(255,141,47,.048) 48%, transparent 70%) !important;
+  border: 1px solid rgba(236,250,255,.055) !important;
+  opacity: .34 !important;
+  filter: blur(.2px) saturate(1.02) !important;
+}
+
+.logo-stage .logo-glass,
+.logo-glass {
+  background-image:
+    radial-gradient(circle at 50% 45%, rgba(255,255,255,.080), transparent 16%),
+    radial-gradient(circle at 34% 40%, rgba(125,247,255,.135), transparent 35%),
+    radial-gradient(circle at 72% 62%, rgba(255,141,47,.095), transparent 40%),
+    linear-gradient(145deg, rgba(2,6,15,.980), rgba(8,14,28,.89)) !important;
+}
+
+.site-shell,
+.status-callout,
+.nav,
+.hero,
+.footer,
+.glass-panel {
+  position: relative !important;
+  z-index: 3 !important;
+}
+
+@media (max-width: 760px) {
+  .phase-starfield {
+    opacity: .64 !important;
+  }
+
+  .hero::before {
+    opacity: .25 !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .phase-starfield,
+  .phase-starfield::before,
+  .phase-starfield::after,
+  .phase-starfield__drift {
+    animation: none !important;
+  }
+}
+
+@keyframes phase1-final-star-drift {
+  from { background-position: 0 0, 0 0, 0 0, 0 0; }
+  to { background-position: 260px -260px, -390px 390px, 520px 520px, -330px -330px; }
+}
+
+@keyframes phase1-final-star-drift-alt {
+  from { background-position: 0 0, 0 0, 0 0, 0 0; }
+  to { background-position: -310px 310px, 460px -460px, -610px -610px, 390px 390px; }
+}
+
+@keyframes phase1-final-star-pulse {
+  0%, 100% { opacity: .30; }
+  45% { opacity: .58; }
+  70% { opacity: .40; }
+}
