@@ -104,6 +104,7 @@ pub const COMMANDS: &[CommandSpec] = &[
     cmd!("security", &["sec", "policy"], "user", "security", "Show safe mode, host tool gates, persistence, and privacy status.", "user.read"),
     cmd!("theme", &["style"], "user", "theme [show|list|rainbow|matrix|cyber|amber|ice|synthwave|crimson|mono|ascii|reset]", "Switch or inspect selectable terminal palettes. Rainbow remains the default.", "user.env"),
     cmd!("banner", &["splash"], "user", "banner [mobile|desktop|mono|rainbow|matrix|cyber|amber|ice|synthwave|crimson|ascii|safe|host|persist]", "Preview boot splash profile and color palette choices without changing saved config.", "user.read"),
+    cmd!("optics", &["pro", "hudrails"], "user", "optics [preview|rails|help]", "Read-only Optics PRO preview and HUD rail preview surface.", "none"),
     cmd!("tips", &["hint", "hints"], "user", "tips", "Show rotating operator tips for useful phase1 commands.", "user.read"),
     cmd!("help", &["commands"], "misc", "help", "Show grouped command map.", "none"),
     cmd!("man", &[], "misc", "man <command>", "Show generated command manual page.", "none"),
@@ -244,18 +245,22 @@ fn command_palette() -> String {
     out.push_str("phase1 command palette\n");
     out.push_str("hot zones\n");
     out.push_str("  CORE   dash sysinfo security opslog\n");
-    out.push_str("  BUILD  dev repo fyr lang cargo rustc\n");
+    out.push_str("  BUILD  dev repo fyr lang\n");
+    out.push_str("  OPTICS optics preview | optics rails\n");
+    out.push_str("  HOST   cargo rustc git gh\n");
     out.push_str("  TEXT   grep find head tail wc pipeline\n");
     out.push_str("  VFS    ls tree cat touch mkdir cp mv rm\n");
     out.push_str("  STYLE  theme banner matrix tips clear\n");
     out.push_str("  SAFE   capabilities sandbox audit update\n\n");
 
     out.push_str("launch examples\n");
-    out.push_str("  help host     guarded host-tool deck\n");
-    out.push_str("  help dev      development command deck\n");
-    out.push_str("  help update   update manual card\n");
-    out.push_str("  complete th   discover theme aliases\n");
-    out.push_str("  man security  full manual page\n");
+    out.push_str("  optics preview read-only Optics PRO preview\n");
+    out.push_str("  optics rails   read-only HUD rails preview\n");
+    out.push_str("  help host      guarded host-tool deck\n");
+    out.push_str("  help dev       development command deck\n");
+    out.push_str("  help update    update manual card\n");
+    out.push_str("  complete th    discover theme aliases\n");
+    out.push_str("  man security   full manual page\n");
     out
 }
 
@@ -350,7 +355,7 @@ fn compact_command_map() -> String {
     for category in CATEGORIES {
         out.push_str(&format!("{:<7}: {}\n", category, command_names(category)));
     }
-    out.push_str("\ntry: help ui | help flows | help host | help update | help security | help --compact | complete th\n");
+    out.push_str("\ntry: help ui | help flows | help host | help update | help security | help --compact | complete opt\n");
     out
 }
 
@@ -481,6 +486,8 @@ mod tests {
         assert_eq!(lookup("branches").map(|cmd| cmd.name), Some("repo"));
         assert_eq!(lookup("doctrine").map(|cmd| cmd.name), Some("repo"));
         assert_eq!(lookup("phase1lang").map(|cmd| cmd.name), Some("fyr"));
+        assert_eq!(lookup("pro").map(|cmd| cmd.name), Some("optics"));
+        assert_eq!(lookup("hudrails").map(|cmd| cmd.name), Some("optics"));
     }
 
     #[test]
@@ -506,6 +513,8 @@ mod tests {
         assert_eq!(canonical_name("runlang"), Some("lang"));
         assert_eq!(canonical_name("channels"), Some("repo"));
         assert_eq!(canonical_name("forge"), Some("fyr"));
+        assert_eq!(canonical_name("pro"), Some("optics"));
+        assert_eq!(canonical_name("hudrails"), Some("optics"));
     }
 
     #[test]
@@ -526,6 +535,7 @@ mod tests {
         assert!(map.contains("theme list"));
         assert!(map.contains("banner"));
         assert!(map.contains("tips"));
+        assert!(map.contains("optics"));
         assert!(map.contains("grep"));
         assert!(map.contains("find"));
         assert!(map.contains("update"));
@@ -558,11 +568,17 @@ mod tests {
         assert!(compact.contains("phase1 help // compact"));
         assert!(compact.contains("host"));
         assert!(compact.contains("dev"));
+        assert!(compact.contains("optics"));
 
         let host = help(&[String::from("host")]);
         assert!(host.contains("phase1 help // host"));
         assert!(host.contains("git"));
         assert!(host.contains("cargo"));
+
+        let optics = help(&[String::from("optics")]);
+        assert!(optics.contains("phase1 help // optics"));
+        assert!(optics.contains("optics [preview|rails|help]"));
+        assert!(optics.contains("capability : none"));
 
         let update = help(&[String::from("update")]);
         assert!(update.contains("phase1 help // update"));
@@ -575,6 +591,7 @@ mod tests {
         assert!(ui.contains("launch examples"));
         assert!(ui.contains("CORE"));
         assert!(ui.contains("BUILD"));
+        assert!(ui.contains("OPTICS"));
 
         let flows = help(&[String::from("flows")]);
         assert!(flows.contains("phase1 help // workflows"));
@@ -589,6 +606,10 @@ mod tests {
         assert!(page.contains("protocol"));
         assert!(page.contains("validation suites"));
         assert!(page.contains("host.exec"));
+        let optics = man_page("optics").expect("optics man page");
+        assert!(optics.contains("optics [preview|rails|help]"));
+        assert!(optics.contains("capability : none"));
+        assert!(optics.contains("Read-only Optics PRO preview"));
         let pipeline = man_page("pipeline").expect("pipeline man page");
         assert!(pipeline.contains("structured text pipeline"));
         let wasm = man_page("wasm").expect("wasm man page");
@@ -617,6 +638,9 @@ mod tests {
         assert!(completions("sec").contains(&"security"));
         assert!(completions("st").contains(&"status"));
         assert!(completions("the").contains(&"theme"));
+        assert!(completions("opt").contains(&"optics"));
+        assert!(completions("pro").contains(&"pro"));
+        assert!(completions("hud").contains(&"hudrails"));
         assert!(completions("f").contains(&"find"));
         assert!(completions("f").contains(&"fyr"));
         assert!(completions("fo").contains(&"forge"));
@@ -663,6 +687,7 @@ mod tests {
         assert!(report.contains("network-change opt-in"));
         assert!(report.contains("PHASE1_ALLOW_HOST_TOOLS"));
         assert!(report.contains("theme"));
+        assert!(report.contains("optics"));
         assert!(report.contains("grep"));
         assert!(report.contains("update"));
         assert!(report.contains("pipeline"));
