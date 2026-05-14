@@ -51,6 +51,18 @@ stdout=ascii       labels remain visible
 stdout=test-mode   deterministic output
 stdout=cooked      deterministic output
 stdout=
+stdout=OPTICS HUD RAIL RENDER
+stdout=status=static-render
+stdout=runtime=not-wired
+stdout=TOP product=Phase1 channel=edge profile=PRO ctx=root > nest:0/1 > portal:none > ghost:none trust=safe/armed security=safe-mode host-gated
+stdout=TOP integrity=not-checked crypto=chain-planned base1=evidence-planned fyr=idle device=terminal
+stdout=CENTER role=command-output chrome=none-permanent
+stdout=CENTER rule=center-remains-primary-workspace
+stdout=CENTER sample=phase1://edge/root > optics rails preview
+stdout=BOT color=bright-blue input=active mutation=none command=none task=idle result=ok
+stdout=BOT warning=none copy-safe=raw-command-preserved
+stdout=NON-CLAIMS not-compositor not-terminal-emulator not-sandbox not-security-boundary not-crypto-enforcement not-system-integrity-guarantee not-base1-boot-environment
+stdout=
 stdout=NON-CLAIMS
 stdout=not-kernel
 stdout=not-compositor
