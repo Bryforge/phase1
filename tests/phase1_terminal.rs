@@ -21,7 +21,7 @@ fn terminal_wrapper_files_exist_and_have_valid_shell_syntax() {
 }
 
 #[test]
-fn simple_phase1_command_delegates_to_start_phase1() {
+fn simple_phase1_command_delegates_to_phase1() {
     let help = Command::new("sh")
         .arg("phase1")
         .arg("help")
@@ -92,7 +92,7 @@ fn terminal_help_describes_safe_wrapper_contract() {
 }
 
 #[test]
-fn terminal_doctor_delegates_to_start_phase1() {
+fn terminal_doctor_delegates_to_phase1() {
     let output = Command::new("sh")
         .arg("terminal/bin/phase1-terminal")
         .arg("doctor")
@@ -138,9 +138,9 @@ fn terminal_docs_point_to_simple_phase1_command_and_source_launcher() {
     let readme = fs::read_to_string("terminal/README.md").expect("read terminal README");
     let root_readme = fs::read_to_string("README.md").expect("read README.md");
     assert!(terminal_doc.contains("./phase1"));
-    assert!(terminal_doc.contains("./start_phase1"));
+    assert!(terminal_doc.contains("./phase1"));
     assert!(terminal_doc.contains("no full terminal-emulator claim"));
-    assert!(readme.contains("delegates to `../../start_phase1`"));
+    assert!(readme.contains("delegates to `./phase1`"));
     assert!(root_readme.contains("sh phase1"));
     assert!(root_readme.contains("install-phase1-command"));
 }

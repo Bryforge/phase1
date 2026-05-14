@@ -99,7 +99,7 @@ BASE1_B42_LANG=C.UTF-8
 BASE1_B42_LANGUAGE=ja:en
 EOF
 
-for path in README.md Cargo.toml phase1 start_phase1 docs/project/FEATURE_STATUS.md docs/project/PHASE1_NATIVE_LANGUAGE.md; do [ -f "$path" ] && cp "$path" "$ROOTFS/phase1/repo/$path"; done
+for path in README.md Cargo.toml phase1 phase1 docs/project/FEATURE_STATUS.md docs/project/PHASE1_NATIVE_LANGUAGE.md; do [ -f "$path" ] && cp "$path" "$ROOTFS/phase1/repo/$path"; done
 [ -d assets ] && { mkdir -p "$ROOTFS/phase1/repo/assets"; cp assets/phase1-splash.png "$ROOTFS/phase1/repo/assets/phase1-splash.png" 2>/dev/null || true; }
 
 cat > "$ROOTFS/init" <<'EOF'

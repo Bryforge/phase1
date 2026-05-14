@@ -35,7 +35,7 @@ fn launch_help_displays_simple_command() {
     let stdout = String::from_utf8_lossy(&output.stdout);
     assert!(stdout.contains("./phase1"));
     assert!(stdout.contains("sh phase1"));
-    assert!(stdout.contains("Simple launch command"));
+    assert!(stdout.contains("Normal use"));
 }
 
 #[test]

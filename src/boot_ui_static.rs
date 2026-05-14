@@ -129,7 +129,7 @@ impl ThemePalette {
 
     pub fn label(self) -> &'static str {
         match self {
-            Self::NeoTokyo => "cyan/magenta Neo Tokyo operator HUD, the default phase1 look",
+            Self::NeoTokyo => "pink/blue/red Neo Tokyo operator HUD, the default Phase1 look",
             Self::Rainbow => "classic rainbow ANSI gradient",
             Self::Matrix => "green-on-black digital rain console",
             Self::Cyber => "cyan/magenta high-contrast operator console",
@@ -223,7 +223,7 @@ impl BootConfig {
                 .map(|theme| theme.trim().is_empty())
                 .unwrap_or(true)
         {
-            std::env::set_var("PHASE1_THEME", ThemePalette::Crimson.name());
+            std::env::set_var("PHASE1_THEME", ThemePalette::NeoTokyo.name());
         }
     }
 
@@ -1315,7 +1315,7 @@ fn active_theme() -> ThemePalette {
         .filter(|theme| *theme != ThemePalette::BleedingEdge || bleeding_edge_env_enabled())
         .unwrap_or_else(|| {
             if bleeding_edge_env_enabled() {
-                ThemePalette::Crimson
+                ThemePalette::NeoTokyo
             } else {
                 ThemePalette::NeoTokyo
             }
@@ -1329,7 +1329,7 @@ fn active_theme_for_config(config: BootConfig) -> ThemePalette {
         .filter(|theme| *theme != ThemePalette::BleedingEdge || config.bleeding_edge)
         .unwrap_or_else(|| {
             if config.bleeding_edge {
-                ThemePalette::Crimson
+                ThemePalette::NeoTokyo
             } else {
                 ThemePalette::NeoTokyo
             }

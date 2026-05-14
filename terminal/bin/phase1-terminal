@@ -3,7 +3,7 @@ set -eu
 
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 ROOT_DIR=$(CDPATH= cd -- "$SCRIPT_DIR/../.." && pwd)
-START_PHASE1="$ROOT_DIR/start_phase1"
+PHASE1_CMD="$ROOT_DIR/phase1"
 
 usage() {
     cat <<'EOF'
@@ -21,14 +21,14 @@ Usage:
   phase1-terminal help
 
 Design:
-  This is a thin, safe wrapper around ./start_phase1.
+  This is a thin, safe wrapper around the root phase1 command.
   It does not replace Phase1's launcher, safe-mode gate, or Base1 boundary.
 EOF
 }
 
 require_start() {
-    if [ ! -f "$START_PHASE1" ]; then
-        echo "phase1-terminal: missing launch command: $START_PHASE1" >&2
+    if [ ! -f "$PHASE1_CMD" ]; then
+        echo "phase1-terminal: missing launch command: $PHASE1_CMD" >&2
         exit 1
     fi
 }
@@ -67,9 +67,9 @@ show_version() {
 selftest() {
     require_start
     sh -n "$0"
-    sh -n "$START_PHASE1"
-    sh "$START_PHASE1" --help >/dev/null
-    sh "$START_PHASE1" --doctor >/dev/null
+    sh -n "$PHASE1_CMD"
+    sh "$PHASE1_CMD" --help >/dev/null
+    sh "$PHASE1_CMD" --doctor >/dev/null
     echo "phase1-terminal selftest: ok"
 }
 
@@ -81,22 +81,22 @@ case "$cmd" in
     run)
         shift || true
         require_start
-        exec sh "$START_PHASE1" "$@"
+        exec sh "$PHASE1_CMD" "$@"
         ;;
     safe)
         shift || true
         require_start
-        PHASE1_SAFE_MODE=1 PHASE1_ALLOW_HOST_TOOLS=0 exec sh "$START_PHASE1" "$@"
+        PHASE1_SAFE_MODE=1 PHASE1_ALLOW_HOST_TOOLS=0 exec sh "$PHASE1_CMD" "$@"
         ;;
     doctor)
         shift || true
         require_start
-        exec sh "$START_PHASE1" --doctor "$@"
+        exec sh "$PHASE1_CMD" --doctor "$@"
         ;;
     gina|assistant)
         shift || true
         require_start
-        exec sh "$START_PHASE1" --gina "$@"
+        exec sh "$PHASE1_CMD" --gina "$@"
         ;;
     quality)
         shift || true
@@ -114,6 +114,6 @@ case "$cmd" in
         ;;
     *)
         require_start
-        exec sh "$START_PHASE1" "$cmd" "$@"
+        exec sh "$PHASE1_CMD" "$cmd" "$@"
         ;;
 esac

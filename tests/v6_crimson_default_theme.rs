@@ -1,17 +1,18 @@
 #[test]
-fn v6_edge_defaults_to_crimson_theme_when_theme_is_missing_or_empty() {
+fn v7_edge_defaults_to_neotokyo_theme_when_theme_is_missing_or_empty() {
     let boot = std::fs::read_to_string("src/boot_ui_static.rs").expect("boot ui");
 
-    assert!(boot.contains("ThemePalette::Crimson.name()"), "{boot}");
+    assert!(boot.contains("ThemePalette::NeoTokyo.name()"), "{boot}");
     assert!(boot.contains("theme.trim().is_empty()"), "{boot}");
     assert!(boot.contains("unwrap_or(true)"), "{boot}");
 }
 
 #[test]
-fn v6_edge_selector_should_not_default_display_to_bleeding_edge() {
+fn v7_edge_selector_should_default_display_to_neotokyo() {
     let boot = std::fs::read_to_string("src/boot_ui_static.rs").expect("boot ui");
 
-    assert!(boot.contains("crimson"), "{boot}");
+    assert!(boot.contains("neo-tokyo"), "{boot}");
+    assert!(!boot.contains("display    crimson"), "{boot}");
     assert!(!boot.contains("display    bleeding-edge"), "{boot}");
 }
 

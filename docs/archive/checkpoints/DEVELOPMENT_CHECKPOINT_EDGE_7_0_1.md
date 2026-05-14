@@ -58,4 +58,4 @@ This is still an edge line. It does not claim a finished OS replacement, bootabl
 
 ### v6 visual default
 
-The v6 edge console defaults to the `crimson` palette when no `PHASE1_THEME` override is set. The legacy bleeding-edge palette remains available manually with `theme edge`.
+The v6 edge console defaults to the `neo-tokyo` palette when no `PHASE1_THEME` override is set. The legacy bleeding-edge palette remains available manually with `theme edge`.

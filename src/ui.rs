@@ -81,7 +81,7 @@ impl ThemePalette {
 
     pub fn label(self) -> &'static str {
         match self {
-            Self::NeoTokyo => "cyan/magenta Neo Tokyo operator HUD, the default phase1 look",
+            Self::NeoTokyo => "pink/blue/red Neo Tokyo operator HUD, the default Phase1 look",
             Self::Rainbow => "classic rainbow ANSI gradient",
             Self::Matrix => "green-on-black digital rain console",
             Self::Cyber => "cyan/magenta high-contrast operator console",
@@ -168,7 +168,7 @@ impl BootConfig {
                 .map(|theme| theme.trim().is_empty())
                 .unwrap_or(true)
         {
-            std::env::set_var("PHASE1_THEME", ThemePalette::Crimson.name());
+            std::env::set_var("PHASE1_THEME", ThemePalette::NeoTokyo.name());
         }
     }
 
@@ -662,11 +662,7 @@ fn active_theme() -> ThemePalette {
         .and_then(|raw| ThemePalette::parse(&raw))
         .filter(|theme| *theme != ThemePalette::BleedingEdge || bleeding_edge_env_enabled())
         .unwrap_or_else(|| {
-            if bleeding_edge_env_enabled() {
-                ThemePalette::Crimson
-            } else {
-                ThemePalette::NeoTokyo
-            }
+            ThemePalette::NeoTokyo
         })
 }
 
@@ -676,11 +672,7 @@ fn active_theme_for_config(config: BootConfig) -> ThemePalette {
         .and_then(|raw| ThemePalette::parse(&raw))
         .filter(|theme| *theme != ThemePalette::BleedingEdge || config.bleeding_edge)
         .unwrap_or_else(|| {
-            if config.bleeding_edge {
-                ThemePalette::Crimson
-            } else {
-                ThemePalette::NeoTokyo
-            }
+            ThemePalette::NeoTokyo
         })
 }
 
@@ -689,11 +681,11 @@ fn palette(theme: ThemePalette) -> Palette {
         ThemePalette::NeoTokyo => Palette {
             border: BLUE,
             title: MAGENTA,
-            accent: GREEN,
+            accent: RED,
             muted: GRAY,
             prompt_user: MAGENTA,
-            prompt_path: GREEN,
-            ready: GREEN,
+            prompt_path: BLUE,
+            ready: RED,
         },
         ThemePalette::Rainbow => Palette {
             border: CYAN,
@@ -749,7 +741,7 @@ fn palette(theme: ThemePalette) -> Palette {
             prompt_path: MAGENTA,
             ready: MAGENTA,
         },
-        ThemePalette::Crimson => Palette {
+        ThemePalette::NeoTokyo => Palette {
             border: RED,
             title: RED,
             accent: YELLOW,

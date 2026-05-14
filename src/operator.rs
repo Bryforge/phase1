@@ -46,8 +46,8 @@ pub fn theme(shell: &mut Phase1Shell, args: &[String]) -> String {
         }
         Some("reset") => {
             if bleeding_edge_active() {
-                set_palette(shell, ThemePalette::Crimson);
-                "theme: reset to crimson edge default\n".to_string()
+                set_palette(shell, ThemePalette::NeoTokyo);
+                "theme: reset to neo-tokyo default\n".to_string()
             } else {
                 set_palette(shell, ThemePalette::Rainbow);
                 "theme: reset to rainbow default\n".to_string()
@@ -55,8 +55,8 @@ pub fn theme(shell: &mut Phase1Shell, args: &[String]) -> String {
         }
         Some("default") => {
             if bleeding_edge_active() {
-                set_palette(shell, ThemePalette::Crimson);
-                "theme: crimson edge default enabled\n".to_string()
+                set_palette(shell, ThemePalette::NeoTokyo);
+                "theme: neo-tokyo default enabled\n".to_string()
             } else {
                 set_palette(shell, ThemePalette::Rainbow);
                 "theme: rainbow default enabled\n".to_string()
@@ -312,7 +312,7 @@ fn theme_status(shell: &Phase1Shell) -> String {
             })
             .unwrap_or_else(|| {
                 if bleeding_edge_active() {
-                    ThemePalette::Crimson.name().to_string()
+                    ThemePalette::NeoTokyo.name().to_string()
                 } else {
                     ThemePalette::Rainbow.name().to_string()
                 }
