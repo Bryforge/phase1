@@ -1,0 +1,10 @@
+fyr staged
+codename      : black_arts
+status        : fixture-backed design stub
+live-system   : untouched
+workspace     : .phase1/staged-candidates
+commands      : status, plan, create, apply, validate, promote, discard
+boundaries    : candidate-only, non-live, evidence-bound, claim-boundary
+implementation: pending
+next          : wire fyr staged in fyr_command
+claim-boundary: fixture-only
