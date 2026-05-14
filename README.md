@@ -601,6 +601,19 @@ Fyr is the Phase1 native language track.
 - [`docs/os/BASE1_SUPERVISOR_PROFILES.md`](docs/os/BASE1_SUPERVISOR_PROFILES.md) — Base1 supervisor profiles.
 - [`docs/os/BASE1_SUPERVISOR_STORAGE_TIER.md`](docs/os/BASE1_SUPERVISOR_STORAGE_TIER.md) — Base1 supervisor storage tier.
 
+## White Arts defensive-care track
+
+White Arts is the Phase1/Base1/Fyr defensive-care track for integrity validation, nominal-state review, healing and maintenance planning, security-audit readiness, and the open security server suite roadmap.
+
+Start here:
+
+- [`docs/white-arts/README.md`](docs/white-arts/README.md) — White Arts overview, scope, boundaries, and command-surface plan.
+- [`docs/white-arts/PROTOCOLS_AND_GUARDRAILS.md`](docs/white-arts/PROTOCOLS_AND_GUARDRAILS.md) — standing defensive protocols and safety guardrails.
+- [`docs/white-arts/OPEN_SECURITY_SERVER_SUITE.md`](docs/white-arts/OPEN_SECURITY_SERVER_SUITE.md) — documentation-first open-source security server environment suite plan.
+- [`docs/white-arts/TODO.md`](docs/white-arts/TODO.md) — maintenance posture TODO list.
+
+White Arts is read-only first, evidence-bound, and non-claiming until tests, validation reports, recovery notes, and review decisions support promotion.
+
 ## Security and crypto policy
 
 - [`SECURITY.md`](SECURITY.md) — Security reporting, safe defaults, host trust gates, and vulnerability-handling guidance.

@@ -217,3 +217,5 @@ Older planning notes, development checkpoints, AI/Gina notes, AVIM notes, and le
 ### White Arts
 
 Use `docs/white-arts/README.md` for White Arts defensive validation, nominal-state, maintenance, security-audit, and open security server suite planning. White Arts work remains evidence-bound, read-only first, and non-claiming until tests and validation reports support promotion.
+
+- [`white-arts/OPEN_SECURITY_SERVER_SUITE.md`](white-arts/OPEN_SECURITY_SERVER_SUITE.md) — documentation-first open-source security server environment suite plan.
