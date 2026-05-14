@@ -59,7 +59,7 @@ claim-boundary   : evidence-bound-maintenance
 
 White Arts is documentation-first.
 
-The first stage is to define the roadmap, nominal-state matrix, integrity plan, healing model, security audit movement, and report template before wiring any command surface.
+The first stage is to define the roadmap, nominal-state matrix, integrity plan, healing model, security audit movement, protocols and guardrails, open security server suite planning, maintenance TODOs, and report templates before wiring any command surface.
 
 ## Planned command surface
 
@@ -87,4 +87,7 @@ No command should silently modify repository files, host settings, credentials, 
 - [Integrity validation plan](INTEGRITY_VALIDATION_PLAN.md)
 - [Healing and maintenance model](HEALING_MAINTENANCE_MODEL.md)
 - [Security audit movement](SECURITY_AUDIT_MOVEMENT.md)
+- [Protocols and security guardrails](PROTOCOLS_AND_GUARDRAILS.md)
+- [Open security server suite](OPEN_SECURITY_SERVER_SUITE.md)
+- [Maintenance TODO](TODO.md)
 - [Report template](REPORT_TEMPLATE.md)

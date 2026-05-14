@@ -12,6 +12,31 @@ planned -> documented -> read-only checked -> locally validated -> CI validated 
 
 A White Arts feature does not advance unless its tests, docs, failure behavior, recovery notes, and claim boundary are present.
 
+## W0 — Standing protocols and guardrails
+
+Goal: preserve the permanent safety posture before adding new White Arts capability.
+
+Required references:
+
+- `docs/white-arts/PROTOCOLS_AND_GUARDRAILS.md`
+- `docs/white-arts/TODO.md`
+
+Required guardrails:
+
+- evidence before claim
+- read-only first
+- no-execute analysis boundary
+- explicit operator consent for mutation
+- secret hygiene and privacy
+- integrity validation posture
+- staged healing only
+- nominal means checked, not invulnerable
+- security audit movement stays defensive
+- open security server suite stays report-only by default
+- promotion and release gates remain blocked without evidence
+
+Status: documentation-first.
+
 ## W1 — Doctrine and vocabulary
 
 Goal: define White Arts as defensive care.
@@ -178,6 +203,67 @@ Initial Fyr scope:
 9. Add `white-arts status` read-only command stub.
 10. Add `white-arts inventory` read-only reporter.
 
+## W11 — Open security server suite
+
+Goal: plan a full open-source-oriented defensive server environment without claiming production readiness.
+
+Required reference:
+
+- `docs/white-arts/OPEN_SECURITY_SERVER_SUITE.md`
+
+Required planning areas:
+
+- server inventory
+- service inventory
+- package inventory
+- network policy state
+- identity and access review
+- log ingestion and redaction
+- backup and recovery proof
+- security report generation
+- open-source component review
+- server-suite promotion gates
+
+First implementation rule: server-facing integrations are report-only and read-only until explicitly reviewed.
+
+## W12 — Maintenance TODO and posture cadence
+
+Goal: keep future White Arts maintenance easy to execute without losing security posture.
+
+Required reference:
+
+- `docs/white-arts/TODO.md`
+
+Required maintenance cadence:
+
+```text
+weekly: docs links, TODO status, failed tests, stale status metadata
+per PR: claim language, test coverage, failure behavior, redaction, rollback notes
+per release candidate: full White Arts report, Base1 evidence review, security audit summary, promotion decision
+```
+
+Required done definition:
+
+- documentation
+- tests or explicit reason tests are not applicable yet
+- safe-default behavior
+- non-claim language
+- reviewable evidence
+- owner-visible next step
+
+## Future reference map
+
+Future White Arts changes should start from these documents:
+
+- [Protocols and security guardrails](PROTOCOLS_AND_GUARDRAILS.md)
+- [Maintenance TODO](TODO.md)
+- [Open Security Server Suite](OPEN_SECURITY_SERVER_SUITE.md)
+- [Nominal-state matrix](NOMINAL_STATE_MATRIX.md)
+- [Integrity validation plan](INTEGRITY_VALIDATION_PLAN.md)
+- [Healing and maintenance model](HEALING_MAINTENANCE_MODEL.md)
+- [Security audit movement](SECURITY_AUDIT_MOVEMENT.md)
+- [Report template](REPORT_TEMPLATE.md)
+
 ## Non-claims
 
 White Arts does not make Phase1, Base1, or Fyr:
@@ -190,3 +276,6 @@ White Arts does not make Phase1, Base1, or Fyr:
 - installer-ready
 - daily-driver ready
 - cryptographically complete
+- corporate certified
+- ransomware-proof
+- autonomous healing ready
