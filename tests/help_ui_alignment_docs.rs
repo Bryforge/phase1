@@ -70,10 +70,12 @@ fn help_ui_hot_zones_are_compact_for_mobile_terminals() {
         registry.contains("CORE   dash sysinfo security opslog"),
         "{registry}"
     );
+    assert!(registry.contains("BUILD  dev repo fyr lang"), "{registry}");
     assert!(
-        registry.contains("BUILD  dev repo fyr lang cargo rustc"),
+        registry.contains("OPTICS optics preview | optics rails"),
         "{registry}"
     );
+    assert!(registry.contains("HOST   cargo rustc git gh"), "{registry}");
     assert!(
         registry.contains("SAFE   capabilities sandbox audit update"),
         "{registry}"
