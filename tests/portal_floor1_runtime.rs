@@ -57,8 +57,8 @@ fn portal_help_reports_local_state_and_floor1_policy() {
 
     for row in [
         "portal help",
-        "usage             : portal <status|list|open|enter|leave|close|inspect|network|split|snapshot|help>",
-        "local-state       : open, enter, leave, close, inspect, network, split, snapshot",
+        "usage             : portal <status|list|open|enter|leave|close|inspect|network|split|snapshot|restore|help>",
+        "local-state       : open, enter, leave, close, inspect, network, split, snapshot, restore",
         "floor             : floor1",
         "network-default   : denied",
         "claim-boundary    : workspace-context-only",
@@ -201,6 +201,33 @@ fn portal_snapshot_captures_local_metadata_only() {
         "result            : local-metadata-only",
         "portal snapshot missing",
         "status            : missing-portal",
+        "result            : no-op",
+        "claim-boundary    : workspace-context-only",
+    ] {
+        assert!(output.contains(row), "missing {row}:\n{output}");
+    }
+}
+
+#[test]
+fn portal_restore_reopens_snapshot_as_local_metadata_only() {
+    let output = run_phase1(
+        "portal open alpha\nportal snapshot alpha\nportal close alpha\nportal restore alpha\nportal restore missing\nexit\n",
+    );
+
+    for row in [
+        "portal restore alpha",
+        "status            : restored",
+        "portal            : alpha",
+        "snapshot          : floor1-alpha-workspace-session",
+        "snapshot-scope    : workspace/session",
+        "active-portal     : alpha",
+        "open-portals      : root,alpha",
+        "network-owner     : floor1",
+        "network-mode      : denied",
+        "network           : blocked",
+        "result            : local-metadata-only",
+        "portal restore missing",
+        "status            : missing-snapshot",
         "result            : no-op",
         "claim-boundary    : workspace-context-only",
     ] {
