@@ -83,14 +83,23 @@ fn portal_fixture_preserves_user_control_cues() {
 }
 
 #[test]
-fn portal_contract_lists_runtime_staging_and_completion_rule() {
+fn portal_contract_marks_runtime_complete_without_overclaiming() {
     let path = "docs/portal/FLOOR1_PORTALS.md";
 
     for row in [
-        "Add read-only runtime status/list/help.",
-        "Add runtime tests for status/list/help and unknown-action no-op output.",
-        "Add `portal open`, `portal enter`, and `portal leave` as explicit local state changes.",
-        "Do not close #336 until the contract, fixture, read-only runtime source, runtime tests, and manual smoke have landed.",
+        "Status: floor1 runtime complete",
+        "## Runtime completion",
+        "Floor1 portal runtime is complete for the current workspace/session scope.",
+        "portal network <name> <denied|local-only|brokered-egress>",
+        "portal split <left> <right>",
+        "portal snapshot <name>",
+        "portal restore <name>",
+        "portal clone <source> <name>",
+        "portal link <left> <right>",
+        "`portal network` is policy-state-only and does not open host networking.",
+        "`portal link` is explicit planned-disabled and returns no-op.",
+        "Host, process, VM, container, hardware, and network namespace isolation are not claimed.",
+        "Close #336 only after the contract, fixture, runtime source, runtime tests, and manual smoke have landed.",
     ] {
         assert_contains(path, row);
     }
