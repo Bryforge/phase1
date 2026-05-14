@@ -40,11 +40,15 @@ fn optics_pro_doc_preserves_minimal_ui_and_start_state() {
 }
 
 #[test]
-fn optics_pro_doc_defines_hud_rails_and_mutation_colors() {
+fn optics_pro_doc_defines_hud_rails_command_surface_and_mutation_colors() {
     let doc = fs::read_to_string(OPTICS_DOC).expect("Optics PRO UI doc should exist");
 
     for required in [
         "OPTICS_HUD_RAILS.md",
+        "OPTICS_COMMAND_SURFACE.md",
+        "optics preview",
+        "optics rails",
+        "WASI-lite plugin path",
         "a top HUD rail for global system state",
         "a center viewport for command output and detailed reports",
         "a bottom HUD rail for command input",
