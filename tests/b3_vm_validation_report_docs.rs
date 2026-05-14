@@ -5,8 +5,8 @@ fn b3_vm_validation_report_defines_scope_and_summary() {
 
     for text in [
         "Base1 B3 VM validation report",
-        "initial local-evidence report scaffold",
-        "B3 emulator evidence collected from local proof/stage runs",
+        "reviewed local VM evidence report",
+        "B3 emulator evidence collected from local proof/stage runs, B2 focused test evidence, B3 log-bundle review, X200 emulator evidence, and latest Phase1 big verification report",
         "BASE1_B3_EVIDENCE_STATE=evidence-present",
         "BASE1_B3_VALIDATION_CLAIM=not_claimed",
         "does not prove Base1 is fully bootable",
@@ -106,13 +106,13 @@ fn b3_vm_validation_report_lists_remaining_requirements_and_non_claims() {
         .expect("B3 VM validation report");
 
     for text in [
-        "B2 focused test suite pass record",
-        "reviewed B3 log bundle",
-        "explicit VM profile",
-        "explicit VM runtime",
+        "B2 focused test suite",
+        "B3 log-bundle review",
+        "explicit VM runtime/version identifiers",
+        "explicit VM runtime/version identifiers",
         "explicit boot artifact identifiers",
         "Phase1 launch result",
-        "non-claims preserved",
+        "non-claims preserved in any strengthened report",
         "does not make Base1 bootable on physical hardware",
         "installer-ready",
         "recovery-complete",
