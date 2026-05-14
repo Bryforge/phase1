@@ -133,6 +133,8 @@ production OS replacement claims
 
 1. Land this matrix and the validation-demo fixture.
 2. Add regression tests that enforce the matrix, user cues, control schemes, and forbidden behavior list.
-3. Implement #317 so `fyr staged` becomes real runtime behavior.
-4. Add the first runtime validation demo command after #317 is complete.
-5. Promote public status only when source and tests prove the behavior.
+3. Wire a real runtime command only after the fixture and acceptance tests exist.
+4. Implement #317 so `fyr staged` becomes real runtime behavior.
+5. Add the first runtime validation demo command after #317 is complete.
+6. Do not raise public Fyr completion percentage until runtime implementation and tests land.
+7. Promote public status only when source and tests prove the behavior.
