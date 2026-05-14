@@ -1,0 +1,13 @@
+name: fyr-doc-consistency
+kind: fixture
+docs:
+  - docs/fyr/ROADMAP.md
+  - docs/fyr/LANGUAGE_BOOK.md
+  - docs/fyr/SAFETY_MODEL.md
+  - docs/fyr/SELF_WORKFLOWS.md
+required-phrases:
+  - VFS
+  - deterministic
+  - non-claim
+  - 100% promotion gate
+  - F5
