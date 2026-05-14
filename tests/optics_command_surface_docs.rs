@@ -27,6 +27,7 @@ fn optics_command_surface_preserves_current_preview_routes() {
     for required in [
         "optics preview",
         "optics rails",
+        "optics status",
         "WASI-lite plugin path",
         "capability `none`",
         "minimal main screen",
@@ -35,6 +36,30 @@ fn optics_command_surface_preserves_current_preview_routes() {
         "top HUD rail",
         "center viewport",
         "bottom HUD rail",
+        "preview-only mode",
+        "Rust static renderer source",
+        "live HUD disabled state",
+        "explicit activation gate requirement",
+    ] {
+        assert!(doc.contains(required), "missing {required:?}: {doc}");
+    }
+}
+
+#[test]
+fn optics_command_surface_preserves_discovery_and_execution_boundaries() {
+    let doc = fs::read_to_string(COMMAND_DOC).expect("Optics command surface doc should exist");
+
+    for required in [
+        "Discovery versus execution",
+        "complete opt",
+        "complete pro",
+        "complete hud",
+        "Those are discovery checks. They do not execute the preview surface.",
+        "optics rails",
+        "hudrails",
+        "optics preview",
+        "pro",
+        "optics status",
     ] {
         assert!(doc.contains(required), "missing {required:?}: {doc}");
     }
@@ -47,7 +72,7 @@ fn optics_command_surface_preserves_registry_expectation() {
     for required in [
         "Future work should promote Optics into the regular command registry",
         "help, completions, and manuals",
-        "optics [preview|rails|help]",
+        "optics [preview|rails|status|help]",
         "Until that registry row exists, the WASI-lite route remains the safe preview path.",
     ] {
         assert!(doc.contains(required), "missing {required:?}: {doc}");
