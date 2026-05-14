@@ -36,9 +36,10 @@
 </p>
 
 <p align="center">
-  <img alt="Stable" src="https://img.shields.io/badge/stable-v5.0.0-39ff88">
+  <img alt="Stable base" src="https://img.shields.io/badge/stable%20base-v5.0.0-39ff88">
   <img alt="Previous stable" src="https://img.shields.io/badge/previous%20stable-v4.4.0-7f8cff">
-  <img alt="Edge" src="https://img.shields.io/badge/edge-v6.0.0-00d8ff">
+  <img alt="Compatibility base" src="https://img.shields.io/badge/compat%20base-v3.6.0-8a5cff">
+  <img alt="Current edge" src="https://img.shields.io/badge/current%20edge-v6.0.0-00d8ff">
   <img alt="Rust" src="https://img.shields.io/badge/language-Rust-ff8a00">
   <img alt="Fyr" src="https://img.shields.io/badge/native%20language-Fyr-ff5a00">
   <img alt="Safe mode" src="https://img.shields.io/badge/safe%20mode-default%20on-39ff88">
