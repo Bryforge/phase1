@@ -14,6 +14,7 @@ Fyr is the Phase1-native language path for VFS automation, self-construction, an
 - F4 runtime-safety evidence now checks that `fyr build`, `fyr run`, and `fyr test` stay VFS-oriented and report no host-tool markers even when host tools are enabled for the wider Phase1 process.
 - F4 error-redaction evidence now checks that check/package/test diagnostics stay target-scoped and avoid host temp paths, host-tool environment markers, shell/compiler text, and network URLs.
 - F4 deterministic-output evidence now compares repeated `fyr build`, `fyr run`, and `fyr test` output slices so the safe runtime stays repeatable.
+- F4 VFS workflow evidence now covers `fyr new`, `fyr cat`, `fyr init`, `fyr check`, `fyr build`, `fyr test`, and `fyr run` working together without host-tool markers.
 
 ## Roadmap
 
