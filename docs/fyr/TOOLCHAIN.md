@@ -12,6 +12,8 @@ fyr check <file.fyr|package>
 fyr build <file.fyr|package>
 ```
 
+Additional active command surface is documented in [`LANGUAGE_BOOK.md`](LANGUAGE_BOOK.md).
+
 ## Package layout
 
 ```text
@@ -24,12 +26,17 @@ tests/
 
 ## Safety model
 
+The Fyr safety boundary is documented in [`SAFETY_MODEL.md`](SAFETY_MODEL.md).
+
+Current defaults:
+
 - VFS-only.
 - No Cargo invocation.
 - No host shell.
 - No network.
 - No host compiler.
 - Deterministic dry-run build output.
+- Build output reports `backend : seed/interpreted` and `host    : none`.
 
 ## Example
 
