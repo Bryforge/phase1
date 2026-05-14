@@ -1,0 +1,10 @@
+fyr staged unknown
+codename      : black_arts
+status        : unknown staged action
+action        : unknown
+live-system   : untouched
+candidate     : none
+result        : no-op
+help          : fyr staged help
+boundaries    : non-live, no-write, evidence-bound, claim-boundary
+claim-boundary: fixture-only
