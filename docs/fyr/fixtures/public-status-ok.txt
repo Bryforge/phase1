@@ -1,0 +1,15 @@
+name: fyr-public-status-fixture
+kind: public-status
+status-kind: estimated-roadmap-progress
+project: Fyr native language
+claim: fixture-only
+required-fields:
+  - repository
+  - branch
+  - project
+  - estimated-completion
+  - next-milestone
+checks:
+  - deterministic
+  - evidence-bound
+  - non-claim-aware

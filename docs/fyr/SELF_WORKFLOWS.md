@@ -17,6 +17,7 @@ Current Fyr inspection surface:
 - The first repository-manifest fixture lives at [`fixtures/repo-manifest-ok.txt`](fixtures/repo-manifest-ok.txt).
 - The first documentation-consistency fixture lives at `docs/fyr/fixtures/doc-consistency-ok.txt`.
 - The first checkpoint-metadata fixture lives at `docs/fyr/fixtures/checkpoint-metadata-ok.txt`.
+- The first public-status fixture lives at `docs/fyr/fixtures/public-status-ok.txt`.
 
 ## F5 target workflows
 
@@ -57,6 +58,16 @@ docs/fyr/fixtures/checkpoint-metadata-ok.txt
 ```
 
 It records checkpoint-shaped metadata with a fixture-only result and a not-complete claim. It is test evidence for a future checkpoint metadata helper; it is not yet a full helper command.
+
+## Public status fixture
+
+The first public status fixture is intentionally small and static:
+
+```text
+docs/fyr/fixtures/public-status-ok.txt
+```
+
+It records the fields expected from a future public status reader. It is fixture evidence for a future reader or documented deferral; it is not yet a full reader command.
 
 ## Safety rules
 
@@ -104,6 +115,7 @@ Related fixtures:
 - [`fixtures/repo-manifest-ok.txt`](fixtures/repo-manifest-ok.txt)
 - `docs/fyr/fixtures/doc-consistency-ok.txt`
 - `docs/fyr/fixtures/checkpoint-metadata-ok.txt`
+- `docs/fyr/fixtures/public-status-ok.txt`
 
 Related tests:
 
@@ -112,3 +124,4 @@ Related tests:
 - `tests/fyr_f5_manifest_fixtures.rs`
 - `tests/fyr_f5_doc_consistency_fixtures.rs`
 - `tests/fyr_f5_checkpoint_fixtures.rs`
+- `tests/fyr_f5_public_status_fixtures.rs`

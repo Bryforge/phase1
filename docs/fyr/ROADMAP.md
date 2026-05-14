@@ -19,6 +19,7 @@ Fyr is the Phase1-native language path for VFS automation, self-construction, an
 - F5 manifest-fixture evidence now validates a project-shaped manifest fixture and checks that listed documentation paths exist.
 - F5 documentation-consistency fixture evidence now validates aligned Fyr docs and required shared phrases.
 - F5 checkpoint-metadata fixture evidence now validates checkpoint-shaped fixture metadata and linked artifacts.
+- F5 public-status fixture evidence now validates expected status-reader fields while keeping the reader command pending.
 
 ## Roadmap
 
