@@ -1,0 +1,17 @@
+name: black-arts-workspace-fixture
+kind: staged-workspace-fixture
+workspace-root: .phase1/staged-candidates
+candidate-root: .phase1/staged-candidates/phase1-base1-candidate
+required-paths:
+  - plan.fyr
+  - candidate.toml
+  - changes.log
+  - validation.log
+  - approval.toml
+  - discard.log
+isolation-rules:
+  - candidate-only-writes
+  - live-system-untouched
+  - declared-workspace
+  - evidence-recorded
+claim: fixture-only
