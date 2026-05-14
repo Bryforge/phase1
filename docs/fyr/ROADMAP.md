@@ -23,6 +23,7 @@ Fyr is the Phase1-native language path for VFS automation, self-construction, an
 - F6 standard-library fixture evidence now defines the planned module surface and required evidence categories without claiming implementation.
 - F6 `vfs` module fixture evidence now records the planned VFS helper surface and required evidence categories.
 - F6 `text` module fixture evidence now records deterministic text helper operations and required evidence categories.
+- `black_arts` staged-candidate design evidence now defines guarded candidate creation, validation, promotion, and discard boundaries without claiming live-system updates.
 
 ## Roadmap
 
@@ -36,6 +37,7 @@ Fyr is the Phase1-native language path for VFS automation, self-construction, an
 | F5 — Phase1 self-workflows | Use Fyr to help Phase1 inspect, copy, construct, and validate itself. | `fyr self`, repository manifest readers, docs sync helpers, checkpoint helpers. | Active |
 | F6 — Standard library | Provide a small Phase1-owned standard library. | `vfs`, `text`, `json-lite`, `audit`, `process`, `package`, and `doc` modules. | Active |
 | F7 — Compiler path | Decide whether Fyr remains interpreted, lowers to Rust, or targets WASI-lite. | Compiler design note, WASI-lite strategy, packaging contract. | Planned |
+| X1 — black_arts staged candidates | Use guarded Fyr plans to create, validate, and promote candidate Phase1/Base1 trees. | Candidate lifecycle design, fixtures, tests, non-claim boundary, approval gate. | Design |
 
 ## 100% promotion gate
 
