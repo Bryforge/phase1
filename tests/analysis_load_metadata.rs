@@ -13,11 +13,11 @@ fn run_phase1(input: &str) -> String {
         .unwrap_or(0);
     let seq = RUN_COUNTER.fetch_add(1, Ordering::Relaxed);
     let run_dir = std::env::temp_dir().join(format!(
-        "phase1-analysis-command-stub-{}-{nonce}-{seq}",
+        "phase1-analysis-load-metadata-{}-{nonce}-{seq}",
         process::id()
     ));
     let _ = fs::remove_dir_all(&run_dir);
-    fs::create_dir_all(&run_dir).expect("create analysis command stub test dir");
+    fs::create_dir_all(&run_dir).expect("create analysis load metadata test dir");
 
     let mut child = Command::new(env!("CARGO_BIN_EXE_phase1"))
         .current_dir(&run_dir)
@@ -51,38 +51,32 @@ fn run_phase1(input: &str) -> String {
 }
 
 #[test]
-fn analyze_command_stub_reports_no_execute_boundary() {
+fn analyze_load_records_vfs_file_metadata_without_execution() {
     let output = run_phase1(
-        "wasm list\nanalyze\nanalyze status\nanalyze help\nanalyze load sample.bin\nexit\n",
+        "echo 'phase1-sample' > sample.bin\nanalyze load sample.bin\nanalyze load sample.bin\nexit\n",
     );
 
     for required in [
-        "analyze",
-        "phase1 wasm plugins",
-        "phase1 analysis",
-        "status           : experimental",
-        "mode             : metadata-only",
+        "phase1 analysis load",
+        "status           : loaded",
+        "status           : duplicate",
+        "id               : sha256-016644b74537",
+        "path             : /home/sample.bin",
+        "size-bytes       : 14",
+        "sha256           : 016644b74537df25d6d98eaf0e62f5a71340a7ad7222d7d652c4d2d238109445",
+        "source           : vfs",
+        "loaded-at        : session",
+        "trust-state      : untrusted",
         "execution-state  : not-executed",
         "host-execution   : disabled",
         "sandbox-claim    : not-claimed",
-        "static-analysis  : planned",
         "dynamic-analysis : future-restricted",
-        "sample-registry  : session-local",
-        "reports          : planned",
-        "fyr-integration  : planned",
-        "base1-evidence   : planned",
         "claim-boundary   : metadata-only-loading",
-        "usage            : analyze load <path>",
-        "phase1 analysis load",
-        "status           : missing",
-        "path             : /home/sample.bin",
-        "error            : no-such-vfs-file",
     ] {
         assert!(output.contains(required), "missing {required:?}:\n{output}");
     }
 
     for forbidden in [
-        "phase1 wasi run",
         "host=enabled",
         "host-execution   : enabled",
         "execution-state  : executed",
@@ -94,5 +88,24 @@ fn analyze_command_stub_reports_no_execute_boundary() {
             !output.contains(forbidden),
             "forbidden {forbidden:?}:\n{output}"
         );
+    }
+}
+
+#[test]
+fn analyze_load_rejects_missing_and_directory_paths_without_execution() {
+    let output = run_phase1("analyze load missing.bin\nanalyze load /home\nexit\n");
+
+    for required in [
+        "status           : missing",
+        "error            : no-such-vfs-file",
+        "path             : /home/missing.bin",
+        "status           : unsupported",
+        "error            : directory-not-sample",
+        "path             : /home",
+        "execution-state  : not-executed",
+        "host-execution   : disabled",
+        "sandbox-claim    : not-claimed",
+    ] {
+        assert!(output.contains(required), "missing {required:?}:\n{output}");
     }
 }
