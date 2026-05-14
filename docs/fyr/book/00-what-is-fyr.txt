@@ -1,0 +1,58 @@
+book          : Fyr
+chapter       : 00
+title         : What is Fyr?
+audience      : first-time and returning operators
+controls      : direct command | tab-complete | help-first | paste-safe | mobile-safe
+fallback      : ascii | no-color | compact-terminal
+runtime       : VFS-only
+host-tools    : blocked
+network       : blocked
+live-system   : untouched
+claim-boundary: book-contract-only
+
+# What is Fyr?
+
+Fyr is the Phase1-owned language path for learning, automation, and eventual self-directed Phase1 workflows.
+
+Fyr is not claimed to be self-hosting yet. Rust remains the implementation language for Phase1 today. Fyr lessons and book chapters must say what exists, what is planned, and what is blocked.
+
+Start here:
+
+```text
+fyr status
+fyr help
+fyr book list
+fyr learn list
+```
+
+What Fyr teaches first:
+
+```text
+fn main() -> i32
+print("Hello from Fyr")
+return 0
+```
+
+Operator safety:
+
+```text
+host-tools    : blocked
+network       : blocked
+live-system   : untouched
+runtime       : VFS-only
+```
+
+Control cues:
+
+- Use direct commands when you know the command.
+- Use `fyr help` when you are unsure.
+- Use tab-completion to discover files and commands as support lands.
+- Copy and paste one command per line on mobile terminals.
+- No-color and ASCII output must still preserve the meaning of every safety state.
+
+Next:
+
+```text
+fyr book read 01
+fyr learn run 001
+```
