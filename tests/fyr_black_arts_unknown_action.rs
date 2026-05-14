@@ -30,14 +30,6 @@ fn black_arts_unknown_action_fixture_has_required_rows() {
 }
 
 #[test]
-fn staged_candidate_doc_links_unknown_action_fixture() {
-    assert_contains(
-        "docs/fyr/STAGED_CANDIDATES.md",
-        "docs/fyr/fixtures/staged-unknown-action-ok.txt",
-    );
-}
-
-#[test]
 fn unknown_action_preserves_noop_boundary() {
     let fixture = read("docs/fyr/fixtures/staged-unknown-action-ok.txt");
 
@@ -45,4 +37,12 @@ fn unknown_action_preserves_noop_boundary() {
     assert!(fixture.contains("candidate     : none"));
     assert!(fixture.contains("live-system   : untouched"));
     assert!(fixture.contains("help          : fyr staged help"));
+}
+
+#[test]
+fn unknown_action_stays_fixture_only() {
+    let fixture = read("docs/fyr/fixtures/staged-unknown-action-ok.txt");
+
+    assert!(fixture.contains("claim-boundary: fixture-only"));
+    assert!(fixture.contains("boundaries    : non-live, no-write, evidence-bound, claim-boundary"));
 }
