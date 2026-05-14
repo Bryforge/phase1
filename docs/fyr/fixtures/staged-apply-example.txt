@@ -1,0 +1,12 @@
+fyr staged apply phase1-base1-candidate docs/fyr/fixtures/staged-plan-ok.txt
+codename      : black_arts
+candidate     : phase1-base1-candidate
+plan          : docs/fyr/fixtures/staged-plan-ok.txt
+change-mode   : candidate-only
+applied       : config-update, feature-toggle, docs-update
+rejected      : live-system-write, undeclared-path, missing-evidence
+records       : changes.log, candidate.toml
+write-scope   : .phase1/staged-candidates/phase1-base1-candidate
+live-system   : untouched
+next          : fyr staged validate phase1-base1-candidate
+claim-boundary: fixture-only
