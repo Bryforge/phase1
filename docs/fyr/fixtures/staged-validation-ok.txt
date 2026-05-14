@@ -1,0 +1,16 @@
+name: black-arts-validation-fixture
+kind: staged-validation-fixture
+candidate: phase1-base1-candidate
+plan: staged-plan-ok.txt
+result: passed
+required-checks:
+  - tests
+  - docs
+  - status
+  - non-claims
+promotion-state: blocked-until-approval
+evidence:
+  - validation-log
+  - checked-files
+  - status-summary
+claim: fixture-only
