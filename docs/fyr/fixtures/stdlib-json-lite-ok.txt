@@ -1,0 +1,15 @@
+name: fyr-stdlib-json-lite
+kind: standard-library-module-fixture
+module: json-lite
+purpose: deterministic JSON-like data helpers
+allowed-operations:
+  - read-object
+  - read-string
+  - read-number
+  - write-object
+required-evidence:
+  - smoke-test
+  - failure-mode-test
+  - docs-example
+  - safety-note
+claim: fixture-only
