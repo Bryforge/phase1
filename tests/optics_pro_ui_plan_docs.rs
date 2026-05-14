@@ -12,7 +12,7 @@ fn optics_pro_doc_exists_and_defines_codename_scope() {
         "Optics is the codename",
         "PRO is the operator-facing interface profile",
         "Phase1 PRO operator interface",
-        "bottom HUD model",
+        "top and bottom HUD rail model",
         "Phase1, Base1, and Fyr",
     ] {
         assert!(doc.contains(required), "missing {required:?}: {doc}");
@@ -25,24 +25,29 @@ fn optics_pro_doc_preserves_minimal_ui_and_start_state() {
 
     for required in [
         "start clean with Phase1 edge enabled",
-        "only the bottom HUD remains persistent",
+        "only compact top and bottom HUD rails remain persistent",
         "no large boot card by default",
         "no wide decorative banners by default",
         "no constant full-screen animation by default",
         "no command-output distortion",
         "Phase1 edge active",
         "safe operator mode visible",
+        "top HUD rail online",
+        "bottom HUD rail online",
     ] {
         assert!(doc.contains(required), "missing {required:?}: {doc}");
     }
 }
 
 #[test]
-fn optics_pro_doc_defines_bottom_hud_and_mutation_colors() {
+fn optics_pro_doc_defines_hud_rails_and_mutation_colors() {
     let doc = fs::read_to_string(OPTICS_DOC).expect("Optics PRO UI doc should exist");
 
     for required in [
-        "The bottom HUD is the center of Optics PRO.",
+        "OPTICS_HUD_RAILS.md",
+        "a top HUD rail for global system state",
+        "a center viewport for command output and detailed reports",
+        "a bottom HUD rail for command input",
         "bright blue by default",
         "active product: Phase1, Base1, or Fyr",
         "input mutation state",
@@ -86,7 +91,7 @@ fn optics_pro_doc_defines_phase1_base1_fyr_integration() {
         "Phase1 integration",
         "Base1 integration",
         "Fyr integration",
-        "portal, nest, analysis, and security contexts remain visible",
+        "portal, nest, ghost, analysis, and security contexts remain visible",
         "Base1 state appears as readiness, recovery, validation, artifact, hardware, or evidence context",
         "Base1 non-claims remain visible",
         "Fyr package, check, build, test, and run phases can light the HUD",
