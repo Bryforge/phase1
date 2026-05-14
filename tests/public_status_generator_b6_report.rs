@@ -26,11 +26,14 @@ fn public_status_generator_preserves_b6_report_state() {
 
     assert_contains(
         "site/status.json",
-        "\"overall_estimated_completion_percent\": 65",
+        "\"overall_estimated_completion_percent\": 67",
     );
+    assert_contains("site/status.json", "\"estimated_completion_percent\": 82");
+    assert_contains("site/status.json", "\"estimated_completion_percent\": 58");
     assert_contains("site/status.json", "\"estimated_completion_percent\": 40");
     assert_contains("site/status.json", "\"estimated_completion_percent\": 44");
-    assert_contains("site/status.json", "\"estimated_completion_percent\": 88");
+    assert_contains("site/status.json", "\"estimated_completion_percent\": 55");
+    assert_contains("site/status.json", "\"estimated_completion_percent\": 90");
     assert_contains("site/status.json", "current_public_report");
     assert_contains("site/status.json", "phase1_marker_seen");
     assert_contains("site/status.json", "not_claimed");
@@ -41,10 +44,10 @@ fn public_status_generator_preserves_b6_report_state() {
 
     assert_contains(
         "docs/status/PROJECT_STATUS.md",
-        "Overall estimated roadmap completion: **65%**.",
+        "Overall estimated roadmap completion: **67%**.",
     );
     assert_contains(
         "docs/status/PROJECT_STATUS.md",
-        "B6 X200 marker chain is now published",
+        "The B6 X200 marker chain is still published",
     );
 }
