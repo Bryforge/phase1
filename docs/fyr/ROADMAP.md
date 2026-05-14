@@ -11,6 +11,7 @@ Fyr is the Phase1-native language path for VFS automation, self-construction, an
 - The seed runner can execute simple print string literals from `.fyr` files stored in the Phase1 VFS.
 - The 100% promotion gate is tracked in [`../status/FYR_PHASE1_100_COMPLETION_GATES.md`](../status/FYR_PHASE1_100_COMPLETION_GATES.md).
 - F3 parser diagnostics now include package manifest, package entry-point, duplicate-main, missing-main, string, semicolon, return-value, boolean-condition, grouped-expression, division-by-zero, missing-operand, and boolean-operator checks.
+- F4 runtime-safety evidence now checks that `fyr build`, `fyr run`, and `fyr test` stay VFS-oriented and report no host-tool markers even when host tools are enabled for the wider Phase1 process.
 
 ## Roadmap
 
@@ -20,7 +21,7 @@ Fyr is the Phase1-native language path for VFS automation, self-construction, an
 | F1 — Seed runner | Let Phase1 run simple `.fyr` programs from the VFS. | `fyr status`, `fyr spec`, `fyr run`, print literal support, guard tests. | Active |
 | F2 — Authoring loop | Make Fyr usable without manually echoing source code. | `fyr new <name>`, `fyr cat <file>`, `fyr self`, starter templates, safer VFS writes. | Active |
 | F3 — Core syntax | Define stable parser behavior inspired by C, Rust, and Python. | Lexer, parser, function blocks, variables, return values, comments, diagnostics. | Active |
-| F4 — Safe runtime | Execute useful scripts without exposing the host. | VFS reads/writes, command metadata, bounded runtime, redacted errors, deterministic tests. | Planned |
+| F4 — Safe runtime | Execute useful scripts without exposing the host. | VFS reads/writes, command metadata, bounded runtime, redacted errors, deterministic tests. | Active |
 | F5 — Phase1 self-workflows | Use Fyr to help Phase1 inspect, copy, construct, and validate itself. | `fyr self`, repository manifest readers, docs sync helpers, checkpoint helpers. | Planned |
 | F6 — Standard library | Provide a small Phase1-owned standard library. | `vfs`, `text`, `json-lite`, `audit`, `process`, `package`, and `doc` modules. | Planned |
 | F7 — Compiler path | Decide whether Fyr remains interpreted, lowers to Rust, or targets WASI-lite. | Compiler design note, WASI-lite strategy, packaging contract. | Planned |
