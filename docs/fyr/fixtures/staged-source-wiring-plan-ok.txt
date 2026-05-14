@@ -1,0 +1,20 @@
+name: black-arts-source-wiring-plan
+kind: staged-source-wiring-plan-fixture
+entrypoint: fyr_command
+first-safe-action: fyr staged
+expected-output-source: docs/fyr/fixtures/staged-runtime-stub-ok.txt
+required-source-changes:
+  - match staged in fyr_command
+  - add fyr_staged helper
+  - add fyr_staged_help helper
+  - add fixture-backed status response
+required-tests:
+  - fyr staged prints runtime stub rows
+  - fyr staged help prints help rows
+  - unknown staged action stays non-live
+boundaries:
+  - no candidate writes
+  - no live-system changes
+  - no host command execution
+  - no promotion
+claim: fixture-only

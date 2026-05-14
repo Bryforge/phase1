@@ -68,11 +68,12 @@ docs/fyr/fixtures/staged-command-contract-ok.txt
 docs/fyr/fixtures/staged-stub-contract-ok.txt
 docs/fyr/fixtures/staged-runtime-stub-ok.txt
 docs/fyr/fixtures/staged-help-ok.txt
+docs/fyr/fixtures/staged-source-wiring-plan-ok.txt
 docs/fyr/fixtures/staged-status-ok.txt
 docs/fyr/fixtures/staged-status-example.txt
 ```
 
-These fixtures define expected shapes for candidate metadata, plan metadata, plan example output, create/apply/validate/promote/discard example output, lifecycle summary, change logs, validation results, explicit approval, discard records, claim boundaries, staged workspace layout, command contract, staged stub contract, runtime stub output, staged help output, status output, and a status example. They are not implementations.
+These fixtures define expected shapes for candidate metadata, plan metadata, plan example output, create/apply/validate/promote/discard example output, lifecycle summary, change logs, validation results, explicit approval, discard records, claim boundaries, staged workspace layout, command contract, staged stub contract, runtime stub output, staged help output, source wiring plan, status output, and a status example. They are not implementations.
 
 ## Safety rules
 
