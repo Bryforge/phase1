@@ -88,7 +88,8 @@ fn white_arts_protocols_preserve_analysis_and_server_suite_boundaries() {
 #[test]
 fn white_arts_protocols_are_linked_from_index_and_roadmap() {
     let index = fs::read_to_string("docs/white-arts/README.md").expect("read White Arts index");
-    let roadmap = fs::read_to_string("docs/white-arts/ROADMAP.md").expect("read White Arts roadmap");
+    let roadmap =
+        fs::read_to_string("docs/white-arts/ROADMAP.md").expect("read White Arts roadmap");
 
     for doc in [&index, &roadmap] {
         assert!(
