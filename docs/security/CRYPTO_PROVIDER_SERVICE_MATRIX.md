@@ -57,6 +57,27 @@ No provider, algorithm, profile, or service is runtime-approved until documentat
 
 These examples are not approvals.
 
+## Relationship to Crypto Chains
+
+Crypto Chains are planned in [`CRYPTO_CHAINS.md`](CRYPTO_CHAINS.md).
+
+The provider service matrix defines service families and candidate provider families.
+
+Crypto Chains define how a future parent or child context may request a scoped combination of:
+
+- crypto profile;
+- provider family;
+- service family;
+- data scope;
+- audit behavior;
+- fail-closed behavior.
+
+A chain must not bind to a provider/service pairing unless the pairing is documented in this matrix, reviewed, and compatible with the selected profile and scope.
+
+Unknown chain contexts, undocumented provider/service pairings, unavailable providers, missing services, and unsupported profile combinations should fail closed.
+
 ## Non-claims
 
 This document does not claim that Phase1 or Base1 currently provides finished cryptographic hardening, approved national-security crypto, compliance posture, secure communications, secure storage, or production-ready cryptographic enforcement.
+
+This document also does not claim that Crypto Chains currently provide runtime isolation, provider enforcement, service binding, hardware-backed secrecy, certified cryptographic compliance, or production-grade key management.
