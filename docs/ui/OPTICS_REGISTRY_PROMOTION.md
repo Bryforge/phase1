@@ -14,6 +14,7 @@ The initial registry promotion makes Optics discoverable from the normal Phase1 
 ```text
 optics preview
 optics rails
+optics status
 ```
 
 These routes remain preview-only and run through the existing `optics` WASI-lite plugin with capability `none`.
@@ -23,7 +24,7 @@ These routes remain preview-only and run through the existing `optics` WASI-lite
 The initial registry entry uses this command shape:
 
 ```text
-optics [preview|rails|help]
+optics [preview|rails|status|help]
 ```
 
 Properties:
@@ -55,6 +56,19 @@ Registry promotion does not activate live HUD rails.
 
 The command keeps routing to the existing read-only preview behavior until a separate renderer-backed shell command is explicitly added and tested.
 
+## Status surface
+
+`optics status` reports the current preview state:
+
+- preview-only mode;
+- Rust static renderer source;
+- top rail preview readiness;
+- bottom rail preview readiness;
+- live HUD disabled state;
+- explicit activation gate requirement;
+- input, history, and parser non-mutation labels;
+- non-claims.
+
 ## Safety rules
 
 Registry promotion must not:
@@ -81,7 +95,7 @@ The initial implementation patch adds tests preserving:
 - `canonical_name("hudrails")` resolves to `optics`;
 - `completions("opt")` contains `optics`;
 - `completions("pro")` contains `pro`;
-- `man_page("optics")` contains `optics [preview|rails|help]`;
+- `man_page("optics")` contains `optics [preview|rails|status|help]`;
 - `capabilities_report()` lists `optics` with capability `none`.
 
 ## Current status
