@@ -1,8 +1,8 @@
 # Phase1 big verification latest report
 
-Generated UTC: 2026-05-14T00:34:46Z
+Generated UTC: 2026-05-14T00:39:37Z
 Source branch: edge/stable
-Source commit: 04e13418fbe9757ed8230e59a9d4e18b071b5ea0
+Source commit: cd1d0b69e9707544b8726ef37ce8708686c42efb
 Host: X200
 Host kernel: Linux X200 6.8.0-110-generic #110trisquel35 SMP PREEMPT_DYNAMIC Wed Apr 15 21:32:36 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux
 
@@ -13,8 +13,8 @@ Host kernel: Linux X200 6.8.0-110-generic #110trisquel35 SMP PREEMPT_DYNAMIC Wed
 | Result | pass |
 | Steps | 15 |
 | Failed steps | 0 |
-| Verification start UTC | 2026-05-14T00:34:00Z |
-| Verification end UTC | 2026-05-14T00:34:29Z |
+| Verification start UTC | 2026-05-14T00:38:50Z |
+| Verification end UTC | 2026-05-14T00:39:20Z |
 | Source summary | build/phase1-big-verify/summary.env |
 | Source report | build/phase1-big-verify/report.md |
 | Source log | build/phase1-big-verify/phase1-big-verify.log |
@@ -29,9 +29,9 @@ No failed steps recorded.
 
 # Phase1 big verification report
 
-Start UTC: 2026-05-14T00:34:00Z
-End UTC: 2026-05-14T00:34:29Z
-Head: 04e13418fbe9757ed8230e59a9d4e18b071b5ea0
+Start UTC: 2026-05-14T00:38:50Z
+End UTC: 2026-05-14T00:39:20Z
+Head: cd1d0b69e9707544b8726ef37ce8708686c42efb
 Result: pass
 Steps run: 15
 Failed steps: 0
@@ -43,7 +43,6 @@ Summary: build/phase1-big-verify/summary.env
 
 ```text
  M docs/os/B3_X200_EMULATOR_EVIDENCE_REPORT.md
- M tests/b3_reviewed_vm_evidence_docs.rs
 ```
 
 ## Non-claims
@@ -77,8 +76,8 @@ test x86_64_boot_support_roadmap_defines_boot_profiles ... ok
 test x86_64_boot_support_roadmap_defines_target_systems_and_boot_modes ... ok
 test x86_64_boot_support_roadmap_documents_b1_script_and_tests ... ok
 test x86_64_boot_support_roadmap_documents_b2_script_and_tests ... ok
-test x86_64_boot_support_roadmap_links_required_docs ... ok
 test x86_64_boot_support_roadmap_lists_detection_goals ... ok
+test x86_64_boot_support_roadmap_links_required_docs ... ok
 test x86_64_boot_support_roadmap_preserves_boot_parameter_inventory ... ok
 test x86_64_boot_support_roadmap_preserves_hardening_and_safety_rules ... ok
 test x86_64_boot_support_roadmap_preserves_non_claims ... ok
