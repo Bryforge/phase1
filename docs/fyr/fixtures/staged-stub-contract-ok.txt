@@ -1,0 +1,21 @@
+name: black-arts-staged-stub-contract
+kind: staged-stub-contract-fixture
+command-family: fyr staged
+current-state: contract-before-implementation
+expected-entrypoint: fyr_command
+required-actions:
+  - status
+  - plan
+  - create
+  - apply
+  - validate
+  - promote
+  - discard
+required-response-boundaries:
+  - fixture-backed
+  - non-live
+  - candidate-only
+  - evidence-bound
+  - claim-boundary
+implementation-note: source wiring must update fyr_command without changing live-system behavior
+claim: fixture-only
