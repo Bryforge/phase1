@@ -127,3 +127,7 @@ The first implementation work should create documentation-only provider entries 
 This provider registry does not make Phase1 or Base1 cryptographically complete, audited, certified, quantum-safe, hardware-validated, installer-ready, or daily-driver ready.
 
 It defines the planned provider metadata and review structure for future cryptographic implementation work.
+
+## Related provider/service planning
+
+- [`CRYPTO_PROVIDER_SERVICE_MATRIX.md`](CRYPTO_PROVIDER_SERVICE_MATRIX.md) — maps provider categories to planned Phase1/Base1 crypto service families and operator-selectable profile boundaries.
