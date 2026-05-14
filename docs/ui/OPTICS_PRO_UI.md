@@ -69,6 +69,19 @@ The HUD should eventually show:
 - crypto chain status when that surface exists;
 - error or denial state in plain text.
 
+## Command surface
+
+The current read-only command surface is defined in [`OPTICS_COMMAND_SURFACE.md`](OPTICS_COMMAND_SURFACE.md).
+
+Current preview routes are:
+
+```text
+optics preview
+optics rails
+```
+
+These routes are currently exposed through the WASI-lite plugin path and remain preview-only.
+
 ## Mutation colors
 
 Optics PRO may use mutation colors for active command activity.
@@ -205,4 +218,5 @@ cargo fmt --all -- --check
 cargo test -p phase1 --test optics_pro_ui_plan_docs
 cargo test -p phase1 --test optics_pro_preview_fixture_docs
 cargo test -p phase1 --test optics_hud_rails_docs
+cargo test -p phase1 --test optics_command_surface_docs
 ```
