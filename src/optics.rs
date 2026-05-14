@@ -137,7 +137,9 @@ pub fn render_static_preview(device: OpticsDeviceProfile) -> String {
     let state = OpticsRailState::pro_static(device);
     let mut out = String::from("OPTICS HUD RAIL RENDER\nstatus=static-render\nruntime=not-wired\n");
     out.push_str(&render_top_rail(&state));
-    out.push_str(&render_center_viewport("phase1://edge/root > optics rails preview"));
+    out.push_str(&render_center_viewport(
+        "phase1://edge/root > optics rails preview",
+    ));
     out.push_str(&render_bottom_rail(&state));
     out.push_str("NON-CLAIMS not-compositor not-terminal-emulator not-sandbox not-security-boundary not-crypto-enforcement not-system-integrity-guarantee not-base1-boot-environment\n");
     out
