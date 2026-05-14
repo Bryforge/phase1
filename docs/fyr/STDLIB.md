@@ -12,7 +12,7 @@ The planned module names are:
 
 | Module | Purpose | Current state |
 | --- | --- | --- |
-| `vfs` | VFS read/write helpers scoped to Phase1-owned paths. | planned |
+| `vfs` | VFS read/write helpers scoped to Phase1-owned paths. | fixture |
 | `text` | Small string and text-processing helpers. | planned |
 | `json-lite` | Minimal deterministic JSON-like reading/writing. | planned |
 | `audit` | Structured validation and event-report helpers. | planned |
@@ -41,6 +41,14 @@ docs/fyr/fixtures/stdlib-modules-ok.txt
 ```
 
 It lists the planned module names and required evidence categories. It is not a module implementation.
+
+The first module-level fixture is:
+
+```text
+docs/fyr/fixtures/stdlib-vfs-ok.txt
+```
+
+It records the planned `vfs` module operation surface and required evidence categories. It is not a module implementation.
 
 ## Completion rule
 
