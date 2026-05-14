@@ -30,7 +30,7 @@ fn run_phase1(input: &str) -> String {
 }
 
 #[test]
-fn optics_rails_execution_shows_hud_rail_render_not_completion_only() {
+fn optics_rails_execution_shows_renderer_without_old_preview_body() {
     let output = run_phase1("optics rails\nexit\n");
 
     for required in [
@@ -47,6 +47,11 @@ fn optics_rails_execution_shows_hud_rail_render_not_completion_only() {
     ] {
         assert!(output.contains(required), "missing {required:?}:\n{output}");
     }
+
+    assert!(
+        !output.contains("OPTICS PRO PREVIEW"),
+        "rails route should not include old preview fixture body:\n{output}"
+    );
 }
 
 #[test]
