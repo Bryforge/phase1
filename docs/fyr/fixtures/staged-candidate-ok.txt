@@ -1,0 +1,17 @@
+name: black-arts-candidate-fixture
+kind: staged-candidate-fixture
+candidate: phase1-base1-candidate
+source: known-good
+plan: plan.fyr
+status: fixture-only
+required-records:
+  - plan-shape
+  - candidate-metadata
+  - validation-result
+  - promotion-approval
+  - discard-result
+checks:
+  - deterministic
+  - candidate-only
+  - evidence-bound
+  - non-claim-aware
