@@ -37,7 +37,7 @@
 
 <p align="center">
   <img alt="Stable base" src="https://img.shields.io/badge/stable%20base-v6.0.0-39ff88">
-  <img alt="Previous stable" src="https://img.shields.io/badge/previous%20stable-v6.0.0-7f8cff">
+  <img alt="Previous stable" src="https://img.shields.io/badge/previous%20stable-v5.0.0-7f8cff">
   <img alt="Compatibility base" src="https://img.shields.io/badge/compat%20base-v3.6.0-8a5cff">
   <img alt="Current edge" src="https://img.shields.io/badge/current%20edge-v7.0.1-00d8ff">
   <img alt="Rust" src="https://img.shields.io/badge/language-Rust-ff8a00">
