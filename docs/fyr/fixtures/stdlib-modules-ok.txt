@@ -1,0 +1,16 @@
+name: fyr-stdlib-modules
+kind: standard-library-fixture
+modules:
+  - vfs
+  - text
+  - json-lite
+  - audit
+  - process
+  - package
+  - doc
+required-evidence:
+  - smoke-tests
+  - failure-mode-tests
+  - docs-examples
+  - safety-notes
+claim: fixture-only
