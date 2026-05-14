@@ -57,8 +57,8 @@ fn portal_help_reports_local_state_and_floor1_policy() {
 
     for row in [
         "portal help",
-        "usage             : portal <status|list|open|enter|leave|close|inspect|help>",
-        "local-state       : open, enter, leave, close, inspect",
+        "usage             : portal <status|list|open|enter|leave|close|inspect|network|split|help>",
+        "local-state       : open, enter, leave, close, inspect, network, split",
         "floor             : floor1",
         "network-default   : denied",
         "claim-boundary    : workspace-context-only",
