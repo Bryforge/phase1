@@ -10,6 +10,21 @@ fn assert_contains(path: &str, needle: &str) {
 }
 
 #[test]
+fn staged_runtime_patch_has_git_apply_compatible_header() {
+    let path = "patches/fyr-staged-runtime-stub.patch";
+    let text = read(path);
+
+    assert_contains(path, "diff --git a/src/main.rs b/src/main.rs");
+    assert_contains(path, "--- a/src/main.rs");
+    assert_contains(path, "+++ b/src/main.rs");
+    assert_contains(path, "@@ -520,19 +520,77 @@ fn fyr_command(shell: &mut Phase1Shell, args: &[String]) -> String {");
+    assert!(
+        !text.lines().any(|line| line == "@@"),
+        "patch must not contain an unnumbered hunk header"
+    );
+}
+
+#[test]
 fn staged_runtime_patch_adds_match_arm_and_helpers() {
     let path = "patches/fyr-staged-runtime-stub.patch";
 

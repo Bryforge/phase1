@@ -1,7 +1,7 @@
 diff --git a/src/main.rs b/src/main.rs
 --- a/src/main.rs
 +++ b/src/main.rs
-@@
+@@ -520,19 +520,77 @@ fn fyr_command(shell: &mut Phase1Shell, args: &[String]) -> String {
  fn fyr_command(shell: &mut Phase1Shell, args: &[String]) -> String {
      match args.first().map(String::as_str) {
          None | Some("status") => fyr_status(),
@@ -77,3 +77,5 @@ diff --git a/src/main.rs b/src/main.rs
 +         claim-boundary: fixture-only\n"
 +    )
 +}
+ 
+ fn fyr_status() -> String {
