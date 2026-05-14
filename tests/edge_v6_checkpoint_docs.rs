@@ -16,17 +16,18 @@ fn edge_v6_checkpoint_records_current_boundary() {
 }
 
 #[test]
-fn release_metadata_points_to_v6_edge() {
+fn release_metadata_points_to_current_v7_edge() {
     let readme = std::fs::read_to_string("README.md").expect("README.md");
     let edge = std::fs::read_to_string("docs/repo/EDGE.md").expect("docs/repo/EDGE.md");
     let cargo = std::fs::read_to_string("Cargo.toml").expect("Cargo.toml");
 
-    assert!(readme.contains("edge-v6.0.0"), "{readme}");
+    assert!(readme.contains("current%20edge-v7.0.1"), "{readme}");
     assert!(
-        readme.contains("Current edge version: `v6.0.0`"),
+        readme.contains("Current edge version: `v7.0.1`"),
         "{readme}"
     );
-    assert!(edge.contains("Current package version | `6.0.0`"), "{edge}");
-    assert!(edge.contains("Current edge label | `v6.0.0`"), "{edge}");
-    assert!(cargo.contains("version = \"6.0.0\""), "{cargo}");
+    assert!(readme.contains("Stable base: `base/v6.0.0`"), "{readme}");
+    assert!(edge.contains("Current package version | `7.0.1`"), "{edge}");
+    assert!(edge.contains("Current edge label | `v7.0.1`"), "{edge}");
+    assert!(cargo.contains("version = \"7.0.1\""), "{cargo}");
 }
