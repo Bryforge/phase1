@@ -52,13 +52,13 @@ fn portal_status_reports_floor1_network_denied_rows() {
 }
 
 #[test]
-fn portal_help_reports_first_slice_and_floor1_policy() {
+fn portal_help_reports_local_state_and_floor1_policy() {
     let output = run_phase1("portal help\nexit\n");
 
     for row in [
         "portal help",
-        "usage             : portal <status|list|help>",
-        "first-slice       : read-only status/list/help",
+        "usage             : portal <status|list|open|enter|leave|inspect|help>",
+        "local-state       : open, enter, leave, inspect",
         "floor             : floor1",
         "network-default   : denied",
         "claim-boundary    : workspace-context-only",
@@ -68,14 +68,43 @@ fn portal_help_reports_first_slice_and_floor1_policy() {
 }
 
 #[test]
-fn portal_pending_actions_are_noop_and_help_guided() {
-    let output = run_phase1("portal open alpha\nexit\n");
+fn portal_open_enter_inspect_leave_updates_local_state_only() {
+    let output = run_phase1(
+        "portal open alpha\nportal status\nportal enter alpha\nportal inspect alpha\nportal leave\nportal status\nexit\n",
+    );
 
     for row in [
-        "portal open",
-        "status            : not-yet-implemented",
+        "portal open alpha",
+        "status            : opened",
+        "open-portals      : root,alpha",
+        "portal enter alpha",
+        "status            : entered",
+        "active-portal     : alpha",
+        "portal inspect alpha",
+        "state             : active",
+        "portal leave",
+        "status            : left",
+        "active-portal     : root",
+        "network-mode      : denied",
+        "network-owner     : floor1",
+        "claim-boundary    : workspace-context-only",
+    ] {
+        assert!(output.contains(row), "missing {row}:\n{output}");
+    }
+}
+
+#[test]
+fn portal_missing_or_invalid_actions_are_noop_and_help_guided() {
+    let output = run_phase1("portal enter missing\nportal open root\nportal nonsense\nexit\n");
+
+    for row in [
+        "portal enter missing",
+        "status            : missing-portal",
         "result            : no-op",
-        "help              : portal status",
+        "portal open root",
+        "status            : invalid-name",
+        "portal nonsense",
+        "status            : not-yet-implemented",
         "claim-boundary    : workspace-context-only",
     ] {
         assert!(output.contains(row), "missing {row}:\n{output}");
