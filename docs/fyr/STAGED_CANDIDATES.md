@@ -44,6 +44,17 @@ The public skin can later expose these through the `black_arts` codename if the 
 | promote | Promote only after validation. | Operator approval, rollback path, evidence link. |
 | discard | Remove failed or stale candidate. | Deletion log, live-system untouched marker. |
 
+## Fixtures
+
+The current staged candidate fixtures are:
+
+```text
+docs/fyr/fixtures/staged-candidate-ok.txt
+docs/fyr/fixtures/staged-plan-ok.txt
+```
+
+These fixtures define expected shapes for candidate metadata and plan metadata. They are not implementations.
+
 ## Safety rules
 
 Required defaults:
