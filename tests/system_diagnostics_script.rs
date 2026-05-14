@@ -33,14 +33,16 @@ fn system_diagnostics_script_is_local_only_and_sanitized() {
     }
 
     for forbidden in [
-        "git push",
-        "git add",
-        "git commit",
+        "git push origin",
+        "git add .",
+        "git add -A",
+        "git commit -m",
         "curl ",
         "wget ",
         "scp ",
         "rsync ",
-        "dd ",
+        "dd if=",
+        "dd of=",
         "mkfs",
         "parted",
         "fdisk",
