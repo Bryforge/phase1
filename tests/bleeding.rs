@@ -277,7 +277,7 @@ fn bleeding_edge_boot_switch_updates_ui_channel_and_version() {
         "dash edge version missing:\n{output}"
     );
     assert!(
-        output.contains("active : crimson"),
+        output.contains("active : neo-tokyo"),
         "edge theme not automatic:\n{output}"
     );
     assert!(
