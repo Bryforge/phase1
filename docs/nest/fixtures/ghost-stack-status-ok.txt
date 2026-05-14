@@ -1,0 +1,44 @@
+phase1 nest stack
+mode          : read-only status
+nest-level    : 0/1
+root          : active
+current       : level-0
+ghost-count   : 0
+exit-all      : clear
+safe-mode     : visible
+trust         : visible
+guardrail     : no host process spawn | no network | no isolation claim
+claim-boundary: control-plane-only
+
+commands:
+  nest stack
+  nest stack status
+  nest stack list
+  nest stack push <label>
+  nest stack pop
+  nest stack ghost <label>
+  nest stack resume <label>
+  nest stack prune
+  nest stack exit-all
+
+user-cues:
+  first-time   : run nest stack status, then nest help
+  keyboard     : direct one-line commands
+  mobile       : compact rows, no wide tables
+  no-color     : every state has a text label
+  ascii        : symbols are optional; text is authoritative
+  low-vision   : safety states are labels, not color-only
+  recovery     : exit-all state is always visible
+  unknown      : unknown stack actions are no-op and help-guided
+
+blocked:
+  host command execution
+  network access
+  hidden process spawning
+  unbounded recursion
+  live-system writes outside documented Phase1 state/control files
+  autonomous stack mutation
+  VM isolation claims
+  container isolation claims
+  physical machine separation claims
+  security boundary hardening claims
