@@ -1,0 +1,16 @@
+name: black-arts-discard-fixture
+kind: staged-discard-fixture
+candidate: phase1-base1-candidate
+reason: failed-validation
+discard-mode: explicit-only
+required-records:
+  - candidate-id
+  - discard-reason
+  - deletion-log
+  - live-system-untouched
+  - evidence-link
+allowed-reasons:
+  - failed-validation
+  - stale-candidate
+  - operator-request
+claim: fixture-only
