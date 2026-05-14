@@ -1,3 +1,5 @@
+#[path = "analysis.rs"]
+mod analysis;
 #[path = "pipeline.rs"]
 mod pipeline;
 #[path = "release.rs"]
@@ -318,6 +320,7 @@ pub fn dispatch(shell: &mut Phase1Shell, cmd: &str, args: &[String]) {
 
     match command {
         "help" => print!("{}", registry::help(args)),
+        "analyze" => print!("{}", analysis::run(shell, args)),
         "complete" => print_completions(args.first().map(String::as_str)),
         "capabilities" => print!("{}", registry::capabilities_report()),
         "dash" => print!("{}", dashboard(shell, args)),
