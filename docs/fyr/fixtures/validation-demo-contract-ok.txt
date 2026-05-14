@@ -1,0 +1,64 @@
+FYR VALIDATION DEMO
+mode          : deterministic
+audience      : first-time and returning operators
+controls      : direct command | tab-complete | help-first | paste-safe | mobile-safe
+fallback      : ascii | no-color | compact-terminal
+runtime       : VFS-only
+host-tools    : blocked
+network       : blocked
+live-system   : untouched
+staged        : non-live black_arts candidate mode
+claim-boundary: demo-contract-only
+
+walkthrough:
+  01 status    : fyr status -> explains current Fyr capability
+  02 help      : fyr help -> lists supported commands and next steps
+  03 new       : fyr new hello_hacker -> creates hello_hacker.fyr in VFS
+  04 check     : fyr check hello_hacker.fyr -> parser-backed diagnostics
+  05 build     : fyr build hello_hacker.fyr -> deterministic dry-run artifact report
+  06 run       : fyr run hello_hacker.fyr -> prints literal output only
+  07 init      : fyr init demo_pkg -> creates VFS package layout
+  08 test      : fyr test demo_pkg -> deterministic pass/fail summary
+  09 color     : fyr color hello_hacker.fyr -> syntax labels with no-color fallback
+  10 highlight : fyr highlight hello_hacker.fyr -> alias-safe syntax labels
+  11 staged    : fyr staged -> non-live black_arts staged candidate mode
+  12 recovery  : fyr staged nonsense -> no-op plus fyr staged help guidance
+
+user-cues:
+  first-time   : start with fyr status, then fyr help
+  mobile       : compact rows; avoid wide runtime tables
+  keyboard     : direct commands and tab-complete guidance
+  paste-safe   : commands can be copied one line at a time
+  no-color     : every colored state has a text label
+  low-vision   : text labels carry meaning; symbols are decorative only
+  recovery     : unknown commands point to help and remain no-op
+  trust        : host-tools, network, and live-system writes are visibly blocked
+
+control-schemes:
+  direct command entry
+  tab-completion expectations
+  help-first discovery
+  copy/paste command flow
+  mobile terminal constraints
+  no-color output
+  compact output
+  safe-mode boundary
+  guarded-host boundary
+  unknown-command recovery
+
+blocked-behavior:
+  host shell execution
+  network access
+  Cargo invocation from Fyr commands
+  Rust compiler invocation from Fyr commands
+  live-system staged writes
+  autonomous promotion
+  autonomous mutation
+  self-hosting completion
+  production OS replacement claims
+
+summary:
+  result        : contract-ready
+  next          : implement runtime demo after #317
+  evidence      : docs/fyr/AUTOMATION_VALIDATION_MATRIX.md
+  claim-boundary: fixture-only
