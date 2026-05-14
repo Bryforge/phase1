@@ -1,7 +1,7 @@
 # Phase1 floor1 portals
 
 Issue: #336  
-Status: design contract  
+Status: floor1 runtime complete  
 Scope: operator portals, door-style workspace contexts, and floor1-owned policy  
 Non-claim: portals are not claimed to be VMs, containers, hardened sandboxes, separate physical machines, or independent network namespaces.
 
@@ -50,7 +50,7 @@ portal clone <source> <name>
 portal link <left> <right>
 portal help
 
-Planned later:
+Planned later: none
 ```
 
 Possible future aliases:
@@ -170,25 +170,50 @@ hardware separation
 live-system writes outside documented portal state
 ```
 
-## Runtime staging
+## Runtime completion
 
-1. Add this contract and a fixture.
-2. Add read-only runtime status/list/help.
-3. Add runtime tests for status/list/help and unknown-action no-op output.
-4. Add `portal open`, `portal enter`, and `portal leave` as explicit local state changes.
-5. Add `portal inspect` with isolation and policy rows.
-6. Add `portal split <portal>` as a local view concept.
-7. Add local-link design and tests before implementation.
-8. Add brokered-egress design, allowlist, audit, and redaction tests before implementation.
+Floor1 portal runtime is complete for the current workspace/session scope.
+
+Implemented runtime surface:
+
+```text
+portal
+portal status
+portal list
+portal open <name>
+portal enter <name>
+portal leave
+portal close <name>
+portal inspect <name>
+portal network <name> <denied|local-only|brokered-egress>
+portal split <left> <right>
+portal snapshot <name>
+portal restore <name>
+portal clone <source> <name>
+portal link <left> <right>
+portal help
+```
+
+Completion notes:
+
+- `portal network` is policy-state-only and does not open host networking.
+- `portal split` is a local two-pane view concept, not a new machine.
+- `portal snapshot`, `portal restore`, and `portal clone` operate on local workspace/session metadata only.
+- `portal link` is explicit planned-disabled and returns no-op.
+- `network-default` remains `denied`.
+- `brokered-egress` remains `planned-disabled`.
+- `local-link` remains `planned-disabled`.
+- Host, process, VM, container, hardware, and network namespace isolation are not claimed.
 
 ## Acceptance commands
 
 ```sh
 cargo fmt --all -- --check
 cargo test -p phase1 --test portal_floor1_contract
+cargo test -p phase1 --test portal_floor1_runtime
 cargo test --workspace --all-targets
 ```
 
 ## Completion rule
 
-Do not close #336 until the contract, fixture, read-only runtime source, runtime tests, and manual smoke have landed. Do not claim stronger isolation until implementation and tests exist.
+Close #336 only after the contract, fixture, runtime source, runtime tests, and manual smoke have landed. Do not claim stronger isolation until implementation and tests exist.
