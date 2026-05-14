@@ -1,7 +1,7 @@
 # Optics PRO UI overhaul
 
 Status: design contract
-Scope: Phase1 PRO operator interface, bottom HUD model, input mutation visuals, and integration boundaries for Phase1, Base1, and Fyr.
+Scope: Phase1 PRO operator interface, top and bottom HUD rail model, input mutation visuals, and integration boundaries for Phase1, Base1, and Fyr.
 
 ## Codename
 
@@ -15,7 +15,7 @@ Optics PRO defines a minimal professional advanced-operator interface for Phase1
 
 The interface should start clean with Phase1 edge enabled and keep the main screen quiet until the operator issues a command.
 
-The primary persistent visual element should be a bottom HUD.
+The primary persistent visual elements should be top and bottom HUD rails that preserve the center command/output viewport.
 
 ## Visual intent
 
@@ -28,7 +28,7 @@ The default screen should be minimal:
 - no constant full-screen animation by default;
 - no command-output distortion;
 - no unnecessary prompt clutter;
-- only the bottom HUD remains persistent.
+- only compact top and bottom HUD rails remain persistent.
 
 ## Starting state
 
@@ -40,19 +40,26 @@ The first visual state should communicate:
 - safe operator mode visible;
 - current context visible;
 - command input active;
-- bottom HUD online;
+- top HUD rail online;
+- bottom HUD rail online;
 - no broad security or hardening claim.
 
-## Bottom HUD
+## HUD rails
 
-The bottom HUD is the center of Optics PRO.
+The HUD rail screen real estate model is defined in [`OPTICS_HUD_RAILS.md`](OPTICS_HUD_RAILS.md).
 
-It should be bright blue by default and text-first for accessibility.
+Optics PRO should use:
+
+- a top HUD rail for global system state, context, trust, integrity, crypto chain, Base1, Fyr, nest, portal, and ghost summaries;
+- a center viewport for command output and detailed reports;
+- a bottom HUD rail for command input, mutation state, command family, active task, guarded-operation warnings, and last result state.
+
+The bottom HUD rail should be bright blue by default and text-first for accessibility.
 
 The HUD should eventually show:
 
 - active product: Phase1, Base1, or Fyr;
-- active context: root, portal, nest, analysis workspace, recovery workspace, or Fyr package;
+- active context: root, portal, nest, ghost, analysis workspace, recovery workspace, or Fyr package;
 - edge/stable channel;
 - safe mode / host tools status;
 - current command family;
@@ -111,8 +118,8 @@ Optics PRO must integrate with the current Phase1, Base1, and Fyr schemes.
 
 Phase1 integration:
 
-- shell prompt and bottom HUD share context state;
-- portal, nest, analysis, and security contexts remain visible;
+- shell prompt and HUD rails share context state;
+- portal, nest, ghost, analysis, and security contexts remain visible;
 - safe mode and host-tool gates stay explicit;
 - existing commands remain readable.
 
@@ -165,9 +172,10 @@ Fallback must retain all state labels without relying on color.
 - Show bottom HUD rows and fallback rows.
 - Keep output deterministic.
 
-### Phase 3: prompt and HUD adapter
+### Phase 3: HUD rails and renderer
 
-- Add a small rendering adapter for the PRO HUD.
+- Add the [`OPTICS_HUD_RAILS.md`](OPTICS_HUD_RAILS.md) design contract.
+- Add a small rendering adapter for top and bottom HUD rails.
 - Keep existing prompt modes available.
 - Gate activation behind explicit config or environment flags.
 
@@ -179,7 +187,7 @@ Fallback must retain all state labels without relying on color.
 
 ### Phase 5: Phase1/Base1/Fyr integration
 
-- Connect portal/nest/analysis context labels.
+- Connect portal/nest/ghost/analysis context labels.
 - Connect Base1 readiness and integrity labels.
 - Connect Fyr package/check/build/test/run labels.
 - Keep all integrations evidence-bound and testable.
@@ -196,4 +204,5 @@ It is a Phase1 user-interface profile and rendering model.
 cargo fmt --all -- --check
 cargo test -p phase1 --test optics_pro_ui_plan_docs
 cargo test -p phase1 --test optics_pro_preview_fixture_docs
+cargo test -p phase1 --test optics_hud_rails_docs
 ```
