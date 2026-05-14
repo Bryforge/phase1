@@ -116,6 +116,16 @@ crypto status
 
 Unknown profiles and scopes should fail closed.
 
+## Crypto chains
+
+The future scoped crypto chain model is planned in [`CRYPTO_CHAINS.md`](CRYPTO_CHAINS.md).
+
+Crypto Chains describe how profiles, providers, and services may eventually be assigned across floors, nests, portals, analysis workspaces, recovery workspaces, Base1 service scopes, and future Fyr automation scopes.
+
+Crypto Chains remain planning records until runtime chain selection, provider enforcement, service binding, audit logging, and Base1/Fyr integration exist.
+
+Unknown chain contexts, unavailable providers, missing services, and unsupported profile combinations should fail closed.
+
 ## Implementation plan
 
 The implementation sequence is defined in [`CRYPTO_IMPLEMENTATION_PLAN.md`](CRYPTO_IMPLEMENTATION_PLAN.md).
@@ -181,9 +191,13 @@ Every supported algorithm page should use [`CRYPTO_ALGORITHM_TEMPLATE.md`](CRYPT
 
 Every provider entry should follow [`CRYPTO_PROVIDER_REGISTRY.md`](CRYPTO_PROVIDER_REGISTRY.md) before it is connected to runtime behavior.
 
+Every provider/service mapping should follow [`CRYPTO_PROVIDER_SERVICE_MATRIX.md`](CRYPTO_PROVIDER_SERVICE_MATRIX.md) before it is connected to profile selection, service behavior, or runtime enforcement.
+
 Every profile should follow the structure in [`crypto-profiles/README.md`](crypto-profiles/README.md) before it is connected to runtime behavior.
 
 Every config schema change should follow [`CRYPTO_CONFIG_SCHEMA.md`](CRYPTO_CONFIG_SCHEMA.md) before it is connected to runtime behavior.
+
+Every crypto chain should follow [`CRYPTO_CHAINS.md`](CRYPTO_CHAINS.md) before it is connected to runtime scope selection, provider enforcement, service binding, or Base1/Fyr integration.
 
 Every implementation phase should follow [`CRYPTO_IMPLEMENTATION_PLAN.md`](CRYPTO_IMPLEMENTATION_PLAN.md) before it is connected to runtime behavior.
 
@@ -205,6 +219,8 @@ Crypto profile changes should:
 
 - Create registry format: [`CRYPTO_REGISTRY.md`](CRYPTO_REGISTRY.md).
 - Create provider registry: [`CRYPTO_PROVIDER_REGISTRY.md`](CRYPTO_PROVIDER_REGISTRY.md).
+- Create provider/service matrix: [`CRYPTO_PROVIDER_SERVICE_MATRIX.md`](CRYPTO_PROVIDER_SERVICE_MATRIX.md).
+- Create crypto chains planning doc: [`CRYPTO_CHAINS.md`](CRYPTO_CHAINS.md).
 - Create algorithm documentation template: [`CRYPTO_ALGORITHM_TEMPLATE.md`](CRYPTO_ALGORITHM_TEMPLATE.md).
 - Create profile planning index: [`crypto-profiles/README.md`](crypto-profiles/README.md).
 - Create operator command plan: [`CRYPTO_OPERATOR_COMMANDS.md`](CRYPTO_OPERATOR_COMMANDS.md).
@@ -231,6 +247,7 @@ Crypto profile changes should:
 ### Phase 4: advanced controls
 
 - Scoped profile selection.
+- Chain-aware profile and provider selection.
 - Policy export and verification.
 - Migration and rotation commands.
 
