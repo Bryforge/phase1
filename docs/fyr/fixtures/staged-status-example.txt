@@ -1,0 +1,13 @@
+fyr staged status
+codename      : black_arts
+workspace     : .phase1/staged-candidates
+candidates    : 1
+
+candidate     : phase1-base1-candidate
+state         : validated
+validation    : passed
+promotion     : blocked-until-approval
+claim-boundary: fixture-only
+evidence      : docs/fyr/fixtures/staged-validation-ok.txt
+
+non-claims    : not-production, not-release-ready, not-live-update
