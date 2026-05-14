@@ -1,0 +1,21 @@
+name: black-arts-status-fixture
+kind: staged-status-fixture
+command: fyr staged status
+candidate-count: 1
+candidates:
+  - phase1-base1-candidate
+required-fields:
+  - workspace-root
+  - candidate-id
+  - validation-state
+  - promotion-state
+  - claim-boundary
+  - evidence-link
+states:
+  - planned
+  - created
+  - changed
+  - validated
+  - approved
+  - discarded
+claim: fixture-only
