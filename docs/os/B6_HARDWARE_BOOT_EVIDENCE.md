@@ -1,6 +1,6 @@
 # B6 named hardware boot evidence
 
-Status: planning scaffold
+Status: X200 phase1 marker observed
 Scope: named local hardware boot observation, artifact identity, machine identity, recovery readiness, result capture, and non-claim boundaries
 
 ## Purpose
@@ -40,3 +40,20 @@ The first successful hardware evidence target is `phase1_marker_seen` with the e
 ## Non-claims
 
 B6 named hardware boot evidence does not make Base1 installer-ready, recovery-complete, hardened, hypervisor-ready, release-candidate ready, or daily-driver ready.
+
+## X200 phase1 marker evidence
+
+Observed local hardware result:
+
+- machine: `X200`
+- artifact: `build/base1-b3-uefi-proof.img`
+- artifact present: `yes`
+- artifact SHA256: `688518c1437003c7b8325b1d5d479bc97f77c3404c8fd27dace6d823d406b79b`
+- USB target observed before attempt: `/dev/sdb`
+- USB partition: `/dev/sdb1`
+- USB label: `PHASE1B42`
+- expected marker: `phase1 6.0.0 ready`
+- observed result: `phase1_marker_seen`
+- claim state: `not_claimed`
+
+This records named X200 hardware boot evidence only. It does not make Base1 installer-ready, recovery-complete, hardened, hypervisor-ready, release-candidate ready, or daily-driver ready.

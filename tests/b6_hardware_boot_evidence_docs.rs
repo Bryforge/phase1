@@ -50,3 +50,20 @@ fn b6_hardware_boot_evidence_preserves_non_claims() {
     assert_contains(&doc, "release-candidate ready");
     assert_contains(&doc, "daily-driver ready");
 }
+
+#[test]
+fn b6_hardware_boot_evidence_records_x200_phase1_marker() {
+    let doc = read_doc();
+    for expected in [
+        "Status: X200 phase1 marker observed",
+        "X200 phase1 marker evidence",
+        "build/base1-b3-uefi-proof.img",
+        "688518c1437003c7b8325b1d5d479bc97f77c3404c8fd27dace6d823d406b79b",
+        "PHASE1B42",
+        "phase1 6.0.0 ready",
+        "phase1_marker_seen",
+        "claim state: `not_claimed`",
+    ] {
+        assert_contains(&doc, expected);
+    }
+}
