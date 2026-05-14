@@ -52,12 +52,12 @@ fn optics_registry_promotion_doc_preserves_discovery_targets() {
         "complete pro",
         "complete hud",
         "capabilities",
-        "lookup(\"optics\") resolves to `optics`",
-        "canonical_name(\"pro\") resolves to `optics`",
-        "canonical_name(\"hudrails\") resolves to `optics`",
-        "completions(\"opt\") contains `optics`",
-        "man_page(\"optics\") contains `optics [preview|rails|help]`",
-        "capabilities_report() lists `optics` with capability `none`",
+        "`lookup(\"optics\")` resolves to `optics`",
+        "`canonical_name(\"pro\")` resolves to `optics`",
+        "`canonical_name(\"hudrails\")` resolves to `optics`",
+        "`completions(\"opt\")` contains `optics`",
+        "`man_page(\"optics\")` contains `optics [preview|rails|help]`",
+        "`capabilities_report()` lists `optics` with capability `none`",
     ] {
         assert!(doc.contains(required), "missing {required:?}: {doc}");
     }
