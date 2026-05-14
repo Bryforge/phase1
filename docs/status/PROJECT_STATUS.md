@@ -3,8 +3,8 @@
 Status kind: estimated roadmap progress
 Source marker: [`site/status.json`](../../site/status.json)
 Badge marker: [`site/status-badge.json`](../../site/status-badge.json)
-Generated from commit: `b35f7b1ddf630b51b0ca2dc99d44fd4b1835358e`
-Last updated UTC: `2026-05-14T08:28:55Z`
+Generated from commit: `4959714940e21418cb8d8cdc470ebfcc04d0b16a`
+Last updated UTC: `2026-05-14T08:43:21Z`
 
 ## Current estimate
 

@@ -1,16 +1,16 @@
 # Phase1 Edge Development
 
-`v6.0.0` is the active development line after the stable `v5.0.0` release point.
+`v7.0.1` is the active development line after the stable `v6.0.0` release point.
 
 ## Current identity
 
 | Item | Value |
 | --- | --- |
-| Current package version | `6.0.0` |
-| Current edge label | `v6.0.0` |
+| Current package version | `7.0.1` |
+| Current edge label | `v7.0.1` |
 | Stable package version | `4.3.0` |
 | Stable release point | `v4.3.0` |
-| Previous stable | `v4.4.0` |
+| Previous stable | `v5.0.0` |
 | Compatibility base | `v3.6.0` |
 
 ## Current checkpoint
@@ -47,7 +47,7 @@ sh scripts/test-website.sh
 <!-- phase1:auto:repo-model:start -->
 ## Phase1 repository model
 
-- `base/v5.0.0` is the current stable base.
+- `base/v6.0.0` is the current stable base.
 - `edge/stable` is the active default development path.
 - `checkpoint/*` branches are verified milestone snapshots.
 - `feature/*` branches target `edge/stable`.

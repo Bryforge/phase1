@@ -1,18 +1,18 @@
-# v6.0.0 Edge Checkpoint
+# v7.0.1 Edge Checkpoint
 
-- Opened the v6.0.0 edge line after the v5.0.0 stable promotion.
+- Opened the v7.0.1 edge line after the v6.0.0 stable promotion.
 - Keeps Base1 recovery USB target-selection and image-provenance work read-only.
 - Preserves OS-replacement non-claims until boot images, recovery, update paths, hardware support, and audits exist.
 
 # v5.1.0 Edge Checkpoint
 
-- Opened the next edge line after promoting v5.0.0 to stable.
+- Opened the next edge line after promoting v6.0.0 to stable.
 - Added Base1 recovery USB read-only development checkpoint coverage.
 - Preserved conservative OS-track and recovery-media non-claims.
 
-# v5.0.0 Edge Checkpoint
+# v6.0.0 Edge Checkpoint
 
-- Moved the active package line from stable `4.3.0` to edge `5.0.0`.
+- Moved the active package line from stable `4.3.0` to edge `6.0.0`.
 - Preserved `v4.3.0` as the stable public representation, `v4.2.0` as previous stable, and `v3.6.0` as compatibility base.
 - Checkpointed guarded host runtime execution so trusted language/runtime commands can run with safe mode still enabled while privileged host mutation remains gated.
 - Checkpointed compact dynamic prompt chips across mobile, laptop, and desktop modes: `phase1://root ~ [edge safe trust] ⇢`.
