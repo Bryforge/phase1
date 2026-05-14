@@ -16,6 +16,7 @@ The current preview commands are routed through the existing WASI-lite plugin pa
 ```text
 optics preview
 optics rails
+optics status
 ```
 
 The current registry aliases are:
@@ -47,6 +48,17 @@ The commands are available because `optics` is exposed as a WASI-lite plugin wit
 - bottom HUD rail;
 - context, nest, portal, ghost, integrity, crypto, Base1, and Fyr summaries;
 - read-only runtime status;
+- non-claims.
+
+`optics status` should show the Optics preview status surface:
+
+- preview-only mode;
+- Rust static renderer source;
+- top rail readiness;
+- bottom rail readiness;
+- live HUD disabled state;
+- explicit activation gate requirement;
+- input, history, and parser non-mutation labels;
 - non-claims.
 
 `pro` should resolve through the Optics registry entry and execute the read-only Optics preview route.
@@ -81,6 +93,12 @@ optics preview
 pro
 ```
 
+To see the Optics status output, run:
+
+```text
+optics status
+```
+
 ## Help and registry expectation
 
 Future work should promote Optics into the regular command registry so it appears in help, completions, and manuals.
@@ -90,7 +108,7 @@ The registry-promotion plan is [`OPTICS_REGISTRY_PROMOTION.md`](OPTICS_REGISTRY_
 The planned registry row should preserve this shape:
 
 ```text
-optics [preview|rails|help]
+optics [preview|rails|status|help]
 ```
 
 Until that registry row exists, the WASI-lite route remains the safe preview path.
