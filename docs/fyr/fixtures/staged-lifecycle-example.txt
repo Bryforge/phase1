@@ -1,0 +1,15 @@
+black_arts staged lifecycle
+codename      : black_arts
+candidate     : phase1-base1-candidate
+workspace     : .phase1/staged-candidates/phase1-base1-candidate
+
+1 plan        : docs/fyr/fixtures/staged-plan-example.txt
+2 create      : docs/fyr/fixtures/staged-create-example.txt
+3 apply       : docs/fyr/fixtures/staged-apply-example.txt
+4 validate    : docs/fyr/fixtures/staged-validate-example.txt
+5 promote     : docs/fyr/fixtures/staged-promote-example.txt
+6 discard     : docs/fyr/fixtures/staged-discard-example.txt
+
+guards        : candidate-only, evidence-recorded, claim-boundary, operator-approval
+live-system   : untouched-until-explicit-promotion
+claim-boundary: fixture-only
