@@ -1,0 +1,41 @@
+course        : fyrlings
+lesson        : 001
+title         : Orientation
+mode          : deterministic
+audience      : first-time and returning operators
+controls      : direct command | tab-complete | help-first | paste-safe | mobile-safe
+fallback      : ascii | no-color | compact-terminal
+runtime       : VFS-only
+host-tools    : blocked
+network       : blocked
+live-system   : untouched
+claim-boundary: learning-fixture-only
+
+goal:
+  Learn what Fyr is, how to ask for help, and which safety boundaries are always visible.
+
+starter commands:
+  fyr status
+  fyr help
+  fyr book read 00
+
+exercise:
+  Read the Fyr status output and identify the runtime boundary row.
+
+hint:
+  Look for rows that say VFS-only, host-tools blocked, network blocked, and live-system untouched.
+
+expected answer:
+  Fyr learning starts in a deterministic VFS-only mode with host tools, network, and live-system writes blocked.
+
+validation:
+  pass when the operator can explain the boundary without relying on color or icons only.
+
+pass output:
+  fyrlings 001: pass - operator understands Fyr orientation and safety boundaries
+
+failure output:
+  fyrlings 001: review - run fyr status and fyr book read 00, then try again
+
+next:
+  fyr learn run 002
