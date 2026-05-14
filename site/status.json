@@ -1,25 +1,25 @@
 {
   "name": "Phase1 public project status",
   "status_kind": "estimated roadmap progress",
-  "last_updated_utc": "2026-05-14T01:24:25Z",
+  "last_updated_utc": "2026-05-14T04:24:00Z",
   "repository": "Bryforge/phase1",
   "branch": "edge/stable",
-  "commit": "1ac2554afc95ca6be26536287fa2ac4fb5b5da80",
-  "overall_estimated_completion_percent": 65,
-  "public_state": "active edge development with reviewed B3 VM evidence, B6 X200 marker evidence, public status promotion, and Base1 B6 X200 marker checkpoint release note published",
-  "important_boundary": "Percentages are planning estimates, not production-readiness or security-hardening claims. Reviewed B3 VM evidence, B6 X200 phase1_marker_seen evidence, checkpoint, public status trail, and release note are present, but installer readiness, recovery-complete status, hardening, release-candidate readiness, daily-driver readiness, and broad hardware validation remain not claimed.",
+  "commit": "372cc871f8b500f17b3a5e085e24d5f66b848b98",
+  "overall_estimated_completion_percent": 67,
+  "public_state": "active edge development with reviewed B3 VM evidence, B6 X200 marker evidence, public status promotion, Base1 B6 X200 marker checkpoint release note, and Fyr black_arts staged-candidate evidence published",
+  "important_boundary": "Percentages are planning estimates, not production-readiness, security-hardening, live-update, or autonomous self-modification claims. Fyr black_arts has staged-candidate design, fixtures, operator visuals, source-wiring checklist, and runtime-stub handoff evidence, but the first safe runtime stub remains pending under issue #317. Installer readiness, recovery-complete status, hardening, release-candidate readiness, daily-driver readiness, broad hardware validation, live-system mutation, and autonomous promotion remain not claimed.",
   "projects": [
     {
       "name": "Phase1 operator console",
       "estimated_completion_percent": 82,
       "state": "usable edge console with guarded host access, VFS, dashboards, help UI, themes, learning, and tests",
-      "next_milestone": "polish release-facing flows and keep safe defaults simple"
+      "next_milestone": "wire safe Fyr black_arts staged runtime stubs while preserving non-live defaults"
     },
     {
       "name": "Fyr native language",
-      "estimated_completion_percent": 44,
-      "state": "seed language and toolchain surface exist with scripts, tests, assertions, package checks, and docs",
-      "next_milestone": "expand language book, package workflow, and runtime integration"
+      "estimated_completion_percent": 58,
+      "state": "seed language and toolchain surface exist with F3/F4/F5/F6 evidence, runtime-safety fixtures, standard-library contracts, and black_arts staged-candidate design/operator-visual/source-wiring handoff evidence",
+      "next_milestone": "implement the first safe fyr staged runtime stub from issue #317 without candidate writes, host commands, network access, validation execution, promotion, discard, or live-system changes"
     },
     {
       "name": "Base1 secure host / OS track",
@@ -41,9 +41,9 @@
     },
     {
       "name": "Website and public docs",
-      "estimated_completion_percent": 88,
-      "state": "public site, status page, status JSON, badge endpoint, native GitHub Wiki, refreshed source wiki, organized docs, X200 evidence report, B6 checkpoint trail, and Base1 B6 X200 release note are in place",
-      "next_milestone": "publish the public report announcement and keep claims evidence-bound"
+      "estimated_completion_percent": 90,
+      "state": "public site, status page, status JSON, badge endpoint, native GitHub Wiki, refreshed source wiki, organized docs, X200 evidence report, B6 checkpoint trail, Base1 B6 X200 release note, and Fyr black_arts public status trail are in place",
+      "next_milestone": "keep the public status synchronized with implementation evidence and non-claims"
     },
     {
       "name": "Repository organization",
@@ -115,6 +115,9 @@
     "not hardware-validated across targets",
     "not a hardened sandbox",
     "not cryptographically complete",
+    "not a live self-updating system",
+    "not autonomous promotion or mutation",
+    "Fyr black_arts staged-candidate evidence is fixture-backed and design/contract oriented; first safe runtime wiring remains pending under issue #317",
     "B6 X200 marker checkpoint is present with phase1_marker_seen; non-claims remain in force",
     "B6 X200 release note is published; installer, recovery-complete, hardening, release-candidate, daily-driver, and broad hardware-validation claims remain out of scope"
   ],
@@ -143,10 +146,18 @@
     }
   ],
   "current_public_report": {
-    "title": "Phase1/Base1 B6 X200 marker checkpoint report",
-    "summary": "The B6 X200 marker chain is now published through raw evidence, checkpoint, public status, and Base1 checkpoint release note.",
+    "title": "Fyr black_arts staged-candidate evidence and Phase1/Base1 B6 X200 marker checkpoint report",
+    "summary": "Fyr black_arts now has staged-candidate design, fixture, visual-mode, checklist, and runtime-stub handoff evidence, while the B6 X200 marker chain remains published through raw evidence, checkpoint, public status, and Base1 checkpoint release note.",
     "release_note_path": "docs/base1/releases/RELEASE_BASE1_B6_X200_MARKER_CHECKPOINT_V1.md",
     "checkpoint_path": "docs/checkpoints/B6_X200_MARKER_CHECKPOINT.md",
+    "fyr_black_arts_paths": [
+      "docs/fyr/STAGED_CANDIDATES.md",
+      "docs/fyr/BLACK_ARTS_OPERATOR_VISUALS.md",
+      "docs/fyr/STAGED_SOURCE_WIRING.md",
+      "docs/fyr/STAGED_VISUAL_RUNTIME_CHECKLIST.md",
+      "docs/fyr/STAGED_RUNTIME_PATCH_HANDOFF.md"
+    ],
+    "fyr_black_arts_runtime_issue": "https://github.com/Bryforge/phase1/issues/317",
     "marker_result": "phase1_marker_seen",
     "claim": "not_claimed",
     "release_note_commit": "c7853f4b6f944b0e496d6a34ed49422fe6a090e7",
