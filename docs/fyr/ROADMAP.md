@@ -9,6 +9,7 @@ Fyr is the Phase1-native language path for VFS automation, self-construction, an
 - `examples/fyr/hello.fyr` and `examples/fyr/self_check.fyr` document the first source shape.
 - `fyr status`, `fyr spec`, and seed `fyr run <file.fyr>` support are wired into Phase1.
 - The seed runner can execute simple print string literals from `.fyr` files stored in the Phase1 VFS.
+- The 100% promotion gate is tracked in [`../status/FYR_PHASE1_100_COMPLETION_GATES.md`](../status/FYR_PHASE1_100_COMPLETION_GATES.md).
 
 ## Roadmap
 
@@ -22,6 +23,20 @@ Fyr is the Phase1-native language path for VFS automation, self-construction, an
 | F5 — Phase1 self-workflows | Use Fyr to help Phase1 inspect, copy, construct, and validate itself. | `fyr self`, repository manifest readers, docs sync helpers, checkpoint helpers. | Planned |
 | F6 — Standard library | Provide a small Phase1-owned standard library. | `vfs`, `text`, `json-lite`, `audit`, `process`, `package`, and `doc` modules. | Planned |
 | F7 — Compiler path | Decide whether Fyr remains interpreted, lowers to Rust, or targets WASI-lite. | Compiler design note, WASI-lite strategy, packaging contract. | Planned |
+
+## 100% promotion gate
+
+Fyr is not promoted to 100% because the name, command, or docs exist. It reaches 100% only when all F0-F7 stages are implemented, tested, documented, and reflected in public release evidence.
+
+Required promotion evidence:
+
+- F0-F2 remain stable after every parser/runtime change.
+- F3 core syntax has deterministic parser, diagnostics, duplicate-main, and missing-main tests.
+- F4 safe runtime stays VFS-only by default and has bounded runtime/error-redaction tests.
+- F5 Phase1 self-workflows operate on deterministic fixture data.
+- F6 standard library has smoke and failure-mode tests for each stable module.
+- F7 packaging/compiler decision has a design note, compatibility policy, and versioned examples.
+- `docs/status/FYR_PHASE1_100_COMPLETION_GATES.md` is satisfied before public status percentages are raised to 100%.
 
 ## Design rules
 
