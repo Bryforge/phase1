@@ -57,8 +57,8 @@ fn portal_help_reports_local_state_and_floor1_policy() {
 
     for row in [
         "portal help",
-        "usage             : portal <status|list|open|enter|leave|close|inspect|network|split|snapshot|restore|help>",
-        "local-state       : open, enter, leave, close, inspect, network, split, snapshot, restore",
+        "usage             : portal <status|list|open|enter|leave|close|inspect|network|split|snapshot|restore|clone|help>",
+        "local-state       : open, enter, leave, close, inspect, network, split, snapshot, restore, clone",
         "floor             : floor1",
         "network-default   : denied",
         "claim-boundary    : workspace-context-only",
@@ -229,6 +229,35 @@ fn portal_restore_reopens_snapshot_as_local_metadata_only() {
         "portal restore missing",
         "status            : missing-snapshot",
         "result            : no-op",
+        "claim-boundary    : workspace-context-only",
+    ] {
+        assert!(output.contains(row), "missing {row}:\n{output}");
+    }
+}
+
+#[test]
+fn portal_clone_copies_local_metadata_only() {
+    let output = run_phase1(
+        "portal open alpha\nportal network alpha local-only\nportal clone alpha beta\nportal inspect beta\nportal clone missing gamma\nportal clone alpha beta\nexit\n",
+    );
+
+    for row in [
+        "portal clone alpha beta",
+        "status            : cloned",
+        "source            : alpha",
+        "portal            : beta",
+        "active-portal     : beta",
+        "open-portals      : root,alpha,beta",
+        "clone-scope       : workspace/session",
+        "network-owner     : floor1",
+        "network-mode      : local-only",
+        "network           : blocked",
+        "result            : local-metadata-only",
+        "portal inspect beta",
+        "portal clone missing gamma",
+        "status            : missing-source",
+        "portal clone alpha beta",
+        "status            : target-exists",
         "claim-boundary    : workspace-context-only",
     ] {
         assert!(output.contains(row), "missing {row}:\n{output}");

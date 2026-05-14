@@ -542,6 +542,7 @@ fn portal_command(shell: &mut Phase1Shell, args: &[String]) -> String {
         Some("split") => portal_split(shell, &args[1..]),
         Some("snapshot") | Some("snap") => portal_snapshot(shell, &args[1..]),
         Some("restore") => portal_restore(shell, &args[1..]),
+        Some("clone") => portal_clone(shell, &args[1..]),
         Some("inspect") | Some("info") => portal_inspect(shell, &args[1..]),
         Some("help") | Some("-h") | Some("--help") => portal_help(),
         Some(other) => format!(
@@ -858,6 +859,60 @@ fn portal_restore(shell: &mut Phase1Shell, args: &[String]) -> String {
     )
 }
 
+fn portal_clone(shell: &mut Phase1Shell, args: &[String]) -> String {
+    let Some(source) = args.first().map(String::as_str) else {
+        return "usage             : portal clone <source> <name>\nclaim-boundary    : workspace-context-only\n".to_string();
+    };
+
+    let Some(target) = args.get(1).map(String::as_str) else {
+        return "usage             : portal clone <source> <name>\nclaim-boundary    : workspace-context-only\n".to_string();
+    };
+
+    if source == target || target == "root" || !portal_name_is_valid(target) {
+        return format!(
+            "portal clone {source} {target}\nstatus            : invalid-clone\nresult            : no-op\nhelp              : portal clone <source> <name>\nclaim-boundary    : workspace-context-only\n"
+        );
+    }
+
+    let mut names = portal_names(shell);
+    if !names.iter().any(|existing| existing == source) {
+        return format!(
+            "portal clone {source} {target}\nstatus            : missing-source\nresult            : no-op\nhelp              : portal list\nclaim-boundary    : workspace-context-only\n"
+        );
+    }
+
+    if names.iter().any(|existing| existing == target) {
+        return format!(
+            "portal clone {source} {target}\nstatus            : target-exists\nresult            : no-op\nhelp              : portal close <name>\nclaim-boundary    : workspace-context-only\n"
+        );
+    }
+
+    let network_mode = portal_network_mode(shell, source);
+    names.push(target.to_string());
+    portal_store_names(shell, &names);
+    portal_store_network_mode(shell, target, &network_mode);
+
+    shell
+        .env
+        .insert("PHASE1_ACTIVE_PORTAL".to_string(), target.to_string());
+
+    format!(
+        "portal clone {source} {target}\n\
+         status            : cloned\n\
+         source            : {source}\n\
+         portal            : {target}\n\
+         active-portal     : {target}\n\
+         open-portals      : {}\n\
+         clone-scope       : workspace/session\n\
+         network-owner     : floor1\n\
+         network-mode      : {network_mode}\n\
+         network           : blocked\n\
+         result            : local-metadata-only\n\
+         claim-boundary    : workspace-context-only\n",
+        names.join(",")
+    )
+}
+
 fn portal_split(shell: &mut Phase1Shell, args: &[String]) -> String {
     let Some(left) = args.first().map(String::as_str) else {
         return "usage             : portal split <left> <right>\nclaim-boundary    : workspace-context-only\n".to_string();
@@ -1032,11 +1087,11 @@ fn portal_store_network_mode(shell: &mut Phase1Shell, name: &str, mode: &str) {
 fn portal_help() -> String {
     concat!(
         "portal help\n",
-        "usage             : portal <status|list|open|enter|leave|close|inspect|network|split|snapshot|restore|help>\n",
-        "local-state       : open, enter, leave, close, inspect, network, split, snapshot, restore\n",
+        "usage             : portal <status|list|open|enter|leave|close|inspect|network|split|snapshot|restore|clone|help>\n",
+        "local-state       : open, enter, leave, close, inspect, network, split, snapshot, restore, clone\n",
         "floor             : floor1\n",
         "network-default   : denied\n",
-        "future-actions    : clone, local-link\n",
+        "future-actions    : local-link\n",
         "claim-boundary    : workspace-context-only\n",
     )
     .to_string()

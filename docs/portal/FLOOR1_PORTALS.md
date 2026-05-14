@@ -46,10 +46,10 @@ portal network <name> <denied|local-only|brokered-egress>
 portal split <left> <right>
 portal snapshot <name>
 portal restore <name>
+portal clone <source> <name>
 portal help
 
 Planned later:
-portal clone <source> <name>
 ```
 
 Possible future aliases:
