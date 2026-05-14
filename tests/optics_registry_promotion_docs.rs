@@ -11,9 +11,10 @@ fn optics_registry_promotion_doc_exists_and_is_linked() {
 
     for required in [
         "Optics Registry Promotion",
-        "Status: promotion plan",
+        "Status: initial registry promotion",
         "command registry, help, completion, and manual visibility",
         "Optics currently works through the read-only WASI-lite plugin route.",
+        "Optics is now initially promoted into the command registry for discovery.",
     ] {
         assert!(doc.contains(required), "missing {required:?}: {doc}");
     }
@@ -33,6 +34,7 @@ fn optics_registry_promotion_doc_preserves_target_command_shape() {
         "optics rails",
         "optics [preview|rails|help]",
         "aliases: `pro`, `hudrails`",
+        "category: `user`",
         "capability: `none`",
         "read-only Optics PRO preview and HUD rail preview surface",
     ] {
@@ -56,6 +58,7 @@ fn optics_registry_promotion_doc_preserves_discovery_targets() {
         "`canonical_name(\"pro\")` resolves to `optics`",
         "`canonical_name(\"hudrails\")` resolves to `optics`",
         "`completions(\"opt\")` contains `optics`",
+        "`completions(\"pro\")` contains `pro`",
         "`man_page(\"optics\")` contains `optics [preview|rails|help]`",
         "`capabilities_report()` lists `optics` with capability `none`",
     ] {
@@ -69,7 +72,7 @@ fn optics_registry_promotion_doc_preserves_safety_rules_and_non_claims() {
         fs::read_to_string(PROMOTION_DOC).expect("Optics registry promotion doc should exist");
 
     for required in [
-        "Registry promotion must not activate live HUD rails.",
+        "Registry promotion does not activate live HUD rails.",
         "enable live HUD rails",
         "mutate shell state",
         "change parser behavior",
@@ -82,7 +85,7 @@ fn optics_registry_promotion_doc_preserves_safety_rules_and_non_claims() {
         "claim crypto enforcement",
         "claim a system integrity guarantee",
         "claim a Base1 boot environment",
-        "Code-level registry promotion remains future work.",
+        "Live Optics PRO HUD activation remains future work.",
     ] {
         assert!(doc.contains(required), "missing {required:?}: {doc}");
     }
