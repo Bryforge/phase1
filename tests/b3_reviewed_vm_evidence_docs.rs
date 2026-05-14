@@ -51,7 +51,7 @@ fn b3_reviewed_vm_evidence_preserves_pass_markers() {
         "BASE1_B2_TEST_SUITE_RESULT=pass",
         "BASE1_B2_TEST_SUITE_FAILED_COUNT=0",
         "BASE1_B3_EVIDENCE_STATE=evidence-present",
-        "BASE1_B3_EVIDENCE_SUMMARY_COUNT=3",
+        "BASE1_B3_EVIDENCE_SUMMARY_COUNT=4",
         "BASE1_B3_UEFI_SUMMARY_PRESENT=yes",
         "BASE1_B3_HANDOFF_SUMMARY_PRESENT=yes",
         "BASE1_B3_GNULINUX_SUMMARY_PRESENT=yes",
