@@ -45,6 +45,38 @@ Current Fyr commands must not:
 - promise hardened sandboxing;
 - claim production language readiness.
 
+## Current bounded-runtime behavior
+
+Fyr does not yet expose unbounded language features such as open-ended loops, recursion, host process execution, network access, or external compiler calls.
+
+Current bounds are intentionally conservative:
+
+- supported execution is limited to parsed `.fyr` files stored in the Phase1 VFS;
+- package tests execute only discovered `.fyr` files under the package `tests/` directory;
+- build output is a deterministic dry-run artifact summary;
+- unsupported or malformed source should fail during check/build/test/run instead of falling through to a host tool;
+- diagnostics should remain target-scoped and deterministic.
+
+## Current error-redaction behavior
+
+Fyr diagnostics should identify the Phase1 VFS target, not the host workspace used to run Phase1 tests.
+
+Expected diagnostic shape:
+
+```text
+fyr check: bad.fyr: <deterministic message>
+fyr check: app: <deterministic package message>
+```
+
+Diagnostics must not require or expose:
+
+- host temp directories;
+- checkout paths;
+- host shell error text;
+- compiler command lines;
+- network URLs;
+- secrets or environment values.
+
 ## F4 promotion requirements
 
 F4 may move from planned to active/completed only after the repository includes evidence for:
@@ -81,3 +113,5 @@ Related tests:
 - `tests/fyr_parser_diagnostics.rs`
 - `tests/fyr_f3_package_diagnostics.rs`
 - `tests/fyr_f3_expression_diagnostics.rs`
+- `tests/fyr_f4_runtime_safety.rs`
+- `tests/fyr_f4_error_redaction.rs`
