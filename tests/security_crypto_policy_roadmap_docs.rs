@@ -149,6 +149,27 @@ fn crypto_policy_roadmap_links_all_profile_planning_docs() {
 }
 
 #[test]
+fn crypto_policy_roadmap_documents_crypto_chains() {
+    let roadmap = std::fs::read_to_string("docs/security/CRYPTO_POLICY_ROADMAP.md")
+        .expect("crypto policy roadmap");
+
+    for text in [
+        "Crypto chains",
+        "CRYPTO_CHAINS.md",
+        "profiles, providers, and services",
+        "floors, nests, portals",
+        "future Fyr automation scopes",
+        "planning records until runtime chain selection",
+        "Unknown chain contexts, unavailable providers, missing services, and unsupported profile combinations should fail closed.",
+        "Every crypto chain should follow [`CRYPTO_CHAINS.md`](CRYPTO_CHAINS.md)",
+        "Create crypto chains planning doc: [`CRYPTO_CHAINS.md`](CRYPTO_CHAINS.md).",
+        "Chain-aware profile and provider selection.",
+    ] {
+        assert!(roadmap.contains(text), "missing crypto chains roadmap text {text}: {roadmap}");
+    }
+}
+
+#[test]
 fn crypto_algorithm_template_defines_required_sections() {
     let template = std::fs::read_to_string("docs/security/CRYPTO_ALGORITHM_TEMPLATE.md")
         .expect("crypto algorithm template");
@@ -219,11 +240,17 @@ fn security_index_links_crypto_policy_surface() {
         "CRYPTO_POLICY_ROADMAP.md",
         "CRYPTO_REGISTRY.md",
         "CRYPTO_PROVIDER_REGISTRY.md",
+        "CRYPTO_PROVIDER_SERVICE_MATRIX.md",
+        "CRYPTO_CHAINS.md",
         "CRYPTO_OPERATOR_COMMANDS.md",
         "CRYPTO_CONFIG_SCHEMA.md",
         "CRYPTO_ALGORITHM_TEMPLATE.md",
         "crypto-profiles/README.md",
         "cryptographic completeness",
+        "crypto provider/service mappings",
+        "crypto chains",
+        "provider/service mappings follow [`CRYPTO_PROVIDER_SERVICE_MATRIX.md`](CRYPTO_PROVIDER_SERVICE_MATRIX.md)",
+        "crypto chains follow [`CRYPTO_CHAINS.md`](CRYPTO_CHAINS.md)",
         "algorithm pages use [`CRYPTO_ALGORITHM_TEMPLATE.md`](CRYPTO_ALGORITHM_TEMPLATE.md)",
         "provider entries are listed or planned through [`CRYPTO_PROVIDER_REGISTRY.md`](CRYPTO_PROVIDER_REGISTRY.md)",
         "crypto configuration follows [`CRYPTO_CONFIG_SCHEMA.md`](CRYPTO_CONFIG_SCHEMA.md)",
