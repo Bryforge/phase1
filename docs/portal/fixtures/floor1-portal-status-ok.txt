@@ -1,0 +1,63 @@
+phase1 portals
+mode              : read-only status
+floor             : floor1
+active-portal     : root
+open-portals      : root
+portal-count      : 1
+portal-layer      : workspace/session
+split-mode        : local-view
+local-link        : planned-disabled
+network-owner     : floor1
+network-mode      : denied
+network-default   : denied
+brokered-egress   : planned-disabled
+vfs-scope         : portal-context
+history-scope     : portal-context
+log-scope         : labelled
+host-isolation    : not-claimed
+process-isolation : not-claimed
+network-isolation : not-claimed
+network           : blocked
+claim-boundary    : workspace-context-only
+
+commands:
+  portal
+  portal status
+  portal list
+  portal open <name>
+  portal enter <name>
+  portal leave
+  portal close <name>
+  portal inspect <name>
+  portal clone <source> <name>
+  portal snapshot <name>
+  portal restore <name>
+  portal help
+
+network-modes:
+  denied          : default; portal has no network access
+  local-only      : planned; explicit local portal bus only
+  brokered-egress : planned; floor1 broker with allowlist and audit
+
+user-cues:
+  first-time   : portals are doors into separate work areas
+  keyboard     : direct one-line commands
+  mobile       : compact rows, no wide tables
+  no-color     : every state has a text label
+  ascii        : symbols are optional; text is authoritative
+  low-vision   : safety states are labels, not color-only
+  recovery     : floor1 owns recovery and policy
+  unknown      : unknown portal actions are no-op and help-guided
+
+blocked:
+  hidden host process spawning
+  host shell execution
+  network access by default
+  autonomous portal creation
+  implicit host directory access
+  VM isolation claims
+  container isolation claims
+  security isolation claims
+  network namespace isolation claims
+  hardware separation claims
+  live-system writes outside documented portal state
