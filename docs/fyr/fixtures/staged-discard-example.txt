@@ -1,0 +1,11 @@
+fyr staged discard phase1-base1-candidate
+codename      : black_arts
+candidate     : phase1-base1-candidate
+reason        : failed-validation
+discard-mode  : explicit-only
+removed       : .phase1/staged-candidates/phase1-base1-candidate
+record        : discard.log
+evidence      : docs/fyr/fixtures/staged-discard-ok.txt
+live-system   : untouched
+claim-boundary: fixture-only
+result        : candidate-discard-record-ready
