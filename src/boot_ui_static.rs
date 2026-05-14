@@ -1313,13 +1313,7 @@ fn active_theme() -> ThemePalette {
         .ok()
         .and_then(|raw| ThemePalette::parse(&raw))
         .filter(|theme| *theme != ThemePalette::BleedingEdge || bleeding_edge_env_enabled())
-        .unwrap_or_else(|| {
-            if bleeding_edge_env_enabled() {
-                ThemePalette::NeoTokyo
-            } else {
-                ThemePalette::NeoTokyo
-            }
-        })
+        .unwrap_or_else(|| ThemePalette::NeoTokyo)
 }
 
 fn active_theme_for_config(config: BootConfig) -> ThemePalette {
@@ -1327,13 +1321,7 @@ fn active_theme_for_config(config: BootConfig) -> ThemePalette {
         .ok()
         .and_then(|raw| ThemePalette::parse(&raw))
         .filter(|theme| *theme != ThemePalette::BleedingEdge || config.bleeding_edge)
-        .unwrap_or_else(|| {
-            if config.bleeding_edge {
-                ThemePalette::NeoTokyo
-            } else {
-                ThemePalette::NeoTokyo
-            }
-        })
+        .unwrap_or_else(|| ThemePalette::NeoTokyo)
 }
 
 fn display_mode(config: BootConfig) -> &'static str {

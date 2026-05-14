@@ -3,8 +3,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 ACTIVE = "edge/stable"
-BASE = "base/v5.0.0"
-VERSION = "v6.0.0"
+BASE = "base/v6.0.0"
+VERSION = "v7.0.1"
 
 
 def upsert(path, title, body):
