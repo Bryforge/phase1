@@ -94,3 +94,25 @@ fn portal_contract_lists_runtime_staging_and_completion_rule() {
         assert_contains(path, row);
     }
 }
+
+#[test]
+fn portal_docs_match_current_floor1_runtime_surface() {
+    let docs = std::fs::read_to_string("docs/portal/FLOOR1_PORTALS.md")
+        .expect("floor1 portal docs should be readable");
+
+    for row in [
+        "portal network <name> <denied|local-only|brokered-egress>",
+        "portal split <left> <right>",
+        "portal clone <source> <name>",
+        "portal snapshot <name>",
+        "portal restore <name>",
+        "network-default",
+        "denied",
+        "local-only",
+        "brokered-egress",
+        "claim-boundary",
+        "workspace-context-only",
+    ] {
+        assert!(docs.contains(row), "missing {row} in floor1 portal docs");
+    }
+}
