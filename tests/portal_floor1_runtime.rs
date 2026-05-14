@@ -57,8 +57,8 @@ fn portal_help_reports_local_state_and_floor1_policy() {
 
     for row in [
         "portal help",
-        "usage             : portal <status|list|open|enter|leave|inspect|help>",
-        "local-state       : open, enter, leave, inspect",
+        "usage             : portal <status|list|open|enter|leave|close|inspect|help>",
+        "local-state       : open, enter, leave, close, inspect",
         "floor             : floor1",
         "network-default   : denied",
         "claim-boundary    : workspace-context-only",
@@ -105,6 +105,25 @@ fn portal_missing_or_invalid_actions_are_noop_and_help_guided() {
         "status            : invalid-name",
         "portal nonsense",
         "status            : not-yet-implemented",
+        "claim-boundary    : workspace-context-only",
+    ] {
+        assert!(output.contains(row), "missing {row}:\n{output}");
+    }
+}
+
+#[test]
+fn portal_close_removes_local_portal_and_returns_active_to_root() {
+    let output = run_phase1(
+        "portal open alpha\nportal enter alpha\nportal close alpha\nportal status\nexit\n",
+    );
+
+    for row in [
+        "portal close alpha",
+        "status            : closed",
+        "active-portal     : root",
+        "open-portals      : root",
+        "network-mode      : denied",
+        "network-owner     : floor1",
         "claim-boundary    : workspace-context-only",
     ] {
         assert!(output.contains(row), "missing {row}:\n{output}");
