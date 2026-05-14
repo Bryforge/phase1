@@ -1,11 +1,11 @@
 {
   "name": "Phase1 public project status",
   "status_kind": "estimated roadmap progress",
-  "last_updated_utc": "2026-05-14T01:11:49Z",
+  "last_updated_utc": "2026-05-14T01:22:43Z",
   "repository": "Bryforge/phase1",
   "branch": "edge/stable",
-  "commit": "c7853f4b6f944b0e496d6a34ed49422fe6a090e7",
-  "overall_estimated_completion_percent": 66,
+  "commit": "a495bed2b25a722302a0f47414d4441d59f535b5",
+  "overall_estimated_completion_percent": 65,
   "public_state": "active edge development with reviewed B3 VM evidence, B6 X200 marker evidence, public status promotion, and Base1 B6 X200 marker checkpoint release note published",
   "important_boundary": "Percentages are planning estimates, not production-readiness or security-hardening claims. Reviewed B3 VM evidence, B6 X200 phase1_marker_seen evidence, checkpoint, public status trail, and release note are present, but installer readiness, recovery-complete status, hardening, release-candidate readiness, daily-driver readiness, and broad hardware validation remain not claimed.",
   "projects": [
@@ -48,7 +48,7 @@
     {
       "name": "Repository organization",
       "estimated_completion_percent": 100,
-      "state": "minimal root has 12 tracked files, 16 top-level folders, 0 unplanned root files, 0 tracked build files, 0 root status duplicates, and clean Base1 link-check output",
+      "state": "minimal root has 12 tracked files, 16 top-level folders, 0 unplanned root files, 0 tracked build files, and 0 root status duplicates",
       "next_milestone": "keep generated artifacts out of Git and keep compatibility links clean as work lands"
     }
   ],
@@ -115,7 +115,6 @@
     "not hardware-validated across targets",
     "not a hardened sandbox",
     "not cryptographically complete",
-    "X200 hardware marker evidence is present with phase1_marker_seen; non-claims remain in force",
     "B6 X200 marker checkpoint is present with phase1_marker_seen; non-claims remain in force",
     "B6 X200 release note is published; installer, recovery-complete, hardening, release-candidate, daily-driver, and broad hardware-validation claims remain out of scope"
   ],
@@ -129,6 +128,10 @@
       "artifact_sha256": "688518c1437003c7b8325b1d5d479bc97f77c3404c8fd27dace6d823d406b79b",
       "result": "phase1_marker_seen",
       "claim": "not_claimed",
+      "release_note_path": "docs/base1/releases/RELEASE_BASE1_B6_X200_MARKER_CHECKPOINT_V1.md",
+      "release_note_commit": "c7853f4b6f944b0e496d6a34ed49422fe6a090e7",
+      "public_status_commit": "f23fcb822f9c0d11bcd0b07adf71c811fcfd99c1",
+      "release_note_status": "published",
       "non_claims": [
         "not installer-ready",
         "not recovery-complete",
@@ -136,11 +139,7 @@
         "not release-candidate ready",
         "not daily-driver ready",
         "not broad hardware validation"
-      ],
-      "release_note_path": "docs/base1/releases/RELEASE_BASE1_B6_X200_MARKER_CHECKPOINT_V1.md",
-      "release_note_commit": "c7853f4b6f944b0e496d6a34ed49422fe6a090e7",
-      "public_status_commit": "f23fcb822f9c0d11bcd0b07adf71c811fcfd99c1",
-      "release_note_status": "published"
+      ]
     }
   ],
   "current_public_report": {

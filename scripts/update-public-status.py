@@ -143,15 +143,15 @@ def project_rows(repo_percent: int, repo_state: str) -> list[dict[str, object]]:
         },
         {
             "name": "Base1 secure host / OS track",
-            "estimated_completion_percent": 31,
-            "state": "documentation, dry-run scripts, release archives, validation gates, recovery planning, and x86_64 boot planning exist",
-            "next_milestone": "advance from dry-run/read-only evidence to VM and hardware validation",
+            "estimated_completion_percent": 40,
+            "state": "B2 focused test-suite evidence passed, reviewed B3 VM evidence is present, and the B6 X200 marker chain is published through evidence, checkpoint, public status, and release note; claim remains not_claimed",
+            "next_milestone": "continue B4 recovery validation and repeatable physical boot evidence while preserving installer, hardening, release-candidate, and daily-driver non-claims",
         },
         {
             "name": "X200 / Libreboot hardware path",
-            "estimated_completion_percent": 38,
-            "state": "USB staging, framebuffer proof paths, recovery notes, and safety gates exist; hardware success remains evidence-bound",
-            "next_milestone": "capture repeatable physical boot evidence without strengthening claims early",
+            "estimated_completion_percent": 44,
+            "state": "X200 Linux-libre host generated reviewed B3 VM evidence and B6 marker evidence with phase1_marker_seen; the checkpoint and release note are published; repeatable physical boot validation remains separate",
+            "next_milestone": "capture repeatable physical boot evidence and keep emulator, USB, recovery, installer, and hardware-readiness claims separated",
         },
         {
             "name": "Security and crypto policy",
@@ -161,9 +161,9 @@ def project_rows(repo_percent: int, repo_state: str) -> list[dict[str, object]]:
         },
         {
             "name": "Website and public docs",
-            "estimated_completion_percent": 78,
-            "state": "public site, status page, status JSON, badge endpoint, organized docs, asset policy, and Pages routing are in place",
-            "next_milestone": "keep the Pages workflow generating public status from repository state",
+            "estimated_completion_percent": 88,
+            "state": "public site, status page, status JSON, badge endpoint, native GitHub Wiki, refreshed source wiki, organized docs, X200 evidence report, B6 checkpoint trail, and Base1 B6 X200 release note are in place",
+            "next_milestone": "publish the public report announcement and keep claims evidence-bound",
         },
         {
             "name": "Repository organization",
@@ -182,6 +182,29 @@ def build_status() -> dict[str, object]:
         sum(int(project["estimated_completion_percent"]) for project in projects) / len(projects)
     )
     now = _dt.datetime.now(_dt.UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    b6_checkpoint = {
+        "name": "B6 X200 marker checkpoint",
+        "path": "docs/checkpoints/B6_X200_MARKER_CHECKPOINT.md",
+        "checkpoint_commit": "d4cd1e13d429662f6713466f57a41233d8238416",
+        "source_commit": "8eeca92294e8fc67437b46f4cb38917a4428e219",
+        "final_evidence_anchor": "095786e808d3908d27c045f04f3de0b5cd538ab9",
+        "artifact_sha256": "688518c1437003c7b8325b1d5d479bc97f77c3404c8fd27dace6d823d406b79b",
+        "result": "phase1_marker_seen",
+        "claim": "not_claimed",
+        "release_note_path": "docs/base1/releases/RELEASE_BASE1_B6_X200_MARKER_CHECKPOINT_V1.md",
+        "release_note_commit": "c7853f4b6f944b0e496d6a34ed49422fe6a090e7",
+        "public_status_commit": "f23fcb822f9c0d11bcd0b07adf71c811fcfd99c1",
+        "release_note_status": "published",
+        "non_claims": [
+            "not installer-ready",
+            "not recovery-complete",
+            "not hardened",
+            "not release-candidate ready",
+            "not daily-driver ready",
+            "not broad hardware validation",
+        ],
+    }
+
     return {
         "name": "Phase1 public project status",
         "status_kind": "estimated roadmap progress",
@@ -190,8 +213,8 @@ def build_status() -> dict[str, object]:
         "branch": os.environ.get("GITHUB_REF_NAME", "edge/stable"),
         "commit": git_sha(),
         "overall_estimated_completion_percent": overall,
-        "public_state": "active edge development",
-        "important_boundary": "Percentages are planning estimates, not production-readiness or security-hardening claims.",
+        "public_state": "active edge development with reviewed B3 VM evidence, B6 X200 marker evidence, public status promotion, and Base1 B6 X200 marker checkpoint release note published",
+        "important_boundary": "Percentages are planning estimates, not production-readiness or security-hardening claims. Reviewed B3 VM evidence, B6 X200 phase1_marker_seen evidence, checkpoint, public status trail, and release note are present, but installer readiness, recovery-complete status, hardening, release-candidate readiness, daily-driver readiness, and broad hardware validation remain not claimed.",
         "projects": projects,
         "repository_organization_metrics": repo_metrics,
         "non_claims": [
@@ -201,7 +224,23 @@ def build_status() -> dict[str, object]:
             "not hardware-validated across targets",
             "not a hardened sandbox",
             "not cryptographically complete",
+            "B6 X200 marker checkpoint is present with phase1_marker_seen; non-claims remain in force",
+            "B6 X200 release note is published; installer, recovery-complete, hardening, release-candidate, daily-driver, and broad hardware-validation claims remain out of scope",
         ],
+        "evidence_checkpoints": [b6_checkpoint],
+        "current_public_report": {
+            "title": "Phase1/Base1 B6 X200 marker checkpoint report",
+            "summary": "The B6 X200 marker chain is now published through raw evidence, checkpoint, public status, and Base1 checkpoint release note.",
+            "release_note_path": "docs/base1/releases/RELEASE_BASE1_B6_X200_MARKER_CHECKPOINT_V1.md",
+            "checkpoint_path": "docs/checkpoints/B6_X200_MARKER_CHECKPOINT.md",
+            "marker_result": "phase1_marker_seen",
+            "claim": "not_claimed",
+            "release_note_commit": "c7853f4b6f944b0e496d6a34ed49422fe6a090e7",
+            "public_status_commit": "f23fcb822f9c0d11bcd0b07adf71c811fcfd99c1",
+            "checkpoint_commit": "d4cd1e13d429662f6713466f57a41233d8238416",
+            "final_evidence_anchor": "095786e808d3908d27c045f04f3de0b5cd538ab9",
+            "artifact_sha256": "688518c1437003c7b8325b1d5d479bc97f77c3404c8fd27dace6d823d406b79b",
+        },
     }
 
 
@@ -259,9 +298,28 @@ def write_markdown(status: dict[str, object]) -> None:
             "https://bryforge.github.io/phase1/status-badge.json",
             "```",
             "",
+            "## Current public report",
+            "",
+            "Current report: [`docs/base1/releases/RELEASE_BASE1_B6_X200_MARKER_CHECKPOINT_V1.md`](../../docs/base1/releases/RELEASE_BASE1_B6_X200_MARKER_CHECKPOINT_V1.md)",
+            "",
+            "The B6 X200 marker chain is now published through raw evidence, checkpoint, public status, and Base1 checkpoint release note.",
+            "",
+            "| Item | Value |",
+            "| --- | --- |",
+            "| Marker result | `phase1_marker_seen` |",
+            "| Claim state | `not_claimed` |",
+            "| Checkpoint | [`docs/checkpoints/B6_X200_MARKER_CHECKPOINT.md`](../../docs/checkpoints/B6_X200_MARKER_CHECKPOINT.md) |",
+            "| Release note | [`docs/base1/releases/RELEASE_BASE1_B6_X200_MARKER_CHECKPOINT_V1.md`](../../docs/base1/releases/RELEASE_BASE1_B6_X200_MARKER_CHECKPOINT_V1.md) |",
+            "| Final evidence anchor | `095786e808d3908d27c045f04f3de0b5cd538ab9` |",
+            "| Artifact SHA256 | `688518c1437003c7b8325b1d5d479bc97f77c3404c8fd27dace6d823d406b79b` |",
+            "",
+            "This report does not claim installer readiness, recovery completion, hardening, release-candidate readiness, daily-driver readiness, or broad hardware validation.",
+            "",
             "## Non-claims",
             "",
             "These percentages are planning estimates. They do not claim that Phase1, Base1, or Fyr are production-ready, installer-ready, daily-driver ready, hardware-validated across targets, hardened, or cryptographically complete.",
+            "",
+            "B6 X200 marker evidence is a named marker observation only; it does not claim installer readiness, recovery completion, hardening, release-candidate readiness, daily-driver readiness, or broad hardware validation.",
             "",
         ]
     )
