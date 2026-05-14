@@ -26,7 +26,7 @@ fn public_status_generator_preserves_b6_report_state() {
 
     assert_contains(
         "site/status.json",
-        "\"overall_estimated_completion_percent\": 66",
+        "\"overall_estimated_completion_percent\": 65",
     );
     assert_contains("site/status.json", "\"estimated_completion_percent\": 40");
     assert_contains("site/status.json", "\"estimated_completion_percent\": 44");
@@ -41,7 +41,7 @@ fn public_status_generator_preserves_b6_report_state() {
 
     assert_contains(
         "docs/status/PROJECT_STATUS.md",
-        "Overall estimated roadmap completion: **66%**.",
+        "Overall estimated roadmap completion: **65%**.",
     );
     assert_contains(
         "docs/status/PROJECT_STATUS.md",

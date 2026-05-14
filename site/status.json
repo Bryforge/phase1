@@ -1,10 +1,10 @@
 {
   "name": "Phase1 public project status",
   "status_kind": "estimated roadmap progress",
-  "last_updated_utc": "2026-05-14T01:22:43Z",
+  "last_updated_utc": "2026-05-14T01:24:25Z",
   "repository": "Bryforge/phase1",
   "branch": "edge/stable",
-  "commit": "a495bed2b25a722302a0f47414d4441d59f535b5",
+  "commit": "1ac2554afc95ca6be26536287fa2ac4fb5b5da80",
   "overall_estimated_completion_percent": 65,
   "public_state": "active edge development with reviewed B3 VM evidence, B6 X200 marker evidence, public status promotion, and Base1 B6 X200 marker checkpoint release note published",
   "important_boundary": "Percentages are planning estimates, not production-readiness or security-hardening claims. Reviewed B3 VM evidence, B6 X200 phase1_marker_seen evidence, checkpoint, public status trail, and release note are present, but installer readiness, recovery-complete status, hardening, release-candidate readiness, daily-driver readiness, and broad hardware validation remain not claimed.",
