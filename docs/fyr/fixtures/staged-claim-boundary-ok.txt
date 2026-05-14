@@ -1,0 +1,16 @@
+name: black-arts-claim-boundary-fixture
+kind: staged-claim-boundary-fixture
+candidate: phase1-base1-candidate
+required-boundaries:
+  - not-production
+  - not-release-ready
+  - not-live-update
+  - not-auto-promote
+  - not-daily-driver
+report-fields:
+  - candidate-id
+  - evidence-link
+  - validation-state
+  - promotion-state
+  - claim-boundary
+claim: fixture-only
