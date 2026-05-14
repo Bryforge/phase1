@@ -559,6 +559,7 @@ Expected behavior:
 | B3 VM validation tests | Present | `tests/base1_b3_vm_validate_script.rs` |
 | VM validation report | Present scaffold | [`B3_VM_VALIDATION_REPORT.md`](B3_VM_VALIDATION_REPORT.md) |
 | Recovery validation report | Not started | planned |
+| B6 X200 marker checkpoint | Present | [`../checkpoints/B6_X200_MARKER_CHECKPOINT.md`](../checkpoints/B6_X200_MARKER_CHECKPOINT.md) |
 | Hardware validation report | Not started | planned |
 
 ## Hardening status
@@ -578,5 +579,7 @@ It records that the first B1 read-only detection script exists and remains bound
 B6 named X200 hardware boot evidence is present.
 
 Current B6 X200 evidence is recorded in `build/base1-b6-hardware-boot-evidence/b6-hardware-boot-evidence.env` with `BASE1_B6_HARDWARE_BOOT_RESULT=phase1_marker_seen` and `BASE1_B6_HARDWARE_BOOT_CLAIM=not_claimed`.
+
+B6 X200 marker checkpoint is recorded in [`../checkpoints/B6_X200_MARKER_CHECKPOINT.md`](../checkpoints/B6_X200_MARKER_CHECKPOINT.md).
 
 B6 has named X200 hardware marker evidence, but it remains non-claim evidence only: no installer, recovery-complete, hardening, release-candidate, or daily-driver claim.

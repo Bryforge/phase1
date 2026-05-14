@@ -1,6 +1,6 @@
 # Phase1
 
-> [Live project status](https://bryforge.github.io/phase1/status.html) · [status.json](https://bryforge.github.io/phase1/status.json) · current roadmap estimate: **62%**
+> [Live project status](https://bryforge.github.io/phase1/status.html) · [status.json](https://bryforge.github.io/phase1/status.json) · current roadmap estimate: **66%**
 
 <p align="center">
   <a href="https://bryforge.github.io/phase1/">
@@ -205,6 +205,8 @@ Current guardrail: Phase1 remains a virtual OS console until boot images, recove
 
 Boot readiness status is tracked in [`docs/os/BOOT_READINESS_STATUS.md`](docs/os/BOOT_READINESS_STATUS.md). The boot-readiness race plan lives at [`docs/os/BOOT_READINESS_RACE_PLAN.md`](docs/os/BOOT_READINESS_RACE_PLAN.md). x86_64 boot planning starts at [`docs/os/X86_64_BOOT_SUPPORT_ROADMAP.md`](docs/os/X86_64_BOOT_SUPPORT_ROADMAP.md).
 
+B6 X200 marker checkpoint: [`docs/checkpoints/B6_X200_MARKER_CHECKPOINT.md`](docs/checkpoints/B6_X200_MARKER_CHECKPOINT.md). This records `phase1_marker_seen` evidence on the named X200 path and preserves the non-claims: no installer, recovery-complete, hardening, release-candidate, or daily-driver readiness claim.
+
 B1 documents:
 
 - [`docs/os/B1_READ_ONLY_DETECTION_PLAN.md`](docs/os/B1_READ_ONLY_DETECTION_PLAN.md)
@@ -390,6 +392,7 @@ Start here:
 
 - [`docs/os/ROADMAP.md`](docs/os/ROADMAP.md) — Phase1 operating-system track
 - [`docs/os/BOOT_READINESS_STATUS.md`](docs/os/BOOT_READINESS_STATUS.md) — current boot-readiness tracker and B1/B2 gate
+- [`docs/checkpoints/B6_X200_MARKER_CHECKPOINT.md`](docs/checkpoints/B6_X200_MARKER_CHECKPOINT.md) — B6 X200 marker checkpoint and non-claim evidence anchor.
 - [`docs/os/BOOT_READINESS_RACE_PLAN.md`](docs/os/BOOT_READINESS_RACE_PLAN.md) — fast, evidence-bound path toward boot readiness
 - [`docs/os/B1_READ_ONLY_DETECTION_PLAN.md`](docs/os/B1_READ_ONLY_DETECTION_PLAN.md) — B1 read-only detection plan
 - [`docs/os/B1_READ_ONLY_DETECTION_LIMITATIONS.md`](docs/os/B1_READ_ONLY_DETECTION_LIMITATIONS.md) — B1 detector limitations and non-claims

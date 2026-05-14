@@ -1,13 +1,13 @@
 {
   "name": "Phase1 public project status",
   "status_kind": "estimated roadmap progress",
-  "last_updated_utc": "2026-05-13T22:18:00Z",
+  "last_updated_utc": "2026-05-14T00:59:29Z",
   "repository": "Bryforge/phase1",
   "branch": "edge/stable",
-  "commit": "a1aa2b0ecc3c28ea16791b661fa50181f56bd7ee",
+  "commit": "d4cd1e13d429662f6713466f57a41233d8238416",
   "overall_estimated_completion_percent": 66,
-  "public_state": "active edge development with published wiki, clean public link surface, and reviewed B3 VM evidence present",
-  "important_boundary": "Percentages are planning estimates, not production-readiness or security-hardening claims. Reviewed B3 VM evidence is present, but installer, recovery-complete, hardening, release-candidate, and daily-driver readiness remain not claimed.",
+  "public_state": "active edge development with published wiki, clean public link surface, reviewed B3 VM evidence, and B6 X200 marker checkpoint present",
+  "important_boundary": "Percentages are planning estimates, not production-readiness or security-hardening claims. Reviewed B3 VM evidence and B6 X200 phase1_marker_seen evidence are present, but installer, recovery-complete, hardening, release-candidate, daily-driver readiness, and broad hardware validation remain not claimed.",
   "projects": [
     {
       "name": "Phase1 operator console",
@@ -24,14 +24,14 @@
     {
       "name": "Base1 secure host / OS track",
       "estimated_completion_percent": 40,
-      "state": "B2 focused test-suite evidence passed, B3 GNU/Linux emulator evidence passed, B3 UEFI proof passed, B3 kernel/initrd handoff passed, OpenBSD launch evidence is present, and B3 log-bundle review passed; claim remains not_claimed",
-      "next_milestone": "begin B4 recovery validation while keeping installer, hardware, hardening, release-candidate, and daily-driver claims out of scope"
+      "state": "B2 focused test-suite evidence passed, reviewed B3 VM evidence is present, and B6 X200 marker checkpoint records phase1_marker_seen; claim remains not_claimed",
+      "next_milestone": "continue B4 recovery validation while keeping installer, hardening, release-candidate, and daily-driver claims out of scope"
     },
     {
       "name": "X200 / Libreboot hardware path",
       "estimated_completion_percent": 44,
-      "state": "X200 Linux-libre host generated reviewed B3 VM evidence across GNU/Linux staging, UEFI proof, kernel/initrd handoff, and OpenBSD launch evidence; physical boot evidence remains separate and not claimed",
-      "next_milestone": "capture repeatable physical boot evidence and keep emulator, USB, recovery, and hardware claims separated"
+      "state": "X200 Linux-libre host generated reviewed B3 VM evidence and B6 marker checkpoint evidence with phase1_marker_seen; repeatable physical boot validation remains separate and not claimed",
+      "next_milestone": "capture repeatable physical boot evidence and keep emulator, USB, recovery, installer, and hardware-readiness claims separated"
     },
     {
       "name": "Security and crypto policy",
@@ -42,7 +42,7 @@
     {
       "name": "Website and public docs",
       "estimated_completion_percent": 88,
-      "state": "public site, status page, status JSON, badge endpoint, native GitHub Wiki, refreshed source wiki, organized docs, asset policy, Pages routing, clean public link checks, X200 evidence report, and reviewed B3 VM evidence wording are in place",
+      "state": "public site, status page, status JSON, badge endpoint, native GitHub Wiki, refreshed source wiki, organized docs, asset policy, Pages routing, clean public link checks, X200 evidence report, reviewed B3 VM wording, and B6 checkpoint trail are in place",
       "next_milestone": "publish B4 recovery validation status and keep public claims evidence-bound"
     },
     {
@@ -115,6 +115,27 @@
     "not hardware-validated across targets",
     "not a hardened sandbox",
     "not cryptographically complete",
-    "X200 hardware marker evidence is present with phase1_marker_seen; non-claims remain in force"
+    "X200 hardware marker evidence is present with phase1_marker_seen; non-claims remain in force",
+    "B6 X200 marker checkpoint is present with phase1_marker_seen; non-claims remain in force"
+  ],
+  "evidence_checkpoints": [
+    {
+      "name": "B6 X200 marker checkpoint",
+      "path": "docs/checkpoints/B6_X200_MARKER_CHECKPOINT.md",
+      "checkpoint_commit": "d4cd1e13d429662f6713466f57a41233d8238416",
+      "source_commit": "8eeca92294e8fc67437b46f4cb38917a4428e219",
+      "final_evidence_anchor": "095786e808d3908d27c045f04f3de0b5cd538ab9",
+      "artifact_sha256": "688518c1437003c7b8325b1d5d479bc97f77c3404c8fd27dace6d823d406b79b",
+      "result": "phase1_marker_seen",
+      "claim": "not_claimed",
+      "non_claims": [
+        "not installer-ready",
+        "not recovery-complete",
+        "not hardened",
+        "not release-candidate ready",
+        "not daily-driver ready",
+        "not broad hardware validation"
+      ]
+    }
   ]
 }
