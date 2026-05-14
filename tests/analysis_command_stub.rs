@@ -118,6 +118,9 @@ fn analyze_command_stub_reports_no_execute_boundary() {
         "malware-safe",
         "production forensic",
     ] {
-        assert!(!output.contains(forbidden), "forbidden {forbidden:?}:\n{output}");
+        assert!(
+            !output.contains(forbidden),
+            "forbidden {forbidden:?}:\n{output}"
+        );
     }
 }
