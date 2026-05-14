@@ -31,7 +31,8 @@ fn white_arts_docs_exist_and_define_defensive_scope() {
 
 #[test]
 fn white_arts_roadmap_preserves_promotion_ladder_and_non_claims() {
-    let roadmap = fs::read_to_string("docs/white-arts/ROADMAP.md").expect("read White Arts roadmap");
+    let roadmap =
+        fs::read_to_string("docs/white-arts/ROADMAP.md").expect("read White Arts roadmap");
     for required in [
         "planned -> documented -> read-only checked -> locally validated -> CI validated -> reviewed -> release eligible",
         "W1 — Doctrine and vocabulary",
