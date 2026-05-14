@@ -60,6 +60,7 @@ The verifier compares reporter output against this document and fails if a repor
 | `tests/base1_release_pre_move_checks_docs.rs` | Release/checkpoint pre-move checks docs. |
 | `tests/base1_reorganization_readiness_docs.rs` | Reorganization readiness checklist docs. |
 | `tests/quality_base1_docs_gate.rs` | Quality gate integration for `base1-docs`, integrity, link checks, and test inventory verification. |
+| `tests/base1_b6_x200_marker_checkpoint_release_docs.rs` | B6 X200 marker checkpoint release note, release index, inventory entry, and non-claim boundary. |
 
 ## Libreboot tests
 
@@ -164,6 +165,7 @@ The following test paths are mirrored from `scripts/base1-test-inventory.sh` so 
 - `tests/base1_b3_vm_validate_script.rs`
 - `tests/base1_b4_recovery_validate_script.rs`
 - `tests/base1_b6_hardware_boot_evidence_script.rs`
+- `tests/base1_b6_x200_marker_checkpoint_release_docs.rs`
 - `tests/base1_boot_preview_script.rs`
 - `tests/base1_delivery_mode_plan_script.rs`
 - `tests/base1_docs_evidence_chain_report_docs.rs`

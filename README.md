@@ -437,6 +437,7 @@ Start here:
 - [`base1/LIBREBOOT_VALIDATION_REPORT.md`](base1/LIBREBOOT_VALIDATION_REPORT.md) — Libreboot validation report.
 - [`docs/base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1.md`](docs/base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1.md) — Libreboot read-only checkpoint v1 release notes.
 - [`docs/base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1_1.md`](docs/base1/releases/RELEASE_BASE1_LIBREBOOT_READONLY_V1_1.md) — Libreboot read-only checkpoint v1.1 release notes.
+- [`docs/base1/releases/RELEASE_BASE1_B6_X200_MARKER_CHECKPOINT_V1.md`](docs/base1/releases/RELEASE_BASE1_B6_X200_MARKER_CHECKPOINT_V1.md) — B6 X200 marker checkpoint v1 release note.
 
 First safe checks are read-only or dry-run oriented:
 

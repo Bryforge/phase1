@@ -23,6 +23,10 @@ Use the pre-move checks before changing this group. Base1 release/checkpoint not
 - [Base1 recovery USB image provenance read-only checkpoint v1](RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md)
 - [Base1 recovery USB emergency shell read-only checkpoint v1](RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md)
 
+## X200 marker checkpoints
+
+- [Base1 B6 X200 marker checkpoint v1](RELEASE_BASE1_B6_X200_MARKER_CHECKPOINT_V1.md)
+
 ## Reorganization rule
 
 Release/checkpoint notes may move here only when inbound links, tests, integrity checks, link checks, and test-inventory verification are updated in the same change set.
@@ -41,3 +45,4 @@ Libreboot read-only checkpoint v1.1 release notes
 - [`docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_HARDWARE_READONLY_V1.md`](RELEASE_BASE1_RECOVERY_USB_HARDWARE_READONLY_V1.md) — Recovery USB hardware read-only checkpoint release notes.
 - [`docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md`](RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md) — Recovery USB image read-only checkpoint release notes.
 - [`docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md`](RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md) — Recovery USB target read-only checkpoint release notes.
+- [`docs/base1/releases/RELEASE_BASE1_B6_X200_MARKER_CHECKPOINT_V1.md`](RELEASE_BASE1_B6_X200_MARKER_CHECKPOINT_V1.md) — B6 X200 marker checkpoint v1 release notes.

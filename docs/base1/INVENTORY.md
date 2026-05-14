@@ -116,12 +116,14 @@ It groups known Base1 material without removing anything. It is not yet a comple
 | `RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md` | `docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_TARGET_READONLY_V1.md` |
 | `RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md` | `docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_IMAGE_READONLY_V1.md` |
 | `RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md` | `docs/base1/releases/RELEASE_BASE1_RECOVERY_USB_EMERGENCY_SHELL_READONLY_V1.md` |
+| `N/A` | `docs/base1/releases/RELEASE_BASE1_B6_X200_MARKER_CHECKPOINT_V1.md` |
 
 Additional checkpoint material:
 
 | Path | Group | Notes |
 | --- | --- | --- |
 | `docs/archive/checkpoints/DEVELOPMENT_CHECKPOINT_BASE1_RECOVERY_USB_READONLY_V1.md` | Checkpoint | Development checkpoint note retained at root. |
+| `docs/base1/releases/RELEASE_BASE1_B6_X200_MARKER_CHECKPOINT_V1.md` | Release/checkpoint | B6 X200 marker checkpoint release note with `phase1_marker_seen` and `not_claimed` boundary. |
 
 ## Base1 scripts
 
