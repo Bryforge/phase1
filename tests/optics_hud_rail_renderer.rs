@@ -1,7 +1,10 @@
 #[path = "../src/optics.rs"]
 mod optics;
 
-use optics::{render_bottom_rail, render_static_preview, render_top_rail, OpticsDeviceProfile, OpticsRailState};
+use optics::{
+    render_bottom_rail, render_static_preview, render_top_rail, OpticsDeviceProfile,
+    OpticsRailState,
+};
 
 #[test]
 fn optics_renderer_static_preview_preserves_top_center_bottom_contract() {
@@ -21,7 +24,10 @@ fn optics_renderer_static_preview_preserves_top_center_bottom_contract() {
         "copy-safe=raw-command-preserved",
         "labels=no-color/ascii-visible",
     ] {
-        assert!(preview.contains(required), "missing {required:?}: {preview}");
+        assert!(
+            preview.contains(required),
+            "missing {required:?}: {preview}"
+        );
     }
 }
 
@@ -31,9 +37,18 @@ fn optics_renderer_keeps_rails_deterministic_and_ascii_safe() {
     let second = render_static_preview(OpticsDeviceProfile::Terminal);
 
     assert_eq!(first, second, "static renderer must be deterministic");
-    assert!(first.is_ascii(), "static renderer should be ASCII-safe: {first}");
-    assert!(!first.contains('\u{1b}'), "renderer should not emit ANSI escapes by default");
-    assert!(!first.contains('╭'), "renderer should not emit box drawing by default");
+    assert!(
+        first.is_ascii(),
+        "static renderer should be ASCII-safe: {first}"
+    );
+    assert!(
+        !first.contains('\u{1b}'),
+        "renderer should not emit ANSI escapes by default"
+    );
+    assert!(
+        !first.contains('╭'),
+        "renderer should not emit box drawing by default"
+    );
 }
 
 #[test]
@@ -43,13 +58,25 @@ fn optics_renderer_adapts_device_density_without_changing_state_meaning() {
     let desktop = render_static_preview(OpticsDeviceProfile::Desktop);
 
     assert!(mobile.contains("BOT color=bright-blue input=active mutation=none result=ok"));
-    assert!(!mobile.contains("BOT warning="), "mobile should stay one-line bottom rail: {mobile}");
+    assert!(
+        !mobile.contains("BOT warning="),
+        "mobile should stay one-line bottom rail: {mobile}"
+    );
 
     assert!(laptop.contains("device=laptop"), "{laptop}");
-    assert!(laptop.contains("BOT warning=none copy-safe=raw-command-preserved"), "{laptop}");
+    assert!(
+        laptop.contains("BOT warning=none copy-safe=raw-command-preserved"),
+        "{laptop}"
+    );
 
-    assert!(desktop.contains("device=desktop evidence=planned"), "{desktop}");
-    assert!(desktop.contains("labels=no-color/ascii-visible"), "{desktop}");
+    assert!(
+        desktop.contains("device=desktop evidence=planned"),
+        "{desktop}"
+    );
+    assert!(
+        desktop.contains("labels=no-color/ascii-visible"),
+        "{desktop}"
+    );
 }
 
 #[test]
@@ -67,7 +94,10 @@ fn optics_renderer_custom_state_preserves_command_and_safety_labels() {
     let top = render_top_rail(&state);
     let bottom = render_bottom_rail(&state);
 
-    assert!(top.contains("ctx=root > portal:alpha > ghost:watch"), "{top}");
+    assert!(
+        top.contains("ctx=root > portal:alpha > ghost:watch"),
+        "{top}"
+    );
     assert!(top.contains("integrity=changed"), "{top}");
     assert!(top.contains("crypto=denied"), "{top}");
     assert!(bottom.contains("mutation=typing"), "{bottom}");
@@ -90,6 +120,9 @@ fn optics_renderer_preserves_non_claims() {
         "not-system-integrity-guarantee",
         "not-base1-boot-environment",
     ] {
-        assert!(preview.contains(required), "missing {required:?}: {preview}");
+        assert!(
+            preview.contains(required),
+            "missing {required:?}: {preview}"
+        );
     }
 }
