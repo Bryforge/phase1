@@ -58,14 +58,16 @@ fn fyr_f3_reports_missing_package_manifest() {
     let output = run_phase1("fyr check ghost_package\nexit\n");
 
     assert!(
-        output.contains("fyr check: ghost_package: missing package manifest ghost_package/fyr.toml"),
+        output
+            .contains("fyr check: ghost_package: missing package manifest ghost_package/fyr.toml"),
         "{output}"
     );
 }
 
 #[test]
 fn fyr_f3_reports_missing_package_main() {
-    let output = run_phase1("mkdir app\necho 'name = \"app\"' > app/fyr.toml\nfyr check app\nexit\n");
+    let output =
+        run_phase1("mkdir app\necho 'name = \"app\"' > app/fyr.toml\nfyr check app\nexit\n");
 
     assert!(
         output.contains("fyr check: app: missing package main app/src/main.fyr"),
@@ -79,7 +81,10 @@ fn fyr_f3_reports_duplicate_package_main() {
         "fyr init app\necho 'fn main() -> i32 { return 0; }' > app/src/extra.fyr\nfyr check app\nexit\n",
     );
 
-    assert!(output.contains("fyr check: app: duplicate fn main"), "{output}");
+    assert!(
+        output.contains("fyr check: app: duplicate fn main"),
+        "{output}"
+    );
 }
 
 #[test]

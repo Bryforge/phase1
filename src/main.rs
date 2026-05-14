@@ -562,9 +562,67 @@ fn fyr_command(shell: &mut Phase1Shell, args: &[String]) -> String {
         Some("test") => fyr_test(shell, &args[1..]),
         Some("self") => fyr_self(),
         Some("run") => fyr_run(shell, &args[1..]),
+        Some("staged") => fyr_staged(&args[1..]),
         Some("help") | Some("-h") | Some("--help") => fyr_help(),
         Some(other) => format!("fyr: unknown action {other}\n{}", fyr_help()),
     }
+}
+
+fn fyr_staged(args: &[String]) -> String {
+    match args.first().map(String::as_str) {
+        None | Some("status") => fyr_staged_visual(),
+        Some("help") | Some("-h") | Some("--help") => fyr_staged_help(),
+        Some(other) => fyr_staged_unknown(other),
+    }
+}
+
+fn fyr_staged_visual() -> String {
+    concat!(
+        "☠ FYR black_arts // STAGED CANDIDATE MODE\n",
+        "[BLACK_ARTS] FYR staged candidate mode\n",
+        "candidate     : phase1-base1-candidate\n",
+        "workspace     : .phase1/staged-candidates/phase1-base1-candidate\n",
+        "state         : fixture-backed\n",
+        "live-system   : untouched\n",
+        "promotion     : blocked-until-validation-and-approval\n",
+        "evidence      : docs/fyr/fixtures/staged-lifecycle-example.txt\n",
+        "boundary      : candidate-only | non-live | evidence-bound | claim-boundary\n",
+        "commands      : status, plan, create, apply, validate, promote, discard\n",
+        "implementation: pending\n",
+        "claim-boundary: fixture-only\n",
+    )
+    .to_string()
+}
+
+fn fyr_staged_help() -> String {
+    concat!(
+        "fyr staged help\n",
+        "codename      : black_arts\n",
+        "status        : fixture-backed design help\n",
+        "usage         : fyr staged <status|plan|create|apply|validate|promote|discard>\n",
+        "commands      : status, plan, create, apply, validate, promote, discard\n",
+        "workspace     : .phase1/staged-candidates\n",
+        "boundaries    : candidate-only, non-live, evidence-bound, claim-boundary\n",
+        "promotion     : validation-and-approval-required\n",
+        "implementation: pending\n",
+        "claim-boundary: fixture-only\n",
+    )
+    .to_string()
+}
+
+fn fyr_staged_unknown(action: &str) -> String {
+    format!(
+        "fyr staged {action}\n\
+         codename      : black_arts\n\
+         status        : unknown staged action\n\
+         action        : {action}\n\
+         live-system   : untouched\n\
+         candidate     : none\n\
+         result        : no-op\n\
+         help          : fyr staged help\n\
+         boundaries    : non-live, no-write, evidence-bound, claim-boundary\n\
+         claim-boundary: fixture-only\n"
+    )
 }
 
 fn fyr_status() -> String {
@@ -876,7 +934,30 @@ fn fyr_expand_let_bindings(source: &str) -> Result<String, &'static str> {
             let assertion =
                 fyr_parse_assertion_ast(&condition).map_err(|_| "expected boolean if condition")?;
 
-            let Some(return_expr) = if_body
+            let mut if_body_tail = if_body;
+            loop {
+                let trimmed = if_body_tail.trim_start();
+                if trimmed.starts_with("return") {
+                    if_body_tail = trimmed;
+                    break;
+                }
+
+                let Some(statement_end) = trimmed.find(';') else {
+                    if_body_tail = trimmed;
+                    break;
+                };
+
+                let statement = trimmed[..statement_end].trim();
+                if statement.starts_with("assert_eq(") || statement.starts_with("assert(") {
+                    if_body_tail = &trimmed[statement_end + 1..];
+                    continue;
+                }
+
+                if_body_tail = trimmed;
+                break;
+            }
+
+            let Some(return_expr) = if_body_tail
                 .strip_prefix("return")
                 .and_then(|raw| raw.trim().strip_suffix(';'))
             else {

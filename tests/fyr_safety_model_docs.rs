@@ -54,7 +54,10 @@ fn fyr_safety_model_lists_f4_promotion_evidence() {
 
 #[test]
 fn fyr_toolchain_links_to_safety_model() {
-    assert_contains("docs/fyr/TOOLCHAIN.md", "[`SAFETY_MODEL.md`](SAFETY_MODEL.md)");
+    assert_contains(
+        "docs/fyr/TOOLCHAIN.md",
+        "[`SAFETY_MODEL.md`](SAFETY_MODEL.md)",
+    );
     assert_contains("docs/fyr/TOOLCHAIN.md", "No host shell.");
     assert_contains("docs/fyr/TOOLCHAIN.md", "No network.");
     assert_contains("docs/fyr/TOOLCHAIN.md", "No host compiler.");

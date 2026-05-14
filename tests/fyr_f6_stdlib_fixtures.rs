@@ -13,7 +13,14 @@ fn assert_contains(path: &str, needle: &str) {
 fn fyr_f6_stdlib_contract_lists_planned_modules() {
     let path = "docs/fyr/STDLIB.md";
 
-    for module in ["`vfs`", "`text`", "`json-lite`", "`audit`", "`package`", "`doc`"] {
+    for module in [
+        "`vfs`",
+        "`text`",
+        "`json-lite`",
+        "`audit`",
+        "`package`",
+        "`doc`",
+    ] {
         assert_contains(path, module);
     }
 

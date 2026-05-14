@@ -54,7 +54,9 @@ fn run_phase1(script: &str) -> String {
 }
 
 fn assert_no_host_markers(output: &str) {
-    for forbidden in ["cargo ", "rustc ", "bash:", "sh:", "http://", "https://", "network"] {
+    for forbidden in [
+        "cargo ", "rustc ", "bash:", "sh:", "http://", "https://", "network",
+    ] {
         assert!(
             !output.to_lowercase().contains(&forbidden.to_lowercase()),
             "unexpected host marker {forbidden:?}:\n{output}"
@@ -63,7 +65,8 @@ fn assert_no_host_markers(output: &str) {
 }
 
 fn assert_contains(path: &str, needle: &str) {
-    let text = fs::read_to_string(path).unwrap_or_else(|err| panic!("failed to read {path}: {err}"));
+    let text =
+        fs::read_to_string(path).unwrap_or_else(|err| panic!("failed to read {path}: {err}"));
     assert!(text.contains(needle), "{path} should contain: {needle}");
 }
 
@@ -90,7 +93,10 @@ fn fyr_inspection_workflows_doc_preserves_f5_non_claims() {
     assert_contains(path, "operate on VFS fixtures first");
     assert_contains(path, "avoid host shell access");
     assert_contains(path, "avoid network access");
-    assert_contains(path, "F5 can be marked complete only when those workflows are implemented, tested, documented");
+    assert_contains(
+        path,
+        "F5 can be marked complete only when those workflows are implemented, tested, documented",
+    );
 }
 
 #[test]

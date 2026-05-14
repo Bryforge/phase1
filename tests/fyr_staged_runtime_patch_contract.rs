@@ -97,6 +97,8 @@ fn staged_runtime_patch_does_not_introduce_host_or_network_execution() {
         );
     }
 
-    assert!(text.contains("commands      : status, plan, create, apply, validate, promote, discard"));
+    assert!(
+        text.contains("commands      : status, plan, create, apply, validate, promote, discard")
+    );
     assert!(text.contains("promotion     : blocked-until-validation-and-approval"));
 }

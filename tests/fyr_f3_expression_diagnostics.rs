@@ -82,7 +82,8 @@ fn fyr_f3_reports_missing_right_hand_integer_operand() {
     );
 
     assert!(
-        output.contains("expected integer expression") || output.contains("expected integer let binding value"),
+        output.contains("expected integer expression")
+            || output.contains("expected integer let binding value"),
         "{output}"
     );
 }

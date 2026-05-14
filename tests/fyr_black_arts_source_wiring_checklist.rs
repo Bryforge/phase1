@@ -68,6 +68,9 @@ fn staged_source_wiring_checklist_links_reference_fixtures() {
         "docs/fyr/fixtures/staged-unknown-action-ok.txt",
     ] {
         assert_contains(path, fixture);
-        assert!(fs::metadata(fixture).is_ok(), "fixture should exist: {fixture}");
+        assert!(
+            fs::metadata(fixture).is_ok(),
+            "fixture should exist: {fixture}"
+        );
     }
 }

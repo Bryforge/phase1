@@ -37,7 +37,10 @@ fn fyr_f5_repo_manifest_fixture_points_to_existing_docs() {
         "docs/fyr/SAFETY_MODEL.md",
     ] {
         assert!(fixture.contains(path), "fixture should list {path}");
-        assert!(fs::metadata(path).is_ok(), "listed path should exist: {path}");
+        assert!(
+            fs::metadata(path).is_ok(),
+            "listed path should exist: {path}"
+        );
     }
 }
 

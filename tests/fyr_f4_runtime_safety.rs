@@ -103,7 +103,10 @@ fn fyr_test_runs_vfs_package_tests_without_host_tool_markers() {
         "fyr init app\necho 'fn main() -> i32 { assert_eq(21 + 21, 42); return 0; }' > app/tests/math.fyr\nfyr test app\nexit\n",
     );
 
-    assert!(output.contains("test    : app/tests/math.fyr ok"), "{output}");
+    assert!(
+        output.contains("test    : app/tests/math.fyr ok"),
+        "{output}"
+    );
     assert!(output.contains("failed  : 0"), "{output}");
     assert!(output.contains("status  : ok"), "{output}");
     assert_no_host_tool_output(&output);

@@ -60,6 +60,9 @@ fn command_contract_matches_documented_surface() {
         "fyr staged promote <candidate>",
         "fyr staged discard <candidate>",
     ] {
-        assert!(doc.contains(command), "staged candidate doc should include {command}");
+        assert!(
+            doc.contains(command),
+            "staged candidate doc should include {command}"
+        );
     }
 }

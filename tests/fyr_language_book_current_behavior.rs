@@ -17,7 +17,10 @@ fn fyr_language_book_documents_current_behavior_without_production_claims() {
     assert_contains(path, "F3 core syntax work is active, not complete.");
     assert_contains(path, "F4-F7 remain planned");
     assert_contains(path, "Fyr is not production-ready");
-    assert_contains(path, "not a general replacement for Rust, Python, C, or shell");
+    assert_contains(
+        path,
+        "not a general replacement for Rust, Python, C, or shell",
+    );
 }
 
 #[test]

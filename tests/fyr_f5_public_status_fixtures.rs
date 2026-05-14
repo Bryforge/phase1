@@ -46,7 +46,10 @@ fn fyr_self_workflows_doc_links_public_status_fixture() {
 fn fyr_public_status_reader_remains_documented_as_pending() {
     let doc = read("docs/fyr/SELF_WORKFLOWS.md");
 
-    assert!(doc.contains("Public status reader"), "doc should name public status reader");
+    assert!(
+        doc.contains("Public status reader"),
+        "doc should name public status reader"
+    );
     assert!(
         doc.contains("not yet a full reader command") || doc.contains("documented deferral"),
         "doc should avoid claiming completed public status reader"

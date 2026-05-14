@@ -39,7 +39,10 @@ fn fyr_f5_doc_consistency_fixture_points_to_existing_docs() {
         "docs/fyr/SELF_WORKFLOWS.md",
     ] {
         assert!(fixture.contains(path), "fixture should list {path}");
-        assert!(fs::metadata(path).is_ok(), "listed path should exist: {path}");
+        assert!(
+            fs::metadata(path).is_ok(),
+            "listed path should exist: {path}"
+        );
     }
 }
 
@@ -57,8 +60,17 @@ fn fyr_f5_docs_preserve_required_consistency_phrases() {
         .collect::<Vec<_>>()
         .join("\n");
 
-    for phrase in ["VFS", "deterministic", "non-claim", "100% promotion gate", "F5"] {
-        assert!(combined.contains(phrase), "Fyr docs should contain {phrase}");
+    for phrase in [
+        "VFS",
+        "deterministic",
+        "non-claim",
+        "100% promotion gate",
+        "F5",
+    ] {
+        assert!(
+            combined.contains(phrase),
+            "Fyr docs should contain {phrase}"
+        );
     }
 }
 

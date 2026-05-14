@@ -45,7 +45,10 @@ fn fyr_f6_stdlib_doc_links_json_lite_fixture() {
 fn fyr_f6_stdlib_doc_keeps_json_lite_module_non_claiming() {
     let doc = read("docs/fyr/STDLIB.md");
 
-    assert!(doc.contains("`json-lite`"), "stdlib doc should list json-lite module");
+    assert!(
+        doc.contains("`json-lite`"),
+        "stdlib doc should list json-lite module"
+    );
     assert!(
         doc.contains("not implemented as a complete standard library yet"),
         "stdlib doc should keep non-claim boundary"

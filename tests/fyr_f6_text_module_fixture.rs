@@ -35,10 +35,7 @@ fn fyr_f6_text_fixture_has_required_shape() {
 
 #[test]
 fn fyr_f6_stdlib_doc_links_text_fixture() {
-    assert_contains(
-        "docs/fyr/STDLIB.md",
-        "docs/fyr/fixtures/stdlib-text-ok.txt",
-    );
+    assert_contains("docs/fyr/STDLIB.md", "docs/fyr/fixtures/stdlib-text-ok.txt");
 }
 
 #[test]
@@ -54,8 +51,5 @@ fn fyr_f6_stdlib_doc_keeps_text_module_non_claiming() {
 
 #[test]
 fn fyr_roadmap_tracks_text_module_fixture_evidence() {
-    assert_contains(
-        "docs/fyr/ROADMAP.md",
-        "F6 `text` module fixture evidence",
-    );
+    assert_contains("docs/fyr/ROADMAP.md", "F6 `text` module fixture evidence");
 }

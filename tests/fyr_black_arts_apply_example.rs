@@ -44,6 +44,8 @@ fn apply_example_preserves_rejected_operation_visibility() {
     let example = read("docs/fyr/fixtures/staged-apply-example.txt");
 
     assert!(example.contains("change-mode   : candidate-only"));
-    assert!(example.contains("rejected      : live-system-write, undeclared-path, missing-evidence"));
+    assert!(
+        example.contains("rejected      : live-system-write, undeclared-path, missing-evidence")
+    );
     assert!(example.contains("live-system   : untouched"));
 }

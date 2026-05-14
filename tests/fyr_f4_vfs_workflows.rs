@@ -55,14 +55,7 @@ fn run_phase1(script: &str) -> String {
 
 fn assert_no_host_markers(output: &str) {
     for forbidden in [
-        "cargo ",
-        "rustc ",
-        "bash:",
-        "sh:",
-        "http://",
-        "https://",
-        "download",
-        "network",
+        "cargo ", "rustc ", "bash:", "sh:", "http://", "https://", "download", "network",
     ] {
         assert!(
             !output.to_lowercase().contains(&forbidden.to_lowercase()),
@@ -73,7 +66,9 @@ fn assert_no_host_markers(output: &str) {
 
 #[test]
 fn fyr_new_cat_check_run_stays_inside_vfs() {
-    let output = run_phase1("fyr new hello\nfyr cat hello.fyr\nfyr check hello.fyr\nfyr run hello.fyr\nexit\n");
+    let output = run_phase1(
+        "fyr new hello\nfyr cat hello.fyr\nfyr check hello.fyr\nfyr run hello.fyr\nexit\n",
+    );
 
     assert!(output.contains("fyr new: created hello.fyr"), "{output}");
     assert!(output.contains("fn main() -> i32"), "{output}");
@@ -90,11 +85,17 @@ fn fyr_init_creates_vfs_package_that_checks_builds_tests_and_runs() {
     assert!(output.contains("manifest: app/fyr.toml"), "{output}");
     assert!(output.contains("main    : app/src/main.fyr"), "{output}");
     assert!(output.contains("tests   : app/tests/smoke.fyr"), "{output}");
-    assert!(output.contains("fyr check: ok app/src/main.fyr"), "{output}");
+    assert!(
+        output.contains("fyr check: ok app/src/main.fyr"),
+        "{output}"
+    );
     assert!(output.contains("package : app"), "{output}");
     assert!(output.contains("backend : seed/interpreted"), "{output}");
     assert!(output.contains("host    : none"), "{output}");
-    assert!(output.contains("test    : app/tests/smoke.fyr ok"), "{output}");
+    assert!(
+        output.contains("test    : app/tests/smoke.fyr ok"),
+        "{output}"
+    );
     assert!(output.contains("Hello from Fyr package"), "{output}");
     assert_no_host_markers(&output);
 }
@@ -104,7 +105,10 @@ fn fyr_new_refuses_to_overwrite_existing_vfs_file() {
     let output = run_phase1("fyr new hello\nfyr new hello\nfyr cat hello.fyr\nexit\n");
 
     assert!(output.contains("fyr new: created hello.fyr"), "{output}");
-    assert!(output.contains("fyr new: hello.fyr already exists"), "{output}");
+    assert!(
+        output.contains("fyr new: hello.fyr already exists"),
+        "{output}"
+    );
     assert!(output.contains("Hello, hacker!"), "{output}");
     assert_no_host_markers(&output);
 }

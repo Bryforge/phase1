@@ -53,6 +53,9 @@ fn lifecycle_example_links_existing_example_fixtures() {
         "docs/fyr/fixtures/staged-discard-example.txt",
     ] {
         assert!(lifecycle.contains(path), "lifecycle should list {path}");
-        assert!(fs::metadata(path).is_ok(), "listed fixture should exist: {path}");
+        assert!(
+            fs::metadata(path).is_ok(),
+            "listed fixture should exist: {path}"
+        );
     }
 }

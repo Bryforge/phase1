@@ -34,10 +34,7 @@ fn fyr_f6_vfs_fixture_has_required_shape() {
 
 #[test]
 fn fyr_f6_stdlib_doc_links_vfs_fixture() {
-    assert_contains(
-        "docs/fyr/STDLIB.md",
-        "docs/fyr/fixtures/stdlib-vfs-ok.txt",
-    );
+    assert_contains("docs/fyr/STDLIB.md", "docs/fyr/fixtures/stdlib-vfs-ok.txt");
 }
 
 #[test]
@@ -53,8 +50,5 @@ fn fyr_f6_stdlib_doc_keeps_vfs_module_non_claiming() {
 
 #[test]
 fn fyr_roadmap_tracks_vfs_module_fixture_evidence() {
-    assert_contains(
-        "docs/fyr/ROADMAP.md",
-        "F6 `vfs` module fixture evidence",
-    );
+    assert_contains("docs/fyr/ROADMAP.md", "F6 `vfs` module fixture evidence");
 }

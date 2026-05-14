@@ -35,7 +35,10 @@ fn fyr_f5_checkpoint_fixture_points_to_existing_artifacts() {
 
     for path in ["docs/fyr/SELF_WORKFLOWS.md", "docs/fyr/ROADMAP.md"] {
         assert!(fixture.contains(path), "fixture should list {path}");
-        assert!(fs::metadata(path).is_ok(), "listed path should exist: {path}");
+        assert!(
+            fs::metadata(path).is_ok(),
+            "listed path should exist: {path}"
+        );
     }
 }
 
