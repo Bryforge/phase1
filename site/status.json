@@ -1,13 +1,13 @@
 {
   "name": "Phase1 public project status",
   "status_kind": "estimated roadmap progress",
-  "last_updated_utc": "2026-05-14T00:59:29Z",
+  "last_updated_utc": "2026-05-14T01:11:49Z",
   "repository": "Bryforge/phase1",
   "branch": "edge/stable",
-  "commit": "d4cd1e13d429662f6713466f57a41233d8238416",
+  "commit": "c7853f4b6f944b0e496d6a34ed49422fe6a090e7",
   "overall_estimated_completion_percent": 66,
-  "public_state": "active edge development with published wiki, clean public link surface, reviewed B3 VM evidence, and B6 X200 marker checkpoint present",
-  "important_boundary": "Percentages are planning estimates, not production-readiness or security-hardening claims. Reviewed B3 VM evidence and B6 X200 phase1_marker_seen evidence are present, but installer, recovery-complete, hardening, release-candidate, daily-driver readiness, and broad hardware validation remain not claimed.",
+  "public_state": "active edge development with reviewed B3 VM evidence, B6 X200 marker evidence, public status promotion, and Base1 B6 X200 marker checkpoint release note published",
+  "important_boundary": "Percentages are planning estimates, not production-readiness or security-hardening claims. Reviewed B3 VM evidence, B6 X200 phase1_marker_seen evidence, checkpoint, public status trail, and release note are present, but installer readiness, recovery-complete status, hardening, release-candidate readiness, daily-driver readiness, and broad hardware validation remain not claimed.",
   "projects": [
     {
       "name": "Phase1 operator console",
@@ -24,13 +24,13 @@
     {
       "name": "Base1 secure host / OS track",
       "estimated_completion_percent": 40,
-      "state": "B2 focused test-suite evidence passed, reviewed B3 VM evidence is present, and B6 X200 marker checkpoint records phase1_marker_seen; claim remains not_claimed",
-      "next_milestone": "continue B4 recovery validation while keeping installer, hardening, release-candidate, and daily-driver claims out of scope"
+      "state": "B2 focused test-suite evidence passed, reviewed B3 VM evidence is present, and the B6 X200 marker chain is published through evidence, checkpoint, public status, and release note; claim remains not_claimed",
+      "next_milestone": "continue B4 recovery validation and repeatable physical boot evidence while preserving installer, hardening, release-candidate, and daily-driver non-claims"
     },
     {
       "name": "X200 / Libreboot hardware path",
       "estimated_completion_percent": 44,
-      "state": "X200 Linux-libre host generated reviewed B3 VM evidence and B6 marker checkpoint evidence with phase1_marker_seen; repeatable physical boot validation remains separate and not claimed",
+      "state": "X200 Linux-libre host generated reviewed B3 VM evidence and B6 marker evidence with phase1_marker_seen; the checkpoint and release note are published; repeatable physical boot validation remains separate",
       "next_milestone": "capture repeatable physical boot evidence and keep emulator, USB, recovery, installer, and hardware-readiness claims separated"
     },
     {
@@ -42,8 +42,8 @@
     {
       "name": "Website and public docs",
       "estimated_completion_percent": 88,
-      "state": "public site, status page, status JSON, badge endpoint, native GitHub Wiki, refreshed source wiki, organized docs, asset policy, Pages routing, clean public link checks, X200 evidence report, reviewed B3 VM wording, and B6 checkpoint trail are in place",
-      "next_milestone": "publish B4 recovery validation status and keep public claims evidence-bound"
+      "state": "public site, status page, status JSON, badge endpoint, native GitHub Wiki, refreshed source wiki, organized docs, X200 evidence report, B6 checkpoint trail, and Base1 B6 X200 release note are in place",
+      "next_milestone": "publish the public report announcement and keep claims evidence-bound"
     },
     {
       "name": "Repository organization",
@@ -116,7 +116,8 @@
     "not a hardened sandbox",
     "not cryptographically complete",
     "X200 hardware marker evidence is present with phase1_marker_seen; non-claims remain in force",
-    "B6 X200 marker checkpoint is present with phase1_marker_seen; non-claims remain in force"
+    "B6 X200 marker checkpoint is present with phase1_marker_seen; non-claims remain in force",
+    "B6 X200 release note is published; installer, recovery-complete, hardening, release-candidate, daily-driver, and broad hardware-validation claims remain out of scope"
   ],
   "evidence_checkpoints": [
     {
@@ -135,7 +136,24 @@
         "not release-candidate ready",
         "not daily-driver ready",
         "not broad hardware validation"
-      ]
+      ],
+      "release_note_path": "docs/base1/releases/RELEASE_BASE1_B6_X200_MARKER_CHECKPOINT_V1.md",
+      "release_note_commit": "c7853f4b6f944b0e496d6a34ed49422fe6a090e7",
+      "public_status_commit": "f23fcb822f9c0d11bcd0b07adf71c811fcfd99c1",
+      "release_note_status": "published"
     }
-  ]
+  ],
+  "current_public_report": {
+    "title": "Phase1/Base1 B6 X200 marker checkpoint report",
+    "summary": "The B6 X200 marker chain is now published through raw evidence, checkpoint, public status, and Base1 checkpoint release note.",
+    "release_note_path": "docs/base1/releases/RELEASE_BASE1_B6_X200_MARKER_CHECKPOINT_V1.md",
+    "checkpoint_path": "docs/checkpoints/B6_X200_MARKER_CHECKPOINT.md",
+    "marker_result": "phase1_marker_seen",
+    "claim": "not_claimed",
+    "release_note_commit": "c7853f4b6f944b0e496d6a34ed49422fe6a090e7",
+    "public_status_commit": "f23fcb822f9c0d11bcd0b07adf71c811fcfd99c1",
+    "checkpoint_commit": "d4cd1e13d429662f6713466f57a41233d8238416",
+    "final_evidence_anchor": "095786e808d3908d27c045f04f3de0b5cd538ab9",
+    "artifact_sha256": "688518c1437003c7b8325b1d5d479bc97f77c3404c8fd27dace6d823d406b79b"
+  }
 }
