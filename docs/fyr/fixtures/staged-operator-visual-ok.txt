@@ -1,0 +1,11 @@
+☠ FYR black_arts // STAGED CANDIDATE MODE
+candidate     : phase1-base1-candidate
+workspace     : .phase1/staged-candidates/phase1-base1-candidate
+state         : fixture-backed
+live-system   : untouched
+promotion     : blocked-until-validation-and-approval
+evidence      : docs/fyr/fixtures/staged-lifecycle-example.txt
+boundary      : candidate-only | non-live | evidence-bound | claim-boundary
+ascii-fallback: [BLACK_ARTS] FYR staged candidate mode
+prompt        : fyr:black_arts(candidate=phase1-base1-candidate,state=staged)>
+claim-boundary: fixture-only
