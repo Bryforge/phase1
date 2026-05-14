@@ -81,7 +81,7 @@ fn analyze_list_reports_loaded_records_without_execution() {
         "status           : ok",
         "records          : 2",
         "record           : sha256-016644b74537 /home/sample.bin 14",
-        "record           : sha256-fe9992b502e4 /home/other.bin 13",
+        "record           : sha256-ad8692ba10b2 /home/other.bin 13",
         "execution-state  : not-executed",
         "host-execution   : disabled",
         "sandbox-claim    : not-claimed",
