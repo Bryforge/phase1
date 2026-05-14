@@ -5,7 +5,8 @@ const COMMAND_DOC: &str = "docs/ui/OPTICS_COMMAND_SURFACE.md";
 
 #[test]
 fn optics_registry_promotion_doc_exists_and_is_linked() {
-    let doc = fs::read_to_string(PROMOTION_DOC).expect("Optics registry promotion doc should exist");
+    let doc =
+        fs::read_to_string(PROMOTION_DOC).expect("Optics registry promotion doc should exist");
     let command = fs::read_to_string(COMMAND_DOC).expect("Optics command surface doc should exist");
 
     for required in [
@@ -16,12 +17,16 @@ fn optics_registry_promotion_doc_exists_and_is_linked() {
     ] {
         assert!(doc.contains(required), "missing {required:?}: {doc}");
     }
-    assert!(command.contains("OPTICS_REGISTRY_PROMOTION.md"), "{command}");
+    assert!(
+        command.contains("OPTICS_REGISTRY_PROMOTION.md"),
+        "{command}"
+    );
 }
 
 #[test]
 fn optics_registry_promotion_doc_preserves_target_command_shape() {
-    let doc = fs::read_to_string(PROMOTION_DOC).expect("Optics registry promotion doc should exist");
+    let doc =
+        fs::read_to_string(PROMOTION_DOC).expect("Optics registry promotion doc should exist");
 
     for required in [
         "optics preview",
@@ -37,7 +42,8 @@ fn optics_registry_promotion_doc_preserves_target_command_shape() {
 
 #[test]
 fn optics_registry_promotion_doc_preserves_discovery_targets() {
-    let doc = fs::read_to_string(PROMOTION_DOC).expect("Optics registry promotion doc should exist");
+    let doc =
+        fs::read_to_string(PROMOTION_DOC).expect("Optics registry promotion doc should exist");
 
     for required in [
         "help optics",
@@ -59,7 +65,8 @@ fn optics_registry_promotion_doc_preserves_discovery_targets() {
 
 #[test]
 fn optics_registry_promotion_doc_preserves_safety_rules_and_non_claims() {
-    let doc = fs::read_to_string(PROMOTION_DOC).expect("Optics registry promotion doc should exist");
+    let doc =
+        fs::read_to_string(PROMOTION_DOC).expect("Optics registry promotion doc should exist");
 
     for required in [
         "Registry promotion must not activate live HUD rails.",
