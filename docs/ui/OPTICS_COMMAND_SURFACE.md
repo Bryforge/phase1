@@ -46,6 +46,8 @@ The commands are available because `optics` is exposed as a WASI-lite plugin wit
 
 Future work should promote Optics into the regular command registry so it appears in help, completions, and manuals.
 
+The registry-promotion plan is [`OPTICS_REGISTRY_PROMOTION.md`](OPTICS_REGISTRY_PROMOTION.md).
+
 The planned registry row should preserve this shape:
 
 ```text
@@ -77,9 +79,10 @@ The command surface should progress in this order:
 
 1. WASI-lite read-only preview.
 2. Command surface documentation and tests.
-3. Registry/help/manual visibility.
-4. Renderer-backed shell preview command.
-5. Explicitly gated live activation.
+3. Registry-promotion contract: [`OPTICS_REGISTRY_PROMOTION.md`](OPTICS_REGISTRY_PROMOTION.md).
+4. Registry/help/manual visibility.
+5. Renderer-backed shell preview command.
+6. Explicitly gated live activation.
 
 ## Current status
 
