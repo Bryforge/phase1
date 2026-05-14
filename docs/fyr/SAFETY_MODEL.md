@@ -89,6 +89,16 @@ Current evidence compares the Fyr-relevant output slices from repeated runs of:
 
 The comparison ignores Phase1 boot/prompt noise and focuses on Fyr command lines such as package, source, AST, backend, host, status, test, passed, and failed rows.
 
+## Current VFS workflow behavior
+
+Current evidence exercises Fyr file and package workflows end-to-end inside the Phase1 VFS:
+
+- `fyr new` creates a `.fyr` source file;
+- `fyr cat` reads the created VFS source file;
+- `fyr new` refuses to overwrite an existing VFS source file;
+- `fyr init` creates a package manifest, source file, and smoke test in the VFS;
+- `fyr check`, `fyr build`, `fyr test`, and `fyr run` operate on those VFS files without host-tool markers.
+
 ## F4 promotion requirements
 
 F4 may move from planned to active/completed only after the repository includes evidence for:
@@ -128,3 +138,4 @@ Related tests:
 - `tests/fyr_f4_runtime_safety.rs`
 - `tests/fyr_f4_error_redaction.rs`
 - `tests/fyr_f4_deterministic_output.rs`
+- `tests/fyr_f4_vfs_workflows.rs`
