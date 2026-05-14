@@ -15,6 +15,7 @@ Current Fyr inspection surface:
 - F3 parser diagnostics and F4 runtime-safety evidence are active.
 - Repository inspection workflows are still planned and must not be described as complete.
 - The first repository-manifest fixture lives at [`fixtures/repo-manifest-ok.txt`](fixtures/repo-manifest-ok.txt).
+- The first documentation-consistency fixture lives at `docs/fyr/fixtures/doc-consistency-ok.txt`.
 
 ## F5 target workflows
 
@@ -35,6 +36,16 @@ docs/fyr/fixtures/repo-manifest-ok.txt
 ```
 
 It records a project-shaped manifest with a name, root, kind, file list, and check list. It is test evidence for the future manifest reader; it is not yet a full reader command.
+
+## Documentation consistency fixture
+
+The first documentation consistency fixture is intentionally small and static:
+
+```text
+docs/fyr/fixtures/doc-consistency-ok.txt
+```
+
+It records the Fyr docs that should stay aligned plus required shared phrases. It is test evidence for a future documentation consistency helper; it is not yet a full helper command.
 
 ## Safety rules
 
@@ -68,10 +79,6 @@ Use this wording now:
 
 > Fyr has a `fyr self` capability/status surface and a planned F5 path for Phase1 inspection workflows. Repository manifest, documentation consistency, checkpoint metadata, and status reader workflows are not complete yet.
 
-Do not use this wording yet:
-
-> Fyr can fully maintain Phase1 on its own.
-
 ## Validation links
 
 Related docs:
@@ -84,9 +91,11 @@ Related docs:
 Related fixtures:
 
 - [`fixtures/repo-manifest-ok.txt`](fixtures/repo-manifest-ok.txt)
+- `docs/fyr/fixtures/doc-consistency-ok.txt`
 
 Related tests:
 
 - `tests/fyr_authoring_commands.rs`
 - `tests/fyr_f5_self_workflows.rs`
 - `tests/fyr_f5_manifest_fixtures.rs`
+- `tests/fyr_f5_doc_consistency_fixtures.rs`
