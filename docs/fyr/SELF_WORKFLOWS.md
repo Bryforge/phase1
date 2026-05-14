@@ -16,6 +16,7 @@ Current Fyr inspection surface:
 - Repository inspection workflows are still planned and must not be described as complete.
 - The first repository-manifest fixture lives at [`fixtures/repo-manifest-ok.txt`](fixtures/repo-manifest-ok.txt).
 - The first documentation-consistency fixture lives at `docs/fyr/fixtures/doc-consistency-ok.txt`.
+- The first checkpoint-metadata fixture lives at `docs/fyr/fixtures/checkpoint-metadata-ok.txt`.
 
 ## F5 target workflows
 
@@ -46,6 +47,16 @@ docs/fyr/fixtures/doc-consistency-ok.txt
 ```
 
 It records the Fyr docs that should stay aligned plus required shared phrases. It is test evidence for a future documentation consistency helper; it is not yet a full helper command.
+
+## Checkpoint metadata fixture
+
+The first checkpoint metadata fixture is intentionally small and static:
+
+```text
+docs/fyr/fixtures/checkpoint-metadata-ok.txt
+```
+
+It records checkpoint-shaped metadata with a fixture-only result and a not-complete claim. It is test evidence for a future checkpoint metadata helper; it is not yet a full helper command.
 
 ## Safety rules
 
@@ -92,6 +103,7 @@ Related fixtures:
 
 - [`fixtures/repo-manifest-ok.txt`](fixtures/repo-manifest-ok.txt)
 - `docs/fyr/fixtures/doc-consistency-ok.txt`
+- `docs/fyr/fixtures/checkpoint-metadata-ok.txt`
 
 Related tests:
 
@@ -99,3 +111,4 @@ Related tests:
 - `tests/fyr_f5_self_workflows.rs`
 - `tests/fyr_f5_manifest_fixtures.rs`
 - `tests/fyr_f5_doc_consistency_fixtures.rs`
+- `tests/fyr_f5_checkpoint_fixtures.rs`
