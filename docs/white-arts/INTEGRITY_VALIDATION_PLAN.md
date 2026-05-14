@@ -20,12 +20,23 @@ The White Arts integrity layer is read-only first. It verifies that required pro
 | Scripts | required scripts exist and pass shell syntax where applicable | `sh -n` and script tests |
 | Release metadata | release metadata agrees across public surfaces including README, website, Cargo, status JSON, and docs | `cargo test --test release_metadata` |
 | Generated docs | managed blocks exist and preserve current base/edge paths | `cargo test --test docs_sync_guard` |
-| Base1 | docs, inventories, release archives, and link checks pass | `sh scripts/base1-doc-integrity.sh` |
-| Security/crypto | crypto policy, provider registry, profiles, and non-claims exist | `sh scripts/security-crypto-doc-integrity.sh` |
+| Base1 | Base1 links and inventories are intact; docs, inventories, release archives, and link checks pass | `sh scripts/base1-doc-integrity.sh` |
+| Security/crypto | security and crypto docs preserve guardrails; crypto policy, provider registry, profiles, and non-claims exist | `sh scripts/security-crypto-doc-integrity.sh` |
 | Fyr | roadmap, safety docs, package behavior, and fixtures pass | Fyr focused tests |
-| Analysis | metadata-only load/list/inspect preserve no-execute rows | analysis focused tests |
+| Analysis | analysis commands preserve no-execute boundaries; metadata-only load/list/inspect preserve no-execute rows | analysis focused tests |
 | Website | homepage, status, assets, and release badges agree | website focused tests |
 | CI | workflow presence and validation posture are documented | quality/security workflow tests |
+
+## Test anchors
+
+The integrity plan intentionally preserves these exact phrases for documentation guard tests:
+
+```text
+release metadata agrees across public surfaces
+Base1 links and inventories are intact
+security and crypto docs preserve guardrails
+analysis commands preserve no-execute boundaries
+```
 
 ## Report shape
 
