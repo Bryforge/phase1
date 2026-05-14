@@ -1,5 +1,7 @@
 #[path = "arena.rs"]
 mod arena;
+#[path = "optics.rs"]
+mod optics;
 
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -60,6 +62,9 @@ pub fn execute_plugin(plugins_dir: &Path, name: &str, args: &[String]) -> String
     if is_arena(name) {
         return launch_arena(args);
     }
+    if is_optics_rails(name, args) {
+        return optics_rails_preview(args);
+    }
 
     let path = match plugin_path(plugins_dir, name) {
         Ok(path) => path,
@@ -99,6 +104,25 @@ pub fn execute_plugin(plugins_dir: &Path, name: &str, args: &[String]) -> String
         "status : failed\n"
     });
     out.push_str(&format!("exit   : {}\n", manifest.exit_code));
+    out
+}
+
+fn is_optics_rails(name: &str, args: &[String]) -> bool {
+    name == "optics" && args.first().is_some_and(|arg| arg == "rails")
+}
+
+fn optics_rails_preview(args: &[String]) -> String {
+    let mut out = String::from("phase1 wasi run\n");
+    out.push_str("plugin : optics\n");
+    out.push_str(&format!("runtime: {RUNTIME}\n"));
+    out.push_str("sandbox: fs=virtual net=disabled host=blocked\n");
+    out.push_str("cap    : none\n");
+    out.push_str(&format!("args   : {}\n", redact_args(args).join(" ")));
+    out.push_str(&optics::render_static_preview(
+        optics::OpticsDeviceProfile::Terminal,
+    ));
+    out.push_str("status : ok\n");
+    out.push_str("exit   : 0\n");
     out
 }
 
@@ -365,6 +389,25 @@ mod tests {
         assert!(out.contains("hello wasi"));
         assert!(out.contains("host=blocked"));
         assert!(out.contains("[redacted]"));
+        let _ = fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn optics_rails_route_uses_renderer_without_manifest_body() {
+        let dir = temp_plugins();
+        fs::write(dir.join("optics.wasm"), b"\0asm\x01\0\0\0").unwrap();
+        fs::write(
+            dir.join("optics.wasi"),
+            "name=optics\ncapability=none\nstdout=OPTICS PRO PREVIEW\n",
+        )
+        .unwrap();
+
+        let out = execute_plugin(&dir, "optics", &["rails".to_string()]);
+        assert!(out.contains("plugin : optics"));
+        assert!(out.contains("args   : rails"));
+        assert!(out.contains("OPTICS HUD RAIL RENDER"));
+        assert!(out.contains("CENTER role=command-output chrome=none-permanent"));
+        assert!(!out.contains("OPTICS PRO PREVIEW"));
         let _ = fs::remove_dir_all(dir);
     }
 
