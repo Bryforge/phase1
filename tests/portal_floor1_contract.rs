@@ -57,6 +57,7 @@ fn portal_contract_keeps_future_network_modes_staged() {
         "denied",
         "local-only",
         "brokered-egress",
+        "local-link",
         "Default mode. The portal has no network access.",
         "future network access must be brokered through `floor1`",
     ] {
@@ -104,6 +105,7 @@ fn portal_docs_match_current_floor1_runtime_surface() {
         "portal network <name> <denied|local-only|brokered-egress>",
         "portal split <left> <right>",
         "portal clone <source> <name>",
+        "portal link <left> <right>",
         "portal snapshot <name>",
         "portal restore <name>",
         "network-default",

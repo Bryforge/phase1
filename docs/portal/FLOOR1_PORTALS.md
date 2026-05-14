@@ -47,6 +47,7 @@ portal split <left> <right>
 portal snapshot <name>
 portal restore <name>
 portal clone <source> <name>
+portal link <left> <right>
 portal help
 
 Planned later:
