@@ -42,10 +42,14 @@ portal enter <name>
 portal leave
 portal close <name>
 portal inspect <name>
+portal network <name> <denied|local-only|brokered-egress>
+portal split <left> <right>
+portal help
+
+Planned later:
 portal clone <source> <name>
 portal snapshot <name>
 portal restore <name>
-portal help
 ```
 
 Possible future aliases:
