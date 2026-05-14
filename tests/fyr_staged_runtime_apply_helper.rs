@@ -25,12 +25,28 @@ fn apply_helper_targets_checked_patch_and_source() {
 }
 
 #[test]
+fn apply_helper_supports_check_only_mode_before_apply() {
+    let path = "scripts/apply-fyr-staged-runtime-stub.sh";
+
+    for row in [
+        "usage: sh scripts/apply-fyr-staged-runtime-stub.sh [apply|check]",
+        "check  : verify the patch can apply without changing files",
+        "MODE=\"check\"",
+        "status    : check-only-pass",
+        "run 'sh scripts/apply-fyr-staged-runtime-stub.sh apply' when ready",
+    ] {
+        assert_contains(path, row);
+    }
+}
+
+#[test]
 fn apply_helper_prints_required_validation_commands() {
     let path = "scripts/apply-fyr-staged-runtime-stub.sh";
 
     for row in [
         "cargo fmt --all -- --check",
         "cargo test -p phase1 --test fyr_staged_runtime_patch_contract",
+        "cargo test -p phase1 --test fyr_staged_runtime_apply_helper",
         "cargo test -p phase1 --test fyr_black_arts_runtime_stub",
         "cargo test -p phase1 --test fyr_black_arts_unknown_action",
         "cargo test --workspace --all-targets",
