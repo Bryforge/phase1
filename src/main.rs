@@ -562,9 +562,100 @@ fn fyr_command(shell: &mut Phase1Shell, args: &[String]) -> String {
         Some("test") => fyr_test(shell, &args[1..]),
         Some("self") => fyr_self(),
         Some("run") => fyr_run(shell, &args[1..]),
+        Some("book") => fyr_book(&args[1..]),
+        Some("learn") => fyr_learn(&args[1..]),
         Some("staged") => fyr_staged(&args[1..]),
         Some("help") | Some("-h") | Some("--help") => fyr_help(),
         Some(other) => format!("fyr: unknown action {other}\n{}", fyr_help()),
+    }
+}
+
+fn fyr_book(args: &[String]) -> String {
+    match args.first().map(String::as_str) {
+        None | Some("list") => concat!(
+            "fyr book\n",
+            "status        : readable inside Phase1\n",
+            "chapters      : 00 What is Fyr?\n",
+            "read          : fyr book read 00\n",
+            "runtime       : VFS-only\n",
+            "host-tools    : blocked\n",
+            "network       : blocked\n",
+            "live-system   : untouched\n",
+            "claim-boundary: book-contract-only\n",
+        )
+        .to_string(),
+        Some("read") => match args.get(1).map(String::as_str) {
+            None | Some("00" | "0") => {
+                match fs::read_to_string("docs/fyr/book/00-what-is-fyr.txt") {
+                    Ok(chapter) => chapter,
+                    Err(err) => format!("fyr book: could not read chapter 00: {err}\n"),
+                }
+            }
+            Some(chapter) => format!(
+                "fyr book read {chapter}\nstatus        : missing chapter\nhelp          : fyr book list\nclaim-boundary: book-contract-only\n"
+            ),
+        },
+        Some("help") | Some("-h") | Some("--help") => {
+            "fyr book help\nusage         : fyr book <list|read 00>\nruntime       : VFS-only\nclaim-boundary: book-contract-only\n".to_string()
+        }
+        Some(other) => format!(
+            "fyr book {other}\nstatus        : unknown book action\nresult        : no-op\nhelp          : fyr book list\nclaim-boundary: book-contract-only\n"
+        ),
+    }
+}
+
+fn fyr_learn(args: &[String]) -> String {
+    match args.first().map(String::as_str) {
+        None | Some("list") => concat!(
+            "fyr learn\n",
+            "status        : fixture-backed operator course\n",
+            "lessons       : 001 orientation and safety\n",
+            "run           : fyr learn run 001\n",
+            "hint          : fyr learn hint 001\n",
+            "runtime       : VFS-only\n",
+            "host-tools    : blocked\n",
+            "network       : blocked\n",
+            "live-system   : untouched\n",
+            "claim-boundary: lesson-contract-only\n",
+        )
+        .to_string(),
+        Some("run") => match args.get(1).map(String::as_str) {
+            None | Some("001" | "1") => {
+                match fs::read_to_string("docs/fyr/fixtures/fyrlings-lesson-001-ok.txt") {
+                    Ok(lesson) => lesson,
+                    Err(err) => format!("fyr learn: could not read lesson 001: {err}\n"),
+                }
+            }
+            Some(lesson) => format!(
+                "fyr learn run {lesson}\nstatus        : missing lesson\nhelp          : fyr learn list\nclaim-boundary: lesson-contract-only\n"
+            ),
+        },
+        Some("hint") => match args.get(1).map(String::as_str) {
+            None | Some("001" | "1") => concat!(
+                "fyr learn hint 001\n",
+                "hint          : start with fyr status, fyr help, and fyr book read 00\n",
+                "safety        : host-tools blocked; network blocked; live-system untouched\n",
+                "claim-boundary: lesson-contract-only\n",
+            )
+            .to_string(),
+            Some(lesson) => format!(
+                "fyr learn hint {lesson}\nstatus        : missing lesson\nhelp          : fyr learn list\nclaim-boundary: lesson-contract-only\n"
+            ),
+        },
+        Some("verify") => concat!(
+            "fyr learn verify\n",
+            "status        : not-yet-implemented\n",
+            "result        : no-op\n",
+            "help          : fyr learn list\n",
+            "claim-boundary: lesson-contract-only\n",
+        )
+        .to_string(),
+        Some("help") | Some("-h") | Some("--help") => {
+            "fyr learn help\nusage         : fyr learn <list|run 001|hint 001|verify>\nruntime       : VFS-only\nclaim-boundary: lesson-contract-only\n".to_string()
+        }
+        Some(other) => format!(
+            "fyr learn {other}\nstatus        : unknown learn action\nresult        : no-op\nhelp          : fyr learn list\nclaim-boundary: lesson-contract-only\n"
+        ),
     }
 }
 
