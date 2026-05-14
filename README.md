@@ -69,7 +69,7 @@ Phase1 is not yet a kernel, hardened sandbox, or drop-in replacement for Linux, 
 
 ## Quick start
 
-Fresh clone, simplest launch:
+Normal launch path:
 
 ```bash
 git clone https://github.com/Bryforge/phase1.git
@@ -77,7 +77,7 @@ cd phase1
 sh phase1
 ```
 
-After the file is executable, you can also run:
+If executable permissions are preserved:
 
 ```bash
 ./phase1
@@ -90,18 +90,26 @@ sh scripts/install-phase1-command.sh
 phase1
 ```
 
-Useful startup checks:
+Useful launcher checks:
 
 ```bash
+sh phase1 help
 sh phase1 version
 sh phase1 doctor
 sh phase1 selftest
 ```
 
-Rust-native launch remains available:
+Developer launch path:
 
 ```bash
 cargo run
+```
+
+Developer validation path:
+
+```bash
+cargo fmt --all -- --check
+cargo test --all-targets
 ```
 
 Inside Phase1, start with:
@@ -530,7 +538,7 @@ Keep stable bases boring. Move tested work through edge/stable.
 
 ## Modern help
 
-Phase1 v6 exposes a topic-aware help deck:
+Phase1 v7 exposes a topic-aware help deck:
 
     help
     help --compact
@@ -540,7 +548,7 @@ Phase1 v6 exposes a topic-aware help deck:
     help <command>
     complete <prefix>
 
-The boot LIVE OPS panel now points operators toward the compact help map, category help, dashboard, security status, ops log, theme list, tips, and update protocol.
+The boot LIVE OPS panel points operators toward the compact help map, category help, dashboard, security status, ops log, theme list, tips, and update protocol.
 
 ### Help command palette
 
@@ -554,9 +562,9 @@ The modern help surface includes a visual command palette and workflow deck:
 
 Use `help ui` for a launch-pad view and `help flows` for daily check, safe update, development, recovery planning, and discovery workflows.
 
-### v6 visual default
+### Neo Tokyo visual default
 
-The v6 edge console defaults to the `neo-tokyo` palette when no `PHASE1_THEME` override is set. The legacy bleeding-edge palette remains available manually with `theme edge`.
+The v7 edge console defaults to the `neo-tokyo` palette when no `PHASE1_THEME` override is set. The legacy bleeding-edge palette remains available manually with `theme edge`.
 
 ## Documentation
 
