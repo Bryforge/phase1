@@ -130,6 +130,14 @@ Fyr integration:
 - Fyr automation must not receive hidden UI-only state;
 - Fyr command output remains deterministic in tests.
 
+## Static preview fixture
+
+The first static preview fixture is [`fixtures/optics-pro-preview.txt`](fixtures/optics-pro-preview.txt).
+
+The fixture shows the intended minimal start state, bottom HUD rows, mutation-state labels, typing-safety boundaries, accessibility fallback labels, and non-claims.
+
+The fixture is read-only design evidence. It is not runtime UI wiring.
+
 ## Accessibility and fallback rules
 
 Optics PRO must preserve readable behavior when any of these are active:
@@ -187,4 +195,5 @@ It is a Phase1 user-interface profile and rendering model.
 ```sh
 cargo fmt --all -- --check
 cargo test -p phase1 --test optics_pro_ui_plan_docs
+cargo test -p phase1 --test optics_pro_preview_fixture_docs
 ```
