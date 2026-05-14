@@ -1,0 +1,65 @@
+OPTICS HUD RAILS PREVIEW
+status      static-fixture
+mode        read-only-preview
+runtime     not-wired
+profile     PRO
+codename    Optics
+layout      top-rail center-viewport bottom-rail
+
+TOP HUD
+product     Phase1
+channel     edge
+profile     PRO
+context     root > nest:0/1 > portal:none > ghost:none
+trust       safe/armed
+security    safe-mode host-gated
+integrity   not-checked
+crypto      chain-planned
+base1       evidence-planned
+fyr         idle
+vehicle     terminal
+
+CENTER VIEWPORT
+role        command-output
+chrome      none-permanent
+content     reports diagnostics analysis portal nest Base1 Fyr integrity crypto
+rule        center remains primary workspace
+sample      phase1://edge/root > optics rails preview
+
+BOTTOM HUD
+hud-color   bright-blue
+input       active
+mutation    none
+command     none
+family      none
+active-task idle
+last-result ok
+warning     none
+copy-safe   raw-command-preserved
+
+FEATURE GROUPS
+context     root nest portal ghost analysis recovery
+security    safe-mode host-gate trust denial
+integrity   manifest file evidence
+crypto      profile chain provider-service
+base1       hardware recovery validation artifact evidence
+fyr         package check build test run automation
+command     typed-input family mutation
+result      ok changed denied failed warning
+
+DEVICE RULES
+mobile      one-line-top one-line-bottom
+laptop      compact-top one-or-two-bottom
+desktop     two-row-top two-row-bottom
+ascii       labels-visible
+no-color    labels-visible
+
+NON-CLAIMS
+not-runtime-wired
+not-compositor
+not-terminal-emulator
+not-sandbox
+not-security-boundary
+not-crypto-enforcement
+not-system-integrity-guarantee
+not-base1-boot-environment
