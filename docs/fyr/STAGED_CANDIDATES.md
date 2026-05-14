@@ -51,6 +51,7 @@ The current staged candidate fixtures are:
 ```text
 docs/fyr/fixtures/staged-candidate-ok.txt
 docs/fyr/fixtures/staged-plan-ok.txt
+docs/fyr/fixtures/staged-change-log-ok.txt
 docs/fyr/fixtures/staged-validation-ok.txt
 docs/fyr/fixtures/staged-approval-ok.txt
 docs/fyr/fixtures/staged-discard-ok.txt
@@ -58,7 +59,7 @@ docs/fyr/fixtures/staged-claim-boundary-ok.txt
 docs/fyr/fixtures/staged-workspace-ok.txt
 ```
 
-These fixtures define expected shapes for candidate metadata, plan metadata, validation results, explicit approval, discard records, claim boundaries, and staged workspace layout. They are not implementations.
+These fixtures define expected shapes for candidate metadata, plan metadata, change logs, validation results, explicit approval, discard records, claim boundaries, and staged workspace layout. They are not implementations.
 
 ## Safety rules
 

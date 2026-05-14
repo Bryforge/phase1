@@ -1,0 +1,19 @@
+name: black-arts-change-log-fixture
+kind: staged-change-log-fixture
+candidate: phase1-base1-candidate
+plan: staged-plan-ok.txt
+change-mode: candidate-only
+applied-changes:
+  - config-update
+  - feature-toggle
+  - docs-update
+rejected-operations:
+  - live-system-write
+  - undeclared-path
+  - missing-evidence
+required-records:
+  - file-list
+  - change-summary
+  - rejected-operations
+  - evidence-link
+claim: fixture-only
