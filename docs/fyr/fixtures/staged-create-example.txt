@@ -1,0 +1,10 @@
+fyr staged create phase1-base1-candidate
+codename      : black_arts
+candidate     : phase1-base1-candidate
+source        : known-good
+workspace     : .phase1/staged-candidates/phase1-base1-candidate
+created       : candidate.toml, plan.fyr, changes.log, validation.log, approval.toml, discard.log
+write-scope   : candidate-only
+live-system   : untouched
+next          : fyr staged apply phase1-base1-candidate docs/fyr/fixtures/staged-plan-ok.txt
+claim-boundary: fixture-only
