@@ -1,0 +1,10 @@
+fyr staged help
+codename      : black_arts
+status        : fixture-backed design help
+usage         : fyr staged <status|plan|create|apply|validate|promote|discard>
+commands      : status, plan, create, apply, validate, promote, discard
+workspace     : .phase1/staged-candidates
+boundaries    : candidate-only, non-live, evidence-bound, claim-boundary
+promotion     : validation-and-approval-required
+implementation: pending
+claim-boundary: fixture-only
