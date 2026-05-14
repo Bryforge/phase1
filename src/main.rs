@@ -483,7 +483,7 @@ fn execute_one(
                 || plugin_exists(shell, canonical)
                 || matches!(
                     canonical,
-                    "avim" | "emacs" | "repo" | "lang" | "fyr" | "opslog"
+                    "avim" | "emacs" | "repo" | "lang" | "fyr" | "portal" | "opslog"
                 );
             match canonical {
                 "help" => print!("{}", registry::help(args)),
@@ -510,6 +510,7 @@ fn execute_one(
                 "emacs" => avim::edit(&mut shell.kernel.vfs, args),
                 "lang" => print!("{}", languages::run(shell, args)),
                 "fyr" => print!("{}", fyr_command(shell, args)),
+                "portal" => print!("{}", portal_command(args)),
                 "opslog" => print!("{}", ops_log::run(args)),
                 "bootcfg" => handle_bootcfg(boot_config, args),
                 "nest" => print!("{}", nest_command(shell, args)),
@@ -528,6 +529,56 @@ fn execute_one(
         }
         Err(err) => Err(err),
     }
+}
+
+fn portal_command(args: &[String]) -> String {
+    match args.first().map(String::as_str) {
+        None | Some("status") | Some("list") | Some("ls") => portal_status(),
+        Some("help") | Some("-h") | Some("--help") => portal_help(),
+        Some(other) => format!(
+            "portal {other}\nstatus            : not-yet-implemented\nresult            : no-op\nhelp              : portal status\nclaim-boundary    : workspace-context-only\n"
+        ),
+    }
+}
+
+fn portal_status() -> String {
+    concat!(
+        "phase1 portals\n",
+        "mode              : read-only status\n",
+        "floor             : floor1\n",
+        "active-portal     : root\n",
+        "open-portals      : root\n",
+        "portal-count      : 1\n",
+        "portal-layer      : workspace/session\n",
+        "split-mode        : local-view\n",
+        "local-link        : planned-disabled\n",
+        "network-owner     : floor1\n",
+        "network-mode      : denied\n",
+        "network-default   : denied\n",
+        "brokered-egress   : planned-disabled\n",
+        "vfs-scope         : portal-context\n",
+        "history-scope     : portal-context\n",
+        "log-scope         : labelled\n",
+        "host-isolation    : not-claimed\n",
+        "process-isolation : not-claimed\n",
+        "network-isolation : not-claimed\n",
+        "network           : blocked\n",
+        "claim-boundary    : workspace-context-only\n",
+    )
+    .to_string()
+}
+
+fn portal_help() -> String {
+    concat!(
+        "portal help\n",
+        "usage             : portal <status|list|help>\n",
+        "first-slice       : read-only status/list/help\n",
+        "floor             : floor1\n",
+        "network-default   : denied\n",
+        "future-actions    : open, enter, leave, close, inspect, split, local-link\n",
+        "claim-boundary    : workspace-context-only\n",
+    )
+    .to_string()
 }
 
 fn theme_command(shell: &mut Phase1Shell, args: &[String]) -> String {
