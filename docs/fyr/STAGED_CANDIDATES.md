@@ -57,9 +57,10 @@ docs/fyr/fixtures/staged-approval-ok.txt
 docs/fyr/fixtures/staged-discard-ok.txt
 docs/fyr/fixtures/staged-claim-boundary-ok.txt
 docs/fyr/fixtures/staged-workspace-ok.txt
+docs/fyr/fixtures/staged-command-contract-ok.txt
 ```
 
-These fixtures define expected shapes for candidate metadata, plan metadata, change logs, validation results, explicit approval, discard records, claim boundaries, and staged workspace layout. They are not implementations.
+These fixtures define expected shapes for candidate metadata, plan metadata, change logs, validation results, explicit approval, discard records, claim boundaries, staged workspace layout, and command contract. They are not implementations.
 
 ## Safety rules
 
