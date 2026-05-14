@@ -1,0 +1,20 @@
+name: black-arts-command-contract-fixture
+kind: staged-command-contract-fixture
+codename: black_arts
+canonical-surface: fyr staged
+commands:
+  - status
+  - plan
+  - create
+  - apply
+  - validate
+  - promote
+  - discard
+required-guards:
+  - candidate-only
+  - declared-workspace
+  - validation-before-promote
+  - operator-approval
+  - evidence-recorded
+  - claim-boundary
+claim: fixture-only
