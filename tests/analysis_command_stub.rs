@@ -52,7 +52,9 @@ fn run_phase1(input: &str) -> String {
 
 #[test]
 fn analyze_command_stub_reports_no_execute_boundary() {
-    let output = run_phase1("wasm list\nanalyze\nanalyze status\nanalyze help\nanalyze load sample.bin\nexit\n");
+    let output = run_phase1(
+        "wasm list\nanalyze\nanalyze status\nanalyze help\nanalyze load sample.bin\nexit\n",
+    );
 
     for required in [
         "analyze",
