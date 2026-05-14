@@ -53,9 +53,11 @@ fn fyr_f6_stdlib_doc_keeps_json_lite_module_non_claiming() {
 }
 
 #[test]
-fn fyr_roadmap_tracks_json_lite_module_fixture_evidence() {
-    assert_contains(
-        "docs/fyr/ROADMAP.md",
-        "F6 `json-lite` module fixture evidence",
+fn fyr_f6_stdlib_doc_marks_json_lite_fixture_backed() {
+    let doc = read("docs/fyr/STDLIB.md");
+
+    assert!(
+        doc.contains("`json-lite` | Minimal deterministic JSON-like reading/writing. | fixture"),
+        "stdlib doc should mark json-lite as fixture-backed"
     );
 }
