@@ -1,0 +1,11 @@
+name: phase1-fixture
+root: /phase1
+kind: fixture
+files:
+  - docs/fyr/SELF_WORKFLOWS.md
+  - docs/fyr/ROADMAP.md
+  - docs/fyr/SAFETY_MODEL.md
+checks:
+  - deterministic
+  - vfs-first
+  - bounded
