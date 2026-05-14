@@ -10,6 +10,7 @@ The White Arts integrity layer is read-only first. It verifies that required pro
 - preserve safe defaults
 - keep release-facing claims evidence-bound
 - block promotion when required evidence is missing
+- ensure release metadata agrees across public surfaces
 
 ## Required checks
 
@@ -17,7 +18,7 @@ The White Arts integrity layer is read-only first. It verifies that required pro
 | --- | --- | --- |
 | Documentation | required docs exist and link to current surfaces | docs guard tests |
 | Scripts | required scripts exist and pass shell syntax where applicable | `sh -n` and script tests |
-| Release metadata | README, website, Cargo, status JSON, and docs agree | `cargo test --test release_metadata` |
+| Release metadata | release metadata agrees across public surfaces including README, website, Cargo, status JSON, and docs | `cargo test --test release_metadata` |
 | Generated docs | managed blocks exist and preserve current base/edge paths | `cargo test --test docs_sync_guard` |
 | Base1 | docs, inventories, release archives, and link checks pass | `sh scripts/base1-doc-integrity.sh` |
 | Security/crypto | crypto policy, provider registry, profiles, and non-claims exist | `sh scripts/security-crypto-doc-integrity.sh` |
