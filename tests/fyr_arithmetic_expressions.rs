@@ -1,9 +1,31 @@
+use std::fs;
 use std::io::Write;
-use std::process::{Command, Stdio};
+use std::process::{self, Command, Stdio};
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::time::{SystemTime, UNIX_EPOCH};
+
+static RUN_COUNTER: AtomicU64 = AtomicU64::new(0);
 
 fn run_phase1(input: &str) -> String {
+    let nonce = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|duration| duration.as_nanos())
+        .unwrap_or(0);
+    let seq = RUN_COUNTER.fetch_add(1, Ordering::Relaxed);
+    let run_dir = std::env::temp_dir().join(format!(
+        "phase1-fyr-arithmetic-{}-{nonce}-{seq}",
+        process::id()
+    ));
+    let _ = fs::remove_dir_all(&run_dir);
+    fs::create_dir_all(&run_dir).expect("create fyr arithmetic test dir");
+
     let mut child = Command::new(env!("CARGO_BIN_EXE_phase1"))
+        .current_dir(&run_dir)
         .env("PHASE1_TEST_MODE", "1")
+        .env("PHASE1_PERSISTENT_STATE", "0")
+        .env_remove("PHASE1_THEME")
+        .env_remove("PHASE1_ALLOW_HOST_TOOLS")
+        .env_remove("PHASE1_SAFE_MODE")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
@@ -18,6 +40,7 @@ fn run_phase1(input: &str) -> String {
         .expect("write stdin");
 
     let output = child.wait_with_output().expect("phase1 output");
+    let _ = fs::remove_dir_all(&run_dir);
     format!(
         "{}{}",
         String::from_utf8_lossy(&output.stdout),
