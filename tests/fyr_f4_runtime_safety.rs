@@ -100,7 +100,7 @@ fn fyr_run_uses_vfs_source_without_host_tool_markers() {
 #[test]
 fn fyr_test_runs_vfs_package_tests_without_host_tool_markers() {
     let output = run_phase1(
-        "fyr init app\necho 'fn main() -> i32 { assert_eq(21 + 21, 42); return 0; }' > app/tests/math.fyr\nfyr test app\nexit\n",
+        "fyr init app\necho 'fn main() -> i32 { let answer = 21 + 21; assert_eq(answer, 42); return 0; }' > app/tests/math.fyr\nfyr test app\nexit\n",
     );
 
     assert!(
