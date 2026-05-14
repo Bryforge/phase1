@@ -539,6 +539,7 @@ fn portal_command(shell: &mut Phase1Shell, args: &[String]) -> String {
         Some("leave") => portal_leave(shell),
         Some("close") | Some("rm") => portal_close(shell, &args[1..]),
         Some("network") | Some("net") => portal_network(shell, &args[1..]),
+        Some("split") => portal_split(shell, &args[1..]),
         Some("inspect") | Some("info") => portal_inspect(shell, &args[1..]),
         Some("help") | Some("-h") | Some("--help") => portal_help(),
         Some(other) => format!(
@@ -592,6 +593,7 @@ fn portal_status(shell: &Phase1Shell) -> String {
     let names = portal_names(shell);
     let active = portal_active(shell, &names);
     let network_mode = portal_network_mode(shell, &active);
+    let split_mode = portal_split_mode(shell, &names);
 
     format!(
         "phase1 portals\n\
@@ -601,7 +603,7 @@ fn portal_status(shell: &Phase1Shell) -> String {
          open-portals      : {}\n\
          portal-count      : {}\n\
          portal-layer      : workspace/session\n\
-         split-mode        : local-view\n\
+         split-mode        : {split_mode}\n\
          local-link        : planned-disabled\n\
          network-owner     : floor1\n\
          network-mode      : {network_mode}\n\
@@ -772,6 +774,81 @@ fn portal_inspect(shell: &Phase1Shell, args: &[String]) -> String {
     )
 }
 
+fn portal_split(shell: &mut Phase1Shell, args: &[String]) -> String {
+    let Some(left) = args.first().map(String::as_str) else {
+        return "usage             : portal split <left> <right>\nclaim-boundary    : workspace-context-only\n".to_string();
+    };
+
+    let Some(right) = args.get(1).map(String::as_str) else {
+        return "usage             : portal split <left> <right>\nclaim-boundary    : workspace-context-only\n".to_string();
+    };
+
+    if left == right
+        || left == "root"
+        || right == "root"
+        || !portal_name_is_valid(left)
+        || !portal_name_is_valid(right)
+    {
+        return format!(
+            "portal split {left} {right}\nstatus            : invalid-split\nresult            : no-op\nhelp              : portal split <left> <right>\nclaim-boundary    : workspace-context-only\n"
+        );
+    }
+
+    let mut names = portal_names(shell);
+    let mut added = false;
+
+    for portal in [left, right] {
+        if !names.iter().any(|existing| existing == portal) {
+            names.push(portal.to_string());
+            added = true;
+        }
+    }
+
+    portal_store_names(shell, &names);
+    shell
+        .env
+        .insert("PHASE1_ACTIVE_PORTAL".to_string(), left.to_string());
+    shell
+        .env
+        .insert("PHASE1_PORTAL_SPLIT".to_string(), format!("{left}|{right}"));
+
+    let status = if added {
+        "split-opened"
+    } else {
+        "split-selected"
+    };
+
+    format!(
+        "portal split {left} {right}\n\
+         status            : {status}\n\
+         left              : {left}\n\
+         right             : {right}\n\
+         active-portal     : {left}\n\
+         open-portals      : {}\n\
+         split-mode        : two-pane-local\n\
+         local-link        : planned-disabled\n\
+         network-owner     : floor1\n\
+         network-mode      : denied\n\
+         network-default   : denied\n\
+         network           : blocked\n\
+         claim-boundary    : workspace-context-only\n",
+        names.join(",")
+    )
+}
+
+fn portal_split_mode(shell: &Phase1Shell, names: &[String]) -> String {
+    shell
+        .env
+        .get("PHASE1_PORTAL_SPLIT")
+        .and_then(|raw| raw.split_once('|'))
+        .filter(|(left, right)| {
+            names.iter().any(|name| name.as_str() == *left)
+                && names.iter().any(|name| name.as_str() == *right)
+        })
+        .map(|_| "two-pane-local".to_string())
+        .unwrap_or_else(|| "local-view".to_string())
+}
+
 fn portal_network(shell: &mut Phase1Shell, args: &[String]) -> String {
     let Some(name) = args.first().map(String::as_str) else {
         return "usage             : portal network <portal> <denied|local-only|brokered-egress>\nclaim-boundary    : workspace-context-only\n".to_string();
@@ -871,11 +948,11 @@ fn portal_store_network_mode(shell: &mut Phase1Shell, name: &str, mode: &str) {
 fn portal_help() -> String {
     concat!(
         "portal help\n",
-        "usage             : portal <status|list|open|enter|leave|close|inspect|network|help>\n",
-        "local-state       : open, enter, leave, close, inspect, network\n",
+        "usage             : portal <status|list|open|enter|leave|close|inspect|network|split|help>\n",
+        "local-state       : open, enter, leave, close, inspect, network, split\n",
         "floor             : floor1\n",
         "network-default   : denied\n",
-        "future-actions    : clone, snapshot, restore, split, local-link\n",
+        "future-actions    : clone, snapshot, restore, local-link\n",
         "claim-boundary    : workspace-context-only\n",
     )
     .to_string()

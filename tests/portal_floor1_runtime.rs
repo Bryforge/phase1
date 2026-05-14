@@ -154,3 +154,30 @@ fn portal_network_modes_are_policy_state_only() {
         assert!(output.contains(row), "missing {row}:\n{output}");
     }
 }
+
+#[test]
+fn portal_split_opens_two_local_portals_with_denied_network() {
+    let output = run_phase1(
+        "portal split alpha beta\nportal status\nportal inspect alpha\nportal inspect beta\nexit\n",
+    );
+
+    for row in [
+        "portal split alpha beta",
+        "status            : split-opened",
+        "left              : alpha",
+        "right             : beta",
+        "active-portal     : alpha",
+        "open-portals      : root,alpha,beta",
+        "split-mode        : two-pane-local",
+        "local-link        : planned-disabled",
+        "network-owner     : floor1",
+        "network-mode      : denied",
+        "network-default   : denied",
+        "network           : blocked",
+        "portal inspect alpha",
+        "portal inspect beta",
+        "claim-boundary    : workspace-context-only",
+    ] {
+        assert!(output.contains(row), "missing {row}:\n{output}");
+    }
+}
