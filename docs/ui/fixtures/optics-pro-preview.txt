@@ -1,0 +1,60 @@
+OPTICS PRO PREVIEW
+status      static-fixture
+mode        read-only-preview
+runtime     not-wired
+profile     PRO
+codename    Optics
+channel     phase1 edge enabled
+surface     minimal-main-screen
+persistent  bottom-hud
+
+MAIN SCREEN
+phase1://edge/root >
+
+BOTTOM HUD
+product     Phase1
+context     root
+channel     edge
+hud-color   bright-blue
+state       ready
+input       active
+mutation    none
+command     none
+security    safe-mode visible
+host-tools  gated
+integrity   planned-read-only
+crypto      chain-status-planned
+base1       readiness/evidence context planned
+fyr         package/check/build/test/run context planned
+
+MUTATION STATES
+bright-blue ready
+cyan-pulse  command-being-typed
+violet      command-family-detected
+amber       guarded-operation-or-confirmation
+red         denied-failed-unsafe-invalid
+green       completed-successfully
+gray        inactive-disabled-unavailable
+
+TYPING PREVIEW
+raw-input   preserved
+history     preserves-operator-text
+parser      unchanged
+copy        unchanged
+hidden      none
+
+FALLBACK LABELS
+no-color    labels remain visible
+ascii       labels remain visible
+test-mode   deterministic output
+cooked      deterministic output
+
+NON-CLAIMS
+not-kernel
+not-compositor
+not-desktop
+not-terminal-emulator
+not-sandbox
+not-security-boundary
+not-crypto-enforcement
+not-base1-boot-environment
