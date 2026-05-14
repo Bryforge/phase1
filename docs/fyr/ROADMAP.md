@@ -24,6 +24,7 @@ Fyr is the Phase1-native language path for VFS automation, self-construction, an
 - F6 `vfs` module fixture evidence now records the planned VFS helper surface and required evidence categories.
 - F6 `text` module fixture evidence now records deterministic text helper operations and required evidence categories.
 - `black_arts` staged-candidate design evidence now defines guarded candidate creation, validation, promotion, and discard boundaries without claiming live-system updates.
+- `black_arts` staged-plan fixture evidence now defines candidate-only plan metadata, validation, promotion, rollback, and discard gates.
 
 ## Roadmap
 
