@@ -18,6 +18,13 @@ optics preview
 optics rails
 ```
 
+The current registry aliases are:
+
+```text
+pro
+hudrails
+```
+
 The commands are available because `optics` is exposed as a WASI-lite plugin with capability `none`.
 
 ## Command behavior
@@ -41,6 +48,38 @@ The commands are available because `optics` is exposed as a WASI-lite plugin wit
 - context, nest, portal, ghost, integrity, crypto, Base1, and Fyr summaries;
 - read-only runtime status;
 - non-claims.
+
+`pro` should resolve through the Optics registry entry and execute the read-only Optics preview route.
+
+`hudrails` should resolve through the Optics registry entry and execute the read-only HUD rail preview route.
+
+## Discovery versus execution
+
+Completion commands only print possible command names or aliases.
+
+Examples:
+
+```text
+complete opt
+complete pro
+complete hud
+```
+
+Those are discovery checks. They do not execute the preview surface.
+
+To see the rails output, run one of these execution routes:
+
+```text
+optics rails
+hudrails
+```
+
+To see the PRO preview output, run one of these execution routes:
+
+```text
+optics preview
+pro
+```
 
 ## Help and registry expectation
 
