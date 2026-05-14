@@ -56,6 +56,7 @@ docs/fyr/fixtures/staged-create-example.txt
 docs/fyr/fixtures/staged-apply-example.txt
 docs/fyr/fixtures/staged-change-log-ok.txt
 docs/fyr/fixtures/staged-validation-ok.txt
+docs/fyr/fixtures/staged-validate-example.txt
 docs/fyr/fixtures/staged-approval-ok.txt
 docs/fyr/fixtures/staged-discard-ok.txt
 docs/fyr/fixtures/staged-claim-boundary-ok.txt
@@ -65,7 +66,7 @@ docs/fyr/fixtures/staged-status-ok.txt
 docs/fyr/fixtures/staged-status-example.txt
 ```
 
-These fixtures define expected shapes for candidate metadata, plan metadata, plan example output, create/apply example output, change logs, validation results, explicit approval, discard records, claim boundaries, staged workspace layout, command contract, status output, and a status example. They are not implementations.
+These fixtures define expected shapes for candidate metadata, plan metadata, plan example output, create/apply/validate example output, change logs, validation results, explicit approval, discard records, claim boundaries, staged workspace layout, command contract, status output, and a status example. They are not implementations.
 
 ## Safety rules
 
