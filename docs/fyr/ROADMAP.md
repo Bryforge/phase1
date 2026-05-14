@@ -15,6 +15,7 @@ Fyr is the Phase1-native language path for VFS automation, self-construction, an
 - F4 error-redaction evidence now checks that check/package/test diagnostics stay target-scoped and avoid host temp paths, host-tool environment markers, shell/compiler text, and network URLs.
 - F4 deterministic-output evidence now compares repeated `fyr build`, `fyr run`, and `fyr test` output slices so the safe runtime stays repeatable.
 - F4 VFS workflow evidence now covers `fyr new`, `fyr cat`, `fyr init`, `fyr check`, `fyr build`, `fyr test`, and `fyr run` working together without host-tool markers.
+- F5 inspection-workflow evidence now documents the `fyr self` surface and the planned repository manifest, documentation consistency, checkpoint metadata, status reader, and fixture validation helpers.
 
 ## Roadmap
 
@@ -25,7 +26,7 @@ Fyr is the Phase1-native language path for VFS automation, self-construction, an
 | F2 — Authoring loop | Make Fyr usable without manually echoing source code. | `fyr new <name>`, `fyr cat <file>`, `fyr self`, starter templates, safer VFS writes. | Active |
 | F3 — Core syntax | Define stable parser behavior inspired by C, Rust, and Python. | Lexer, parser, function blocks, variables, return values, comments, diagnostics. | Active |
 | F4 — Safe runtime | Execute useful scripts without exposing the host. | VFS reads/writes, command metadata, bounded runtime, redacted errors, deterministic tests. | Active |
-| F5 — Phase1 self-workflows | Use Fyr to help Phase1 inspect, copy, construct, and validate itself. | `fyr self`, repository manifest readers, docs sync helpers, checkpoint helpers. | Planned |
+| F5 — Phase1 self-workflows | Use Fyr to help Phase1 inspect, copy, construct, and validate itself. | `fyr self`, repository manifest readers, docs sync helpers, checkpoint helpers. | Active |
 | F6 — Standard library | Provide a small Phase1-owned standard library. | `vfs`, `text`, `json-lite`, `audit`, `process`, `package`, and `doc` modules. | Planned |
 | F7 — Compiler path | Decide whether Fyr remains interpreted, lowers to Rust, or targets WASI-lite. | Compiler design note, WASI-lite strategy, packaging contract. | Planned |
 
