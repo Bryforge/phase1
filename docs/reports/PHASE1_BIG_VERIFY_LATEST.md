@@ -1,8 +1,8 @@
 # Phase1 big verification latest report
 
-Generated UTC: 2026-05-13T23:30:41Z
+Generated UTC: 2026-05-14T00:15:50Z
 Source branch: edge/stable
-Source commit: ab77a4e824acef9c0b3d640b899d9be0d5424fa2
+Source commit: d0fdbd49fe425d7b790610c2d00f092159d93dc7
 Host: X200
 Host kernel: Linux X200 6.8.0-110-generic #110trisquel35 SMP PREEMPT_DYNAMIC Wed Apr 15 21:32:36 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux
 
@@ -13,8 +13,8 @@ Host kernel: Linux X200 6.8.0-110-generic #110trisquel35 SMP PREEMPT_DYNAMIC Wed
 | Result | pass |
 | Steps | 15 |
 | Failed steps | 0 |
-| Verification start UTC | 2026-05-13T23:30:11Z |
-| Verification end UTC | 2026-05-13T23:30:41Z |
+| Verification start UTC | 2026-05-14T00:14:57Z |
+| Verification end UTC | 2026-05-14T00:15:26Z |
 | Source summary | build/phase1-big-verify/summary.env |
 | Source report | build/phase1-big-verify/report.md |
 | Source log | build/phase1-big-verify/phase1-big-verify.log |
@@ -29,9 +29,9 @@ No failed steps recorded.
 
 # Phase1 big verification report
 
-Start UTC: 2026-05-13T23:30:11Z
-End UTC: 2026-05-13T23:30:41Z
-Head: ab77a4e824acef9c0b3d640b899d9be0d5424fa2
+Start UTC: 2026-05-14T00:14:57Z
+End UTC: 2026-05-14T00:15:26Z
+Head: e7683b42058d3169b99428d2215305356fc47b1d
 Result: pass
 Steps run: 15
 Failed steps: 0
@@ -43,6 +43,8 @@ Summary: build/phase1-big-verify/summary.env
 
 ```text
  M docs/os/B3_X200_EMULATOR_EVIDENCE_REPORT.md
+ M tests/b3_reviewed_vm_evidence_docs.rs
+ M tests/b3_vm_validation_report_docs.rs
 ```
 
 ## Non-claims
