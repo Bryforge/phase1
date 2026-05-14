@@ -1,0 +1,22 @@
+name: black-arts-plan-fixture
+kind: staged-plan-fixture
+plan-version: 0.1.0
+source: known-good
+candidate: phase1-base1-candidate
+scope: candidate-only
+changes:
+  - config-update
+  - feature-toggle
+  - docs-update
+validation:
+  - tests
+  - docs
+  - status
+promotion:
+  - operator-approval
+  - rollback-path
+  - evidence-link
+discard:
+  - stale-candidate
+  - failed-validation
+claim: fixture-only
