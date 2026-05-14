@@ -1,0 +1,11 @@
+fyr staged validate phase1-base1-candidate
+codename      : black_arts
+candidate     : phase1-base1-candidate
+checks        : tests, docs, status, non-claims
+result        : passed
+evidence      : docs/fyr/fixtures/staged-validation-ok.txt
+promotion     : blocked-until-approval
+approval      : required
+rollback      : required
+claim-boundary: fixture-only
+next          : fyr staged promote phase1-base1-candidate
