@@ -20,6 +20,7 @@ Fyr is the Phase1-native language path for VFS automation, self-construction, an
 - F5 documentation-consistency fixture evidence now validates aligned Fyr docs and required shared phrases.
 - F5 checkpoint-metadata fixture evidence now validates checkpoint-shaped fixture metadata and linked artifacts.
 - F5 public-status fixture evidence now validates expected status-reader fields while keeping the reader command pending.
+- F6 standard-library fixture evidence now defines the planned module surface and required evidence categories without claiming implementation.
 
 ## Roadmap
 
@@ -31,7 +32,7 @@ Fyr is the Phase1-native language path for VFS automation, self-construction, an
 | F3 — Core syntax | Define stable parser behavior inspired by C, Rust, and Python. | Lexer, parser, function blocks, variables, return values, comments, diagnostics. | Active |
 | F4 — Safe runtime | Execute useful scripts without exposing the host. | VFS reads/writes, command metadata, bounded runtime, redacted errors, deterministic tests. | Active |
 | F5 — Phase1 self-workflows | Use Fyr to help Phase1 inspect, copy, construct, and validate itself. | `fyr self`, repository manifest readers, docs sync helpers, checkpoint helpers. | Active |
-| F6 — Standard library | Provide a small Phase1-owned standard library. | `vfs`, `text`, `json-lite`, `audit`, `process`, `package`, and `doc` modules. | Planned |
+| F6 — Standard library | Provide a small Phase1-owned standard library. | `vfs`, `text`, `json-lite`, `audit`, `process`, `package`, and `doc` modules. | Active |
 | F7 — Compiler path | Decide whether Fyr remains interpreted, lowers to Rust, or targets WASI-lite. | Compiler design note, WASI-lite strategy, packaging contract. | Planned |
 
 ## 100% promotion gate
