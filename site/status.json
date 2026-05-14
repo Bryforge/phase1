@@ -1,10 +1,10 @@
 {
   "name": "Phase1 public project status",
   "status_kind": "estimated roadmap progress",
-  "last_updated_utc": "2026-05-14T18:41:16Z",
+  "last_updated_utc": "2026-05-14T19:56:36Z",
   "repository": "Bryforge/phase1",
   "branch": "edge/stable",
-  "commit": "61df4dcdbac3be270fab26096ae4aeb29c058fdb",
+  "commit": "eadee12b780cab167012491ce986501e8d10091d",
   "overall_estimated_completion_percent": 67,
   "public_state": "active edge development with reviewed B3 VM evidence, B6 X200 marker evidence, public status promotion, Base1 B6 X200 marker checkpoint release note, and Fyr black_arts staged-candidate evidence published",
   "important_boundary": "Percentages are planning estimates, not production-readiness, security-hardening, live-update, or autonomous self-modification claims. Fyr black_arts has staged-candidate design, fixtures, operator visuals, source-wiring checklist, and runtime-stub handoff evidence, but the first safe runtime stub remains pending under issue #317. Installer readiness, recovery-complete status, hardening, release-candidate readiness, daily-driver readiness, broad hardware validation, live-system mutation, and autonomous promotion remain not claimed.",
