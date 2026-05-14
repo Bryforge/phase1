@@ -1,3 +1,0 @@
-# Test Placeholder
-
-Planning note.
