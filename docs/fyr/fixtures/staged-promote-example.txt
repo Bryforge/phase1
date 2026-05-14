@@ -1,0 +1,11 @@
+fyr staged promote phase1-base1-candidate
+codename      : black_arts
+candidate     : phase1-base1-candidate
+validation    : passed
+approval      : approved-by-operator
+promotion     : explicit-only
+rollback      : docs/fyr/fixtures/staged-approval-ok.txt
+evidence      : docs/fyr/fixtures/staged-validation-ok.txt
+claim-boundary: fixture-only
+live-system   : untouched-before-promotion
+result        : promotion-record-ready
