@@ -4,7 +4,7 @@ set -eu
 ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 PHASE1="$ROOT_DIR/phase1"
 TERMINAL="$ROOT_DIR/terminal/bin/phase1-terminal"
-START="$ROOT_DIR/start_phase1"
+START="$ROOT_DIR/phase1"
 INSTALLER="$ROOT_DIR/scripts/install-phase1-command.sh"
 
 fail() {
@@ -14,7 +14,7 @@ fail() {
 
 [ -f "$PHASE1" ] || fail "missing simple phase1 launcher"
 [ -f "$TERMINAL" ] || fail "missing terminal wrapper"
-[ -f "$START" ] || fail "missing start_phase1 launcher"
+[ -f "$START" ] || fail "missing phase1 launcher"
 [ -f "$INSTALLER" ] || fail "missing command installer"
 
 sh -n "$PHASE1"
@@ -31,7 +31,7 @@ phase1_version=$(sh "$PHASE1" version)
 echo "$phase1_version" | grep -q "Phase1" || fail "phase1 version output missing Phase1 marker"
 
 phase1_doctor=$(sh "$PHASE1" doctor)
-echo "$phase1_doctor" | grep -q "Phase1 launch doctor" || fail "phase1 doctor did not delegate to start_phase1"
+echo "$phase1_doctor" | grep -q "Phase1 launch doctor" || fail "phase1 doctor did not delegate to phase1"
 echo "$phase1_doctor" | grep -q "launcher" || fail "phase1 doctor missing launcher status"
 
 help_out=$(sh "$TERMINAL" help)
@@ -43,7 +43,7 @@ version_out=$(sh "$TERMINAL" version)
 echo "$version_out" | grep -q "phase1-terminal for Phase1" || fail "version output missing Phase1 marker"
 
 doctor_out=$(sh "$TERMINAL" doctor)
-echo "$doctor_out" | grep -q "Phase1 launch doctor" || fail "doctor did not delegate to start_phase1"
+echo "$doctor_out" | grep -q "Phase1 launch doctor" || fail "doctor did not delegate to phase1"
 echo "$doctor_out" | grep -q "gina" || fail "doctor missing gina status"
 echo "$doctor_out" | grep -q "base1" || fail "doctor missing base1 status"
 

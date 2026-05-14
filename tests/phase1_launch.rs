@@ -9,7 +9,7 @@ use std::process::Command;
 fn launch_scripts_exist_and_have_valid_shell_syntax() {
     for path in [
         "phase1",
-        "start_phase1",
+        "phase1",
         "scripts/configure-phase1.sh",
         "scripts/install-phase1-command.sh",
         "scripts/test-phase1-launch.sh",
@@ -27,10 +27,10 @@ fn launch_scripts_exist_and_have_valid_shell_syntax() {
 #[test]
 fn launch_help_displays_simple_command() {
     let output = Command::new("sh")
-        .arg("start_phase1")
+        .arg("phase1")
         .arg("--help")
         .output()
-        .expect("run start help");
+        .expect("run phase1 help");
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
     assert!(stdout.contains("./phase1"));
@@ -41,10 +41,10 @@ fn launch_help_displays_simple_command() {
 #[test]
 fn launch_doctor_reports_gina_base1_and_config() {
     let output = Command::new("sh")
-        .arg("start_phase1")
+        .arg("phase1")
         .arg("--doctor")
         .output()
-        .expect("run start doctor");
+        .expect("run phase1 doctor");
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
     assert!(stdout.contains("Phase1 launch doctor"));
@@ -76,7 +76,7 @@ fn gina_is_configured_for_phase1_operations() {
     assert!(gina.contains("cybersecurity"));
     assert!(gina.contains("Base1"));
     assert!(gina.contains("quality"));
-    assert!(gina.contains("./start_phase1"));
+    assert!(gina.contains("./phase1"));
     assert!(gina.contains("offline"));
 }
 

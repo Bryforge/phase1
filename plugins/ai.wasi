@@ -4,5 +4,5 @@ stdout=ai: Phase1 AI bridge is configured.
 stdout=gina: primary operations assistant available through gina and ai gina.
 stdout=scope: secure launch guidance, quality workflow, terminal setup, Base1 preflight, update guidance, and Phase1 operations.
 stdout=cybersecurity: offline by default; no provider call, no host network, no credential context.
-stdout=launch: use ./start_phase1 for the premium integrated initialization sequence.
+stdout=launch: use ./phase1 for the operator integrated initialization sequence.
 stdout=status: ready; safe; local; operations-focused.

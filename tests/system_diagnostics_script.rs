@@ -29,7 +29,10 @@ fn system_diagnostics_script_is_local_only_and_sanitized() {
         "does not upload, add, commit, push",
         "--repo-copy",
     ] {
-        assert!(script.contains(text), "missing safety text {text}: {script}");
+        assert!(
+            script.contains(text),
+            "missing safety text {text}: {script}"
+        );
     }
 
     for forbidden in [
@@ -63,7 +66,10 @@ fn system_diagnostics_script_has_valid_shell_syntax() {
         .status()
         .expect("run sh -n");
 
-    assert!(status.success(), "system diagnostics script shell syntax failed");
+    assert!(
+        status.success(),
+        "system diagnostics script shell syntax failed"
+    );
 }
 
 #[test]

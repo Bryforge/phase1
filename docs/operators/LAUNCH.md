@@ -3,20 +3,20 @@
 Phase1 now has a simple integrated launch command:
 
 ```bash
-./start_phase1
+./phase1
 ```
 
 If your checkout does not preserve executable bits, use:
 
 ```bash
-sh start_phase1
+sh phase1
 ```
 
 For first-time setup:
 
 ```bash
 sh scripts/configure-phase1.sh
-./start_phase1
+./phase1
 ```
 
 ## What the launcher configures
@@ -35,13 +35,13 @@ The launch experience is intentionally simple and cybersecurity-conscious. It co
 ## Commands
 
 ```bash
-./start_phase1              # premium Phase1 launch
-./start_phase1 --configure  # run full local configuration first
-./start_phase1 --doctor     # show launch readiness
-./start_phase1 --base1      # run Base1 preflight before launch
-./start_phase1 --quality    # run lightweight quality checks before launch
-./start_phase1 --gina       # launch with Gina command intent
-./start_phase1 --no-build   # require an existing built binary
+./phase1              # Phase1 operator launch
+./phase1 --configure  # run full local configuration first
+./phase1 --doctor     # show launch readiness
+./phase1 --base1      # run Base1 preflight before launch
+./phase1 --quality    # run lightweight quality checks before launch
+./phase1 --gina       # launch with Gina command intent
+./phase1 --no-build   # require an existing built binary
 ```
 
 ## Gina operations
@@ -62,7 +62,7 @@ Gina's baseline is local and deterministic. It is designed to guide secure opera
 Base1 support is included through the existing read-only preflight script:
 
 ```bash
-./start_phase1 --base1
+./phase1 --base1
 ```
 
 or:
@@ -76,7 +76,7 @@ sh scripts/base1-preflight.sh
 Run lightweight quality readiness before launch:
 
 ```bash
-./start_phase1 --quality
+./phase1 --quality
 ```
 
 or directly:

@@ -10,7 +10,7 @@ Status: active.
 - `assistant` is a compatibility alias for Gina.
 - Output is deterministic and local.
 - Sandbox language is explicit: virtual filesystem, network disabled, host blocked.
-- Launch path is `./start_phase1 --gina` or `phase1-terminal gina`.
+- Launch path is `./phase1 --gina` or `phase1-terminal gina`.
 
 ## Stage G2 — Native command polish
 
@@ -32,7 +32,7 @@ Status: active.
 
 ## Stage G5 — Terminal integration
 
-- Keep Phase1 Terminal as a wrapper around `./start_phase1`.
+- Keep Phase1 Terminal as a wrapper around `./phase1`.
 - Let `phase1-terminal gina` call the existing launch path.
 - Avoid a separate trust path.
 

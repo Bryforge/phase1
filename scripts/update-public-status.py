@@ -29,7 +29,6 @@ EXPECTED_ROOT_FILES = {
     "deny.toml",
     "phase1",
     "run-phase1-uefi.sh",
-    "start_phase1",
 }
 
 ROOT_STATUS_DUPLICATES = {

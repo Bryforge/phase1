@@ -137,7 +137,7 @@ chmod 0755 "$ROOTFS/phase1/bin/phase1"
 copy_libs_for_binary "$PHASE1_BIN_PATH" "$ROOTFS"
 
 # Copy minimal repo identity/config assets useful for Phase1 startup context.
-for path in README.md Cargo.toml phase1 start_phase1 docs/project/FEATURE_STATUS.md docs/project/PHASE1_NATIVE_LANGUAGE.md; do
+for path in README.md Cargo.toml phase1 phase1 docs/project/FEATURE_STATUS.md docs/project/PHASE1_NATIVE_LANGUAGE.md; do
   if [ -f "$path" ]; then
     cp "$path" "$ROOTFS/phase1/repo/$path"
   fi

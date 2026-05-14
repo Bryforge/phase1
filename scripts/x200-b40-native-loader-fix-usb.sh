@@ -168,7 +168,7 @@ BASE1_B42_JAPANESE_SUPPORT=1
 BASE1_B42_TEST_FILE=/phase1/i18n/ja/boot-test.txt
 EOF
 
-for path in README.md Cargo.toml phase1 start_phase1 docs/project/FEATURE_STATUS.md docs/project/PHASE1_NATIVE_LANGUAGE.md; do
+for path in README.md Cargo.toml phase1 phase1 docs/project/FEATURE_STATUS.md docs/project/PHASE1_NATIVE_LANGUAGE.md; do
   if [ -f "$path" ]; then
     cp "$path" "$ROOTFS/phase1/repo/$path"
   fi

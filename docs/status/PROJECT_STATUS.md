@@ -3,8 +3,8 @@
 Status kind: estimated roadmap progress
 Source marker: [`site/status.json`](../../site/status.json)
 Badge marker: [`site/status-badge.json`](../../site/status-badge.json)
-Generated from commit: `9cccd1ff2ff59df4d59197c3ef6411f452ff2319`
-Last updated UTC: `2026-05-14T08:45:39Z`
+Generated from commit: `5abf1a24570081902182f0c956c3203234ffdabc`
+Last updated UTC: `2026-05-14T09:01:11Z`
 
 ## Current estimate
 
@@ -16,13 +16,13 @@ Last updated UTC: `2026-05-14T08:45:39Z`
 | X200 / Libreboot hardware path | 44% | X200 Linux-libre host generated reviewed B3 VM evidence and B6 marker evidence with phase1_marker_seen; the checkpoint and release note are published; repeatable physical boot validation remains separate | capture repeatable physical boot evidence and keep emulator, USB, recovery, installer, and hardware-readiness claims separated |
 | Security and crypto policy | 55% | trust model, crypto policy roadmap, provider registry, profile docs, config schema, and integrity checks are present | move from documentation policy into scoped implementation only after tests and review evidence |
 | Website and public docs | 90% | public site, status page, status JSON, badge endpoint, native GitHub Wiki, refreshed source wiki, organized docs, X200 evidence report, B6 checkpoint trail, Base1 B6 X200 release note, and Fyr black_arts public status trail are in place | keep the public status synchronized with implementation evidence and non-claims |
-| Repository organization | 100% | minimal root has 12 tracked files, 17 top-level folders, 0 unplanned root files, 0 tracked build files, and 0 root status duplicates | keep generated artifacts out of Git and keep compatibility links clean as work lands |
+| Repository organization | 100% | minimal root has 11 tracked files, 17 top-level folders, 0 unplanned root files, 0 tracked build files, and 0 root status duplicates | keep generated artifacts out of Git and keep compatibility links clean as work lands |
 
 Overall estimated roadmap completion: **67%**.
 
 ## Repository organization inputs
 
-- Root tracked files: 12
+- Root tracked files: 11
 - Top-level tracked directories: 17
 - Unplanned root files: 0
 - Tracked build files: 0

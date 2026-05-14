@@ -30,10 +30,10 @@ The `assistant` plugin is a compatibility alias for Gina. It keeps user-facing l
 
 ## Launch workflow
 
-The premium launch path remains:
+The operator launch path remains:
 
 ```bash
-./start_phase1 --gina
+./phase1 --gina
 ```
 
 The terminal wrapper delegates to the same flow:

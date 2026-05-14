@@ -7,7 +7,7 @@ sh phase1
 ./phase1
 ```
 
-The root `phase1` command is the simplest operator entrypoint. It delegates to `./start_phase1`, so Phase1 keeps one source launcher for trust, build, Gina, Base1, and quality logic.
+The root `phase1` command is the simplest operator entrypoint. It delegates to `./phase1`, so Phase1 keeps one source launcher for trust, build, Gina, Base1, and quality logic.
 
 The lower-level terminal wrapper remains available for explicit terminal workflows:
 
@@ -57,7 +57,7 @@ sh phase1 selftest
 The original launcher remains valid:
 
 ```bash
-./start_phase1
+./phase1
 ```
 
 ## Safety model
@@ -70,7 +70,7 @@ Defaults stay conservative:
 - no external AI provider call
 - no full terminal-emulator claim
 
-The simple launcher and terminal wrapper do not create new privilege paths. They only make the already-merged `./start_phase1` flow easier to discover from Linux, macOS, and local terminal sessions.
+The simple launcher and terminal wrapper do not create new privilege paths. They only make the already-merged `./phase1` flow easier to discover from Linux, macOS, and local terminal sessions.
 
 ## Gina workflow
 
@@ -81,7 +81,7 @@ sh phase1 gina
 This delegates to:
 
 ```bash
-./start_phase1 --gina
+./phase1 --gina
 ```
 
 Gina remains offline by default and runs through the existing Phase1 WASI-lite plugin path.

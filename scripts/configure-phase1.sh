@@ -92,15 +92,15 @@ EOF
 
 make_launchers_executable() {
     if [ "$DRY_RUN" = "1" ]; then
-        say "dry-run: chmod +x phase1 start_phase1 scripts/configure-phase1.sh scripts/install-phase1-command.sh"
+        say "dry-run: chmod +x phase1 phase1 scripts/configure-phase1.sh scripts/install-phase1-command.sh"
         return 0
     fi
-    chmod 0755 "$ROOT_DIR/phase1" "$ROOT_DIR/start_phase1" "$ROOT_DIR/scripts/configure-phase1.sh" "$ROOT_DIR/scripts/install-phase1-command.sh"
+    chmod 0755 "$ROOT_DIR/phase1" "$ROOT_DIR/phase1" "$ROOT_DIR/scripts/configure-phase1.sh" "$ROOT_DIR/scripts/install-phase1-command.sh"
 }
 
 validate_files() {
     missing=0
-    for file in phase1 start_phase1 plugins/gina.wasi plugins/ai.wasi scripts/base1-preflight.sh; do
+    for file in phase1 phase1 plugins/gina.wasi plugins/ai.wasi scripts/base1-preflight.sh; do
         if [ ! -f "$ROOT_DIR/$file" ]; then
             say "missing: $file"
             missing=$((missing + 1))
