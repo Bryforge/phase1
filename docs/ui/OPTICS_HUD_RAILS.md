@@ -18,6 +18,14 @@ Optics PRO should use two persistent HUD rails:
 
 The center of the screen should remain the command/output viewport.
 
+## Static rail preview fixture
+
+The first static rail preview fixture is [`fixtures/optics-hud-rails-preview.txt`](fixtures/optics-hud-rails-preview.txt).
+
+The fixture shows the intended top rail, center viewport, bottom rail, feature groups, device rules, accessibility labels, and non-claims.
+
+The fixture is read-only design evidence. It is not runtime UI wiring.
+
 ## Top HUD rail
 
 The top rail should carry stable context that operators need at all times.
