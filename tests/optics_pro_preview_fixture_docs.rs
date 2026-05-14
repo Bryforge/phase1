@@ -6,7 +6,8 @@ const PREVIEW_FIXTURE: &str = "docs/ui/fixtures/optics-pro-preview.txt";
 #[test]
 fn optics_preview_fixture_exists_and_is_linked() {
     let doc = fs::read_to_string(OPTICS_DOC).expect("Optics PRO UI doc should exist");
-    let fixture = fs::read_to_string(PREVIEW_FIXTURE).expect("Optics PRO preview fixture should exist");
+    let fixture =
+        fs::read_to_string(PREVIEW_FIXTURE).expect("Optics PRO preview fixture should exist");
 
     assert!(doc.contains("fixtures/optics-pro-preview.txt"), "{doc}");
     assert!(doc.contains("read-only design evidence"), "{doc}");
@@ -16,7 +17,8 @@ fn optics_preview_fixture_exists_and_is_linked() {
 
 #[test]
 fn optics_preview_fixture_preserves_minimal_start_state() {
-    let fixture = fs::read_to_string(PREVIEW_FIXTURE).expect("Optics PRO preview fixture should exist");
+    let fixture =
+        fs::read_to_string(PREVIEW_FIXTURE).expect("Optics PRO preview fixture should exist");
 
     for required in [
         "status      static-fixture",
@@ -28,13 +30,17 @@ fn optics_preview_fixture_preserves_minimal_start_state() {
         "persistent  bottom-hud",
         "phase1://edge/root >",
     ] {
-        assert!(fixture.contains(required), "missing {required:?}: {fixture}");
+        assert!(
+            fixture.contains(required),
+            "missing {required:?}: {fixture}"
+        );
     }
 }
 
 #[test]
 fn optics_preview_fixture_preserves_bottom_hud_rows() {
-    let fixture = fs::read_to_string(PREVIEW_FIXTURE).expect("Optics PRO preview fixture should exist");
+    let fixture =
+        fs::read_to_string(PREVIEW_FIXTURE).expect("Optics PRO preview fixture should exist");
 
     for required in [
         "BOTTOM HUD",
@@ -51,13 +57,17 @@ fn optics_preview_fixture_preserves_bottom_hud_rows() {
         "base1       readiness/evidence context planned",
         "fyr         package/check/build/test/run context planned",
     ] {
-        assert!(fixture.contains(required), "missing {required:?}: {fixture}");
+        assert!(
+            fixture.contains(required),
+            "missing {required:?}: {fixture}"
+        );
     }
 }
 
 #[test]
 fn optics_preview_fixture_preserves_mutation_and_typing_labels() {
-    let fixture = fs::read_to_string(PREVIEW_FIXTURE).expect("Optics PRO preview fixture should exist");
+    let fixture =
+        fs::read_to_string(PREVIEW_FIXTURE).expect("Optics PRO preview fixture should exist");
 
     for required in [
         "MUTATION STATES",
@@ -73,13 +83,17 @@ fn optics_preview_fixture_preserves_mutation_and_typing_labels() {
         "parser      unchanged",
         "copy        unchanged",
     ] {
-        assert!(fixture.contains(required), "missing {required:?}: {fixture}");
+        assert!(
+            fixture.contains(required),
+            "missing {required:?}: {fixture}"
+        );
     }
 }
 
 #[test]
 fn optics_preview_fixture_preserves_fallbacks_and_non_claims() {
-    let fixture = fs::read_to_string(PREVIEW_FIXTURE).expect("Optics PRO preview fixture should exist");
+    let fixture =
+        fs::read_to_string(PREVIEW_FIXTURE).expect("Optics PRO preview fixture should exist");
 
     for required in [
         "no-color    labels remain visible",
@@ -95,6 +109,9 @@ fn optics_preview_fixture_preserves_fallbacks_and_non_claims() {
         "not-crypto-enforcement",
         "not-base1-boot-environment",
     ] {
-        assert!(fixture.contains(required), "missing {required:?}: {fixture}");
+        assert!(
+            fixture.contains(required),
+            "missing {required:?}: {fixture}"
+        );
     }
 }
