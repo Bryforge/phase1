@@ -65,7 +65,10 @@ fn integrity_verify_file_reports_sha256_without_mutating_file() {
     assert!(ok, "script should pass: {output}");
     assert_eq!(before, after, "script must not mutate target file");
     assert!(output.contains("path:"), "{output}");
-    assert!(output.contains("sha256: 583c40a164e83290fdbf230004b813d4782ee3a128aba11bfeddb2c793ffbc3c"), "{output}");
+    assert!(
+        output.contains("sha256: 583c40a164e83290fdbf230004b813d4782ee3a128aba11bfeddb2c793ffbc3c"),
+        "{output}"
+    );
     assert!(output.contains("result: ok"), "{output}");
 }
 
@@ -103,7 +106,11 @@ fn integrity_verify_manifest_rejects_malformed_expected_hash() {
     let file = dir.join("sample.txt");
     let manifest = dir.join("manifest.sha256");
     fs::write(&file, "phase1\n").expect("write sample");
-    fs::write(&manifest, format!("not-a-sha256  {}\n", file.display())).expect("write manifest");
+    fs::write(
+        &manifest,
+        format!("not-a-sha256  {}\n", file.display()),
+    )
+    .expect("write manifest");
 
     let manifest_path = manifest.to_string_lossy().to_string();
     let (ok, output) = run_script(&["--manifest", &manifest_path]);
