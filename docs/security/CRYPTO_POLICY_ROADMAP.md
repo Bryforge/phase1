@@ -253,3 +253,7 @@ Base1 crypto planning should prioritize image provenance, recovery media verific
 This roadmap does not make Phase1 or Base1 cryptographically complete, audited, quantum-safe, certified, hardware-validated, installer-ready, or daily-driver ready.
 
 It defines a plan for safer cryptographic capability, documentation, and operator-selectable policy.
+
+## Provider service matrix
+
+- [`CRYPTO_PROVIDER_SERVICE_MATRIX.md`](CRYPTO_PROVIDER_SERVICE_MATRIX.md) — planning matrix for open-source crypto provider families, service families, profile selection, and non-claiming provider/service boundaries.
