@@ -7,8 +7,8 @@ fn read(path: &str) -> String {
 #[test]
 fn docs_sync_script_and_outputs_are_present() {
     let script = read("scripts/update-docs.py");
-    assert!(script.contains("base/v5.0.0"), "{script}");
-    assert!(script.contains("v6.0.0"), "{script}");
+    assert!(script.contains("base/v6.0.0"), "{script}");
+    assert!(script.contains("v7.0.1"), "{script}");
     assert!(script.contains("edge/stable"), "{script}");
     assert!(
         script.contains("upsert(\"README.md\", \"repo-model\""),
@@ -35,7 +35,7 @@ fn generated_docs_preserve_current_stable_base_edge_version_and_edge_path() {
     for path in docs {
         let body = read(path);
         assert!(
-            body.contains("base/v5.0.0"),
+            body.contains("base/v6.0.0"),
             "{path} lost the current stable base"
         );
         assert!(
@@ -46,8 +46,8 @@ fn generated_docs_preserve_current_stable_base_edge_version_and_edge_path() {
 
     let readme = read("README.md");
     assert!(
-        readme.contains("Current edge version: `v6.0.0`"),
-        "README lost v6 current status: {readme}"
+        readme.contains("Current edge version: `v7.0.1`"),
+        "README lost v7 current status: {readme}"
     );
 }
 
