@@ -33,12 +33,6 @@ Normal use:
 Install command:
   sh scripts/install-phase1-command.sh
 
-Install command:
-  sh scripts/install-phase1-command.sh
-
-Install command:
-  sh scripts/install-phase1-command.sh
-
 Installed command:
   phase1
 

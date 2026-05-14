@@ -29,7 +29,7 @@ fn simple_phase1_command_delegates_to_phase1() {
         .expect("run phase1 help");
     assert!(help.status.success());
     let help_stdout = String::from_utf8_lossy(&help.stdout);
-    assert!(help_stdout.contains("Fresh clone shortcut"));
+    assert!(help_stdout.contains("Normal use"));
     assert!(help_stdout.contains("sh phase1"));
     assert!(help_stdout.contains("install-phase1-command"));
 
