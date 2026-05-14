@@ -10,7 +10,7 @@ Fyr is the Phase1-native language path for VFS automation, self-construction, an
 - `fyr status`, `fyr spec`, and seed `fyr run <file.fyr>` support are wired into Phase1.
 - The seed runner can execute simple print string literals from `.fyr` files stored in the Phase1 VFS.
 - The 100% promotion gate is tracked in [`../status/FYR_PHASE1_100_COMPLETION_GATES.md`](../status/FYR_PHASE1_100_COMPLETION_GATES.md).
-- F3 parser diagnostics now include package manifest, package entry-point, duplicate-main, missing-main, string, semicolon, return-value, and boolean-condition checks.
+- F3 parser diagnostics now include package manifest, package entry-point, duplicate-main, missing-main, string, semicolon, return-value, boolean-condition, grouped-expression, division-by-zero, missing-operand, and boolean-operator checks.
 
 ## Roadmap
 
