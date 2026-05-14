@@ -1,0 +1,12 @@
+name: fyr-checkpoint-fixture
+kind: checkpoint-metadata
+checkpoint: F5-fixture-001
+claim: not-complete
+result: fixture-only
+artifacts:
+  - docs/fyr/SELF_WORKFLOWS.md
+  - docs/fyr/ROADMAP.md
+checks:
+  - deterministic
+  - scoped
+  - reviewable
