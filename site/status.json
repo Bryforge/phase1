@@ -7,7 +7,7 @@
   "commit": "a1aa2b0ecc3c28ea16791b661fa50181f56bd7ee",
   "overall_estimated_completion_percent": 66,
   "public_state": "active edge development with published wiki, clean public link surface, and reviewed B3 VM evidence present",
-  "important_boundary": "Percentages are planning estimates, not production-readiness or security-hardening claims. Reviewed B3 VM evidence is present, but physical hardware boot, installer, recovery, hardening, release-candidate, and daily-driver readiness remain not claimed.",
+  "important_boundary": "Percentages are planning estimates, not production-readiness or security-hardening claims. Reviewed B3 VM evidence is present, but installer, recovery-complete, hardening, release-candidate, and daily-driver readiness remain not claimed.",
   "projects": [
     {
       "name": "Phase1 operator console",
@@ -115,6 +115,6 @@
     "not hardware-validated across targets",
     "not a hardened sandbox",
     "not cryptographically complete",
-    "reviewed B3 VM evidence is not physical hardware boot validation"
+    "X200 hardware marker evidence is present with phase1_marker_seen; non-claims remain in force"
   ]
 }
