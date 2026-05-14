@@ -538,6 +538,7 @@ fn portal_command(shell: &mut Phase1Shell, args: &[String]) -> String {
         Some("enter") => portal_enter(shell, &args[1..]),
         Some("leave") => portal_leave(shell),
         Some("close") | Some("rm") => portal_close(shell, &args[1..]),
+        Some("network") | Some("net") => portal_network(shell, &args[1..]),
         Some("inspect") | Some("info") => portal_inspect(shell, &args[1..]),
         Some("help") | Some("-h") | Some("--help") => portal_help(),
         Some(other) => format!(
@@ -590,6 +591,7 @@ fn portal_name_is_valid(name: &str) -> bool {
 fn portal_status(shell: &Phase1Shell) -> String {
     let names = portal_names(shell);
     let active = portal_active(shell, &names);
+    let network_mode = portal_network_mode(shell, &active);
 
     format!(
         "phase1 portals\n\
@@ -602,7 +604,7 @@ fn portal_status(shell: &Phase1Shell) -> String {
          split-mode        : local-view\n\
          local-link        : planned-disabled\n\
          network-owner     : floor1\n\
-         network-mode      : denied\n\
+         network-mode      : {network_mode}\n\
          network-default   : denied\n\
          brokered-egress   : planned-disabled\n\
          vfs-scope         : portal-context\n\
@@ -668,11 +670,13 @@ fn portal_enter(shell: &mut Phase1Shell, args: &[String]) -> String {
         .env
         .insert("PHASE1_ACTIVE_PORTAL".to_string(), name.to_string());
 
+    let network_mode = portal_network_mode(shell, name);
+
     format!(
         "portal enter {name}\n\
          status            : entered\n\
          active-portal     : {name}\n\
-         network-mode      : denied\n\
+         network-mode      : {network_mode}\n\
          network-owner     : floor1\n\
          claim-boundary    : workspace-context-only\n"
     )
@@ -714,6 +718,7 @@ fn portal_close(shell: &mut Phase1Shell, args: &[String]) -> String {
 
     names.retain(|existing| existing != name);
     portal_store_names(shell, &names);
+    portal_store_network_mode(shell, name, "denied");
 
     let active = portal_active(shell, &names);
     let active = if active == name {
@@ -749,6 +754,7 @@ fn portal_inspect(shell: &Phase1Shell, args: &[String]) -> String {
     }
 
     let state = if name == active { "active" } else { "open" };
+    let network_mode = portal_network_mode(shell, name);
 
     format!(
         "portal inspect {name}\n\
@@ -757,7 +763,7 @@ fn portal_inspect(shell: &Phase1Shell, args: &[String]) -> String {
          floor             : floor1\n\
          portal-layer      : workspace/session\n\
          network-owner     : floor1\n\
-         network-mode      : denied\n\
+         network-mode      : {network_mode}\n\
          brokered-egress   : planned-disabled\n\
          host-isolation    : not-claimed\n\
          process-isolation : not-claimed\n\
@@ -766,11 +772,107 @@ fn portal_inspect(shell: &Phase1Shell, args: &[String]) -> String {
     )
 }
 
+fn portal_network(shell: &mut Phase1Shell, args: &[String]) -> String {
+    let Some(name) = args.first().map(String::as_str) else {
+        return "usage             : portal network <portal> <denied|local-only|brokered-egress>\nclaim-boundary    : workspace-context-only\n".to_string();
+    };
+
+    let names = portal_names(shell);
+    if !names.iter().any(|existing| existing == name) {
+        return format!(
+            "portal network {name}\nstatus            : missing-portal\nresult            : no-op\nhelp              : portal list\nclaim-boundary    : workspace-context-only\n"
+        );
+    }
+
+    let Some(mode) = args.get(1).map(String::as_str) else {
+        let current = portal_network_mode(shell, name);
+        return format!(
+            "portal network {name}\nstatus            : current\nportal            : {name}\nnetwork-owner     : floor1\nnetwork-mode      : {current}\nnetwork-default   : denied\nnetwork           : blocked\nclaim-boundary    : workspace-context-only\n"
+        );
+    };
+
+    if !matches!(mode, "denied" | "local-only" | "brokered-egress") {
+        return format!(
+            "portal network {name} {mode}\nstatus            : invalid-network-mode\nresult            : no-op\nhelp              : portal network <portal> <denied|local-only|brokered-egress>\nclaim-boundary    : workspace-context-only\n"
+        );
+    }
+
+    if name == "root" && mode != "denied" {
+        return format!(
+            "portal network root {mode}\nstatus            : root-network-locked\nresult            : no-op\nnetwork-mode      : denied\nnetwork-owner     : floor1\nclaim-boundary    : workspace-context-only\n"
+        );
+    }
+
+    portal_store_network_mode(shell, name, mode);
+
+    format!(
+        "portal network {name}\n\
+         status            : updated\n\
+         portal            : {name}\n\
+         network-owner     : floor1\n\
+         network-mode      : {mode}\n\
+         network-default   : denied\n\
+         local-link        : planned-disabled\n\
+         brokered-egress   : planned-disabled\n\
+         network           : blocked\n\
+         result            : policy-state-only\n\
+         claim-boundary    : workspace-context-only\n"
+    )
+}
+
+fn portal_network_mode(shell: &Phase1Shell, name: &str) -> String {
+    shell
+        .env
+        .get("PHASE1_PORTAL_NETWORKS")
+        .and_then(|raw| {
+            raw.split(',').find_map(|entry| {
+                let (portal, mode) = entry.split_once('=')?;
+                if portal == name && matches!(mode, "denied" | "local-only" | "brokered-egress") {
+                    Some(mode.to_string())
+                } else {
+                    None
+                }
+            })
+        })
+        .unwrap_or_else(|| "denied".to_string())
+}
+
+fn portal_store_network_mode(shell: &mut Phase1Shell, name: &str, mode: &str) {
+    let mut entries = Vec::new();
+
+    if let Some(raw) = shell.env.get("PHASE1_PORTAL_NETWORKS") {
+        for entry in raw
+            .split(',')
+            .map(str::trim)
+            .filter(|entry| !entry.is_empty())
+        {
+            let Some((portal, existing_mode)) = entry.split_once('=') else {
+                continue;
+            };
+            if portal != name && matches!(existing_mode, "local-only" | "brokered-egress") {
+                entries.push(format!("{portal}={existing_mode}"));
+            }
+        }
+    }
+
+    if matches!(mode, "local-only" | "brokered-egress") {
+        entries.push(format!("{name}={mode}"));
+    }
+
+    if entries.is_empty() {
+        shell.env.remove("PHASE1_PORTAL_NETWORKS");
+    } else {
+        shell
+            .env
+            .insert("PHASE1_PORTAL_NETWORKS".to_string(), entries.join(","));
+    }
+}
+
 fn portal_help() -> String {
     concat!(
         "portal help\n",
-        "usage             : portal <status|list|open|enter|leave|close|inspect|help>\n",
-        "local-state       : open, enter, leave, close, inspect\n",
+        "usage             : portal <status|list|open|enter|leave|close|inspect|network|help>\n",
+        "local-state       : open, enter, leave, close, inspect, network\n",
         "floor             : floor1\n",
         "network-default   : denied\n",
         "future-actions    : clone, snapshot, restore, split, local-link\n",

@@ -129,3 +129,28 @@ fn portal_close_removes_local_portal_and_returns_active_to_root() {
         assert!(output.contains(row), "missing {row}:\n{output}");
     }
 }
+
+#[test]
+fn portal_network_modes_are_policy_state_only() {
+    let output = run_phase1(
+        "portal open alpha\nportal network alpha local-only\nportal enter alpha\nportal inspect alpha\nportal network alpha brokered-egress\nportal status\nportal network alpha denied\nportal status\nexit\n",
+    );
+
+    for row in [
+        "portal network alpha",
+        "status            : updated",
+        "portal            : alpha",
+        "network-owner     : floor1",
+        "network-mode      : local-only",
+        "network-mode      : brokered-egress",
+        "network-mode      : denied",
+        "network-default   : denied",
+        "local-link        : planned-disabled",
+        "brokered-egress   : planned-disabled",
+        "network           : blocked",
+        "result            : policy-state-only",
+        "claim-boundary    : workspace-context-only",
+    ] {
+        assert!(output.contains(row), "missing {row}:\n{output}");
+    }
+}
