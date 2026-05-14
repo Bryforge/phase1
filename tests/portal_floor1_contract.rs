@@ -118,3 +118,27 @@ fn portal_docs_match_current_floor1_runtime_surface() {
         assert!(docs.contains(row), "missing {row} in floor1 portal docs");
     }
 }
+
+#[test]
+fn portal_fixture_lists_complete_floor1_command_surface() {
+    let path = "docs/portal/fixtures/floor1-portal-status-ok.txt";
+
+    for command in [
+        "portal status",
+        "portal list",
+        "portal open <name>",
+        "portal enter <name>",
+        "portal leave",
+        "portal close <name>",
+        "portal inspect <name>",
+        "portal network <name> <denied|local-only|brokered-egress>",
+        "portal split <left> <right>",
+        "portal snapshot <name>",
+        "portal restore <name>",
+        "portal clone <source> <name>",
+        "portal link <left> <right>",
+        "portal help",
+    ] {
+        assert_contains(path, command);
+    }
+}

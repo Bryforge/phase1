@@ -29,7 +29,10 @@ commands:
   portal leave
   portal close <name>
   portal inspect <name>
+  portal network <name> <denied|local-only|brokered-egress>
+  portal split <left> <right>
   portal clone <source> <name>
+  portal link <left> <right>
   portal snapshot <name>
   portal restore <name>
   portal help
