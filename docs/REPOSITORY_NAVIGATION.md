@@ -213,3 +213,7 @@ It provides a clearer path through the repository so users and contributors can 
 ## Historical archive path
 
 Older planning notes, development checkpoints, AI/Gina notes, AVIM notes, and legacy next-update files are preserved under [`archive/README.md`](archive/README.md). Keep current user, contributor, security, quality, and Base1 paths in the active root/docs indexes.
+
+### White Arts
+
+Use `docs/white-arts/README.md` for White Arts defensive validation, nominal-state, maintenance, security-audit, and open security server suite planning. White Arts work remains evidence-bound, read-only first, and non-claiming until tests and validation reports support promotion.

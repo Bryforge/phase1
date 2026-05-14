@@ -104,3 +104,8 @@ Use narrow, testable statements. Do not claim that Phase1 is secure, hardened, b
 - [Project status](status/PROJECT_STATUS.md)
 - [Live status page](https://bryforge.github.io/phase1/status.html)
 - [Live JSON marker](https://bryforge.github.io/phase1/status.json)
+
+## White Arts
+
+- [`white-arts/README.md`](white-arts/README.md) — defensive validation, healing, maintenance, security-audit, and open security server suite planning.
+- [`white-arts/OPEN_SECURITY_SERVER_SUITE.md`](white-arts/OPEN_SECURITY_SERVER_SUITE.md) — documentation-first open-source security server environment suite plan.
