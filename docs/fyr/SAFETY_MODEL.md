@@ -77,6 +77,18 @@ Diagnostics must not require or expose:
 - network URLs;
 - secrets or environment values.
 
+## Current deterministic-output behavior
+
+Fyr output should remain repeatable for the same VFS inputs.
+
+Current evidence compares the Fyr-relevant output slices from repeated runs of:
+
+- `fyr build`;
+- `fyr run`;
+- `fyr test`.
+
+The comparison ignores Phase1 boot/prompt noise and focuses on Fyr command lines such as package, source, AST, backend, host, status, test, passed, and failed rows.
+
 ## F4 promotion requirements
 
 F4 may move from planned to active/completed only after the repository includes evidence for:
@@ -115,3 +127,4 @@ Related tests:
 - `tests/fyr_f3_expression_diagnostics.rs`
 - `tests/fyr_f4_runtime_safety.rs`
 - `tests/fyr_f4_error_redaction.rs`
+- `tests/fyr_f4_deterministic_output.rs`
