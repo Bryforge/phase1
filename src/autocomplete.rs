@@ -250,6 +250,7 @@ fn argument_matches(command: &str, prefix: &str, before_token: &str) -> Vec<Stri
             ],
             prefix,
         ),
+        "fyr" => fyr_matches(prefix, before_token),
         "wasm" => matches_from(
             &[
                 "list",
@@ -308,6 +309,22 @@ fn argument_matches(command: &str, prefix: &str, before_token: &str) -> Vec<Stri
     matches
 }
 
+fn fyr_matches(prefix: &str, before_token: &str) -> Vec<String> {
+    let has_file_action = before_token
+        .split_whitespace()
+        .any(|token| matches!(token, "cat" | "check" | "build" | "run"));
+    if has_file_action {
+        return fyr_file_matches(prefix);
+    }
+    matches_from(
+        &[
+            "status", "spec", "new", "init", "cat", "color", "check", "build", "test", "self",
+            "run",
+        ],
+        prefix,
+    )
+}
+
 fn lang_matches(prefix: &str, before_token: &str) -> Vec<String> {
     let mut options = matches_from(
         &[
@@ -344,6 +361,11 @@ fn option_and_file_matches(options: &[&str], prefix: &str) -> Vec<String> {
     matches.sort();
     matches.dedup();
     matches
+}
+
+fn fyr_file_matches(prefix: &str) -> Vec<String> {
+    let options = ["hello_hacker.fyr", "/home/hello_hacker.fyr"];
+    matches_from(&options, prefix)
 }
 
 fn file_matches(prefix: &str) -> Vec<String> {
