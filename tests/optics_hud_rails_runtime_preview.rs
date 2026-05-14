@@ -62,6 +62,7 @@ fn optics_rails_preview_runs_through_read_only_wasi_lite_surface() {
     }
 
     for forbidden in [
+        "OPTICS PRO PREVIEW",
         "runtime=wired",
         "security-boundary claimed",
         "crypto-enforcement claimed",
