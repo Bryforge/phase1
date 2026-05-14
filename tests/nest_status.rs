@@ -53,5 +53,6 @@ fn nest_help_lists_status_command() {
     let output = run_phase1("nest help\nexit\n", "0", "1");
 
     assert!(output.contains("nest status"), "{output}");
+    assert!(output.contains("nest stack"), "{output}");
     assert!(output.contains("nest exit-all"), "{output}");
 }

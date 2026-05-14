@@ -2493,7 +2493,7 @@ fn request_nest_exit_all(shell: &mut Phase1Shell) -> String {
 }
 
 fn nest_help() -> String {
-    "phase1 nest control\n\nusage:\n  nest status\n  nest spawn <name>\n  nest list\n  nest enter <name>\n  nest exit\n  nest destroy <name>\n  nest inspect <name>\n  nest tree\n  nest target <self|parent|root|level>\n  nest exit self\n  nest exit all\n  nest exit-all\n  exit all\n\nnotes:\n  target is an operator context marker for nested workflows\n  nest exit-all is an alias for nest exit all\n  exit all writes a local Phase1 exit signal so parent shells unwind when they regain control\n".to_string()
+    "phase1 nest control\n\nusage:\n  nest status\n  nest spawn <name>\n  nest list\n  nest enter <name>\n  nest exit\n  nest destroy <name>\n  nest inspect <name>\n  nest tree\n  nest stack\n  nest target <self|parent|root|level>\n  nest exit self\n  nest exit all\n  nest exit-all\n  exit all\n\nnotes:\n  nest stack shows read-only ghost stack status\n  target is an operator context marker for nested workflows\n  nest exit-all is an alias for nest exit all\n  exit all writes a local Phase1 exit signal so parent shells unwind when they regain control\n".to_string()
 }
 
 fn request_reboot(shell: &mut Phase1Shell) {
