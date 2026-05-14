@@ -2113,6 +2113,7 @@ fn nest_command(shell: &mut Phase1Shell, args: &[String]) -> String {
         Some("destroy") | Some("rm") => nest_destroy(shell, &args[1..]),
         Some("inspect") | Some("info") => nest_inspect(shell, &args[1..]),
         Some("tree") => nest_tree(shell),
+        Some("stack") => nest_stack_command(&args[1..]),
         Some("target") | Some("use") => {
             let Some(raw) = args.get(1).map(String::as_str) else {
                 return "usage: nest target <self|parent|root|level>\n".to_string();
@@ -2153,6 +2154,43 @@ fn nest_command(shell: &mut Phase1Shell, args: &[String]) -> String {
         Some("help") | Some("-h") | Some("--help") => nest_help(),
         Some(other) => format!("nest: unknown action '{other}'\n{}", nest_help()),
     }
+}
+
+fn nest_stack_command(args: &[String]) -> String {
+    match args.first().map(String::as_str) {
+        None | Some("status") | Some("list") | Some("ls") => nest_stack_status(),
+        Some("push") | Some("pop") | Some("ghost") | Some("resume") | Some("prune")
+        | Some("exit-all") => nest_stack_pending(args.first().map(String::as_str).unwrap_or("")),
+        Some("help") | Some("-h") | Some("--help") => nest_stack_help(),
+        Some(other) => format!(
+            "nest stack {other}\nstatus        : unknown stack action\nresult        : no-op\nhelp          : nest stack status\nclaim-boundary: control-plane-only\n"
+        ),
+    }
+}
+
+fn nest_stack_status() -> String {
+    let level = nested_level();
+    let max = nested_max();
+    let exit_all = if nest_exit_all_requested() {
+        "requested"
+    } else {
+        "clear"
+    };
+
+    format!(
+        "phase1 nest stack\n         mode          : read-only status\n         nest-level    : {level}/{max}\n         root          : active\n         current       : level-{level}\n         ghost-count   : 0\n         exit-all      : {exit_all}\n         safe-mode     : visible\n         trust         : visible\n         guardrail     : no host process spawn | no network | no isolation claim\n         claim-boundary: control-plane-only\n"
+    )
+}
+
+fn nest_stack_pending(action: &str) -> String {
+    format!(
+        "nest stack {action}\n         status        : not-yet-implemented\n         result        : no-op\n         help          : nest stack status\n         claim-boundary: control-plane-only\n"
+    )
+}
+
+fn nest_stack_help() -> String {
+    "nest stack help\n     usage         : nest stack <status|list|push|pop|ghost|resume|prune|exit-all>\n     first-slice   : status, list\n     pending       : push, pop, ghost, resume, prune, exit-all\n     claim-boundary: control-plane-only\n"
+        .to_string()
 }
 
 fn nest_spawn(shell: &mut Phase1Shell, args: &[String]) -> String {
