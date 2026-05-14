@@ -14,6 +14,7 @@ Current Fyr inspection surface:
 - Fyr package/file workflows are VFS-first.
 - F3 parser diagnostics and F4 runtime-safety evidence are active.
 - Repository inspection workflows are still planned and must not be described as complete.
+- The first repository-manifest fixture lives at [`fixtures/repo-manifest-ok.txt`](fixtures/repo-manifest-ok.txt).
 
 ## F5 target workflows
 
@@ -24,6 +25,16 @@ F5 should add or document these workflows only after implementation and tests ex
 3. Checkpoint metadata helper.
 4. Public status reader or documented deferral.
 5. Fixture-based validation helper.
+
+## Repository manifest fixture
+
+The first fixture is intentionally small and static:
+
+```text
+docs/fyr/fixtures/repo-manifest-ok.txt
+```
+
+It records a project-shaped manifest with a name, root, kind, file list, and check list. It is test evidence for the future manifest reader; it is not yet a full reader command.
 
 ## Safety rules
 
@@ -70,7 +81,12 @@ Related docs:
 - [`SAFETY_MODEL.md`](SAFETY_MODEL.md)
 - [`../status/FYR_PHASE1_100_COMPLETION_GATES.md`](../status/FYR_PHASE1_100_COMPLETION_GATES.md)
 
+Related fixtures:
+
+- [`fixtures/repo-manifest-ok.txt`](fixtures/repo-manifest-ok.txt)
+
 Related tests:
 
 - `tests/fyr_authoring_commands.rs`
 - `tests/fyr_f5_self_workflows.rs`
+- `tests/fyr_f5_manifest_fixtures.rs`

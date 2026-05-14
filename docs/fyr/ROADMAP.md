@@ -16,6 +16,7 @@ Fyr is the Phase1-native language path for VFS automation, self-construction, an
 - F4 deterministic-output evidence now compares repeated `fyr build`, `fyr run`, and `fyr test` output slices so the safe runtime stays repeatable.
 - F4 VFS workflow evidence now covers `fyr new`, `fyr cat`, `fyr init`, `fyr check`, `fyr build`, `fyr test`, and `fyr run` working together without host-tool markers.
 - F5 inspection-workflow evidence now documents the `fyr self` surface and the planned repository manifest, documentation consistency, checkpoint metadata, status reader, and fixture validation helpers.
+- F5 manifest-fixture evidence now validates a project-shaped manifest fixture and checks that listed documentation paths exist.
 
 ## Roadmap
 
