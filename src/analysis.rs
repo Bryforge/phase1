@@ -1,15 +1,25 @@
 use crate::commands::Phase1Shell;
 use crate::kernel::VfsNode;
 
+const REGISTRY_KEY: &str = "PHASE1_ANALYSIS_REGISTRY";
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct AnalysisRecord {
+    id: String,
+    path: String,
+    size_bytes: usize,
+    sha256: String,
+}
+
 pub fn run(shell: &mut Phase1Shell, args: &[String]) -> String {
     match args.first().map(String::as_str) {
         None | Some("status") | Some("help") | Some("--help") | Some("-h") => status(),
         Some("load") => load(shell, &args[1..]),
-        Some("inspect") => planned("inspect"),
+        Some("inspect") => inspect(shell, &args[1..]),
         Some("report") => planned("report"),
         Some("forget") => planned("forget"),
         Some(other) => format!(
-            "phase1 analysis\nstatus           : unknown-action\naction           : {other}\nmode             : no-execute\nexecution-state  : not-executed\nhost-execution   : disabled\nsandbox-claim    : not-claimed\nhelp             : analyze status | analyze load <path>\n"
+            "phase1 analysis\nstatus           : unknown-action\naction           : {other}\nmode             : no-execute\nexecution-state  : not-executed\nhost-execution   : disabled\nsandbox-claim    : not-claimed\nhelp             : analyze status | analyze load <path> | analyze inspect <id>\n"
         ),
     }
 }
@@ -29,7 +39,7 @@ fn status() -> String {
         "fyr-integration  : planned\n",
         "base1-evidence   : planned\n",
         "claim-boundary   : metadata-only-loading\n",
-        "usage            : analyze load <path>\n",
+        "usage            : analyze load <path> | analyze inspect <id>\n",
     )
     .to_string()
 }
@@ -72,20 +82,19 @@ fn load(shell: &mut Phase1Shell, args: &[String]) -> String {
     let bytes = content.as_bytes();
     let digest = sha256_hex(bytes);
     let id = format!("sha256-{}", &digest[..12]);
-    let registry_key = "PHASE1_ANALYSIS_REGISTRY";
-    let prior = shell.env.get(registry_key).cloned().unwrap_or_default();
-    let duplicate = prior
-        .split(',')
-        .filter(|item| !item.is_empty())
-        .any(|item| item == id);
+    let record = AnalysisRecord {
+        id: id.clone(),
+        path: resolved.display().to_string(),
+        size_bytes: bytes.len(),
+        sha256: digest.clone(),
+    };
+
+    let mut records = load_registry(shell);
+    let duplicate = records.iter().any(|item| item.id == id);
 
     if !duplicate {
-        let next = if prior.trim().is_empty() {
-            id.clone()
-        } else {
-            format!("{prior},{id}")
-        };
-        shell.env.insert(registry_key.to_string(), next);
+        records.push(record.clone());
+        save_registry(shell, &records);
     }
 
     shell.kernel.audit.record(format!(
@@ -94,12 +103,133 @@ fn load(shell: &mut Phase1Shell, args: &[String]) -> String {
         bytes.len()
     ));
 
-    format!(
-        "phase1 analysis load\nstatus           : {}\nid               : {id}\npath             : {}\nsize-bytes       : {}\nsha256           : {digest}\nsource           : vfs\nloaded-at        : session\ntrust-state      : untrusted\nexecution-state  : not-executed\nhost-execution   : disabled\nsandbox-claim    : not-claimed\ndynamic-analysis : future-restricted\nclaim-boundary   : metadata-only-loading\n",
+    format_record(
+        "load",
         if duplicate { "duplicate" } else { "loaded" },
-        resolved.display(),
-        bytes.len()
+        &record,
     )
+}
+
+fn inspect(shell: &mut Phase1Shell, args: &[String]) -> String {
+    let Some(id) = args.first().map(String::as_str) else {
+        return concat!(
+            "phase1 analysis inspect\n",
+            "status           : missing-id\n",
+            "usage            : analyze inspect <id>\n",
+            "mode             : no-execute\n",
+            "execution-state  : not-executed\n",
+            "host-execution   : disabled\n",
+            "sandbox-claim    : not-claimed\n",
+            "dynamic-analysis : future-restricted\n",
+            "claim-boundary   : metadata-only-loading\n",
+        )
+        .to_string();
+    };
+
+    let records = load_registry(shell);
+    let Some(record) = records.iter().find(|item| item.id == id) else {
+        return format!(
+            "phase1 analysis inspect\nstatus           : missing\nid               : {id}\nerror            : no-such-analysis-record\nmode             : no-execute\nexecution-state  : not-executed\nhost-execution   : disabled\nsandbox-claim    : not-claimed\ndynamic-analysis : future-restricted\nclaim-boundary   : metadata-only-loading\n"
+        );
+    };
+
+    format_record("inspect", "found", record)
+}
+
+fn format_record(action: &str, status: &str, record: &AnalysisRecord) -> String {
+    format!(
+        "phase1 analysis {action}\nstatus           : {status}\nid               : {}\npath             : {}\nsize-bytes       : {}\nsha256           : {}\nsource           : vfs\nloaded-at        : session\ntrust-state      : untrusted\nexecution-state  : not-executed\nhost-execution   : disabled\nsandbox-claim    : not-claimed\ndynamic-analysis : future-restricted\nclaim-boundary   : metadata-only-loading\n",
+        record.id, record.path, record.size_bytes, record.sha256
+    )
+}
+
+fn load_registry(shell: &Phase1Shell) -> Vec<AnalysisRecord> {
+    shell
+        .env
+        .get(REGISTRY_KEY)
+        .map(|raw| {
+            raw.lines()
+                .filter_map(AnalysisRecord::decode)
+                .collect::<Vec<_>>()
+        })
+        .unwrap_or_default()
+}
+
+fn save_registry(shell: &mut Phase1Shell, records: &[AnalysisRecord]) {
+    let encoded = records
+        .iter()
+        .map(AnalysisRecord::encode)
+        .collect::<Vec<_>>()
+        .join("\n");
+    shell.env.insert(REGISTRY_KEY.to_string(), encoded);
+}
+
+impl AnalysisRecord {
+    fn encode(&self) -> String {
+        format!(
+            "{}|{}|{}|{}",
+            encode_field(&self.id),
+            encode_field(&self.path),
+            self.size_bytes,
+            encode_field(&self.sha256)
+        )
+    }
+
+    fn decode(raw: &str) -> Option<Self> {
+        let mut parts = raw.split('|');
+        let id = decode_field(parts.next()?)?;
+        let path = decode_field(parts.next()?)?;
+        let size_bytes = parts.next()?.parse().ok()?;
+        let sha256 = decode_field(parts.next()?)?;
+        if parts.next().is_some() {
+            return None;
+        }
+        Some(Self {
+            id,
+            path,
+            size_bytes,
+            sha256,
+        })
+    }
+}
+
+fn encode_field(value: &str) -> String {
+    let mut out = String::with_capacity(value.len());
+    for byte in value.bytes() {
+        match byte {
+            b'%' | b'|' | b'\n' | b'\r' => out.push_str(&format!("%{byte:02X}")),
+            _ => out.push(byte as char),
+        }
+    }
+    out
+}
+
+fn decode_field(value: &str) -> Option<String> {
+    let mut out = Vec::with_capacity(value.len());
+    let bytes = value.as_bytes();
+    let mut index = 0;
+    while index < bytes.len() {
+        if bytes[index] != b'%' {
+            out.push(bytes[index]);
+            index += 1;
+            continue;
+        }
+        let high = *bytes.get(index + 1)?;
+        let low = *bytes.get(index + 2)?;
+        let decoded = hex_value(high)? * 16 + hex_value(low)?;
+        out.push(decoded);
+        index += 3;
+    }
+    String::from_utf8(out).ok()
+}
+
+fn hex_value(byte: u8) -> Option<u8> {
+    match byte {
+        b'0'..=b'9' => Some(byte - b'0'),
+        b'a'..=b'f' => Some(byte - b'a' + 10),
+        b'A'..=b'F' => Some(byte - b'A' + 10),
+        _ => None,
+    }
 }
 
 fn sha256_hex(input: &[u8]) -> String {
