@@ -15,7 +15,10 @@ fn optics_hud_rails_preview_fixture_exists_and_is_linked() {
     );
     assert!(doc.contains("read-only design evidence"), "{doc}");
     assert!(fixture.contains("OPTICS HUD RAILS PREVIEW"), "{fixture}");
-    assert!(fixture.contains("layout      top-rail center-viewport bottom-rail"), "{fixture}");
+    assert!(
+        fixture.contains("layout      top-rail center-viewport bottom-rail"),
+        "{fixture}"
+    );
     assert!(fixture.contains("runtime     not-wired"), "{fixture}");
 }
 
