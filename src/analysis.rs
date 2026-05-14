@@ -16,10 +16,11 @@ pub fn run(shell: &mut Phase1Shell, args: &[String]) -> String {
         None | Some("status") | Some("help") | Some("--help") | Some("-h") => status(),
         Some("load") => load(shell, &args[1..]),
         Some("inspect") => inspect(shell, &args[1..]),
+        Some("list") => list(shell),
         Some("report") => planned("report"),
         Some("forget") => planned("forget"),
         Some(other) => format!(
-            "phase1 analysis\nstatus           : unknown-action\naction           : {other}\nmode             : no-execute\nexecution-state  : not-executed\nhost-execution   : disabled\nsandbox-claim    : not-claimed\nhelp             : analyze status | analyze load <path> | analyze inspect <id>\n"
+            "phase1 analysis\nstatus           : unknown-action\naction           : {other}\nmode             : no-execute\nexecution-state  : not-executed\nhost-execution   : disabled\nsandbox-claim    : not-claimed\nhelp             : analyze status | analyze load <path> | analyze inspect <id> | analyze list\n"
         ),
     }
 }
@@ -39,7 +40,7 @@ fn status() -> String {
         "fyr-integration  : planned\n",
         "base1-evidence   : planned\n",
         "claim-boundary   : metadata-only-loading\n",
-        "usage            : analyze load <path> | analyze inspect <id>\n",
+        "usage            : analyze load <path> | analyze inspect <id> | analyze list\n",
     )
     .to_string()
 }
@@ -135,6 +136,32 @@ fn inspect(shell: &mut Phase1Shell, args: &[String]) -> String {
     };
 
     format_record("inspect", "found", record)
+}
+
+fn list(shell: &Phase1Shell) -> String {
+    let records = load_registry(shell);
+    let mut out = format!(
+        "phase1 analysis list\nstatus           : {}\nrecords          : {}\n",
+        if records.is_empty() { "empty" } else { "ok" },
+        records.len()
+    );
+
+    for record in &records {
+        out.push_str(&format!(
+            "record           : {} {} {}\n",
+            record.id, record.path, record.size_bytes
+        ));
+    }
+
+    out.push_str(concat!(
+        "execution-state  : not-executed\n",
+        "host-execution   : disabled\n",
+        "sandbox-claim    : not-claimed\n",
+        "dynamic-analysis : future-restricted\n",
+        "claim-boundary   : metadata-only-loading\n",
+    ));
+
+    out
 }
 
 fn format_record(action: &str, status: &str, record: &AnalysisRecord) -> String {
