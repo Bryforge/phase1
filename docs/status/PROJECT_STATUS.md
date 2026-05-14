@@ -1,29 +1,29 @@
 # Public project status
 
-Status kind: estimated roadmap progress  
-Source marker: [`site/status.json`](../../site/status.json)  
-Badge marker: [`site/status-badge.json`](../../site/status-badge.json)  
-Generated from commit: `372cc871f8b500f17b3a5e085e24d5f66b848b98`  
-Last updated UTC: `2026-05-14T04:24:00Z`
+Status kind: estimated roadmap progress
+Source marker: [`site/status.json`](../../site/status.json)
+Badge marker: [`site/status-badge.json`](../../site/status-badge.json)
+Generated from commit: `b35f7b1ddf630b51b0ca2dc99d44fd4b1835358e`
+Last updated UTC: `2026-05-14T08:28:55Z`
 
 ## Current estimate
 
 | Project | Estimated completion | Current state | Next milestone |
 | --- | ---: | --- | --- |
 | Phase1 operator console | 82% | usable edge console with guarded host access, VFS, dashboards, help UI, themes, learning, and tests | wire safe Fyr black_arts staged runtime stubs while preserving non-live defaults |
-| Fyr native language | 58% | seed language and toolchain surface exist with F3/F4/F5/F6 evidence, runtime-safety fixtures, standard-library contracts, and black_arts staged-candidate design/operator-visual/source-wiring handoff evidence | implement the first safe fyr staged runtime stub from issue #317 without candidate writes, host commands, network access, validation execution, promotion, discard, or live-system changes |
+| Fyr native language | 58% | seed language and toolchain surface exist with F3/F4/F5/F6 evidence, runtime-safety fixtures, standard-library contracts, Fyr-aware tab completion, and black_arts staged-candidate design/operator-visual/source-wiring handoff evidence | implement the first safe fyr staged runtime stub from issue #317 without candidate writes, host commands, network access, validation execution, promotion, discard, or live-system changes |
 | Base1 secure host / OS track | 40% | B2 focused test-suite evidence passed, reviewed B3 VM evidence is present, and the B6 X200 marker chain is published through evidence, checkpoint, public status, and release note; claim remains not_claimed | continue B4 recovery validation and repeatable physical boot evidence while preserving installer, hardening, release-candidate, and daily-driver non-claims |
 | X200 / Libreboot hardware path | 44% | X200 Linux-libre host generated reviewed B3 VM evidence and B6 marker evidence with phase1_marker_seen; the checkpoint and release note are published; repeatable physical boot validation remains separate | capture repeatable physical boot evidence and keep emulator, USB, recovery, installer, and hardware-readiness claims separated |
 | Security and crypto policy | 55% | trust model, crypto policy roadmap, provider registry, profile docs, config schema, and integrity checks are present | move from documentation policy into scoped implementation only after tests and review evidence |
 | Website and public docs | 90% | public site, status page, status JSON, badge endpoint, native GitHub Wiki, refreshed source wiki, organized docs, X200 evidence report, B6 checkpoint trail, Base1 B6 X200 release note, and Fyr black_arts public status trail are in place | keep the public status synchronized with implementation evidence and non-claims |
-| Repository organization | 100% | minimal root has 12 tracked files, 16 top-level folders, 0 unplanned root files, 0 tracked build files, and 0 root status duplicates | keep generated artifacts out of Git and keep compatibility links clean as work lands |
+| Repository organization | 100% | minimal root has 12 tracked files, 17 top-level folders, 0 unplanned root files, 0 tracked build files, and 0 root status duplicates | keep generated artifacts out of Git and keep compatibility links clean as work lands |
 
 Overall estimated roadmap completion: **67%**.
 
 ## Repository organization inputs
 
 - Root tracked files: 12
-- Top-level tracked directories: 16
+- Top-level tracked directories: 17
 - Unplanned root files: 0
 - Tracked build files: 0
 - Root status duplicates: 0
@@ -41,7 +41,7 @@ https://bryforge.github.io/phase1/status-badge.json
 
 Current report: Fyr black_arts staged-candidate evidence and [`docs/base1/releases/RELEASE_BASE1_B6_X200_MARKER_CHECKPOINT_V1.md`](../../docs/base1/releases/RELEASE_BASE1_B6_X200_MARKER_CHECKPOINT_V1.md)
 
-Fyr black_arts now has staged-candidate design, fixture, visual-mode, checklist, and runtime-stub handoff evidence. The first safe runtime wiring remains pending under issue #317.
+Fyr now has command and action-aware tab completion for `fyr`, `fyr run`, `fyr cat`, and the default `hello_hacker.fyr` VFS demo; Fyr black_arts also has staged-candidate design, fixture, visual-mode, checklist, and runtime-stub handoff evidence. The first safe runtime wiring remains pending under issue #317.
 
 The B6 X200 marker chain is still published through raw evidence, checkpoint, public status, and Base1 checkpoint release note.
 

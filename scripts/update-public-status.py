@@ -138,7 +138,7 @@ def project_rows(repo_percent: int, repo_state: str) -> list[dict[str, object]]:
         {
             "name": "Fyr native language",
             "estimated_completion_percent": 58,
-            "state": "seed language and toolchain surface exist with F3/F4/F5/F6 evidence, runtime-safety fixtures, standard-library contracts, and black_arts staged-candidate design/operator-visual/source-wiring handoff evidence",
+            "state": "seed language and toolchain surface exist with F3/F4/F5/F6 evidence, runtime-safety fixtures, standard-library contracts, Fyr-aware tab completion, and black_arts staged-candidate design/operator-visual/source-wiring handoff evidence",
             "next_milestone": "implement the first safe fyr staged runtime stub from issue #317 without candidate writes, host commands, network access, validation execution, promotion, discard, or live-system changes",
         },
         {
@@ -233,7 +233,7 @@ def build_status() -> dict[str, object]:
         "evidence_checkpoints": [b6_checkpoint],
         "current_public_report": {
             "title": "Fyr black_arts staged-candidate evidence and Phase1/Base1 B6 X200 marker checkpoint report",
-            "summary": "Fyr black_arts now has staged-candidate design, fixture, visual-mode, checklist, and runtime-stub handoff evidence, while the B6 X200 marker chain remains published through raw evidence, checkpoint, public status, and Base1 checkpoint release note.",
+            "summary": "Fyr now has command and action-aware tab completion for `fyr`, `fyr run`, `fyr cat`, and the default `hello_hacker.fyr` VFS demo; Fyr black_arts also has staged-candidate design, fixture, visual-mode, checklist, and runtime-stub handoff evidence, while the B6 X200 marker chain remains published through raw evidence, checkpoint, public status, and Base1 checkpoint release note.",
             "release_note_path": "docs/base1/releases/RELEASE_BASE1_B6_X200_MARKER_CHECKPOINT_V1.md",
             "checkpoint_path": "docs/checkpoints/B6_X200_MARKER_CHECKPOINT.md",
             "fyr_black_arts_paths": [
@@ -313,7 +313,7 @@ def write_markdown(status: dict[str, object]) -> None:
             "",
             "Current report: Fyr black_arts staged-candidate evidence and [`docs/base1/releases/RELEASE_BASE1_B6_X200_MARKER_CHECKPOINT_V1.md`](../../docs/base1/releases/RELEASE_BASE1_B6_X200_MARKER_CHECKPOINT_V1.md)",
             "",
-            "Fyr black_arts now has staged-candidate design, fixture, visual-mode, checklist, and runtime-stub handoff evidence. The first safe runtime wiring remains pending under issue #317.",
+            "Fyr now has command and action-aware tab completion for `fyr`, `fyr run`, `fyr cat`, and the default `hello_hacker.fyr` VFS demo; Fyr black_arts also has staged-candidate design, fixture, visual-mode, checklist, and runtime-stub handoff evidence. The first safe runtime wiring remains pending under issue #317.",
             "",
             "The B6 X200 marker chain is still published through raw evidence, checkpoint, public status, and Base1 checkpoint release note.",
             "",

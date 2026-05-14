@@ -58,7 +58,7 @@ Phase1 is not yet a kernel, hardened sandbox, or drop-in replacement for Linux, 
 | Operator console | Boot selector, dashboards, shell commands, help/man pages, autocomplete, mobile-safe UI, and theme controls. |
 | Virtual OS model | Simulated kernel, VFS, process table, `/proc`, `/dev`, `/var/log`, architecture reports, and system inspection commands. |
 | Guarded host access | Safe mode on by default, explicit trust gates, command capability metadata, and secret redaction. |
-| Fyr native language | `.fyr` scripts with prints, returns, let bindings, arithmetic, assertions, comparisons, boolean chains, grouped expressions, `if` return statements, test runner, package checks, and syntax color output. |
+| Fyr native language | `.fyr` scripts with prints, returns, let bindings, arithmetic, assertions, comparisons, boolean chains, grouped expressions, `if` return statements, test runner, package checks, syntax color output, and Fyr-aware tab completion for actions and demo files. |
 | Nested Phase1 | Metadata-only recursive operator contexts with `nest status`, `nest spawn`, `nest enter`, `nest destroy`, `nest inspect`, and `nest tree`. |
 | Base1 OS track | Long-term path toward a bootable Phase1-first system with Base1 as the trusted host layer, recovery, installer, update, storage, x86_64 boot profiles, and hardware validation. |
 | Learning system | `phase1-learn` stores local sanitized memory, imports history, learns notes/rules, and suggests next actions. |
@@ -254,7 +254,7 @@ Current Fyr visual assets:
 
 Start with [`docs/project/PHASE1_NATIVE_LANGUAGE.md`](docs/project/PHASE1_NATIVE_LANGUAGE.md), then follow the dedicated [`Fyr roadmap`](docs/fyr/ROADMAP.md).
 
-First working script inside Phase1:
+First working script inside Phase1. With raw line editing enabled, `fy<Tab>`, `fyr ru<Tab>`, and `fyr run hello_<Tab>` complete to the Fyr command, run action, and demo file path:
 
 ```text
 echo 'fn main() -> i32 { print("Hello, hacker!"); return 0; }' > hello_hacker.fyr
