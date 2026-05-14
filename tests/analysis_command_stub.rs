@@ -6,7 +6,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 static RUN_COUNTER: AtomicU64 = AtomicU64::new(0);
 
-fn run_phase1_with_analyze_plugin(input: &str) -> String {
+fn run_phase1(input: &str) -> String {
     let nonce = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map(|duration| duration.as_nanos())
@@ -16,36 +16,8 @@ fn run_phase1_with_analyze_plugin(input: &str) -> String {
         "phase1-analysis-command-stub-{}-{nonce}-{seq}",
         process::id()
     ));
-    let plugin_dir = run_dir.join("plugins");
     let _ = fs::remove_dir_all(&run_dir);
-    fs::create_dir_all(&plugin_dir).expect("create analysis plugin dir");
-    fs::write(plugin_dir.join("analyze.wasm"), b"\0asm\x01\0\0\0")
-        .expect("write analyze wasm marker");
-    fs::write(
-        plugin_dir.join("analyze.wasi"),
-        concat!(
-            "name=analyze\n",
-            "capability=none\n",
-            "stdout=phase1 analysis\n",
-            "stdout=status           : planned\n",
-            "stdout=mode             : no-execute\n",
-            "stdout=execution-state  : not-executed\n",
-            "stdout=host-execution   : disabled\n",
-            "stdout=sandbox-claim    : not-claimed\n",
-            "stdout=static-analysis  : planned\n",
-            "stdout=dynamic-analysis : future-restricted\n",
-            "stdout=sample-registry  : planned\n",
-            "stdout=reports          : planned\n",
-            "stdout=fyr-integration  : planned\n",
-            "stdout=base1-evidence   : planned\n",
-            "stdout=claim-boundary   : metadata-only-planning\n",
-            "stdout=load             : planned-no-op\n",
-            "stdout=inspect          : planned-no-op\n",
-            "stdout=report           : planned-no-op\n",
-            "stdout=forget           : planned-no-op\n",
-        ),
-    )
-    .expect("write analyze wasi manifest");
+    fs::create_dir_all(&run_dir).expect("create analysis command stub test dir");
 
     let mut child = Command::new(env!("CARGO_BIN_EXE_phase1"))
         .current_dir(&run_dir)
@@ -80,37 +52,35 @@ fn run_phase1_with_analyze_plugin(input: &str) -> String {
 
 #[test]
 fn analyze_command_stub_reports_no_execute_boundary() {
-    let output = run_phase1_with_analyze_plugin(
-        "wasm list\nanalyze\nanalyze status\nanalyze help\nanalyze load sample.bin\nexit\n",
-    );
+    let output = run_phase1("wasm list\nanalyze\nanalyze status\nanalyze help\nanalyze load sample.bin\nexit\n");
 
     for required in [
         "analyze",
-        "phase1 wasi run",
-        "plugin : analyze",
-        "sandbox: fs=virtual net=disabled host=blocked",
+        "phase1 wasm plugins",
         "phase1 analysis",
-        "status           : planned",
-        "mode             : no-execute",
+        "status           : experimental",
+        "mode             : metadata-only",
         "execution-state  : not-executed",
         "host-execution   : disabled",
         "sandbox-claim    : not-claimed",
         "static-analysis  : planned",
         "dynamic-analysis : future-restricted",
-        "sample-registry  : planned",
+        "sample-registry  : session-local",
         "reports          : planned",
         "fyr-integration  : planned",
         "base1-evidence   : planned",
-        "claim-boundary   : metadata-only-planning",
-        "load             : planned-no-op",
-        "inspect          : planned-no-op",
-        "report           : planned-no-op",
-        "forget           : planned-no-op",
+        "claim-boundary   : metadata-only-loading",
+        "usage            : analyze load <path>",
+        "phase1 analysis load",
+        "status           : missing",
+        "path             : /home/sample.bin",
+        "error            : no-such-vfs-file",
     ] {
         assert!(output.contains(required), "missing {required:?}:\n{output}");
     }
 
     for forbidden in [
+        "phase1 wasi run",
         "host=enabled",
         "host-execution   : enabled",
         "execution-state  : executed",
