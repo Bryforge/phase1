@@ -126,7 +126,7 @@ Future mode. `floor1` performs explicit allowlisted external requests for a port
 - Network mode defaults to `denied`.
 - Portal status must show the network owner.
 - Portals must not silently inherit host network access.
-- Future network access must be brokered through `floor1`.
+- future network access must be brokered through `floor1`.
 - Brokered access requires allowlists, audit rows, and redaction tests.
 - Portals cannot claim network isolation until separately implemented and tested.
 
