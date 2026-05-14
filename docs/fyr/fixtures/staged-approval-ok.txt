@@ -1,0 +1,17 @@
+name: black-arts-approval-fixture
+kind: staged-approval-fixture
+candidate: phase1-base1-candidate
+validation: staged-validation-ok.txt
+approval-state: approved-by-operator
+promotion-mode: explicit-only
+required-approval:
+  - operator
+  - evidence-link
+  - rollback-path
+  - status-boundary-check
+promotion-blockers:
+  - missing-validation
+  - missing-approval
+  - missing-rollback
+  - failed-status-boundary
+claim: fixture-only

@@ -52,9 +52,10 @@ The current staged candidate fixtures are:
 docs/fyr/fixtures/staged-candidate-ok.txt
 docs/fyr/fixtures/staged-plan-ok.txt
 docs/fyr/fixtures/staged-validation-ok.txt
+docs/fyr/fixtures/staged-approval-ok.txt
 ```
 
-These fixtures define expected shapes for candidate metadata, plan metadata, and validation results. They are not implementations.
+These fixtures define expected shapes for candidate metadata, plan metadata, validation results, and explicit approval. They are not implementations.
 
 ## Safety rules
 
