@@ -2,8 +2,8 @@
 mod optics;
 
 use optics::{
-    render_bottom_rail, render_static_preview, render_top_rail, OpticsDeviceProfile,
-    OpticsRailState,
+    render_bottom_rail, render_static_preview, render_top_rail, supported_device_labels,
+    supported_device_profiles, OpticsDeviceProfile, OpticsRailState,
 };
 
 #[test]
@@ -29,6 +29,19 @@ fn optics_renderer_static_preview_preserves_top_center_bottom_contract() {
             "missing {required:?}: {preview}"
         );
     }
+}
+
+#[test]
+fn optics_renderer_exposes_supported_device_profiles_without_dead_code() {
+    let profiles = supported_device_profiles();
+    let labels = supported_device_labels();
+
+    assert_eq!(profiles.len(), 4);
+    assert!(profiles.contains(&OpticsDeviceProfile::Mobile));
+    assert!(profiles.contains(&OpticsDeviceProfile::Laptop));
+    assert!(profiles.contains(&OpticsDeviceProfile::Desktop));
+    assert!(profiles.contains(&OpticsDeviceProfile::Terminal));
+    assert_eq!(labels, "mobile,laptop,desktop,terminal");
 }
 
 #[test]
