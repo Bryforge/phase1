@@ -98,6 +98,21 @@ fn clear_nest_exit_all_if_root() {
     }
 }
 
+fn main_env_flag(name: &str) -> Option<bool> {
+    std::env::var(name)
+        .ok()
+        .and_then(|raw| match raw.trim().to_ascii_lowercase().as_str() {
+            "1" | "true" | "on" | "yes" => Some(true),
+            "0" | "false" | "off" | "no" => Some(false),
+            _ => None,
+        })
+}
+
+fn optics_pro_shell_active() -> bool {
+    main_env_flag("PHASE1_OPTICS_PRO").unwrap_or(true)
+        && main_env_flag("PHASE1_LEGACY_SHELL_UI") != Some(true)
+}
+
 fn main() {
     ops_log::install_panic_hook();
     ops_log::log_event(
@@ -289,17 +304,21 @@ fn run_shell(boot_config: ui::BootConfig) -> ShellExit {
         }
     }
 
-    if boot_config.quick_boot {
-        ui::print_quick_boot(kernel::VERSION, boot_config);
-    } else {
-        ui::print_boot(kernel::VERSION);
+    if !optics_pro_shell_active() {
+        if boot_config.quick_boot {
+            ui::print_quick_boot(kernel::VERSION, boot_config);
+        } else {
+            ui::print_boot(kernel::VERSION);
+        }
     }
 
     shell.cmd_cd(Some("/home"));
-    println!(
-        "phase1 {} ready. Type 'help' for commands.",
-        display_version
-    );
+    if !optics_pro_shell_active() {
+        println!(
+            "phase1 {} ready. Type 'help' for commands.",
+            display_version
+        );
+    }
 
     let mut shell_exit = ShellExit::Shutdown;
     loop {
@@ -316,8 +335,10 @@ fn run_shell(boot_config: ui::BootConfig) -> ShellExit {
         shell.kernel.tick();
 
         let path = compact_path(&shell.kernel.vfs.cwd);
-        ui::print_prompt(shell.user(), &path);
-        let _ = io::stdout().flush();
+        if !optics_pro_shell_active() {
+            ui::print_prompt(shell.user(), &path);
+            let _ = io::stdout().flush();
+        }
         let editor_prompt = editor_prompt_text(shell.user(), &path);
 
         let line = match line_editor::read_shell_line(&editor_prompt) {

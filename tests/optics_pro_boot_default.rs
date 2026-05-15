@@ -1,30 +1,58 @@
+use std::fs;
 use std::io::Write;
-use std::process::{Command, Stdio};
+use std::process::{self, Command, Stdio};
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::time::{SystemTime, UNIX_EPOCH};
 
-fn run_phase1(input: &str) -> String {
-    let mut child = Command::new(env!("CARGO_BIN_EXE_phase1"))
+static RUN_COUNTER: AtomicU64 = AtomicU64::new(0);
+
+fn test_run_dir(label: &str) -> std::path::PathBuf {
+    let nonce = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|duration| duration.as_nanos())
+        .unwrap_or(0);
+    let seq = RUN_COUNTER.fetch_add(1, Ordering::Relaxed);
+    let dir = std::env::temp_dir().join(format!(
+        "phase1-optics-pro-{label}-{}-{nonce}-{seq}",
+        process::id()
+    ));
+    let _ = fs::remove_dir_all(&dir);
+    fs::create_dir_all(&dir).expect("create optics pro test dir");
+    dir
+}
+
+fn run_phase1_with_env(label: &str, input: &[u8], envs: &[(&str, &str)]) -> String {
+    let run_dir = test_run_dir(label);
+
+    let mut command = Command::new(env!("CARGO_BIN_EXE_phase1"));
+    command
+        .current_dir(&run_dir)
         .env("PHASE1_TEST_MODE", "1")
         .env("PHASE1_PERSISTENT_STATE", "0")
         .env("PHASE1_COOKED_INPUT", "1")
         .env("PHASE1_NO_COLOR", "1")
         .env("PHASE1_ASCII", "1")
-        .env("PHASE1_OPTICS_PRO", "1")
-        .env_remove("PHASE1_BOOT_SELECTOR")
-        .env_remove("PHASE1_LEGACY_SHELL_UI")
+        .env_remove("PHASE1_THEME")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .spawn()
-        .expect("spawn phase1");
+        .stderr(Stdio::piped());
+
+    for (key, value) in envs {
+        command.env(key, value);
+    }
+
+    let mut child = command.spawn().expect("spawn phase1");
 
     child
         .stdin
         .as_mut()
         .expect("stdin")
-        .write_all(format!("\n{input}").as_bytes())
+        .write_all(input)
         .expect("write stdin");
 
     let output = child.wait_with_output().expect("phase1 output");
+    let _ = fs::remove_dir_all(&run_dir);
+
     format!(
         "{}{}",
         String::from_utf8_lossy(&output.stdout),
@@ -62,7 +90,15 @@ fn has_blank_line_between_command_and_status(output: &str) -> bool {
 
 #[test]
 fn optics_pro_shell_frame_is_default_active_input_surface() {
-    let output = run_phase1("exit\n");
+    let output = run_phase1_with_env(
+        "default",
+        b"\nexit\n",
+        &[
+            ("PHASE1_OPTICS_PRO", "1"),
+            ("PHASE1_BOOT_SELECTOR", "0"),
+            ("PHASE1_LEGACY_SHELL_UI", "0"),
+        ],
+    );
 
     assert!(
         output.contains("\x1b[3J\x1b[2J\x1b[H"),
@@ -107,69 +143,32 @@ fn optics_pro_shell_frame_is_default_active_input_surface() {
 
 #[test]
 fn optics_boot_selector_escape_hatch_preserves_boot_card() {
-    let mut child = Command::new(env!("CARGO_BIN_EXE_phase1"))
-        .env("PHASE1_TEST_MODE", "1")
-        .env("PHASE1_PERSISTENT_STATE", "0")
-        .env("PHASE1_COOKED_INPUT", "1")
-        .env("PHASE1_NO_COLOR", "1")
-        .env("PHASE1_ASCII", "1")
-        .env("PHASE1_OPTICS_PRO", "1")
-        .env("PHASE1_BOOT_SELECTOR", "1")
-        .env_remove("PHASE1_LEGACY_SHELL_UI")
-        .stdin(Stdio::piped())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .spawn()
-        .expect("spawn phase1");
-
-    child
-        .stdin
-        .as_mut()
-        .expect("stdin")
-        .write_all(b"\nexit\n")
-        .expect("write stdin");
-
-    let output = child.wait_with_output().expect("phase1 output");
-    let output = format!(
-        "{}{}",
-        String::from_utf8_lossy(&output.stdout),
-        String::from_utf8_lossy(&output.stderr)
+    let output = run_phase1_with_env(
+        "boot-selector",
+        b"\nexit\n",
+        &[
+            ("PHASE1_OPTICS_PRO", "1"),
+            ("PHASE1_BOOT_SELECTOR", "1"),
+            ("PHASE1_LEGACY_SHELL_UI", "0"),
+        ],
     );
+    let normalized = normalize_terminal_output(&output);
 
-    assert!(output.contains("BOOT CONFIG"), "{output}");
-    assert!(output.contains("phase1://boot"), "{output}");
-    assert!(output.contains("A TOP RAIL"), "{output}");
+    assert!(normalized.contains("BOOT CONFIG"), "{output}");
+    assert!(normalized.contains("phase1://boot"), "{output}");
+    assert!(normalized.contains("A TOP RAIL"), "{output}");
 }
 
 #[test]
 fn legacy_shell_ui_escape_hatch_preserves_old_prompt() {
-    let mut child = Command::new(env!("CARGO_BIN_EXE_phase1"))
-        .env("PHASE1_TEST_MODE", "1")
-        .env("PHASE1_PERSISTENT_STATE", "0")
-        .env("PHASE1_COOKED_INPUT", "1")
-        .env("PHASE1_NO_COLOR", "1")
-        .env("PHASE1_ASCII", "1")
-        .env("PHASE1_LEGACY_SHELL_UI", "1")
-        .env_remove("PHASE1_BOOT_SELECTOR")
-        .env_remove("PHASE1_OPTICS_PRO")
-        .stdin(Stdio::piped())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .spawn()
-        .expect("spawn phase1");
-
-    child
-        .stdin
-        .as_mut()
-        .expect("stdin")
-        .write_all(b"\nexit\n")
-        .expect("write stdin");
-
-    let output = child.wait_with_output().expect("phase1 output");
-    let output = format!(
-        "{}{}",
-        String::from_utf8_lossy(&output.stdout),
-        String::from_utf8_lossy(&output.stderr)
+    let output = run_phase1_with_env(
+        "legacy",
+        b"\nexit\n",
+        &[
+            ("PHASE1_OPTICS_PRO", "0"),
+            ("PHASE1_BOOT_SELECTOR", "0"),
+            ("PHASE1_LEGACY_SHELL_UI", "1"),
+        ],
     );
     let normalized = normalize_terminal_output(&output);
 
