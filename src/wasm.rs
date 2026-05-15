@@ -515,11 +515,7 @@ mod tests {
         let dir = temp_plugins();
         fs::write(dir.join("optics.wasm"), b"\0asm\x01\0\0\0").unwrap();
         for device in ["mobile", "laptop", "desktop", "terminal"] {
-            let out = execute_plugin(
-                &dir,
-                "optics",
-                &["device".to_string(), device.to_string()],
-            );
+            let out = execute_plugin(&dir, "optics", &["device".to_string(), device.to_string()]);
             assert!(out.contains("plugin : optics"));
             assert!(out.contains(&format!("args   : device {device}")));
             assert!(out.contains("OPTICS DEVICE PREVIEW"));
