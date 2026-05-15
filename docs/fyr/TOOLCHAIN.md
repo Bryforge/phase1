@@ -28,6 +28,8 @@ tests/
 
 The Fyr safety boundary is documented in [`SAFETY_MODEL.md`](SAFETY_MODEL.md).
 
+Native execution workflow guidance is documented in [`NATIVE_EXECUTION_GUIDANCE.md`](NATIVE_EXECUTION_GUIDANCE.md).
+
 Current defaults:
 
 - VFS-only.
@@ -38,10 +40,19 @@ Current defaults:
 - Deterministic dry-run build output.
 - Build output reports `backend : seed/interpreted` and `host    : none`.
 
+## Operator workflow guidance
+
+Use native or inline Fyr execution only for short tests and quick checks.
+
+Use `.fyr` files edited with an editor for real work.
+
+Prefer file-backed package/check/build/test/run workflows over long unsaved native input.
+
 ## Example
 
 ```text
 fyr init hello
+avim hello/src/main.fyr
 fyr check hello
 fyr build hello
 fyr run hello/src/main.fyr
