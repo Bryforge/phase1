@@ -6,7 +6,8 @@ const COMMAND_DOC: &str = "docs/ui/OPTICS_COMMAND_SURFACE.md";
 
 #[test]
 fn optics_rail_configuration_doc_exists_and_defines_scope() {
-    let doc = fs::read_to_string(RAIL_CONFIG_DOC).expect("Optics rail configuration doc should exist");
+    let doc =
+        fs::read_to_string(RAIL_CONFIG_DOC).expect("Optics rail configuration doc should exist");
 
     for required in [
         "# Optics Rail Configuration",
@@ -24,7 +25,8 @@ fn optics_rail_configuration_doc_exists_and_defines_scope() {
 
 #[test]
 fn optics_rail_configuration_documents_environment_controls() {
-    let doc = fs::read_to_string(RAIL_CONFIG_DOC).expect("Optics rail configuration doc should exist");
+    let doc =
+        fs::read_to_string(RAIL_CONFIG_DOC).expect("Optics rail configuration doc should exist");
 
     for required in [
         "PHASE1_OPTICS_PRO=1",
@@ -42,7 +44,8 @@ fn optics_rail_configuration_documents_environment_controls() {
 
 #[test]
 fn optics_rail_configuration_preserves_layer_responsibilities() {
-    let doc = fs::read_to_string(RAIL_CONFIG_DOC).expect("Optics rail configuration doc should exist");
+    let doc =
+        fs::read_to_string(RAIL_CONFIG_DOC).expect("Optics rail configuration doc should exist");
 
     for required in [
         "product",
@@ -64,7 +67,8 @@ fn optics_rail_configuration_preserves_layer_responsibilities() {
 
 #[test]
 fn optics_rail_configuration_preserves_color_policy() {
-    let doc = fs::read_to_string(RAIL_CONFIG_DOC).expect("Optics rail configuration doc should exist");
+    let doc =
+        fs::read_to_string(RAIL_CONFIG_DOC).expect("Optics rail configuration doc should exist");
 
     for required in [
         "A TOP RAIL: cyan",
@@ -81,7 +85,8 @@ fn optics_rail_configuration_preserves_color_policy() {
 
 #[test]
 fn optics_rail_configuration_preserves_dynamic_spacing_and_non_claims() {
-    let doc = fs::read_to_string(RAIL_CONFIG_DOC).expect("Optics rail configuration doc should exist");
+    let doc =
+        fs::read_to_string(RAIL_CONFIG_DOC).expect("Optics rail configuration doc should exist");
 
     for required in [
         "B-to-C gap",
