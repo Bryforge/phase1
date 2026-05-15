@@ -17,8 +17,12 @@ fn optics_renderer_static_preview_preserves_top_center_bottom_contract() {
         "runtime=not-wired",
         "TOP product=Phase1 channel=edge profile=PRO",
         "ctx=root > nest:0/1 > portal:none > ghost:none",
+        "origin=0/0",
+        "route=ROOT",
         "integrity=not-checked",
         "crypto=chain-planned",
+        "safe-portal=planned",
+        "rollback=available",
         "ROOT DIRECTION MAP",
         "layout=center-root u-d-L-R",
         "L/NUM  <----  ROOT  ---->  R/NUM",
@@ -56,6 +60,26 @@ fn optics_pro_shell_layers_keep_a_b_blank_c_d_order() {
         frame.contains("phase1://edge/root > security status\n\nC STATUS HUD"),
         "B and C must be separated by a blank line: {frame}"
     );
+}
+
+#[test]
+fn optics_pro_shell_layers_expose_origin_route_and_recovery_state() {
+    let mut state = OpticsRailState::pro_static(OpticsDeviceProfile::Terminal);
+    state.origin = "0/0".to_string();
+    state.route = "ROOT>R/3".to_string();
+    state.safe_portal = "ready".to_string();
+    state.rollback = "0/0".to_string();
+    let frame = render_pro_shell_layers(&state, "phase whereami", false);
+
+    for required in [
+        "origin=0/0",
+        "route=ROOT>R/3",
+        "safe-portal=ready",
+        "rollback=0/0",
+        "phase1://edge/root > phase whereami",
+    ] {
+        assert!(frame.contains(required), "missing {required:?}: {frame}");
+    }
 }
 
 #[test]
@@ -143,6 +167,7 @@ fn optics_renderer_adapts_device_density_without_changing_state_meaning() {
     let desktop = render_static_preview(OpticsDeviceProfile::Desktop);
 
     assert!(mobile.contains("BOT color=bright-blue input=active mutation=none result=ok"));
+    assert!(mobile.contains("origin=0/0"), "{mobile}");
     assert!(
         !mobile.contains("BOT warning="),
         "mobile should stay one-line bottom rail: {mobile}"
@@ -150,7 +175,7 @@ fn optics_renderer_adapts_device_density_without_changing_state_meaning() {
 
     assert!(laptop.contains("device=laptop"), "{laptop}");
     assert!(
-        laptop.contains("BOT warning=none copy-safe=raw-command-preserved"),
+        laptop.contains("BOT warning=none safe-portal=planned rollback=available"),
         "{laptop}"
     );
 
@@ -210,6 +235,10 @@ fn optics_root_direction_map_normalizes_direction_aliases() {
 fn optics_renderer_custom_state_preserves_command_and_safety_labels() {
     let mut state = OpticsRailState::pro_static(OpticsDeviceProfile::Laptop);
     state.context = "root > portal:alpha > ghost:watch".to_string();
+    state.origin = "0/0".to_string();
+    state.route = "ROOT>L/2".to_string();
+    state.safe_portal = "ready".to_string();
+    state.rollback = "ROOT".to_string();
     state.integrity = "changed".to_string();
     state.crypto = "denied".to_string();
     state.mutation = "typing".to_string();
@@ -225,6 +254,9 @@ fn optics_renderer_custom_state_preserves_command_and_safety_labels() {
         top.contains("ctx=root > portal:alpha > ghost:watch"),
         "{top}"
     );
+    assert!(top.contains("origin=0/0"), "{top}");
+    assert!(top.contains("route=ROOT>L/2"), "{top}");
+    assert!(top.contains("safe-portal=ready"), "{top}");
     assert!(top.contains("integrity=changed"), "{top}");
     assert!(top.contains("crypto=denied"), "{top}");
     assert!(bottom.contains("mutation=typing"), "{bottom}");
@@ -232,6 +264,8 @@ fn optics_renderer_custom_state_preserves_command_and_safety_labels() {
     assert!(bottom.contains("task=verify"), "{bottom}");
     assert!(bottom.contains("result=warning"), "{bottom}");
     assert!(bottom.contains("warning=guarded-operation"), "{bottom}");
+    assert!(bottom.contains("safe-portal=ready"), "{bottom}");
+    assert!(bottom.contains("rollback=ROOT"), "{bottom}");
 }
 
 #[test]
