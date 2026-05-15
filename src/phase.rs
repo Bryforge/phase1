@@ -13,7 +13,9 @@ fn phase_help() -> String {
     out.push_str("PHASE HELP\n");
     out.push_str("mode=status-only\n");
     out.push_str("commands=whereami compass path map status help\n");
-    out.push_str("boundary=no-live-movement no-origin-mutation no-host-effect no-external-effect\n");
+    out.push_str(
+        "boundary=no-live-movement no-origin-mutation no-host-effect no-external-effect\n",
+    );
     out.push_str("examples:\n");
     out.push_str("  phase whereami\n");
     out.push_str("  phase compass\n");
