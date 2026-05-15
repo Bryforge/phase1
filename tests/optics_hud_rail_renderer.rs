@@ -23,6 +23,12 @@ fn optics_renderer_static_preview_preserves_top_center_bottom_contract() {
         "crypto=chain-planned",
         "safe-portal=planned",
         "rollback=available",
+        "health=nominal",
+        "risk=low",
+        "lock=open",
+        "dark_phase=off",
+        "host-effect=none",
+        "external-effect=none",
         "ROOT DIRECTION MAP",
         "layout=center-root u-d-L-R",
         "L/NUM  <----  ROOT  ---->  R/NUM",
@@ -77,6 +83,30 @@ fn optics_pro_shell_layers_expose_origin_route_and_recovery_state() {
         "safe-portal=ready",
         "rollback=0/0",
         "phase1://edge/root > phase whereami",
+    ] {
+        assert!(frame.contains(required), "missing {required:?}: {frame}");
+    }
+}
+
+#[test]
+fn optics_pro_shell_layers_expose_danger_status_overlays() {
+    let mut state = OpticsRailState::pro_static(OpticsDeviceProfile::Terminal);
+    state.domain_health = "unstable".to_string();
+    state.risk = "high".to_string();
+    state.lock_state = "sealed".to_string();
+    state.dark_phase = "armed".to_string();
+    state.host_effect = "none".to_string();
+    state.external_effect = "none".to_string();
+    let frame = render_pro_shell_layers(&state, "phase danger status", false);
+
+    for required in [
+        "health=unstable",
+        "risk=high",
+        "lock=sealed",
+        "dark_phase=armed",
+        "host-effect=none",
+        "external-effect=none",
+        "phase1://edge/root > phase danger status",
     ] {
         assert!(frame.contains(required), "missing {required:?}: {frame}");
     }
@@ -168,6 +198,7 @@ fn optics_renderer_adapts_device_density_without_changing_state_meaning() {
 
     assert!(mobile.contains("BOT color=bright-blue input=active mutation=none result=ok"));
     assert!(mobile.contains("origin=0/0"), "{mobile}");
+    assert!(mobile.contains("health=nominal risk=low"), "{mobile}");
     assert!(
         !mobile.contains("BOT warning="),
         "mobile should stay one-line bottom rail: {mobile}"
@@ -176,6 +207,10 @@ fn optics_renderer_adapts_device_density_without_changing_state_meaning() {
     assert!(laptop.contains("device=laptop"), "{laptop}");
     assert!(
         laptop.contains("BOT warning=none safe-portal=planned rollback=available"),
+        "{laptop}"
+    );
+    assert!(
+        laptop.contains("host-effect=none external-effect=none"),
         "{laptop}"
     );
 
@@ -239,6 +274,12 @@ fn optics_renderer_custom_state_preserves_command_and_safety_labels() {
     state.route = "ROOT>L/2".to_string();
     state.safe_portal = "ready".to_string();
     state.rollback = "ROOT".to_string();
+    state.domain_health = "quarantined".to_string();
+    state.risk = "critical".to_string();
+    state.lock_state = "sealed".to_string();
+    state.dark_phase = "armed".to_string();
+    state.host_effect = "none".to_string();
+    state.external_effect = "none".to_string();
     state.integrity = "changed".to_string();
     state.crypto = "denied".to_string();
     state.mutation = "typing".to_string();
@@ -257,6 +298,12 @@ fn optics_renderer_custom_state_preserves_command_and_safety_labels() {
     assert!(top.contains("origin=0/0"), "{top}");
     assert!(top.contains("route=ROOT>L/2"), "{top}");
     assert!(top.contains("safe-portal=ready"), "{top}");
+    assert!(top.contains("health=quarantined"), "{top}");
+    assert!(top.contains("risk=critical"), "{top}");
+    assert!(top.contains("lock=sealed"), "{top}");
+    assert!(top.contains("dark_phase=armed"), "{top}");
+    assert!(top.contains("host-effect=none"), "{top}");
+    assert!(top.contains("external-effect=none"), "{top}");
     assert!(top.contains("integrity=changed"), "{top}");
     assert!(top.contains("crypto=denied"), "{top}");
     assert!(bottom.contains("mutation=typing"), "{bottom}");
@@ -266,6 +313,8 @@ fn optics_renderer_custom_state_preserves_command_and_safety_labels() {
     assert!(bottom.contains("warning=guarded-operation"), "{bottom}");
     assert!(bottom.contains("safe-portal=ready"), "{bottom}");
     assert!(bottom.contains("rollback=ROOT"), "{bottom}");
+    assert!(bottom.contains("host-effect=none"), "{bottom}");
+    assert!(bottom.contains("external-effect=none"), "{bottom}");
 }
 
 #[test]
