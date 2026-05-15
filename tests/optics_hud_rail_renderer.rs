@@ -2,8 +2,9 @@
 mod optics;
 
 use optics::{
-    render_bottom_rail, render_static_preview, render_top_rail, supported_device_labels,
-    supported_device_profiles, OpticsDeviceProfile, OpticsRailState,
+    colorize_user_input, render_bottom_rail, render_pro_shell_layers, render_static_preview,
+    render_top_rail, supported_device_labels, supported_device_profiles, OpticsDeviceProfile,
+    OpticsRailState, USER_INPUT_BRIGHT_YELLOW,
 };
 
 #[test]
@@ -29,6 +30,57 @@ fn optics_renderer_static_preview_preserves_top_center_bottom_contract() {
             "missing {required:?}: {preview}"
         );
     }
+}
+
+#[test]
+fn optics_pro_shell_layers_keep_a_b_blank_c_d_order() {
+    let mut state = OpticsRailState::pro_static(OpticsDeviceProfile::Terminal);
+    state.mutation = "typing".to_string();
+    state.command_family = "security".to_string();
+    let frame = render_pro_shell_layers(&state, "security status", false);
+
+    let top = frame.find("A TOP RAIL").expect("top rail");
+    let command = frame.find("B COMMAND RAIL").expect("command rail");
+    let status = frame.find("C STATUS HUD").expect("status hud");
+    let bottom = frame.find("D BOTTOM HUD").expect("bottom hud");
+
+    assert!(top < command, "{frame}");
+    assert!(command < status, "{frame}");
+    assert!(status < bottom, "{frame}");
+    assert!(
+        frame.contains("phase1://edge/root > security status\n\nC STATUS HUD"),
+        "B and C must be separated by a blank line: {frame}"
+    );
+}
+
+#[test]
+fn optics_pro_shell_layers_color_code_without_reusing_bright_yellow() {
+    let mut state = OpticsRailState::pro_static(OpticsDeviceProfile::Terminal);
+    state.mutation = "typing".to_string();
+    let frame = render_pro_shell_layers(&state, "optics status", true);
+
+    let highlighted = format!("{USER_INPUT_BRIGHT_YELLOW}optics status");
+    assert!(frame.contains(&highlighted), "typed text must be bright yellow: {frame:?}");
+    assert_eq!(
+        frame.matches(USER_INPUT_BRIGHT_YELLOW).count(),
+        1,
+        "bright yellow is reserved for typed/copied user input only: {frame:?}"
+    );
+    assert!(frame.contains("\x1b[36mA TOP RAIL"), "top rail should be cyan: {frame:?}");
+    assert!(frame.contains("\x1b[34mB COMMAND RAIL"), "command rail label should be blue: {frame:?}");
+    assert!(frame.contains("\x1b[32mC STATUS HUD"), "status hud should be green: {frame:?}");
+    assert!(frame.contains("\x1b[35mD BOTTOM HUD"), "bottom hud should be magenta: {frame:?}");
+}
+
+#[test]
+fn optics_user_input_highlight_reserves_bright_yellow() {
+    let colored = colorize_user_input("rm scratch", true);
+    assert!(colored.contains(USER_INPUT_BRIGHT_YELLOW));
+    assert!(colored.contains("rm scratch"));
+    assert_eq!(colored.matches(USER_INPUT_BRIGHT_YELLOW).count(), 1);
+
+    let plain = colorize_user_input("rm scratch", false);
+    assert_eq!(plain, "rm scratch");
 }
 
 #[test]
