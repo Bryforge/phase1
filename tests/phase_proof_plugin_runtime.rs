@@ -74,8 +74,20 @@ fn phase_proof_plugin_is_runnable_as_phase1_command_by_default() {
     );
 
     assert!(output.status.success(), "phase1 failed:\n{combined}");
-    assert!(combined.contains("PHASE UNIVERSE PROOF PROGRAM"), "{combined}");
-    assert!(combined.contains("LaTeX: P = ROOT > r_1 > r_2 > ... > r_n"), "{combined}");
-    assert!(combined.contains("claim-boundary=proof-display-only"), "{combined}");
-    assert!(!combined.contains("command not found: phase-proof"), "{combined}");
+    assert!(
+        combined.contains("PHASE UNIVERSE PROOF PROGRAM"),
+        "{combined}"
+    );
+    assert!(
+        combined.contains("LaTeX: P = ROOT > r_1 > r_2 > ... > r_n"),
+        "{combined}"
+    );
+    assert!(
+        combined.contains("claim-boundary=proof-display-only"),
+        "{combined}"
+    );
+    assert!(
+        !combined.contains("command not found: phase-proof"),
+        "{combined}"
+    );
 }
