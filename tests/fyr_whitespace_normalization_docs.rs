@@ -5,8 +5,8 @@ const LANGUAGE_BOOK: &str = "docs/fyr/LANGUAGE_BOOK.md";
 
 #[test]
 fn fyr_whitespace_normalization_doc_exists_and_defines_scope() {
-    let doc = fs::read_to_string(WHITESPACE_DOC)
-        .expect("Fyr whitespace normalization doc should exist");
+    let doc =
+        fs::read_to_string(WHITESPACE_DOC).expect("Fyr whitespace normalization doc should exist");
 
     for required in [
         "# Fyr whitespace normalization",
@@ -21,8 +21,8 @@ fn fyr_whitespace_normalization_doc_exists_and_defines_scope() {
 
 #[test]
 fn fyr_whitespace_normalization_preserves_core_equivalence_rule() {
-    let doc = fs::read_to_string(WHITESPACE_DOC)
-        .expect("Fyr whitespace normalization doc should exist");
+    let doc =
+        fs::read_to_string(WHITESPACE_DOC).expect("Fyr whitespace normalization doc should exist");
 
     for required in [
         "let x=1+2;",
@@ -36,8 +36,8 @@ fn fyr_whitespace_normalization_preserves_core_equivalence_rule() {
 
 #[test]
 fn fyr_whitespace_normalization_lists_token_spacing_surfaces() {
-    let doc = fs::read_to_string(WHITESPACE_DOC)
-        .expect("Fyr whitespace normalization doc should exist");
+    let doc =
+        fs::read_to_string(WHITESPACE_DOC).expect("Fyr whitespace normalization doc should exist");
 
     for required in [
         "assignment operators",
@@ -59,8 +59,8 @@ fn fyr_whitespace_normalization_lists_token_spacing_surfaces() {
 
 #[test]
 fn fyr_whitespace_normalization_preserves_meaningful_whitespace() {
-    let doc = fs::read_to_string(WHITESPACE_DOC)
-        .expect("Fyr whitespace normalization doc should exist");
+    let doc =
+        fs::read_to_string(WHITESPACE_DOC).expect("Fyr whitespace normalization doc should exist");
 
     for required in [
         "string literals",
@@ -77,8 +77,8 @@ fn fyr_whitespace_normalization_preserves_meaningful_whitespace() {
 
 #[test]
 fn fyr_whitespace_normalization_links_file_backed_workflows_and_non_claims() {
-    let doc = fs::read_to_string(WHITESPACE_DOC)
-        .expect("Fyr whitespace normalization doc should exist");
+    let doc =
+        fs::read_to_string(WHITESPACE_DOC).expect("Fyr whitespace normalization doc should exist");
 
     for required in [
         "NATIVE_EXECUTION_GUIDANCE.md",
