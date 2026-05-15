@@ -116,7 +116,10 @@ fn optics_device_profiles_are_all_routable() {
     for device in ["mobile", "laptop", "desktop", "terminal"] {
         let output = run_phase1(&format!("optics device {device}"));
         assert!(output.contains("OPTICS DEVICE PREVIEW"), "{output}");
-        assert!(output.contains(&format!("device      : {device}")), "{output}");
+        assert!(
+            output.contains(&format!("device      : {device}")),
+            "{output}"
+        );
         assert!(output.contains(&format!("device={device}")), "{output}");
         assert!(output.contains("OPTICS HUD RAIL RENDER"), "{output}");
         assert!(output.contains("status : ok"), "{output}");
