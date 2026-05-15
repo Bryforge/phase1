@@ -100,7 +100,33 @@ Example:
 fn main() -> i32 { let answer = 42; if (answer > 40 && answer < 50) { return answer; } return 0; }
 ```
 
-## 6. Diagnostics
+## 6. Whitespace
+
+Fyr whitespace behavior is defined in [`WHITESPACE_NORMALIZATION.md`](WHITESPACE_NORMALIZATION.md).
+
+Core rule:
+
+- spaces between normal tokens should not change program meaning;
+- spaces inside strings, text literals, comments, and any future indentation-sensitive syntax must be preserved.
+
+Example equivalent forms:
+
+```fyr
+let x=1+2;
+let x = 1 + 2;
+let   x   =   1   +   2;
+```
+
+Example preserved literal spacing:
+
+```fyr
+print("hello world");
+print("hello   world");
+```
+
+Those string literals are not equivalent because the spaces are literal content.
+
+## 7. Diagnostics
 
 Current diagnostics are designed to be deterministic and VFS-facing. Covered diagnostics include:
 
@@ -119,7 +145,7 @@ Current diagnostics are designed to be deterministic and VFS-facing. Covered dia
 
 Diagnostics should identify the Fyr file or package target where possible.
 
-## 7. Tooling commands
+## 8. Tooling commands
 
 Current commands:
 
@@ -147,7 +173,7 @@ Safety model:
 - No host compiler.
 - Deterministic dry-run build output.
 
-## 8. Phase1 integration
+## 9. Phase1 integration
 
 Fyr is part of Phase1, not a separate production language. The intended path is:
 
@@ -157,7 +183,7 @@ Fyr is part of Phase1, not a separate production language. The intended path is:
 4. Use F5 self-workflows to help Phase1 inspect, copy, construct, and validate itself.
 5. Add a small standard library only after the runtime is bounded and tested.
 
-## 9. Examples
+## 10. Examples
 
 Current examples:
 
@@ -169,9 +195,10 @@ Current roadmap and toolchain docs:
 - [`ROADMAP.md`](ROADMAP.md)
 - [`TOOLCHAIN.md`](TOOLCHAIN.md)
 - [`README.md`](README.md)
+- [`NATIVE_EXECUTION_GUIDANCE.md`](NATIVE_EXECUTION_GUIDANCE.md)
 - [`../status/FYR_PHASE1_100_COMPLETION_GATES.md`](../status/FYR_PHASE1_100_COMPLETION_GATES.md)
 
-## 10. Validation links
+## 11. Validation links
 
 Current Fyr-focused integration tests include:
 
@@ -183,7 +210,7 @@ Current Fyr-focused integration tests include:
 - `tests/fyr_f3_package_diagnostics.rs`
 - `tests/fyr_f3_expression_diagnostics.rs`
 
-## 11. Contributor guide
+## 12. Contributor guide
 
 When adding Fyr behavior:
 
@@ -193,7 +220,7 @@ When adding Fyr behavior:
 4. Do not raise public completion percentages manually.
 5. Preserve non-claims unless release evidence supports changing them.
 
-## 12. Roadmap
+## 13. Roadmap
 
 Fyr's 100% gate is evidence-bound. All F0-F7 gates must be satisfied before public wording can move from "Phase1-native language track" to "Phase1's native scripting language." See [`../status/FYR_PHASE1_100_COMPLETION_GATES.md`](../status/FYR_PHASE1_100_COMPLETION_GATES.md).
 
@@ -203,3 +230,4 @@ Fyr's 100% gate is evidence-bound. All F0-F7 gates must be satisfied before publ
 - [`../../docs/project/PHASE1_NATIVE_LANGUAGE.md`](../../docs/project/PHASE1_NATIVE_LANGUAGE.md)
 - [`ROADMAP.md`](ROADMAP.md)
 - [`TOOLCHAIN.md`](TOOLCHAIN.md)
+- [`WHITESPACE_NORMALIZATION.md`](WHITESPACE_NORMALIZATION.md)
