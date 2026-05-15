@@ -65,6 +65,9 @@ pub fn execute_plugin(plugins_dir: &Path, name: &str, args: &[String]) -> String
     if is_optics_status(name, args) {
         return optics_status(args);
     }
+    if is_optics_device(name, args) {
+        return optics_device_preview(args);
+    }
     if is_optics_rails(name, args) {
         return optics_rails_preview(args);
     }
@@ -114,6 +117,10 @@ fn is_optics_status(name: &str, args: &[String]) -> bool {
     name == "optics" && args.first().is_some_and(|arg| arg == "status")
 }
 
+fn is_optics_device(name: &str, args: &[String]) -> bool {
+    name == "optics" && args.first().is_some_and(|arg| arg == "device")
+}
+
 fn is_optics_rails(name: &str, args: &[String]) -> bool {
     name == "optics" && args.first().is_some_and(|arg| arg == "rails")
 }
@@ -143,6 +150,62 @@ fn optics_status(args: &[String]) -> String {
     out.push_str("status : ok\n");
     out.push_str("exit   : 0\n");
     out
+}
+
+fn optics_device_preview(args: &[String]) -> String {
+    let mut out = String::from("phase1 wasi run\n");
+    out.push_str("plugin : optics\n");
+    out.push_str(&format!("runtime: {RUNTIME}\n"));
+    out.push_str("sandbox: fs=virtual net=disabled host=blocked\n");
+    out.push_str("cap    : none\n");
+    out.push_str(&format!("args   : {}\n", redact_args(args).join(" ")));
+
+    let Some(raw_device) = args.get(1).map(String::as_str) else {
+        out.push_str("OPTICS DEVICE PREVIEW\n");
+        out.push_str("result      : missing-device\n");
+        out.push_str("usage       : optics device mobile|laptop|desktop|terminal\n");
+        out.push_str(&format!(
+            "supported   : {}\n",
+            optics::supported_device_labels()
+        ));
+        out.push_str("status : failed\n");
+        out.push_str("exit   : 1\n");
+        return out;
+    };
+
+    let Some(device) = optics_device_profile(raw_device) else {
+        out.push_str("OPTICS DEVICE PREVIEW\n");
+        out.push_str("result      : invalid-device\n");
+        out.push_str(&format!("requested   : {}\n", redact_text(raw_device)));
+        out.push_str("usage       : optics device mobile|laptop|desktop|terminal\n");
+        out.push_str(&format!(
+            "supported   : {}\n",
+            optics::supported_device_labels()
+        ));
+        out.push_str("status : failed\n");
+        out.push_str("exit   : 1\n");
+        return out;
+    };
+
+    out.push_str("OPTICS DEVICE PREVIEW\n");
+    out.push_str(&format!("device      : {}\n", device.as_label()));
+    out.push_str("mode        : preview-only\n");
+    out.push_str("renderer    : rust-static-renderer\n");
+    out.push_str("live-hud    : disabled\n");
+    out.push_str(&optics::render_static_preview(device));
+    out.push_str("status : ok\n");
+    out.push_str("exit   : 0\n");
+    out
+}
+
+fn optics_device_profile(raw: &str) -> Option<optics::OpticsDeviceProfile> {
+    match raw {
+        "mobile" => Some(optics::OpticsDeviceProfile::Mobile),
+        "laptop" => Some(optics::OpticsDeviceProfile::Laptop),
+        "desktop" => Some(optics::OpticsDeviceProfile::Desktop),
+        "terminal" => Some(optics::OpticsDeviceProfile::Terminal),
+        _ => None,
+    }
 }
 
 fn optics_rails_preview(args: &[String]) -> String {
@@ -444,6 +507,48 @@ mod tests {
         assert!(out.contains("parser      : unchanged"));
         assert!(out.contains("not-security-boundary"));
         assert!(out.contains("status : ok"));
+        let _ = fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn optics_device_route_renders_requested_profile() {
+        let dir = temp_plugins();
+        fs::write(dir.join("optics.wasm"), b"\0asm\x01\0\0\0").unwrap();
+        for device in ["mobile", "laptop", "desktop", "terminal"] {
+            let out = execute_plugin(
+                &dir,
+                "optics",
+                &["device".to_string(), device.to_string()],
+            );
+            assert!(out.contains("plugin : optics"));
+            assert!(out.contains(&format!("args   : device {device}")));
+            assert!(out.contains("OPTICS DEVICE PREVIEW"));
+            assert!(out.contains(&format!("device      : {device}")));
+            assert!(out.contains("mode        : preview-only"));
+            assert!(out.contains("live-hud    : disabled"));
+            assert!(out.contains("OPTICS HUD RAIL RENDER"));
+            assert!(out.contains(&format!("device={device}")));
+            assert!(out.contains("status : ok"));
+        }
+        let _ = fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn optics_device_route_rejects_invalid_profile_without_live_activation() {
+        let dir = temp_plugins();
+        fs::write(dir.join("optics.wasm"), b"\0asm\x01\0\0\0").unwrap();
+        let out = execute_plugin(
+            &dir,
+            "optics",
+            &["device".to_string(), "wallpaper".to_string()],
+        );
+        assert!(out.contains("OPTICS DEVICE PREVIEW"));
+        assert!(out.contains("result      : invalid-device"));
+        assert!(out.contains("requested   : wallpaper"));
+        assert!(out.contains("supported   : mobile,laptop,desktop,terminal"));
+        assert!(out.contains("status : failed"));
+        assert!(out.contains("exit   : 1"));
+        assert!(!out.contains("live-hud    : enabled"));
         let _ = fs::remove_dir_all(dir);
     }
 
