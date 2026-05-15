@@ -31,7 +31,10 @@ fn white_arts_inventory_reporter_contract_preserves_header_fields() {
         "repair-policy    : staged-candidate-only",
         "claim-boundary   : evidence-bound-maintenance",
     ] {
-        assert!(contract.contains(field), "missing inventory header field: {field}");
+        assert!(
+            contract.contains(field),
+            "missing inventory header field: {field}"
+        );
     }
 }
 
@@ -49,7 +52,10 @@ fn white_arts_inventory_reporter_contract_preserves_table_shape() {
         "recovery-path",
         "claim-boundary",
     ] {
-        assert!(contract.contains(column), "missing inventory column: {column}");
+        assert!(
+            contract.contains(column),
+            "missing inventory column: {column}"
+        );
     }
 }
 
@@ -72,7 +78,10 @@ fn white_arts_inventory_reporter_contract_lists_required_system_rows() {
         "Website and release metadata",
         "CI and quality gates",
     ] {
-        assert!(contract.contains(system), "missing inventory system row: {system}");
+        assert!(
+            contract.contains(system),
+            "missing inventory system row: {system}"
+        );
     }
 }
 
