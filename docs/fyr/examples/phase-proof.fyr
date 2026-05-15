@@ -5,8 +5,8 @@ fn main() -> i32 {
     print("P = ROOT > r_1 > r_2 > ... > r_n");
     print("example = ROOT>R/3>u/1");
     print("S = {root_anchor, origin, route, axis, domain, cell, breadcrumb, trace_id}");
-    print("T(S,r) -> S'");
-    print("breadcrumb(S') = breadcrumb(S) > r");
+    print("T(S,r) -> S_prime");
+    print("breadcrumb(S_prime) = breadcrumb(S) > r");
     print("ReturnOrigin preserves rollback target");
     print("PlantOrigin preserves previous origin");
     print("RecoverSelf preserves ROOT and recovered_from");
