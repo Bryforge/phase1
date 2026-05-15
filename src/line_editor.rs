@@ -13,10 +13,13 @@ const BLUE: &str = "\x1b[34m";
 const MAGENTA: &str = "\x1b[35m";
 const YELLOW: &str = "\x1b[33m";
 const RED: &str = "\x1b[31m";
+const USER_INPUT_BRIGHT_YELLOW: &str = "\x1b[93m";
 const HISTORY_LIMIT: usize = 200;
 const IDLE_ENTER_GUARD_DEFAULT_SECS: u64 = 30;
+const OPTICS_INPUT_LINES_BELOW_PROMPT: usize = 6;
 
 static SESSION_HISTORY: OnceLock<Mutex<Vec<String>>> = OnceLock::new();
+static OPTICS_FRAME_DRAWN: OnceLock<Mutex<bool>> = OnceLock::new();
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 struct EditorState {
@@ -186,6 +189,10 @@ pub fn read_shell_line(prompt: &str) -> io::Result<Option<String>> {
 }
 
 fn read_plain_line(prompt: &str) -> io::Result<Option<String>> {
+    if optics_pro_shell_enabled() {
+        return read_optics_positioned_line(prompt);
+    }
+
     io::stdout().flush()?;
     let prompt_started = Instant::now();
     let mut input = String::new();
@@ -210,6 +217,10 @@ fn read_plain_line(prompt: &str) -> io::Result<Option<String>> {
 }
 
 fn read_cooked_line(prompt: &str) -> io::Result<Option<String>> {
+    if optics_pro_shell_enabled() {
+        return read_optics_positioned_line(prompt);
+    }
+
     print!("{prompt}");
     io::stdout().flush()?;
     let prompt_started = Instant::now();
@@ -227,6 +238,41 @@ fn read_cooked_line(prompt: &str) -> io::Result<Option<String>> {
             }
             if line.contains('\t') {
                 return Ok(Some(complete_cooked_line(line, prompt)?));
+            }
+            Ok(Some(line.to_string()))
+        }
+        Err(err) => Err(err),
+    }
+}
+
+fn read_optics_positioned_line(prompt: &str) -> io::Result<Option<String>> {
+    let prompt_started = Instant::now();
+    let command_prompt = optics_command_prompt(prompt);
+    print_optics_shell_frame(&command_prompt)?;
+    if color_enabled() {
+        print!("{BOLD}{USER_INPUT_BRIGHT_YELLOW}");
+    }
+    io::stdout().flush()?;
+
+    let mut input = String::new();
+    match io::stdin().read_line(&mut input) {
+        Ok(0) => Ok(None),
+        Ok(_) => {
+            if color_enabled() {
+                print!("{RESET}");
+            }
+            print!("\x1b[{OPTICS_INPUT_LINES_BELOW_PROMPT}B\r\x1b[2K");
+            io::stdout().flush()?;
+            let line = input.trim_end_matches(['\r', '\n']);
+            if line.trim().is_empty() && idle_enter_guard_triggered(prompt_started.elapsed()) {
+                println!(
+                    "idle-enter guard: ignored blank Enter after {}s idle; press Enter again to run",
+                    prompt_started.elapsed().as_secs()
+                );
+                return Ok(Some(String::new()));
+            }
+            if line.contains('\t') {
+                return Ok(Some(complete_cooked_line(line, &command_prompt)?));
             }
             Ok(Some(line.to_string()))
         }
@@ -538,6 +584,70 @@ fn env_flag(name: &str) -> Option<bool> {
         })
 }
 
+fn optics_pro_shell_enabled() -> bool {
+    env_flag("PHASE1_OPTICS_PRO").unwrap_or(true)
+        && env_flag("PHASE1_LEGACY_SHELL_UI") != Some(true)
+}
+
+fn optics_frame_drawn_once() -> bool {
+    let lock = OPTICS_FRAME_DRAWN.get_or_init(|| Mutex::new(false));
+    if let Ok(mut drawn) = lock.lock() {
+        let already_drawn = *drawn;
+        *drawn = true;
+        already_drawn
+    } else {
+        true
+    }
+}
+
+fn print_optics_shell_frame(command_prompt: &str) -> io::Result<()> {
+    if !optics_frame_drawn_once() {
+        print!("\x1b[2J\x1b[H");
+    } else {
+        print!("\r\x1b[2K");
+    }
+
+    let color = color_enabled();
+    println!("{}", optics_label("A TOP RAIL", color, CYAN));
+    println!("product=Phase1 channel=edge profile=PRO ctx=root > nest:0/1 > portal:none > ghost:none trust=safe/armed security=safe-mode");
+    println!("{}", optics_label("B COMMAND RAIL", color, BLUE));
+    print!("{command_prompt}");
+    println!();
+    println!();
+    println!("{}", optics_label("C STATUS HUD", color, GREEN));
+    println!("result=ready mutation=none integrity=not-checked crypto=chain-planned base1=evidence-planned fyr=idle");
+    println!("{}", optics_label("D BOTTOM HUD", color, MAGENTA));
+    println!("input=active command=none task=idle warning=none copy-safe=raw-command-preserved");
+    print!("\x1b[{OPTICS_INPUT_LINES_BELOW_PROMPT}A\r");
+    let column = visible_len(command_prompt);
+    if column > 0 {
+        print!("\x1b[{column}C");
+    }
+    Ok(())
+}
+
+fn optics_command_prompt(fallback: &str) -> String {
+    let plain = strip_ansi(fallback);
+    if plain.trim().is_empty() {
+        "phase1://edge/root > ".to_string()
+    } else {
+        plain
+            .replace('❯', ">")
+            .replace('⇢', "->")
+            .trim_end()
+            .to_string()
+            + " "
+    }
+}
+
+fn optics_label(label: &str, color: bool, ansi: &str) -> String {
+    if color {
+        format!("{BOLD}{ansi}{label}{RESET}")
+    } else {
+        label.to_string()
+    }
+}
+
 fn command_status_line(input: &str) -> String {
     let width = terminal_width().clamp(32, 72);
     let raw = format!("HUD {} | {}", short_clock_utc(), command_hint(input));
@@ -649,7 +759,7 @@ fn short_clock_utc() -> String {
     let hours = seconds / 3_600;
     let minutes = (seconds % 3_600) / 60;
     let seconds = seconds % 60;
-    format!("{hours:02}:{minutes:02}:{seconds:02} UTC")
+    format!("{hours:02}:{minutes:02} UTC")
 }
 
 fn color_enabled() -> bool {
@@ -700,7 +810,8 @@ mod tests {
     use super::{
         char_len, command_hint, command_status_line, delete_at_cursor, delete_before_cursor,
         delete_previous_word, history_down, history_up, idle_enter_guard_triggered, insert_char,
-        simple_line_editor_enabled, EditorState,
+        optics_command_prompt, optics_label, simple_line_editor_enabled, EditorState,
+        USER_INPUT_BRIGHT_YELLOW,
     };
     use std::time::Duration;
 
@@ -722,6 +833,16 @@ mod tests {
         assert!(!status.contains('\0'));
         std::env::remove_var("NO_COLOR");
         std::env::remove_var("COLUMNS");
+    }
+
+    #[test]
+    fn optics_command_prompt_preserves_input_position() {
+        std::env::set_var("NO_COLOR", "1");
+        let prompt = optics_command_prompt("phase1://root ~ ❯ ");
+        assert_eq!(prompt, "phase1://root ~ > ");
+        assert_eq!(optics_label("A TOP RAIL", false, "\x1b[36m"), "A TOP RAIL");
+        assert_eq!(USER_INPUT_BRIGHT_YELLOW, "\x1b[93m");
+        std::env::remove_var("NO_COLOR");
     }
 
     #[test]
