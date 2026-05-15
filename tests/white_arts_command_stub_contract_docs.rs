@@ -78,7 +78,10 @@ fn white_arts_command_stub_contract_blocks_unsafe_behavior() {
         "imply forensic admissibility",
         "imply production hardening",
     ] {
-        assert!(contract.contains(forbidden), "missing forbidden behavior: {forbidden}");
+        assert!(
+            contract.contains(forbidden),
+            "missing forbidden behavior: {forbidden}"
+        );
     }
 }
 
