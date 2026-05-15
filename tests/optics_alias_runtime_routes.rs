@@ -61,7 +61,7 @@ fn optics_registry_aliases_execute_preview_surfaces() {
     for required in [
         "phase1 wasi run",
         "plugin : optics",
-        "OPTICS PRO PREVIEW",
+        "OPTICS PRO COMMAND SURFACE",
         "OPTICS HUD RAIL RENDER",
         "TOP product=Phase1 channel=edge profile=PRO",
         "BOT color=bright-blue input=active mutation=none",
@@ -74,6 +74,7 @@ fn optics_registry_aliases_execute_preview_surfaces() {
     for forbidden in [
         "command not found: pro",
         "command not found: hudrails",
+        "OPTICS PRO PREVIEW",
         "security-boundary claimed",
         "crypto-enforcement claimed",
         "system-integrity-guarantee claimed",
