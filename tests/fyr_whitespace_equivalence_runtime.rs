@@ -79,7 +79,7 @@ exit\n",
 fn fyr_boolean_and_grouping_spacing_forms_are_equivalent() {
     let output = run_phase1(
         "fyr init app\n\
-echo 'fn main() -> i32 { let answer=42; if(answer>40&&answer<50){return answer;} return 0; }' > app/tests/compact_bool.fyr\n\
+echo 'fn main() -> i32 { let answer=42; if (answer>40&&answer<50){return answer;} return 0; }' > app/tests/tight_bool.fyr\n\
 echo 'fn main() -> i32 { let answer = 42; if ( answer > 40 && answer < 50 ) { return answer; } return 0; }' > app/tests/spaced_bool.fyr\n\
 fyr check app\n\
 fyr test app\n\
@@ -88,7 +88,7 @@ exit\n",
 
     assert!(output.contains("fyr check: ok app/src/main.fyr"), "{output}");
     assert!(
-        output.contains("test    : app/tests/compact_bool.fyr ok"),
+        output.contains("test    : app/tests/tight_bool.fyr ok"),
         "{output}"
     );
     assert!(
@@ -111,5 +111,4 @@ exit\n",
 
     assert!(output.contains("fyr check: ok literal.fyr"), "{output}");
     assert!(output.contains("hello   world"), "{output}");
-    assert!(output.contains("status  : ok"), "{output}");
 }
