@@ -17,6 +17,10 @@ The current preview commands are routed through the existing WASI-lite plugin pa
 optics preview
 optics rails
 optics status
+optics device mobile
+optics device laptop
+optics device desktop
+optics device terminal
 ```
 
 The current registry aliases are:
@@ -61,6 +65,17 @@ The commands are available because `optics` is exposed as a WASI-lite plugin wit
 - input, history, and parser non-mutation labels;
 - non-claims.
 
+`optics device <profile>` should render a read-only Optics HUD rail preview for a selected device profile.
+
+Supported device profiles:
+
+```text
+mobile
+laptop
+desktop
+terminal
+```
+
 `pro` should resolve through the Optics registry entry and execute the read-only Optics preview route.
 
 `hudrails` should resolve through the Optics registry entry and execute the read-only HUD rail preview route.
@@ -99,6 +114,15 @@ To see the Optics status output, run:
 optics status
 ```
 
+To see device-specific rail previews, run:
+
+```text
+optics device mobile
+optics device laptop
+optics device desktop
+optics device terminal
+```
+
 ## Help and registry expectation
 
 Future work should promote Optics into the regular command registry so it appears in help, completions, and manuals.
@@ -108,7 +132,7 @@ The registry-promotion plan is [`OPTICS_REGISTRY_PROMOTION.md`](OPTICS_REGISTRY_
 The planned registry row should preserve this shape:
 
 ```text
-optics [preview|rails|status|help]
+optics [preview|rails|status|device|help]
 ```
 
 Until that registry row exists, the WASI-lite route remains the safe preview path.
