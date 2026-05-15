@@ -2,6 +2,8 @@
 mod arena;
 #[path = "optics.rs"]
 mod optics;
+#[path = "phase.rs"]
+mod phase;
 
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -62,6 +64,9 @@ pub fn execute_plugin(plugins_dir: &Path, name: &str, args: &[String]) -> String
     if is_arena(name) {
         return launch_arena(args);
     }
+    if is_phase(name) {
+        return phase_native(args);
+    }
     if is_optics_status(name, args) {
         return optics_status(args);
     }
@@ -110,6 +115,24 @@ pub fn execute_plugin(plugins_dir: &Path, name: &str, args: &[String]) -> String
         "status : failed\n"
     });
     out.push_str(&format!("exit   : {}\n", manifest.exit_code));
+    out
+}
+
+fn is_phase(name: &str) -> bool {
+    name == "phase"
+}
+
+fn phase_native(args: &[String]) -> String {
+    let mut out = String::from("phase1 native run\n");
+    out.push_str("command: phase\n");
+    if args.is_empty() {
+        out.push_str("args   : none\n");
+    } else {
+        out.push_str(&format!("args   : {}\n", redact_args(args).join(" ")));
+    }
+    out.push_str(&phase::run(args));
+    out.push_str("status : ok\n");
+    out.push_str("exit   : 0\n");
     out
 }
 
@@ -243,7 +266,7 @@ fn list_plugins(plugins_dir: &Path) -> String {
             }
         }
     }
-    for built_in in ["arena", "game"] {
+    for built_in in ["arena", "game", "phase"] {
         if !names.iter().any(|name| name == built_in) {
             names.push(built_in.to_string());
         }
@@ -262,6 +285,9 @@ fn inspect_plugin(plugins_dir: &Path, name: &str) -> String {
     }
     if is_arena(name) {
         return arena_inspect();
+    }
+    if is_phase(name) {
+        return phase_inspect();
     }
 
     let path = match plugin_path(plugins_dir, name) {
@@ -299,6 +325,9 @@ fn validate_plugin(plugins_dir: &Path, name: &str) -> String {
     if is_arena(name) {
         return "wasm: arena built-in phase1-wasi-lite game launcher\n".to_string();
     }
+    if is_phase(name) {
+        return "wasm: phase source-native status surface\n".to_string();
+    }
 
     let path = match plugin_path(plugins_dir, name) {
         Ok(path) => path,
@@ -330,6 +359,16 @@ fn arena_inspect() -> String {
     out.push_str("cap    : none\n");
     out.push_str("play   : arena start\n");
     out.push_str("dev    : docs/developers/GAME_DEV.md and scripts/test-game.sh\n");
+    out
+}
+
+fn phase_inspect() -> String {
+    let mut out = String::from("phase1 wasm inspect\n");
+    out.push_str("plugin : phase\n");
+    out.push_str("module : source-native Phase compass status surface\n");
+    out.push_str("runtime: source-native\n");
+    out.push_str("cap    : none\n");
+    out.push_str("usage  : phase whereami | phase compass | phase path | phase map\n");
     out
 }
 
@@ -474,6 +513,7 @@ mod tests {
         assert!(listed.contains("demo"));
         assert!(listed.contains("arena"));
         assert!(listed.contains("game"));
+        assert!(listed.contains("phase"));
         let inspected = inspect_plugin(&dir, "demo");
         assert!(inspected.contains("valid wasm"));
         let game = inspect_plugin(&dir, "arena");
@@ -481,6 +521,8 @@ mod tests {
         assert!(game.contains("Phase1 Arena"));
         let workspace = inspect_plugin(&dir, "game");
         assert!(workspace.contains("development workspace"));
+        let phase = inspect_plugin(&dir, "phase");
+        assert!(phase.contains("source-native Phase compass status surface"));
         let _ = fs::remove_dir_all(dir);
     }
 
@@ -492,6 +534,22 @@ mod tests {
         assert!(out.contains("hello wasi"));
         assert!(out.contains("host=blocked"));
         assert!(out.contains("[redacted]"));
+        let _ = fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn phase_builtin_uses_source_native_status_surface() {
+        let dir = temp_plugins();
+        let out = execute_plugin(&dir, "phase", &["whereami".to_string()]);
+        assert!(out.contains("phase1 native run"));
+        assert!(out.contains("command: phase"));
+        assert!(out.contains("args   : whereami"));
+        assert!(out.contains("PHASE COMPASS"));
+        assert!(out.contains("runtime=source-native"));
+        assert!(out.contains("mutation=disabled"));
+        assert!(out.contains("origin=0/0"));
+        assert!(out.contains("path=ROOT>0/0"));
+        assert!(!out.contains("phase1 wasi run"));
         let _ = fs::remove_dir_all(dir);
     }
 
