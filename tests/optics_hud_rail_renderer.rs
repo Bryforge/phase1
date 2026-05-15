@@ -19,6 +19,10 @@ fn optics_renderer_static_preview_preserves_top_center_bottom_contract() {
         "ctx=root > nest:0/1 > portal:none > ghost:none",
         "origin=0/0",
         "route=ROOT",
+        "axis=ROOT",
+        "trace=trace-preview",
+        "path=ROOT>0/0",
+        "breadcrumb=ROOT",
         "integrity=not-checked",
         "crypto=chain-planned",
         "safe-portal=planned",
@@ -73,6 +77,10 @@ fn optics_pro_shell_layers_expose_origin_route_and_recovery_state() {
     let mut state = OpticsRailState::pro_static(OpticsDeviceProfile::Terminal);
     state.origin = "0/0".to_string();
     state.route = "ROOT>R/3".to_string();
+    state.current_axis = "R".to_string();
+    state.path = "ROOT>R/3".to_string();
+    state.breadcrumb = "ROOT>R/3".to_string();
+    state.trace_id = "trace-r3".to_string();
     state.safe_portal = "ready".to_string();
     state.rollback = "0/0".to_string();
     let frame = render_pro_shell_layers(&state, "phase whereami", false);
@@ -80,6 +88,10 @@ fn optics_pro_shell_layers_expose_origin_route_and_recovery_state() {
     for required in [
         "origin=0/0",
         "route=ROOT>R/3",
+        "axis=R",
+        "path=ROOT>R/3",
+        "breadcrumb=ROOT>R/3",
+        "trace=trace-r3",
         "safe-portal=ready",
         "rollback=0/0",
         "phase1://edge/root > phase whereami",
@@ -198,6 +210,8 @@ fn optics_renderer_adapts_device_density_without_changing_state_meaning() {
 
     assert!(mobile.contains("BOT color=bright-blue input=active mutation=none result=ok"));
     assert!(mobile.contains("origin=0/0"), "{mobile}");
+    assert!(mobile.contains("axis=ROOT"), "{mobile}");
+    assert!(mobile.contains("trace=trace-preview"), "{mobile}");
     assert!(mobile.contains("health=nominal risk=low"), "{mobile}");
     assert!(
         !mobile.contains("BOT warning="),
@@ -207,6 +221,10 @@ fn optics_renderer_adapts_device_density_without_changing_state_meaning() {
     assert!(laptop.contains("device=laptop"), "{laptop}");
     assert!(
         laptop.contains("BOT warning=none safe-portal=planned rollback=available"),
+        "{laptop}"
+    );
+    assert!(
+        laptop.contains("trace=trace-preview intent=explicit"),
         "{laptop}"
     );
     assert!(
@@ -272,6 +290,11 @@ fn optics_renderer_custom_state_preserves_command_and_safety_labels() {
     state.context = "root > portal:alpha > ghost:watch".to_string();
     state.origin = "0/0".to_string();
     state.route = "ROOT>L/2".to_string();
+    state.current_axis = "L".to_string();
+    state.path = "ROOT>L/2>d/1".to_string();
+    state.breadcrumb = "ROOT>L/2>d/1".to_string();
+    state.trace_id = "trace-l2-d1".to_string();
+    state.operator_intent = "explicit".to_string();
     state.safe_portal = "ready".to_string();
     state.rollback = "ROOT".to_string();
     state.domain_health = "quarantined".to_string();
@@ -297,6 +320,9 @@ fn optics_renderer_custom_state_preserves_command_and_safety_labels() {
     );
     assert!(top.contains("origin=0/0"), "{top}");
     assert!(top.contains("route=ROOT>L/2"), "{top}");
+    assert!(top.contains("axis=L"), "{top}");
+    assert!(top.contains("trace=trace-l2-d1"), "{top}");
+    assert!(top.contains("path=ROOT>L/2>d/1"), "{top}");
     assert!(top.contains("safe-portal=ready"), "{top}");
     assert!(top.contains("health=quarantined"), "{top}");
     assert!(top.contains("risk=critical"), "{top}");
@@ -313,6 +339,8 @@ fn optics_renderer_custom_state_preserves_command_and_safety_labels() {
     assert!(bottom.contains("warning=guarded-operation"), "{bottom}");
     assert!(bottom.contains("safe-portal=ready"), "{bottom}");
     assert!(bottom.contains("rollback=ROOT"), "{bottom}");
+    assert!(bottom.contains("trace=trace-l2-d1"), "{bottom}");
+    assert!(bottom.contains("intent=explicit"), "{bottom}");
     assert!(bottom.contains("host-effect=none"), "{bottom}");
     assert!(bottom.contains("external-effect=none"), "{bottom}");
 }
