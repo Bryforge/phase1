@@ -1,73 +1,60 @@
 # Optics Command Surface
 
-Status: command surface contract
-Scope: read-only Optics commands, WASI-lite preview routing, help/registry expectations, and non-claims for Optics PRO.
+Status: implemented read-only command surface checkpoint
+Scope: Optics PRO preview, rails, status, device previews, command discovery, and non-claims.
 
 ## Purpose
 
-The Optics command surface defines how operators should discover and use Optics preview commands before live UI activation exists.
+The Optics command surface defines how operators discover and inspect Optics PRO before live UI activation exists.
 
-The current command surface is intentionally read-only.
+The current surface is complete for read-only preview work. It is not a live HUD, compositor, terminal emulator, sandbox, security boundary, crypto-enforcement layer, Base1 boot environment, or Phase movement engine.
 
 ## Current commands
 
-The current preview commands are routed through the existing WASI-lite plugin path:
-
 ```text
+optics help
 optics preview
-optics rails
 optics status
+optics rails
 optics device mobile
 optics device laptop
 optics device desktop
 optics device terminal
 ```
 
-The current registry aliases are:
+Registry aliases:
 
 ```text
 pro
 hudrails
 ```
 
-The commands are available because `optics` is exposed as a WASI-lite plugin with capability `none`.
+The current `optics preview` and `optics help` routes display the complete read-only Optics command card. `optics status` displays the renderer/status contract. `optics rails` displays the current rail renderer. `optics device <profile>` displays the rail preview for a selected device profile.
 
-## Command behavior
+## Current visibility
 
-`optics preview` should show the original Optics PRO static preview:
+Optics now exposes the Phase universe prerequisites as visible status labels before live movement exists:
 
-- minimal main screen;
-- Phase1 edge enabled;
-- PRO profile;
-- bottom HUD preview;
-- mutation labels;
-- typing safety labels;
-- fallback labels;
-- non-claims.
+```text
+origin=0/0
+route=ROOT
+axis=ROOT
+path=ROOT>0/0
+breadcrumb=ROOT
+trace=trace-preview
+safe-portal=planned
+rollback=available
+health=nominal
+risk=low
+lock=open
+dark_phase=off
+host-effect=none
+external-effect=none
+```
 
-`optics rails` should show the rail preview surface:
+## Device profiles
 
-- top HUD rail;
-- center viewport;
-- bottom HUD rail;
-- context, nest, portal, ghost, integrity, crypto, Base1, and Fyr summaries;
-- read-only runtime status;
-- non-claims.
-
-`optics status` should show the Optics preview status surface:
-
-- preview-only mode;
-- Rust static renderer source;
-- top rail readiness;
-- bottom rail readiness;
-- live HUD disabled state;
-- explicit activation gate requirement;
-- input, history, and parser non-mutation labels;
-- non-claims.
-
-`optics device <profile>` should render a read-only Optics HUD rail preview for a selected device profile.
-
-Supported device profiles:
+Supported read-only device previews:
 
 ```text
 mobile
@@ -75,10 +62,6 @@ laptop
 desktop
 terminal
 ```
-
-`pro` should resolve through the Optics registry entry and execute the read-only Optics preview route.
-
-`hudrails` should resolve through the Optics registry entry and execute the read-only HUD rail preview route.
 
 ## Discovery versus execution
 
@@ -94,48 +77,15 @@ complete hud
 
 Those are discovery checks. They do not execute the preview surface.
 
-To see the rails output, run one of these execution routes:
+To execute Optics surfaces, run:
 
 ```text
-optics rails
-hudrails
-```
-
-To see the PRO preview output, run one of these execution routes:
-
-```text
+optics help
 optics preview
-pro
-```
-
-To see the Optics status output, run:
-
-```text
 optics status
-```
-
-To see device-specific rail previews, run:
-
-```text
-optics device mobile
-optics device laptop
-optics device desktop
+optics rails
 optics device terminal
 ```
-
-## Help and registry expectation
-
-Future work should promote Optics into the regular command registry so it appears in help, completions, and manuals.
-
-The registry-promotion plan is [`OPTICS_REGISTRY_PROMOTION.md`](OPTICS_REGISTRY_PROMOTION.md).
-
-The planned registry row should preserve this shape:
-
-```text
-optics [preview|rails|status|device|help]
-```
-
-Until that registry row exists, the WASI-lite route remains the safe preview path.
 
 ## Safety rules
 
@@ -152,21 +102,45 @@ Optics preview commands must not:
 - claim a security boundary;
 - claim crypto enforcement;
 - claim a system integrity guarantee;
-- claim a Base1 boot environment.
+- claim a Base1 boot environment;
+- claim live Phase movement;
+- claim origin mutation;
+- claim safe-portal recovery execution;
+- claim runtime domain mutation;
+- claim host mutation;
+- claim external effects.
 
-## Integration path
+## Completion checkpoint
 
-The command surface should progress in this order:
+The read-only Optics command surface is considered complete when these routes remain deterministic and tested:
 
-1. WASI-lite read-only preview.
-2. Command surface documentation and tests.
-3. Registry-promotion contract: [`OPTICS_REGISTRY_PROMOTION.md`](OPTICS_REGISTRY_PROMOTION.md).
-4. Registry/help/manual visibility.
-5. Renderer-backed shell preview command.
-6. Explicitly gated live activation.
+```text
+optics help
+optics preview
+optics status
+optics rails
+optics device mobile
+optics device laptop
+optics device desktop
+optics device terminal
+```
 
-## Current status
+Focused validation:
 
-This document preserves the command surface contract only.
+```bash
+cargo test -p phase1 --test optics_command_surface_complete
+cargo test -p phase1 --test optics_hud_rail_renderer
+cargo test -p phase1 --test optics_hud_rails_runtime_preview
+```
+
+## Future work
+
+Future Optics work should move in this order:
+
+1. Keep read-only command surface stable.
+2. Add state fixtures for Phase path, breadcrumb, origin, safe portal, health, and lock states.
+3. Add invariant tests for those fixtures.
+4. Add explicit-gate experiments only after the status model is test-backed.
+5. Do not promote live movement or recovery execution until evidence supports it.
 
 Live Optics PRO HUD activation remains future work.
