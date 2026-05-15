@@ -1,0 +1,40 @@
+name=phase
+capability=none
+stdout=PHASE COMPASS
+stdout=mode=status-only
+stdout=mutation=disabled
+stdout=origin=0/0
+stdout=root-anchor=ROOT
+stdout=current-route=ROOT
+stdout=current-axis=ROOT
+stdout=path=ROOT>0/0
+stdout=breadcrumb=ROOT
+stdout=trace-id=trace-preview
+stdout=safe-portal=planned
+stdout=rollback-target=available
+stdout=health=nominal
+stdout=risk=low
+stdout=lock-state=open
+stdout=dark_phase=off
+stdout=host-effect=none
+stdout=external-effect=none
+stdout=operator-intent=explicit
+stdout=claim-boundary=phase-compass-status-only
+stdout=
+stdout=SUPPORTED ROUTES
+stdout=phase whereami
+stdout=phase compass
+stdout=phase path
+stdout=phase map
+stdout=
+stdout=ROOT DIRECTION MAP
+stdout=              u/NUM
+stdout=                ^
+stdout=                |
+stdout=L/NUM  <----  ROOT  ---->  R/NUM
+stdout=                |
+stdout=                v
+stdout=              d/NUM
+stdout=rule=root-remains-anchor
+stdout=external-link=none
+exit=0
