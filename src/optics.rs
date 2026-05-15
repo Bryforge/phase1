@@ -210,18 +210,18 @@ pub fn render_center_viewport(sample: &str) -> String {
 
 pub fn normalize_direction_axis(axis: &str) -> &'static str {
     match axis.trim().to_ascii_lowercase().as_str() {
-        "top" | "up" | "north" => "top",
-        "bottom" | "down" | "south" => "bottom",
-        "left" | "west" => "left",
-        "right" | "east" => "right",
-        _ => "root",
+        "u" | "top" | "up" | "north" => "u",
+        "d" | "bottom" | "down" | "south" => "d",
+        "l" | "left" | "west" => "L",
+        "r" | "right" | "east" => "R",
+        _ => "ROOT",
     }
 }
 
 pub fn render_root_direction_map(active_axis: &str) -> String {
     let axis = normalize_direction_axis(active_axis);
     format!(
-        "ROOT DIRECTION MAP\nlayout=center-root top-bottom-left-right\nactive-axis={axis}\n              [ TOP ]\n                 ^\n                 |\n[ LEFT ]  <--- [ ROOT ] --->  [ RIGHT ]\n                 |\n                 v\n             [ BOTTOM ]\nrule=root-remains-anchor\nmovement=planned-visible-logged-reversible\nnetwork=not-wired host-bridge=disabled\n"
+        "ROOT DIRECTION MAP\nlayout=center-root u-d-L-R\nactive-route={axis}/0\n              u/NUM\n                ^\n                |\nL/NUM  <----  ROOT  ---->  R/NUM\n                |\n                v\n              d/NUM\nrule=root-remains-anchor\npath-examples=ROOT>u/1 ROOT>d/1 ROOT>L/2 ROOT>R/3\nmovement=planned-visible-logged-reversible\nexternal-link=none\n"
     )
 }
 
