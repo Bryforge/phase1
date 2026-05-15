@@ -60,16 +60,31 @@ fn optics_pro_shell_layers_color_code_without_reusing_bright_yellow() {
     let frame = render_pro_shell_layers(&state, "optics status", true);
 
     let highlighted = format!("{USER_INPUT_BRIGHT_YELLOW}optics status");
-    assert!(frame.contains(&highlighted), "typed text must be bright yellow: {frame:?}");
+    assert!(
+        frame.contains(&highlighted),
+        "typed text must be bright yellow: {frame:?}"
+    );
     assert_eq!(
         frame.matches(USER_INPUT_BRIGHT_YELLOW).count(),
         1,
         "bright yellow is reserved for typed/copied user input only: {frame:?}"
     );
-    assert!(frame.contains("\x1b[36mA TOP RAIL"), "top rail should be cyan: {frame:?}");
-    assert!(frame.contains("\x1b[34mB COMMAND RAIL"), "command rail label should be blue: {frame:?}");
-    assert!(frame.contains("\x1b[32mC STATUS HUD"), "status hud should be green: {frame:?}");
-    assert!(frame.contains("\x1b[35mD BOTTOM HUD"), "bottom hud should be magenta: {frame:?}");
+    assert!(
+        frame.contains("\x1b[36mA TOP RAIL"),
+        "top rail should be cyan: {frame:?}"
+    );
+    assert!(
+        frame.contains("\x1b[34mB COMMAND RAIL"),
+        "command rail label should be blue: {frame:?}"
+    );
+    assert!(
+        frame.contains("\x1b[32mC STATUS HUD"),
+        "status hud should be green: {frame:?}"
+    );
+    assert!(
+        frame.contains("\x1b[35mD BOTTOM HUD"),
+        "bottom hud should be magenta: {frame:?}"
+    );
 }
 
 #[test]
