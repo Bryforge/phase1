@@ -619,7 +619,7 @@ fn optics_input_lines_below_prompt() -> usize {
 
 fn print_optics_shell_frame(command_prompt: &str) -> io::Result<()> {
     if !optics_frame_drawn_once() {
-        print!("\x1b[2J\x1b[H");
+        print!("\x1b[3J\x1b[2J\x1b[H");
     } else {
         print!("\r\x1b[2K");
     }
