@@ -59,6 +59,12 @@ pub struct OpticsRailState {
     pub route: String,
     pub safe_portal: String,
     pub rollback: String,
+    pub domain_health: String,
+    pub risk: String,
+    pub lock_state: String,
+    pub dark_phase: String,
+    pub host_effect: String,
+    pub external_effect: String,
     pub device: OpticsDeviceProfile,
     pub input: String,
     pub mutation: String,
@@ -85,6 +91,12 @@ impl OpticsRailState {
             route: "ROOT".to_string(),
             safe_portal: "planned".to_string(),
             rollback: "available".to_string(),
+            domain_health: "nominal".to_string(),
+            risk: "low".to_string(),
+            lock_state: "open".to_string(),
+            dark_phase: "off".to_string(),
+            host_effect: "none".to_string(),
+            external_effect: "none".to_string(),
             device,
             input: "active".to_string(),
             mutation: "none".to_string(),
@@ -124,7 +136,7 @@ pub fn render_pro_shell_layers(state: &OpticsRailState, typed_input: &str, color
     format!(
         "{top_label}\nproduct={} channel={} profile={} ctx={} origin={} route={} trust={} security={} device={}\n\
          {command_label}\nphase1://edge/root > {typed}\n\n\
-         {status_label}\nresult={} mutation={} integrity={} crypto={} base1={} fyr={} safe-portal={} rollback={}\n\
+         {status_label}\nresult={} mutation={} integrity={} crypto={} base1={} fyr={} safe-portal={} rollback={} health={} risk={} lock={} dark_phase={} host-effect={} external-effect={}\n\
          {bottom_label}\ninput={} command={} task={} warning={} copy-safe=raw-command-preserved\n",
         state.product,
         state.channel,
@@ -143,6 +155,12 @@ pub fn render_pro_shell_layers(state: &OpticsRailState, typed_input: &str, color
         state.fyr,
         state.safe_portal,
         state.rollback,
+        state.domain_health,
+        state.risk,
+        state.lock_state,
+        state.dark_phase,
+        state.host_effect,
+        state.external_effect,
         state.input,
         state.command_family,
         state.active_task,
@@ -174,7 +192,7 @@ fn result_label_color(value: &str, color: bool) -> String {
 pub fn render_top_rail(state: &OpticsRailState) -> String {
     match state.device {
         OpticsDeviceProfile::Mobile => format!(
-            "TOP product={} channel={} profile={} ctx={} origin={} route={} trust={} device={}\n",
+            "TOP product={} channel={} profile={} ctx={} origin={} route={} trust={} device={}\nTOP health={} risk={} lock={} dark_phase={}\n",
             state.product,
             state.channel,
             state.profile,
@@ -182,10 +200,14 @@ pub fn render_top_rail(state: &OpticsRailState) -> String {
             state.origin,
             state.route,
             state.trust,
-            state.device.as_label()
+            state.device.as_label(),
+            state.domain_health,
+            state.risk,
+            state.lock_state,
+            state.dark_phase
         ),
         OpticsDeviceProfile::Laptop | OpticsDeviceProfile::Terminal => format!(
-            "TOP product={} channel={} profile={} ctx={} origin={} route={} trust={} security={}\nTOP integrity={} crypto={} base1={} fyr={} safe-portal={} device={}\n",
+            "TOP product={} channel={} profile={} ctx={} origin={} route={} trust={} security={}\nTOP integrity={} crypto={} base1={} fyr={} safe-portal={} device={}\nTOP health={} risk={} lock={} dark_phase={} host-effect={} external-effect={}\n",
             state.product,
             state.channel,
             state.profile,
@@ -199,10 +221,16 @@ pub fn render_top_rail(state: &OpticsRailState) -> String {
             state.base1,
             state.fyr,
             state.safe_portal,
-            state.device.as_label()
+            state.device.as_label(),
+            state.domain_health,
+            state.risk,
+            state.lock_state,
+            state.dark_phase,
+            state.host_effect,
+            state.external_effect
         ),
         OpticsDeviceProfile::Desktop => format!(
-            "TOP product={} channel={} profile={} ctx={} origin={} route={} trust={} security={}\nTOP integrity={} crypto={} base1={} fyr={} safe-portal={} rollback={} device={} evidence=planned\n",
+            "TOP product={} channel={} profile={} ctx={} origin={} route={} trust={} security={}\nTOP integrity={} crypto={} base1={} fyr={} safe-portal={} rollback={} device={} evidence=planned\nTOP health={} risk={} lock={} dark_phase={} host-effect={} external-effect={}\n",
             state.product,
             state.channel,
             state.profile,
@@ -217,7 +245,13 @@ pub fn render_top_rail(state: &OpticsRailState) -> String {
             state.fyr,
             state.safe_portal,
             state.rollback,
-            state.device.as_label()
+            state.device.as_label(),
+            state.domain_health,
+            state.risk,
+            state.lock_state,
+            state.dark_phase,
+            state.host_effect,
+            state.external_effect
         ),
     }
 }
@@ -249,11 +283,16 @@ pub fn render_root_direction_map(active_axis: &str) -> String {
 pub fn render_bottom_rail(state: &OpticsRailState) -> String {
     match state.device {
         OpticsDeviceProfile::Mobile => format!(
-            "BOT color=bright-blue input={} mutation={} result={} origin={}\n",
-            state.input, state.mutation, state.last_result, state.origin
+            "BOT color=bright-blue input={} mutation={} result={} origin={} health={} risk={}\n",
+            state.input,
+            state.mutation,
+            state.last_result,
+            state.origin,
+            state.domain_health,
+            state.risk
         ),
         OpticsDeviceProfile::Laptop | OpticsDeviceProfile::Terminal => format!(
-            "BOT color=bright-blue input={} mutation={} command={} task={} result={}\nBOT warning={} safe-portal={} rollback={} copy-safe=raw-command-preserved\n",
+            "BOT color=bright-blue input={} mutation={} command={} task={} result={}\nBOT warning={} safe-portal={} rollback={} copy-safe=raw-command-preserved host-effect={} external-effect={}\n",
             state.input,
             state.mutation,
             state.command_family,
@@ -261,10 +300,12 @@ pub fn render_bottom_rail(state: &OpticsRailState) -> String {
             state.last_result,
             state.warning,
             state.safe_portal,
-            state.rollback
+            state.rollback,
+            state.host_effect,
+            state.external_effect
         ),
         OpticsDeviceProfile::Desktop => format!(
-            "BOT color=bright-blue input={} mutation={} command={} task={} result={}\nBOT warning={} safe-portal={} rollback={} copy-safe=raw-command-preserved labels=no-color/ascii-visible\n",
+            "BOT color=bright-blue input={} mutation={} command={} task={} result={}\nBOT warning={} safe-portal={} rollback={} copy-safe=raw-command-preserved labels=no-color/ascii-visible host-effect={} external-effect={}\n",
             state.input,
             state.mutation,
             state.command_family,
@@ -272,7 +313,9 @@ pub fn render_bottom_rail(state: &OpticsRailState) -> String {
             state.last_result,
             state.warning,
             state.safe_portal,
-            state.rollback
+            state.rollback,
+            state.host_effect,
+            state.external_effect
         ),
     }
 }
