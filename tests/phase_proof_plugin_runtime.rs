@@ -147,8 +147,7 @@ fn phase_proof_fyr_program_runs_inside_phase1() {
     let combined = run_phase1_script(&script);
 
     for required in [
-        "fyr check",
-        "status  : ok",
+        "fyr check: ok phase-proof.fyr",
         "PHASE UNIVERSE FYR PROOF PROGRAM",
         "D = {u,d,L,R}",
         "O = 0/0",
