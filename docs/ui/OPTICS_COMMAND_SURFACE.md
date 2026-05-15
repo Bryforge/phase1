@@ -29,6 +29,8 @@ pro
 hudrails
 ```
 
+Related registry-promotion contract: [OPTICS_REGISTRY_PROMOTION.md](OPTICS_REGISTRY_PROMOTION.md).
+
 The current `optics preview` and `optics help` routes display the complete read-only Optics command card. `optics status` displays the renderer/status contract. `optics rails` displays the current rail renderer. `optics device <profile>` displays the rail preview for a selected device profile.
 
 ## Current visibility
