@@ -52,8 +52,14 @@ fn optics_device_preview_routes_render_all_profiles() {
         ] {
             assert!(output.contains(required), "missing {required:?}:\n{output}");
         }
-        assert!(output.contains(&format!("args   : device {device}")), "{output}");
-        assert!(output.contains(&format!("device      : {device}")), "{output}");
+        assert!(
+            output.contains(&format!("args   : device {device}")),
+            "{output}"
+        );
+        assert!(
+            output.contains(&format!("device      : {device}")),
+            "{output}"
+        );
         assert!(output.contains(&format!("device={device}")), "{output}");
     }
 }
