@@ -55,6 +55,10 @@ pub struct OpticsRailState {
     pub crypto: String,
     pub base1: String,
     pub fyr: String,
+    pub origin: String,
+    pub route: String,
+    pub safe_portal: String,
+    pub rollback: String,
     pub device: OpticsDeviceProfile,
     pub input: String,
     pub mutation: String,
@@ -77,6 +81,10 @@ impl OpticsRailState {
             crypto: "chain-planned".to_string(),
             base1: "evidence-planned".to_string(),
             fyr: "idle".to_string(),
+            origin: "0/0".to_string(),
+            route: "ROOT".to_string(),
+            safe_portal: "planned".to_string(),
+            rollback: "available".to_string(),
             device,
             input: "active".to_string(),
             mutation: "none".to_string(),
@@ -114,14 +122,16 @@ pub fn render_pro_shell_layers(state: &OpticsRailState, typed_input: &str, color
     let result = result_label_color(&state.last_result, color);
 
     format!(
-        "{top_label}\nproduct={} channel={} profile={} ctx={} trust={} security={} device={}\n\
+        "{top_label}\nproduct={} channel={} profile={} ctx={} origin={} route={} trust={} security={} device={}\n\
          {command_label}\nphase1://edge/root > {typed}\n\n\
-         {status_label}\nresult={} mutation={} integrity={} crypto={} base1={} fyr={}\n\
+         {status_label}\nresult={} mutation={} integrity={} crypto={} base1={} fyr={} safe-portal={} rollback={}\n\
          {bottom_label}\ninput={} command={} task={} warning={} copy-safe=raw-command-preserved\n",
         state.product,
         state.channel,
         state.profile,
         state.context,
+        state.origin,
+        state.route,
         state.trust,
         state.security,
         state.device.as_label(),
@@ -131,6 +141,8 @@ pub fn render_pro_shell_layers(state: &OpticsRailState, typed_input: &str, color
         state.crypto,
         state.base1,
         state.fyr,
+        state.safe_portal,
+        state.rollback,
         state.input,
         state.command_family,
         state.active_task,
@@ -162,40 +174,49 @@ fn result_label_color(value: &str, color: bool) -> String {
 pub fn render_top_rail(state: &OpticsRailState) -> String {
     match state.device {
         OpticsDeviceProfile::Mobile => format!(
-            "TOP product={} channel={} profile={} ctx={} trust={} device={}\n",
+            "TOP product={} channel={} profile={} ctx={} origin={} route={} trust={} device={}\n",
             state.product,
             state.channel,
             state.profile,
             state.context,
+            state.origin,
+            state.route,
             state.trust,
             state.device.as_label()
         ),
         OpticsDeviceProfile::Laptop | OpticsDeviceProfile::Terminal => format!(
-            "TOP product={} channel={} profile={} ctx={} trust={} security={}\nTOP integrity={} crypto={} base1={} fyr={} device={}\n",
+            "TOP product={} channel={} profile={} ctx={} origin={} route={} trust={} security={}\nTOP integrity={} crypto={} base1={} fyr={} safe-portal={} device={}\n",
             state.product,
             state.channel,
             state.profile,
             state.context,
+            state.origin,
+            state.route,
             state.trust,
             state.security,
             state.integrity,
             state.crypto,
             state.base1,
             state.fyr,
+            state.safe_portal,
             state.device.as_label()
         ),
         OpticsDeviceProfile::Desktop => format!(
-            "TOP product={} channel={} profile={} ctx={} trust={} security={}\nTOP integrity={} crypto={} base1={} fyr={} device={} evidence=planned\n",
+            "TOP product={} channel={} profile={} ctx={} origin={} route={} trust={} security={}\nTOP integrity={} crypto={} base1={} fyr={} safe-portal={} rollback={} device={} evidence=planned\n",
             state.product,
             state.channel,
             state.profile,
             state.context,
+            state.origin,
+            state.route,
             state.trust,
             state.security,
             state.integrity,
             state.crypto,
             state.base1,
             state.fyr,
+            state.safe_portal,
+            state.rollback,
             state.device.as_label()
         ),
     }
@@ -228,26 +249,30 @@ pub fn render_root_direction_map(active_axis: &str) -> String {
 pub fn render_bottom_rail(state: &OpticsRailState) -> String {
     match state.device {
         OpticsDeviceProfile::Mobile => format!(
-            "BOT color=bright-blue input={} mutation={} result={}\n",
-            state.input, state.mutation, state.last_result
+            "BOT color=bright-blue input={} mutation={} result={} origin={}\n",
+            state.input, state.mutation, state.last_result, state.origin
         ),
         OpticsDeviceProfile::Laptop | OpticsDeviceProfile::Terminal => format!(
-            "BOT color=bright-blue input={} mutation={} command={} task={} result={}\nBOT warning={} copy-safe=raw-command-preserved\n",
+            "BOT color=bright-blue input={} mutation={} command={} task={} result={}\nBOT warning={} safe-portal={} rollback={} copy-safe=raw-command-preserved\n",
             state.input,
             state.mutation,
             state.command_family,
             state.active_task,
             state.last_result,
-            state.warning
+            state.warning,
+            state.safe_portal,
+            state.rollback
         ),
         OpticsDeviceProfile::Desktop => format!(
-            "BOT color=bright-blue input={} mutation={} command={} task={} result={}\nBOT warning={} copy-safe=raw-command-preserved labels=no-color/ascii-visible\n",
+            "BOT color=bright-blue input={} mutation={} command={} task={} result={}\nBOT warning={} safe-portal={} rollback={} copy-safe=raw-command-preserved labels=no-color/ascii-visible\n",
             state.input,
             state.mutation,
             state.command_family,
             state.active_task,
             state.last_result,
-            state.warning
+            state.warning,
+            state.safe_portal,
+            state.rollback
         ),
     }
 }
