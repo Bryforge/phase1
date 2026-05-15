@@ -82,8 +82,13 @@ impl OpticsRailState {
 pub fn render_top_rail(state: &OpticsRailState) -> String {
     match state.device {
         OpticsDeviceProfile::Mobile => format!(
-            "TOP product={} channel={} profile={} ctx={} trust={}\n",
-            state.product, state.channel, state.profile, state.context, state.trust
+            "TOP product={} channel={} profile={} ctx={} trust={} device={}\n",
+            state.product,
+            state.channel,
+            state.profile,
+            state.context,
+            state.trust,
+            state.device.as_label()
         ),
         OpticsDeviceProfile::Laptop | OpticsDeviceProfile::Terminal => format!(
             "TOP product={} channel={} profile={} ctx={} trust={} security={}\nTOP integrity={} crypto={} base1={} fyr={} device={}\n",
