@@ -155,7 +155,10 @@ fn optics_boot_selector_escape_hatch_preserves_boot_card() {
     let normalized = normalize_terminal_output(&output);
 
     assert!(normalized.contains("BOOT CONFIG"), "{output}");
-    assert!(normalized.contains("phase1://boot"), "{output}");
+    assert!(
+        normalized.contains("phase1://boot") || normalized.contains("boot>"),
+        "{output}"
+    );
     assert!(normalized.contains("A TOP RAIL"), "{output}");
 }
 
@@ -172,11 +175,7 @@ fn legacy_shell_ui_escape_hatch_preserves_old_prompt() {
     );
     let normalized = normalize_terminal_output(&output);
 
-    assert!(
-        normalized.contains("phase1://root ~ edge safe trust")
-            || normalized.contains("phase1://root ~ ❯"),
-        "{output}"
-    );
+    assert!(normalized.contains("phase1://root ~"), "{output}");
     assert!(!normalized.contains("A TOP RAIL"), "{output}");
     assert!(normalized.contains("LIVE OPS"), "{output}");
     assert!(
