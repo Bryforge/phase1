@@ -10,6 +10,7 @@ fn run_phase1(input: &str) -> String {
         .env("PHASE1_ASCII", "1")
         .env("PHASE1_OPTICS_PRO", "1")
         .env_remove("PHASE1_BOOT_SELECTOR")
+        .env_remove("PHASE1_LEGACY_SHELL_UI")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
@@ -105,8 +106,6 @@ fn optics_pro_shell_frame_is_default_active_input_surface() {
 }
 
 #[test]
-
-#[test]
 fn optics_boot_selector_escape_hatch_preserves_boot_card() {
     let mut child = Command::new(env!("CARGO_BIN_EXE_phase1"))
         .env("PHASE1_TEST_MODE", "1")
@@ -116,6 +115,7 @@ fn optics_boot_selector_escape_hatch_preserves_boot_card() {
         .env("PHASE1_ASCII", "1")
         .env("PHASE1_OPTICS_PRO", "1")
         .env("PHASE1_BOOT_SELECTOR", "1")
+        .env_remove("PHASE1_LEGACY_SHELL_UI")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
@@ -141,6 +141,7 @@ fn optics_boot_selector_escape_hatch_preserves_boot_card() {
     assert!(output.contains("A TOP RAIL"), "{output}");
 }
 
+#[test]
 fn legacy_shell_ui_escape_hatch_preserves_old_prompt() {
     let mut child = Command::new(env!("CARGO_BIN_EXE_phase1"))
         .env("PHASE1_TEST_MODE", "1")
@@ -149,6 +150,7 @@ fn legacy_shell_ui_escape_hatch_preserves_old_prompt() {
         .env("PHASE1_NO_COLOR", "1")
         .env("PHASE1_ASCII", "1")
         .env("PHASE1_LEGACY_SHELL_UI", "1")
+        .env_remove("PHASE1_BOOT_SELECTOR")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
