@@ -23,6 +23,8 @@ Phase1 now covers several connected workstreams:
 | --- | --- |
 | Run Phase1 | [`../README.md`](../README.md#quick-start) |
 | Understand what is implemented | [`../docs/project/FEATURE_STATUS.md`](../docs/project/FEATURE_STATUS.md) |
+| Build toward a real-life system | [`project/REAL_SYSTEM_DEVELOPMENT_GUIDE.md`](project/REAL_SYSTEM_DEVELOPMENT_GUIDE.md) |
+| Develop Trilateral Phase Movement | [`project/TRILATERAL_PHASE_MOVEMENT.md`](project/TRILATERAL_PHASE_MOVEMENT.md) |
 | Learn the docs structure | [`README.md`](README.md) |
 | Understand the reorganization plan | [`REORGANIZATION_PLAN.md`](REORGANIZATION_PLAN.md) |
 | Review public asset filenames | [`../assets/README.md`](../assets/README.md) |
@@ -52,6 +54,8 @@ Phase1 now covers several connected workstreams:
 | `SECURITY.md` | Security model, trust gates, crypto policy goal, and reporting guidance. |
 | `docs/quality/QUALITY.md` | Quality gates, validation commands, score model, and ownership areas. |
 | `docs/project/FEATURE_STATUS.md` | Implemented, experimental, restricted, and roadmap feature matrix. |
+| `docs/project/REAL_SYSTEM_DEVELOPMENT_GUIDE.md` | Real-system development direction, evidence ladder, project roles, promotion rules, and next development order. |
+| `docs/project/TRILATERAL_PHASE_MOVEMENT.md` | Trilateral Phase Movement design contract, fixture-first state model, preview-only transition rules, and non-claims. |
 | `docs/project/PHASE1_NATIVE_LANGUAGE.md` | Fyr language specification and entry point. |
 | `.github/` | Pull request template, issue templates, workflows, and automation. |
 | `src/` | Phase1 Rust source. |
@@ -82,6 +86,20 @@ Phase1 now covers several connected workstreams:
 2. Run the quick start.
 3. Read [`operators/README.md`](operators/README.md).
 4. Check [`../docs/project/FEATURE_STATUS.md`](../docs/project/FEATURE_STATUS.md) before assuming a feature is implemented.
+
+### Real-system builder
+
+1. Read [`project/REAL_SYSTEM_DEVELOPMENT_GUIDE.md`](project/REAL_SYSTEM_DEVELOPMENT_GUIDE.md).
+2. Treat simulation as a proving layer, not the destination.
+3. Move concepts through fixtures, tests, read-only surfaces, VM evidence, real-device read-only evidence, and only then explicit-gated execution.
+4. Keep Base1 claims tied to Base1 evidence and keep Optics/Fyr/Phase UI progress separate from boot-readiness claims.
+
+### Phase movement designer
+
+1. Read [`project/TRILATERAL_PHASE_MOVEMENT.md`](project/TRILATERAL_PHASE_MOVEMENT.md).
+2. Start with Phase state fixtures before live movement.
+3. Keep `host-effect=none` and `external-effect=none` until explicit gates and evidence exist.
+4. Add invariant tests before adding runtime preview commands.
 
 ### Contributor
 
@@ -217,5 +235,3 @@ Older planning notes, development checkpoints, AI/Gina notes, AVIM notes, and le
 ### White Arts
 
 Use `docs/white-arts/README.md` for White Arts defensive validation, nominal-state, maintenance, security-audit, and open security server suite planning. White Arts work remains evidence-bound, read-only first, and non-claiming until tests and validation reports support promotion.
-
-- [`white-arts/OPEN_SECURITY_SERVER_SUITE.md`](white-arts/OPEN_SECURITY_SERVER_SUITE.md) — documentation-first open-source security server environment suite plan.
