@@ -2,9 +2,9 @@
 mod optics;
 
 use optics::{
-    colorize_user_input, render_bottom_rail, render_pro_shell_layers, render_static_preview,
-    render_top_rail, supported_device_labels, supported_device_profiles, OpticsDeviceProfile,
-    OpticsRailState, USER_INPUT_BRIGHT_YELLOW,
+    colorize_user_input, normalize_direction_axis, render_bottom_rail, render_pro_shell_layers,
+    render_root_direction_map, render_static_preview, render_top_rail, supported_device_labels,
+    supported_device_profiles, OpticsDeviceProfile, OpticsRailState, USER_INPUT_BRIGHT_YELLOW,
 };
 
 #[test]
@@ -19,6 +19,11 @@ fn optics_renderer_static_preview_preserves_top_center_bottom_contract() {
         "ctx=root > nest:0/1 > portal:none > ghost:none",
         "integrity=not-checked",
         "crypto=chain-planned",
+        "ROOT DIRECTION MAP",
+        "layout=center-root top-bottom-left-right",
+        "[ LEFT ]  <--- [ ROOT ] --->  [ RIGHT ]",
+        "rule=root-remains-anchor",
+        "network=not-wired host-bridge=disabled",
         "CENTER role=command-output chrome=none-permanent",
         "CENTER rule=center-remains-primary-workspace",
         "BOT color=bright-blue input=active mutation=none",
@@ -157,6 +162,43 @@ fn optics_renderer_adapts_device_density_without_changing_state_meaning() {
         desktop.contains("labels=no-color/ascii-visible"),
         "{desktop}"
     );
+}
+
+#[test]
+fn optics_root_direction_map_keeps_root_centered_with_all_axes() {
+    let map = render_root_direction_map("right");
+
+    for required in [
+        "ROOT DIRECTION MAP",
+        "layout=center-root top-bottom-left-right",
+        "active-axis=right",
+        "              [ TOP ]",
+        "                 ^",
+        "                 |",
+        "[ LEFT ]  <--- [ ROOT ] --->  [ RIGHT ]",
+        "                 v",
+        "             [ BOTTOM ]",
+        "rule=root-remains-anchor",
+        "movement=planned-visible-logged-reversible",
+        "network=not-wired host-bridge=disabled",
+    ] {
+        assert!(map.contains(required), "missing {required:?}: {map}");
+    }
+}
+
+#[test]
+fn optics_root_direction_map_normalizes_direction_aliases() {
+    for (raw, expected) in [
+        ("up", "top"),
+        ("north", "top"),
+        ("down", "bottom"),
+        ("south", "bottom"),
+        ("west", "left"),
+        ("east", "right"),
+        ("unknown", "root"),
+    ] {
+        assert_eq!(normalize_direction_axis(raw), expected, "raw axis: {raw}");
+    }
 }
 
 #[test]
