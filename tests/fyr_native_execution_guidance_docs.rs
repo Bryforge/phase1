@@ -6,7 +6,8 @@ const TOOLCHAIN_DOC: &str = "docs/fyr/TOOLCHAIN.md";
 
 #[test]
 fn fyr_native_execution_guidance_doc_exists_and_defines_scope() {
-    let doc = fs::read_to_string(GUIDANCE_DOC).expect("Fyr native execution guidance doc should exist");
+    let doc =
+        fs::read_to_string(GUIDANCE_DOC).expect("Fyr native execution guidance doc should exist");
 
     for required in [
         "# Fyr native execution guidance",
@@ -21,7 +22,8 @@ fn fyr_native_execution_guidance_doc_exists_and_defines_scope() {
 
 #[test]
 fn fyr_native_execution_guidance_limits_inline_native_runs_to_short_tests() {
-    let doc = fs::read_to_string(GUIDANCE_DOC).expect("Fyr native execution guidance doc should exist");
+    let doc =
+        fs::read_to_string(GUIDANCE_DOC).expect("Fyr native execution guidance doc should exist");
 
     for required in [
         "Use native or inline Fyr execution only for:",
@@ -38,7 +40,8 @@ fn fyr_native_execution_guidance_limits_inline_native_runs_to_short_tests() {
 
 #[test]
 fn fyr_native_execution_guidance_requires_file_backed_real_work() {
-    let doc = fs::read_to_string(GUIDANCE_DOC).expect("Fyr native execution guidance doc should exist");
+    let doc =
+        fs::read_to_string(GUIDANCE_DOC).expect("Fyr native execution guidance doc should exist");
 
     for required in [
         "Use `.fyr` files for:",
@@ -60,7 +63,8 @@ fn fyr_native_execution_guidance_requires_file_backed_real_work() {
 
 #[test]
 fn fyr_native_execution_guidance_preserves_editor_and_package_expectations() {
-    let doc = fs::read_to_string(GUIDANCE_DOC).expect("Fyr native execution guidance doc should exist");
+    let doc =
+        fs::read_to_string(GUIDANCE_DOC).expect("Fyr native execution guidance doc should exist");
 
     for required in [
         "Operators should use an editor for meaningful Fyr source.",
@@ -77,7 +81,8 @@ fn fyr_native_execution_guidance_preserves_editor_and_package_expectations() {
 
 #[test]
 fn fyr_native_execution_guidance_preserves_safety_relationship_and_non_claims() {
-    let doc = fs::read_to_string(GUIDANCE_DOC).expect("Fyr native execution guidance doc should exist");
+    let doc =
+        fs::read_to_string(GUIDANCE_DOC).expect("Fyr native execution guidance doc should exist");
 
     for required in [
         "VFS-first by default",
@@ -100,7 +105,10 @@ fn fyr_native_execution_guidance_is_linked_from_safety_and_toolchain_docs() {
     let toolchain = fs::read_to_string(TOOLCHAIN_DOC).expect("Fyr toolchain doc should exist");
 
     assert!(safety.contains("NATIVE_EXECUTION_GUIDANCE.md"), "{safety}");
-    assert!(toolchain.contains("NATIVE_EXECUTION_GUIDANCE.md"), "{toolchain}");
+    assert!(
+        toolchain.contains("NATIVE_EXECUTION_GUIDANCE.md"),
+        "{toolchain}"
+    );
     assert!(
         safety.contains("Native or inline Fyr execution is for short tests and quick checks only."),
         "{safety}"
