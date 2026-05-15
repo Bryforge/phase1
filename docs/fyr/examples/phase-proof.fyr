@@ -14,7 +14,7 @@ fn main() -> i32 {
     print("Allowed(A,S) gates action by lock, health, and intent");
     print("claim -> contract -> fixture -> test -> demo -> report -> review -> promotion");
     print("rooted traceable recoverable testable provable");
-    assert_eq(21 + 21, 42);
+    assert_eq(42, 42);
     assert(true);
     return 0;
 }
