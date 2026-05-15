@@ -1,0 +1,70 @@
+name=phase-proof
+capability=none
+stdout=PHASE UNIVERSE PROOF PROGRAM
+stdout=status=default-runtime-surface
+stdout=mode=proof-display
+stdout=execution-state=not-executed
+stdout=mutation=disabled
+stdout=host-effect=none
+stdout=external-effect=none
+stdout=
+stdout=ROUTE MODEL
+stdout=LaTeX: D = {u,d,L,R}
+stdout=LaTeX: r = delta/n, delta in D, n in N+
+stdout=LaTeX: O = 0/0
+stdout=LaTeX: P = ROOT > r_1 > r_2 > ... > r_n
+stdout=example=ROOT>R/3>u/1
+stdout=
+stdout=STATE MODEL
+stdout=LaTeX: S = {root_anchor, origin, current_route, current_axis, current_domain, current_cell, breadcrumb, trace_id, safe_portal, health, lock_state, rollback_target}
+stdout=root-anchor=ROOT
+stdout=origin=0/0
+stdout=current-route=R/3
+stdout=current-axis=R
+stdout=breadcrumb=ROOT>R/3>u/1
+stdout=
+stdout=TRANSITION MODEL
+stdout=LaTeX: T(S,r) -> S'
+stdout=LaTeX: breadcrumb(S') = breadcrumb(S) > r
+stdout=LaTeX: ReturnOrigin(S) -> S_0
+stdout=LaTeX: PlantOrigin(S) -> S'
+stdout=LaTeX: RecoverSelf(S,SP) -> S'
+stdout=
+stdout=HEALTH MODEL
+stdout=LaTeX: H = {nominal, changed, unstable, quarantined, broken}
+stdout=LaTeX: risk(nominal)=0, risk(changed)=1, risk(unstable)=2, risk(quarantined)=3, risk(broken)=4
+stdout=LaTeX: RiskScore(D_i) = risk(D_i.health)
+stdout=rule=RiskScore>=2 offers safe portal recovery
+stdout=rule=RiskScore>=3 restricts movement except recovery
+stdout=
+stdout=LOCK MODEL
+stdout=LaTeX: Lambda = {open, locked, sealed, quarantined, broken}
+stdout=LaTeX: Allowed(A,S) = policy(A,S.lock_state,S.health,S.operator_intent)
+stdout=LaTeX: CanUnlock = explicit_intent and valid_authority and approved_key_custody and audit_enabled
+stdout=boundary=credential-capture-disabled brute-force-disabled unauthorized-use-denied
+stdout=
+stdout=SAFETY INVARIANTS
+stdout=I1 ROOT must remain reachable from every valid Phase state
+stdout=I2 breadcrumb must append instead of overwrite
+stdout=I3 ReturnOrigin must preserve previous route as rollback target
+stdout=I4 PlantOrigin must preserve previous origin
+stdout=I5 RecoverSelf must preserve root_anchor and recovered_from
+stdout=I6 Quarantine must preserve evidence
+stdout=I7 dark_phase modeling must preserve host-effect=none and external-effect=none
+stdout=I8 simulated domain networks must not mutate host networking
+stdout=
+stdout=PROOF LADDER
+stdout=claim -> contract -> fixture -> test -> demo -> report -> review -> promotion
+stdout=E0 ContractProof
+stdout=E1 RendererProof
+stdout=E2 StateFixtureProof
+stdout=E3 InvariantProof
+stdout=E4 RuntimeStatusProof
+stdout=E5 RecoveryDrillProof
+stdout=E6 DryRunPlannerProof
+stdout=E7 LabHardwareProof
+stdout=
+stdout=PHASE1 UNIVERSE
+stdout=rooted traceable recoverable testable provable
+stdout=claim-boundary=proof-display-only
+exit=0
