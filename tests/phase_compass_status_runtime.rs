@@ -41,6 +41,7 @@ fn assert_compass_core(output: &str) {
     for required in [
         "PHASE COMPASS",
         "mode=status-only",
+        "runtime=source-native",
         "mutation=disabled",
         "origin=0/0",
         "root-anchor=ROOT",
@@ -61,21 +62,19 @@ fn assert_compass_core(output: &str) {
 }
 
 #[test]
-fn phase_compass_wasi_plugin_runs_from_default_plugins_directory() {
+fn phase_compass_uses_source_native_runtime_surface() {
     let output = wasm::execute_plugin(Path::new("plugins"), "phase", &["whereami".to_string()]);
 
     for required in [
-        "phase1 wasi run",
-        "plugin : phase",
-        "runtime: phase1-wasi-lite",
-        "sandbox: fs=virtual net=disabled host=blocked",
-        "cap    : none",
+        "phase1 native run",
+        "command: phase",
         "args   : whereami",
         "status : ok",
         "exit   : 0",
     ] {
         assert!(output.contains(required), "missing {required:?}:\n{output}");
     }
+    assert!(!output.contains("phase1 wasi run"), "{output}");
     assert_compass_core(&output);
 }
 
