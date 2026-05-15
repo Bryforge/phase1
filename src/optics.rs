@@ -17,6 +17,23 @@ impl OpticsDeviceProfile {
     }
 }
 
+pub fn supported_device_profiles() -> [OpticsDeviceProfile; 4] {
+    [
+        OpticsDeviceProfile::Mobile,
+        OpticsDeviceProfile::Laptop,
+        OpticsDeviceProfile::Desktop,
+        OpticsDeviceProfile::Terminal,
+    ]
+}
+
+pub fn supported_device_labels() -> String {
+    supported_device_profiles()
+        .into_iter()
+        .map(OpticsDeviceProfile::as_label)
+        .collect::<Vec<_>>()
+        .join(",")
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct OpticsRailState {
     pub product: String,

@@ -32,7 +32,8 @@ fn optics_registry_promotion_doc_preserves_target_command_shape() {
     for required in [
         "optics preview",
         "optics rails",
-        "optics [preview|rails|help]",
+        "optics status",
+        "optics [preview|rails|status|help]",
         "aliases: `pro`, `hudrails`",
         "category: `user`",
         "capability: `none`",
@@ -59,8 +60,28 @@ fn optics_registry_promotion_doc_preserves_discovery_targets() {
         "`canonical_name(\"hudrails\")` resolves to `optics`",
         "`completions(\"opt\")` contains `optics`",
         "`completions(\"pro\")` contains `pro`",
-        "`man_page(\"optics\")` contains `optics [preview|rails|help]`",
+        "`man_page(\"optics\")` contains `optics [preview|rails|status|help]`",
         "`capabilities_report()` lists `optics` with capability `none`",
+    ] {
+        assert!(doc.contains(required), "missing {required:?}: {doc}");
+    }
+}
+
+#[test]
+fn optics_registry_promotion_doc_preserves_status_surface() {
+    let doc =
+        fs::read_to_string(PROMOTION_DOC).expect("Optics registry promotion doc should exist");
+
+    for required in [
+        "Status surface",
+        "`optics status` reports the current preview state",
+        "preview-only mode",
+        "Rust static renderer source",
+        "top rail preview readiness",
+        "bottom rail preview readiness",
+        "live HUD disabled state",
+        "explicit activation gate requirement",
+        "input, history, and parser non-mutation labels",
     ] {
         assert!(doc.contains(required), "missing {required:?}: {doc}");
     }

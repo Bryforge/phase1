@@ -62,6 +62,9 @@ pub fn execute_plugin(plugins_dir: &Path, name: &str, args: &[String]) -> String
     if is_arena(name) {
         return launch_arena(args);
     }
+    if is_optics_status(name, args) {
+        return optics_status(args);
+    }
     if is_optics_rails(name, args) {
         return optics_rails_preview(args);
     }
@@ -107,8 +110,39 @@ pub fn execute_plugin(plugins_dir: &Path, name: &str, args: &[String]) -> String
     out
 }
 
+fn is_optics_status(name: &str, args: &[String]) -> bool {
+    name == "optics" && args.first().is_some_and(|arg| arg == "status")
+}
+
 fn is_optics_rails(name: &str, args: &[String]) -> bool {
     name == "optics" && args.first().is_some_and(|arg| arg == "rails")
+}
+
+fn optics_status(args: &[String]) -> String {
+    let mut out = String::from("phase1 wasi run\n");
+    out.push_str("plugin : optics\n");
+    out.push_str(&format!("runtime: {RUNTIME}\n"));
+    out.push_str("sandbox: fs=virtual net=disabled host=blocked\n");
+    out.push_str("cap    : none\n");
+    out.push_str(&format!("args   : {}\n", redact_args(args).join(" ")));
+    out.push_str("OPTICS STATUS\n");
+    out.push_str("mode        : preview-only\n");
+    out.push_str("renderer    : rust-static-renderer\n");
+    out.push_str("top-rail    : ready-preview\n");
+    out.push_str("bottom-rail : ready-preview\n");
+    out.push_str(&format!(
+        "devices     : {}\n",
+        optics::supported_device_labels()
+    ));
+    out.push_str("live-hud    : disabled\n");
+    out.push_str("activation  : explicit-gate-required\n");
+    out.push_str("input       : raw-command-preserved\n");
+    out.push_str("history     : unchanged\n");
+    out.push_str("parser      : unchanged\n");
+    out.push_str("non-claims  : not-compositor not-terminal-emulator not-sandbox not-security-boundary not-crypto-enforcement not-system-integrity-guarantee not-base1-boot-environment\n");
+    out.push_str("status : ok\n");
+    out.push_str("exit   : 0\n");
+    out
 }
 
 fn optics_rails_preview(args: &[String]) -> String {
@@ -389,6 +423,27 @@ mod tests {
         assert!(out.contains("hello wasi"));
         assert!(out.contains("host=blocked"));
         assert!(out.contains("[redacted]"));
+        let _ = fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn optics_status_route_reports_preview_mode_and_activation_gate() {
+        let dir = temp_plugins();
+        fs::write(dir.join("optics.wasm"), b"\0asm\x01\0\0\0").unwrap();
+        let out = execute_plugin(&dir, "optics", &["status".to_string()]);
+        assert!(out.contains("plugin : optics"));
+        assert!(out.contains("args   : status"));
+        assert!(out.contains("OPTICS STATUS"));
+        assert!(out.contains("mode        : preview-only"));
+        assert!(out.contains("renderer    : rust-static-renderer"));
+        assert!(out.contains("top-rail    : ready-preview"));
+        assert!(out.contains("bottom-rail : ready-preview"));
+        assert!(out.contains("devices     : mobile,laptop,desktop,terminal"));
+        assert!(out.contains("live-hud    : disabled"));
+        assert!(out.contains("activation  : explicit-gate-required"));
+        assert!(out.contains("parser      : unchanged"));
+        assert!(out.contains("not-security-boundary"));
+        assert!(out.contains("status : ok"));
         let _ = fs::remove_dir_all(dir);
     }
 
