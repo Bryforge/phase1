@@ -142,7 +142,6 @@ fn optics_boot_selector_escape_hatch_preserves_boot_card() {
 }
 
 #[test]
-#[test]
 fn legacy_shell_ui_escape_hatch_preserves_old_prompt() {
     let mut child = Command::new(env!("CARGO_BIN_EXE_phase1"))
         .env("PHASE1_TEST_MODE", "1")
@@ -152,7 +151,7 @@ fn legacy_shell_ui_escape_hatch_preserves_old_prompt() {
         .env("PHASE1_ASCII", "1")
         .env("PHASE1_LEGACY_SHELL_UI", "1")
         .env_remove("PHASE1_BOOT_SELECTOR")
-        .env_remove("PHASE1_LEGACY_SHELL_UI")
+        .env_remove("PHASE1_OPTICS_PRO")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
