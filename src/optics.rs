@@ -1,3 +1,12 @@
+pub const USER_INPUT_BRIGHT_YELLOW: &str = "\x1b[93m";
+const RESET: &str = "\x1b[0m";
+const BOLD: &str = "\x1b[1m";
+const CYAN: &str = "\x1b[36m";
+const BLUE: &str = "\x1b[34m";
+const GREEN: &str = "\x1b[32m";
+const MAGENTA: &str = "\x1b[35m";
+const RED: &str = "\x1b[31m";
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum OpticsDeviceProfile {
     Mobile,
@@ -77,6 +86,77 @@ impl OpticsRailState {
             warning: "none".to_string(),
         }
     }
+}
+
+pub fn colorize_user_input(input: &str, color: bool) -> String {
+    if color && !input.is_empty() {
+        format!("{BOLD}{USER_INPUT_BRIGHT_YELLOW}{input}{RESET}")
+    } else {
+        input.to_string()
+    }
+}
+
+fn colorize_layer(text: &str, color: bool, ansi: &str) -> String {
+    if color {
+        format!("{BOLD}{ansi}{text}{RESET}")
+    } else {
+        text.to_string()
+    }
+}
+
+pub fn render_pro_shell_layers(state: &OpticsRailState, typed_input: &str, color: bool) -> String {
+    let top_label = colorize_layer("A TOP RAIL", color, CYAN);
+    let command_label = colorize_layer("B COMMAND RAIL", color, BLUE);
+    let status_label = colorize_layer("C STATUS HUD", color, GREEN);
+    let bottom_label = colorize_layer("D BOTTOM HUD", color, MAGENTA);
+    let typed = colorize_user_input(typed_input, color);
+    let mutation = mutation_label_color(&state.mutation, color);
+    let result = result_label_color(&state.last_result, color);
+
+    format!(
+        "{top_label}\nproduct={} channel={} profile={} ctx={} trust={} security={} device={}\n\
+         {command_label}\nphase1://edge/root > {typed}\n\n\
+         {status_label}\nresult={} mutation={} integrity={} crypto={} base1={} fyr={}\n\
+         {bottom_label}\ninput={} command={} task={} warning={} copy-safe=raw-command-preserved\n",
+        state.product,
+        state.channel,
+        state.profile,
+        state.context,
+        state.trust,
+        state.security,
+        state.device.as_label(),
+        result,
+        mutation,
+        state.integrity,
+        state.crypto,
+        state.base1,
+        state.fyr,
+        state.input,
+        state.command_family,
+        state.active_task,
+        state.warning
+    )
+}
+
+fn mutation_label_color(value: &str, color: bool) -> String {
+    let ansi = match value {
+        "typing" | "command-family-detected" => CYAN,
+        "guarded" | "confirmation" => MAGENTA,
+        "denied" | "failed" | "unsafe" | "invalid" => RED,
+        "complete" | "success" => GREEN,
+        _ => BLUE,
+    };
+    colorize_layer(value, color, ansi)
+}
+
+fn result_label_color(value: &str, color: bool) -> String {
+    let ansi = match value {
+        "ok" | "success" => GREEN,
+        "warning" | "guarded" => MAGENTA,
+        "failed" | "denied" | "invalid" => RED,
+        _ => BLUE,
+    };
+    colorize_layer(value, color, ansi)
 }
 
 pub fn render_top_rail(state: &OpticsRailState) -> String {
