@@ -1,19 +1,19 @@
 {
   "name": "Phase1 public project status",
   "status_kind": "estimated roadmap progress",
-  "last_updated_utc": "2026-05-14T20:42:44Z",
+  "last_updated_utc": "2026-05-15T06:10:00Z",
   "repository": "Bryforge/phase1",
   "branch": "edge/stable",
-  "commit": "3c75180da9e62be73533610ae052cd01ab71bc99",
-  "overall_estimated_completion_percent": 67,
-  "public_state": "active edge development with reviewed B3 VM evidence, B6 X200 marker evidence, public status promotion, Base1 B6 X200 marker checkpoint release note, and Fyr black_arts staged-candidate evidence published",
-  "important_boundary": "Percentages are planning estimates, not production-readiness, security-hardening, live-update, or autonomous self-modification claims. Fyr black_arts has staged-candidate design, fixtures, operator visuals, source-wiring checklist, and runtime-stub handoff evidence, but the first safe runtime stub remains pending under issue #317. Installer readiness, recovery-complete status, hardening, release-candidate readiness, daily-driver readiness, broad hardware validation, live-system mutation, and autonomous promotion remain not claimed.",
+  "commit": "5ad5a73e54602e970f75843a6f0928187ce1e411",
+  "overall_estimated_completion_percent": 68,
+  "public_state": "active edge development with Optics PRO visibility rails, source-native Phase Compass status, reviewed B3 VM evidence, B6 X200 marker evidence, public status promotion, Base1 B6 X200 marker checkpoint release note, and Fyr black_arts staged-candidate evidence published",
+  "important_boundary": "Percentages are planning estimates, not production-readiness, security-hardening, live-update, live Phase movement, or autonomous self-modification claims. Phase Compass and Optics PRO surfaces are status-only and visualization-first. Fyr black_arts has staged-candidate design, fixtures, operator visuals, source-wiring checklist, and runtime-stub handoff evidence, but the first safe runtime stub remains pending under issue #317. Installer readiness, recovery-complete status, hardening, release-candidate readiness, daily-driver readiness, broad hardware validation, live-system mutation, and autonomous promotion remain not claimed.",
   "projects": [
     {
       "name": "Phase1 operator console",
-      "estimated_completion_percent": 82,
-      "state": "usable edge console with guarded host access, VFS, dashboards, help UI, themes, learning, and tests",
-      "next_milestone": "wire safe Fyr black_arts staged runtime stubs while preserving non-live defaults"
+      "estimated_completion_percent": 84,
+      "state": "usable edge console with guarded host access, VFS, dashboards, help UI, themes, learning, tests, Optics PRO rails, and source-native Phase Compass status commands",
+      "next_milestone": "move from status-only Phase Compass into tested trace/breadcrumb state fixtures before any live movement"
     },
     {
       "name": "Fyr native language",
@@ -22,10 +22,16 @@
       "next_milestone": "implement the first safe fyr staged runtime stub from issue #317 without candidate writes, host commands, network access, validation execution, promotion, discard, or live-system changes"
     },
     {
+      "name": "Phase universe / Optics PRO",
+      "estimated_completion_percent": 34,
+      "state": "route/origin contract, proof ladder, Optics ROOT map, recovery/status/danger/trace rails, source-native Phase Compass status, and lore-mode issue #386 are present; live movement remains future work",
+      "next_milestone": "add state fixtures and invariant tests for path, breadcrumb, origin return, safe portal, and domain health before movement"
+    },
+    {
       "name": "Base1 secure host / OS track",
       "estimated_completion_percent": 40,
       "state": "B2 focused test-suite evidence passed, reviewed B3 VM evidence is present, and the B6 X200 marker chain is published through evidence, checkpoint, public status, and release note; claim remains not_claimed",
-      "next_milestone": "continue B4 recovery validation and repeatable physical boot evidence while preserving installer, hardening, release-candidate, and daily-driver non-claims"
+      "next_milestone": "continue B4 recovery validation, fresh-spawn contingency planning, and repeatable physical boot evidence while preserving installer, hardening, release-candidate, and daily-driver non-claims"
     },
     {
       "name": "X200 / Libreboot hardware path",
@@ -41,8 +47,8 @@
     },
     {
       "name": "Website and public docs",
-      "estimated_completion_percent": 90,
-      "state": "public site, status page, status JSON, badge endpoint, native GitHub Wiki, refreshed source wiki, organized docs, X200 evidence report, B6 checkpoint trail, Base1 B6 X200 release note, and Fyr black_arts public status trail are in place",
+      "estimated_completion_percent": 91,
+      "state": "public site, status page, status JSON, badge endpoint, native GitHub Wiki, refreshed source wiki, organized docs, Phase Compass status note, X200 evidence report, B6 checkpoint trail, Base1 B6 X200 release note, and Fyr black_arts public status trail are in place",
       "next_milestone": "keep the public status synchronized with implementation evidence and non-claims"
     },
     {
@@ -116,11 +122,32 @@
     "not cryptographically complete",
     "not a live self-updating system",
     "not autonomous promotion or mutation",
+    "Phase universe, Optics PRO, and Phase Compass surfaces are status-only and visualization-first; live movement, origin mutation, safe portal recovery execution, host networking changes, and external effects remain not claimed",
     "Fyr black_arts staged-candidate evidence is fixture-backed and design/contract oriented; first safe runtime wiring remains pending under issue #317",
     "B6 X200 marker checkpoint is present with phase1_marker_seen; non-claims remain in force",
     "B6 X200 release note is published; installer, recovery-complete, hardening, release-candidate, daily-driver, and broad hardware-validation claims remain out of scope"
   ],
   "evidence_checkpoints": [
+    {
+      "name": "Phase Compass source-native status checkpoint",
+      "path": "src/phase.rs",
+      "commands": [
+        "phase whereami",
+        "phase compass",
+        "phase path",
+        "phase map"
+      ],
+      "result": "source-native status surface",
+      "claim": "status_only",
+      "non_claims": [
+        "not live movement",
+        "not origin mutation",
+        "not runtime domain mutation",
+        "not recovery execution",
+        "not host mutation",
+        "not external effects"
+      ]
+    },
     {
       "name": "B6 X200 marker checkpoint",
       "path": "docs/checkpoints/B6_X200_MARKER_CHECKPOINT.md",
@@ -145,8 +172,18 @@
     }
   ],
   "current_public_report": {
-    "title": "Fyr black_arts staged-candidate evidence and Phase1/Base1 B6 X200 marker checkpoint report",
-    "summary": "Fyr now has command and action-aware tab completion for `fyr`, `fyr run`, `fyr cat`, and the default `hello_hacker.fyr` VFS demo; Fyr black_arts also has staged-candidate design, fixture, visual-mode, checklist, and runtime-stub handoff evidence, while the B6 X200 marker chain remains published through raw evidence, checkpoint, public status, and Base1 checkpoint release note.",
+    "title": "Phase Compass status checkpoint, Optics PRO rails, Fyr black_arts staged-candidate evidence, and Phase1/Base1 B6 X200 marker checkpoint report",
+    "summary": "Phase1 now has a status-only Phase universe checkpoint with Optics PRO ROOT-centered visibility and source-native Phase Compass status commands. Fyr still has command and action-aware tab completion plus black_arts staged-candidate evidence, while the B6 X200 marker chain remains published through raw evidence, checkpoint, public status, and Base1 checkpoint release note.",
+    "phase_compass_commands": [
+      "phase whereami",
+      "phase compass",
+      "phase path",
+      "phase map"
+    ],
+    "phase_compass_runtime": "source-native",
+    "phase_universe_issue": "https://github.com/Bryforge/phase1/issues/379",
+    "phase_proof_evidence_issue": "https://github.com/Bryforge/phase1/issues/381",
+    "spawn_basilisk_issue": "https://github.com/Bryforge/phase1/issues/386",
     "release_note_path": "docs/base1/releases/RELEASE_BASE1_B6_X200_MARKER_CHECKPOINT_V1.md",
     "checkpoint_path": "docs/checkpoints/B6_X200_MARKER_CHECKPOINT.md",
     "fyr_black_arts_paths": [
