@@ -17,6 +17,8 @@ Start with [`MANUAL_ROADMAP.md`](MANUAL_ROADMAP.md) for the full book, manual, a
 ## Fast navigation
 
 - [`REPOSITORY_NAVIGATION.md`](REPOSITORY_NAVIGATION.md) — repository map, fast paths, reader paths, issue-template chooser, quality-gate chooser, and reorganization rules.
+- [`project/REAL_SYSTEM_DEVELOPMENT_GUIDE.md`](project/REAL_SYSTEM_DEVELOPMENT_GUIDE.md) — real-system development direction, evidence ladder, Phase1/Base1/Fyr/Optics roles, and promotion rules.
+- [`project/TRILATERAL_PHASE_MOVEMENT.md`](project/TRILATERAL_PHASE_MOVEMENT.md) — Trilateral Phase Movement design contract, fixture-first state model, preview-only transition rules, and non-claims.
 - [`REORGANIZATION_PLAN.md`](REORGANIZATION_PLAN.md) — minimalist target structure, destination map, move policy, and rollback rules.
 - [`../README.md`](../README.md) — public project entry point and quick start.
 - [`../CONTRIBUTING.md`](../CONTRIBUTING.md) — repository-wide contribution guidelines.
@@ -29,6 +31,8 @@ Start with [`MANUAL_ROADMAP.md`](MANUAL_ROADMAP.md) for the full book, manual, a
 | --- | --- | --- |
 | First-time user | [`operators/README.md`](operators/README.md) | Launch Phase1 safely and understand the current boundary. |
 | Operator | [`phase1/README.md`](phase1/README.md) | Learn boot modes, shell workflows, VFS, host tools, and logs. |
+| Real-system builder | [`project/REAL_SYSTEM_DEVELOPMENT_GUIDE.md`](project/REAL_SYSTEM_DEVELOPMENT_GUIDE.md) | Build toward real-world capability through fixtures, tests, gates, VM evidence, and hardware evidence. |
+| Phase movement designer | [`project/TRILATERAL_PHASE_MOVEMENT.md`](project/TRILATERAL_PHASE_MOVEMENT.md) | Develop Phase universe movement as fixture-first, preview-only, effect-free state transitions before live movement. |
 | Repository navigator | [`REPOSITORY_NAVIGATION.md`](REPOSITORY_NAVIGATION.md) | Find the right repo area, support path, contribution path, or validation gate quickly. |
 | Repository organizer | [`REORGANIZATION_PLAN.md`](REORGANIZATION_PLAN.md) | Follow preservation-first moves, destination mapping, compatibility, and rollback rules. |
 | Contributor | [`../CONTRIBUTING.md`](../CONTRIBUTING.md) | Prepare repository contributions while preserving quality, safety, compatibility, and non-claims. |
@@ -46,6 +50,8 @@ Start with [`MANUAL_ROADMAP.md`](MANUAL_ROADMAP.md) for the full book, manual, a
 
 - [`REPOSITORY_NAVIGATION.md`](REPOSITORY_NAVIGATION.md) — repository navigation guide and fast-path map.
 - [`REORGANIZATION_PLAN.md`](REORGANIZATION_PLAN.md) — repository reorganization plan and minimalist target structure.
+- [`project/REAL_SYSTEM_DEVELOPMENT_GUIDE.md`](project/REAL_SYSTEM_DEVELOPMENT_GUIDE.md) — real-system development guide and evidence ladder.
+- [`project/TRILATERAL_PHASE_MOVEMENT.md`](project/TRILATERAL_PHASE_MOVEMENT.md) — Trilateral Phase Movement model and fixture-first implementation contract.
 - [`phase1/`](phase1/) — Phase1 Operator Manual.
 - [`base1/`](base1/) — Base1 Recovery and OS Foundation Manual.
 - [`fyr/`](fyr/) — Fyr Language Book.
