@@ -1,33 +1,51 @@
 name=optics
 capability=none
-stdout=OPTICS PRO PREVIEW
-stdout=status      static-fixture
-stdout=mode        read-only-preview
-stdout=runtime     not-wired
+stdout=OPTICS PRO COMMAND SURFACE
+stdout=status      complete-read-only-fixture
+stdout=mode        preview-only
+stdout=runtime     phase1-wasi-lite
+stdout=renderer    rust-static-renderer
 stdout=profile     PRO
 stdout=codename    Optics
 stdout=channel     phase1 edge enabled
-stdout=surface     minimal-main-screen
-stdout=persistent  bottom-hud
 stdout=
-stdout=MAIN SCREEN
-stdout=phase1://edge/root >
+stdout=COMMANDS
+stdout=optics help
+stdout=optics preview
+stdout=optics status
+stdout=optics rails
+stdout=optics device mobile
+stdout=optics device laptop
+stdout=optics device desktop
+stdout=optics device terminal
 stdout=
-stdout=BOTTOM HUD
-stdout=product     Phase1
-stdout=context     root
-stdout=channel     edge
-stdout=hud-color   bright-blue
-stdout=state       ready
-stdout=input       active
-stdout=mutation    none
-stdout=command     none
-stdout=security    safe-mode visible
-stdout=host-tools  gated
-stdout=integrity   planned-read-only
-stdout=crypto      chain-status-planned
-stdout=base1       readiness/evidence context planned
-stdout=fyr         package/check/build/test/run context planned
+stdout=PHASE UNIVERSE VISIBILITY
+stdout=origin=0/0
+stdout=route=ROOT
+stdout=axis=ROOT
+stdout=path=ROOT>0/0
+stdout=breadcrumb=ROOT
+stdout=trace=trace-preview
+stdout=safe-portal=planned
+stdout=rollback=available
+stdout=health=nominal
+stdout=risk=low
+stdout=lock=open
+stdout=dark_phase=off
+stdout=host-effect=none
+stdout=external-effect=none
+stdout=
+stdout=OPTICS HUD RAIL RENDER
+stdout=status=static-render
+stdout=runtime=not-wired
+stdout=TOP product=Phase1 channel=edge profile=PRO ctx=root > nest:0/1 > portal:none > ghost:none origin=0/0 route=ROOT axis=ROOT trace=trace-preview trust=safe/armed security=safe-mode host-gated
+stdout=TOP integrity=not-checked crypto=chain-planned base1=evidence-planned fyr=idle safe-portal=planned device=terminal
+stdout=TOP health=nominal risk=low lock=open dark_phase=off host-effect=none external-effect=none path=ROOT>0/0
+stdout=CENTER role=command-output chrome=none-permanent
+stdout=CENTER rule=center-remains-primary-workspace
+stdout=CENTER sample=phase1://edge/root > optics preview
+stdout=BOT color=bright-blue input=active mutation=none command=none task=idle result=ok
+stdout=BOT warning=none safe-portal=planned rollback=available trace=trace-preview intent=explicit copy-safe=raw-command-preserved host-effect=none external-effect=none
 stdout=
 stdout=MUTATION STATES
 stdout=bright-blue ready
@@ -38,31 +56,6 @@ stdout=red         denied-failed-unsafe-invalid
 stdout=green       completed-successfully
 stdout=gray        inactive-disabled-unavailable
 stdout=
-stdout=TYPING PREVIEW
-stdout=raw-input   preserved
-stdout=history     preserves-operator-text
-stdout=parser      unchanged
-stdout=copy        unchanged
-stdout=hidden      none
-stdout=
-stdout=FALLBACK LABELS
-stdout=no-color    labels remain visible
-stdout=ascii       labels remain visible
-stdout=test-mode   deterministic output
-stdout=cooked      deterministic output
-stdout=
-stdout=OPTICS HUD RAIL RENDER
-stdout=status=static-render
-stdout=runtime=not-wired
-stdout=TOP product=Phase1 channel=edge profile=PRO ctx=root > nest:0/1 > portal:none > ghost:none trust=safe/armed security=safe-mode host-gated
-stdout=TOP integrity=not-checked crypto=chain-planned base1=evidence-planned fyr=idle device=terminal
-stdout=CENTER role=command-output chrome=none-permanent
-stdout=CENTER rule=center-remains-primary-workspace
-stdout=CENTER sample=phase1://edge/root > optics rails preview
-stdout=BOT color=bright-blue input=active mutation=none command=none task=idle result=ok
-stdout=BOT warning=none copy-safe=raw-command-preserved
-stdout=NON-CLAIMS not-compositor not-terminal-emulator not-sandbox not-security-boundary not-crypto-enforcement not-system-integrity-guarantee not-base1-boot-environment
-stdout=
 stdout=NON-CLAIMS
 stdout=not-kernel
 stdout=not-compositor
@@ -71,4 +64,11 @@ stdout=not-terminal-emulator
 stdout=not-sandbox
 stdout=not-security-boundary
 stdout=not-crypto-enforcement
+stdout=not-system-integrity-guarantee
 stdout=not-base1-boot-environment
+stdout=not-live-phase-movement
+stdout=not-origin-mutation
+stdout=not-safe-portal-recovery-execution
+stdout=not-runtime-domain-mutation
+stdout=not-host-mutation
+stdout=not-external-effects
