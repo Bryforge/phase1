@@ -20,10 +20,10 @@ fn optics_renderer_static_preview_preserves_top_center_bottom_contract() {
         "integrity=not-checked",
         "crypto=chain-planned",
         "ROOT DIRECTION MAP",
-        "layout=center-root top-bottom-left-right",
-        "[ LEFT ]  <--- [ ROOT ] --->  [ RIGHT ]",
+        "layout=center-root u-d-L-R",
+        "L/NUM  <----  ROOT  ---->  R/NUM",
         "rule=root-remains-anchor",
-        "network=not-wired host-bridge=disabled",
+        "external-link=none",
         "CENTER role=command-output chrome=none-permanent",
         "CENTER rule=center-remains-primary-workspace",
         "BOT color=bright-blue input=active mutation=none",
@@ -165,22 +165,23 @@ fn optics_renderer_adapts_device_density_without_changing_state_meaning() {
 }
 
 #[test]
-fn optics_root_direction_map_keeps_root_centered_with_all_axes() {
+fn optics_root_direction_map_keeps_root_centered_with_all_routes() {
     let map = render_root_direction_map("right");
 
     for required in [
         "ROOT DIRECTION MAP",
-        "layout=center-root top-bottom-left-right",
-        "active-axis=right",
-        "              [ TOP ]",
-        "                 ^",
-        "                 |",
-        "[ LEFT ]  <--- [ ROOT ] --->  [ RIGHT ]",
-        "                 v",
-        "             [ BOTTOM ]",
+        "layout=center-root u-d-L-R",
+        "active-route=R/0",
+        "              u/NUM",
+        "                ^",
+        "                |",
+        "L/NUM  <----  ROOT  ---->  R/NUM",
+        "                v",
+        "              d/NUM",
         "rule=root-remains-anchor",
+        "path-examples=ROOT>u/1 ROOT>d/1 ROOT>L/2 ROOT>R/3",
         "movement=planned-visible-logged-reversible",
-        "network=not-wired host-bridge=disabled",
+        "external-link=none",
     ] {
         assert!(map.contains(required), "missing {required:?}: {map}");
     }
@@ -189,13 +190,17 @@ fn optics_root_direction_map_keeps_root_centered_with_all_axes() {
 #[test]
 fn optics_root_direction_map_normalizes_direction_aliases() {
     for (raw, expected) in [
-        ("up", "top"),
-        ("north", "top"),
-        ("down", "bottom"),
-        ("south", "bottom"),
-        ("west", "left"),
-        ("east", "right"),
-        ("unknown", "root"),
+        ("u", "u"),
+        ("up", "u"),
+        ("north", "u"),
+        ("d", "d"),
+        ("down", "d"),
+        ("south", "d"),
+        ("L", "L"),
+        ("west", "L"),
+        ("R", "R"),
+        ("east", "R"),
+        ("unknown", "ROOT"),
     ] {
         assert_eq!(normalize_direction_axis(raw), expected, "raw axis: {raw}");
     }
