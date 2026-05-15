@@ -28,6 +28,10 @@ fn optics_command_surface_preserves_current_preview_routes() {
         "optics preview",
         "optics rails",
         "optics status",
+        "optics device mobile",
+        "optics device laptop",
+        "optics device desktop",
+        "optics device terminal",
         "WASI-lite plugin path",
         "capability `none`",
         "minimal main screen",
@@ -40,6 +44,27 @@ fn optics_command_surface_preserves_current_preview_routes() {
         "Rust static renderer source",
         "live HUD disabled state",
         "explicit activation gate requirement",
+    ] {
+        assert!(doc.contains(required), "missing {required:?}: {doc}");
+    }
+}
+
+#[test]
+fn optics_command_surface_preserves_device_preview_profiles() {
+    let doc = fs::read_to_string(COMMAND_DOC).expect("Optics command surface doc should exist");
+
+    for required in [
+        "`optics device <profile>` should render a read-only Optics HUD rail preview for a selected device profile.",
+        "Supported device profiles",
+        "mobile",
+        "laptop",
+        "desktop",
+        "terminal",
+        "To see device-specific rail previews, run:",
+        "optics device mobile",
+        "optics device laptop",
+        "optics device desktop",
+        "optics device terminal",
     ] {
         assert!(doc.contains(required), "missing {required:?}: {doc}");
     }
@@ -60,6 +85,7 @@ fn optics_command_surface_preserves_discovery_and_execution_boundaries() {
         "optics preview",
         "pro",
         "optics status",
+        "optics device mobile",
     ] {
         assert!(doc.contains(required), "missing {required:?}: {doc}");
     }
@@ -72,7 +98,7 @@ fn optics_command_surface_preserves_registry_expectation() {
     for required in [
         "Future work should promote Optics into the regular command registry",
         "help, completions, and manuals",
-        "optics [preview|rails|status|help]",
+        "optics [preview|rails|status|device|help]",
         "Until that registry row exists, the WASI-lite route remains the safe preview path.",
     ] {
         assert!(doc.contains(required), "missing {required:?}: {doc}");
