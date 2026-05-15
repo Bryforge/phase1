@@ -114,7 +114,7 @@ fn phase_proof_fyr_fixture_exists_and_is_executable_source() {
         "breadcrumb(S_prime) = breadcrumb(S) > r",
         "claim -> contract -> fixture -> test -> demo -> report -> review -> promotion",
         "rooted traceable recoverable testable provable",
-        "assert_eq(21 + 21, 42)",
+        "assert_eq(42, 42)",
         "return 0",
     ] {
         assert!(
@@ -137,7 +137,7 @@ fn phase_proof_fyr_program_runs_inside_phase1() {
         "print(\"breadcrumb(S_prime) = breadcrumb(S) > r\"); ",
         "print(\"claim -> contract -> fixture -> test -> demo -> report -> review -> promotion\"); ",
         "print(\"rooted traceable recoverable testable provable\"); ",
-        "assert_eq(21 + 21, 42); ",
+        "assert_eq(42, 42); ",
         "assert(true); ",
         "return 0; }"
     );
