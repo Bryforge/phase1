@@ -19,6 +19,14 @@ Current Fyr workflows must preserve these defaults:
 - Package build output reports `backend : seed/interpreted` and `host    : none`.
 - Diagnostics should name Fyr files/packages without exposing host paths unless the operator explicitly chose a host-facing workflow outside Fyr.
 
+## Native execution guidance
+
+Native or inline Fyr execution is for short tests and quick checks only.
+
+Meaningful Fyr work should be saved into `.fyr` files and edited with an editor.
+
+The detailed operator workflow is documented in [`NATIVE_EXECUTION_GUIDANCE.md`](NATIVE_EXECUTION_GUIDANCE.md).
+
 ## Current allowed operations
 
 Current Fyr commands may:
@@ -126,6 +134,7 @@ Related docs:
 
 - [`TOOLCHAIN.md`](TOOLCHAIN.md)
 - [`LANGUAGE_BOOK.md`](LANGUAGE_BOOK.md)
+- [`NATIVE_EXECUTION_GUIDANCE.md`](NATIVE_EXECUTION_GUIDANCE.md)
 - [`ROADMAP.md`](ROADMAP.md)
 - [`../status/FYR_PHASE1_100_COMPLETION_GATES.md`](../status/FYR_PHASE1_100_COMPLETION_GATES.md)
 
