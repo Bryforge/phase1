@@ -63,7 +63,10 @@ fyr test app\n\
 exit\n",
     );
 
-    assert!(output.contains("fyr check: ok app/src/main.fyr"), "{output}");
+    assert!(
+        output.contains("fyr check: ok app/src/main.fyr"),
+        "{output}"
+    );
     for test in ["compact", "spaced", "padded"] {
         assert!(
             output.contains(&format!("test    : app/tests/{test}.fyr ok")),
@@ -86,7 +89,10 @@ fyr test app\n\
 exit\n",
     );
 
-    assert!(output.contains("fyr check: ok app/src/main.fyr"), "{output}");
+    assert!(
+        output.contains("fyr check: ok app/src/main.fyr"),
+        "{output}"
+    );
     assert!(
         output.contains("test    : app/tests/tight_bool.fyr ok"),
         "{output}"
