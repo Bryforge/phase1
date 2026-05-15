@@ -87,6 +87,7 @@ No command should silently modify repository files, host settings, credentials, 
 - [Integrity validation plan](INTEGRITY_VALIDATION_PLAN.md)
 - [Healing and maintenance model](HEALING_MAINTENANCE_MODEL.md)
 - [Security audit movement](SECURITY_AUDIT_MOVEMENT.md)
+- [Command stub contract](COMMAND_STUB_CONTRACT.md)
 - [Protocols and security guardrails](PROTOCOLS_AND_GUARDRAILS.md)
 - [Open security server suite](OPEN_SECURITY_SERVER_SUITE.md)
 - [Maintenance TODO](TODO.md)
