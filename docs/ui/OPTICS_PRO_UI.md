@@ -48,6 +48,8 @@ The first visual state should communicate:
 
 The HUD rail screen real estate model is defined in [`OPTICS_HUD_RAILS.md`](OPTICS_HUD_RAILS.md).
 
+The active rail configuration contract is defined in [`OPTICS_RAIL_CONFIGURATION.md`](OPTICS_RAIL_CONFIGURATION.md).
+
 Optics PRO should use:
 
 - a top HUD rail for global system state, context, trust, integrity, crypto chain, Base1, Fyr, nest, portal, and ghost summaries;
@@ -219,4 +221,5 @@ cargo test -p phase1 --test optics_pro_ui_plan_docs
 cargo test -p phase1 --test optics_pro_preview_fixture_docs
 cargo test -p phase1 --test optics_hud_rails_docs
 cargo test -p phase1 --test optics_command_surface_docs
+cargo test -p phase1 --test optics_rail_configuration_docs
 ```
