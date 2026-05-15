@@ -115,7 +115,10 @@ fn phase_proof_fyr_fixture_exists_and_is_executable_source() {
         "assert_eq(21 + 21, 42)",
         "return 0",
     ] {
-        assert!(fixture.contains(required), "missing Fyr proof marker: {required}");
+        assert!(
+            fixture.contains(required),
+            "missing Fyr proof marker: {required}"
+        );
     }
 }
 
@@ -152,7 +155,10 @@ fn phase_proof_fyr_program_runs_inside_phase1() {
         "claim -> contract -> fixture -> test -> demo -> report -> review -> promotion",
         "rooted traceable recoverable testable provable",
     ] {
-        assert!(combined.contains(required), "missing {required:?}:\n{combined}");
+        assert!(
+            combined.contains(required),
+            "missing {required:?}:\n{combined}"
+        );
     }
 
     assert!(
