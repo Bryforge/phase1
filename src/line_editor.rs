@@ -16,7 +16,8 @@ const RED: &str = "\x1b[31m";
 const USER_INPUT_BRIGHT_YELLOW: &str = "\x1b[93m";
 const HISTORY_LIMIT: usize = 200;
 const IDLE_ENTER_GUARD_DEFAULT_SECS: u64 = 30;
-const OPTICS_INPUT_LINES_BELOW_PROMPT: usize = 6;
+const OPTICS_DEFAULT_COMMAND_STATUS_GAP_LINES: usize = 1;
+const OPTICS_MAX_COMMAND_STATUS_GAP_LINES: usize = 8;
 
 static SESSION_HISTORY: OnceLock<Mutex<Vec<String>>> = OnceLock::new();
 static OPTICS_FRAME_DRAWN: OnceLock<Mutex<bool>> = OnceLock::new();
@@ -261,7 +262,8 @@ fn read_optics_positioned_line(prompt: &str) -> io::Result<Option<String>> {
             if color_enabled() {
                 print!("{RESET}");
             }
-            print!("\x1b[{OPTICS_INPUT_LINES_BELOW_PROMPT}B\r\x1b[2K");
+            let lines_below_prompt = optics_input_lines_below_prompt();
+            print!("\x1b[{lines_below_prompt}B\r\x1b[2K");
             io::stdout().flush()?;
             let line = input.trim_end_matches(['\r', '\n']);
             if line.trim().is_empty() && idle_enter_guard_triggered(prompt_started.elapsed()) {
@@ -600,6 +602,21 @@ fn optics_frame_drawn_once() -> bool {
     }
 }
 
+fn optics_command_status_gap_lines() -> usize {
+    std::env::var("PHASE1_OPTICS_COMMAND_GAP_LINES")
+        .ok()
+        .and_then(|raw| raw.trim().parse::<usize>().ok())
+        .unwrap_or(OPTICS_DEFAULT_COMMAND_STATUS_GAP_LINES)
+        .clamp(
+            OPTICS_DEFAULT_COMMAND_STATUS_GAP_LINES,
+            OPTICS_MAX_COMMAND_STATUS_GAP_LINES,
+        )
+}
+
+fn optics_input_lines_below_prompt() -> usize {
+    optics_command_status_gap_lines() + 5
+}
+
 fn print_optics_shell_frame(command_prompt: &str) -> io::Result<()> {
     if !optics_frame_drawn_once() {
         print!("\x1b[2J\x1b[H");
@@ -608,17 +625,22 @@ fn print_optics_shell_frame(command_prompt: &str) -> io::Result<()> {
     }
 
     let color = color_enabled();
+    let gap_lines = optics_command_status_gap_lines();
+
     println!("{}", optics_label("A TOP RAIL", color, CYAN));
     println!("product=Phase1 channel=edge profile=PRO ctx=root > nest:0/1 > portal:none > ghost:none trust=safe/armed security=safe-mode");
     println!("{}", optics_label("B COMMAND RAIL", color, BLUE));
     print!("{command_prompt}");
     println!();
-    println!();
+    for _ in 0..gap_lines {
+        println!();
+    }
     println!("{}", optics_label("C STATUS HUD", color, GREEN));
     println!("result=ready mutation=none integrity=not-checked crypto=chain-planned base1=evidence-planned fyr=idle");
     println!("{}", optics_label("D BOTTOM HUD", color, MAGENTA));
     println!("input=active command=none task=idle warning=none copy-safe=raw-command-preserved");
-    print!("\x1b[{OPTICS_INPUT_LINES_BELOW_PROMPT}A\r");
+    let lines_below_prompt = optics_input_lines_below_prompt();
+    print!("\x1b[{lines_below_prompt}A\r");
     let column = visible_len(command_prompt);
     if column > 0 {
         print!("\x1b[{column}C");
@@ -759,7 +781,7 @@ fn short_clock_utc() -> String {
     let hours = seconds / 3_600;
     let minutes = (seconds % 3_600) / 60;
     let seconds = seconds % 60;
-    format!("{hours:02}:{minutes:02} UTC")
+    format!("{hours:02}:{minutes:02}:{seconds:02} UTC")
 }
 
 fn color_enabled() -> bool {
@@ -810,8 +832,8 @@ mod tests {
     use super::{
         char_len, command_hint, command_status_line, delete_at_cursor, delete_before_cursor,
         delete_previous_word, history_down, history_up, idle_enter_guard_triggered, insert_char,
-        optics_command_prompt, optics_label, simple_line_editor_enabled, EditorState,
-        USER_INPUT_BRIGHT_YELLOW,
+        optics_command_prompt, optics_command_status_gap_lines, optics_input_lines_below_prompt,
+        optics_label, simple_line_editor_enabled, EditorState, USER_INPUT_BRIGHT_YELLOW,
     };
     use std::time::Duration;
 
@@ -843,6 +865,26 @@ mod tests {
         assert_eq!(optics_label("A TOP RAIL", false, "\x1b[36m"), "A TOP RAIL");
         assert_eq!(USER_INPUT_BRIGHT_YELLOW, "\x1b[93m");
         std::env::remove_var("NO_COLOR");
+    }
+
+    #[test]
+    fn optics_command_gap_is_dynamic_and_bounded() {
+        std::env::remove_var("PHASE1_OPTICS_COMMAND_GAP_LINES");
+        assert_eq!(optics_command_status_gap_lines(), 1);
+        assert_eq!(optics_input_lines_below_prompt(), 6);
+
+        std::env::set_var("PHASE1_OPTICS_COMMAND_GAP_LINES", "3");
+        assert_eq!(optics_command_status_gap_lines(), 3);
+        assert_eq!(optics_input_lines_below_prompt(), 8);
+
+        std::env::set_var("PHASE1_OPTICS_COMMAND_GAP_LINES", "99");
+        assert_eq!(optics_command_status_gap_lines(), 8);
+        assert_eq!(optics_input_lines_below_prompt(), 13);
+
+        std::env::set_var("PHASE1_OPTICS_COMMAND_GAP_LINES", "0");
+        assert_eq!(optics_command_status_gap_lines(), 1);
+
+        std::env::remove_var("PHASE1_OPTICS_COMMAND_GAP_LINES");
     }
 
     #[test]
