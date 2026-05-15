@@ -61,7 +61,9 @@ fn phase_navigation_contract_preserves_optics_rails() {
     let doc = contract();
 
     assert!(doc.contains("Optics A/B/C/D rail contract"));
-    assert!(doc.contains("A TOP RAIL     floor=<num|root> domain=<name|none> portal=<active|none> nest=<level/max>"));
+    assert!(doc.contains(
+        "A TOP RAIL     floor=<num|root> domain=<name|none> portal=<active|none> nest=<level/max>"
+    ));
     assert!(doc.contains("B COMMAND      phase floor enter 2"));
     assert!(doc.contains("C STATUS HUD   active-main=floor/2 transition=ok path=root>floor/2"));
     assert!(doc.contains("D BOTTOM HUD   back=root phase-safe=on host-tools=gated"));
@@ -81,7 +83,10 @@ fn phase_navigation_contract_preserves_boundaries_and_promotion_rule() {
         "malware safety",
         "production isolation",
     ] {
-        assert!(doc.contains(forbidden), "missing forbidden claim: {forbidden}");
+        assert!(
+            doc.contains(forbidden),
+            "missing forbidden claim: {forbidden}"
+        );
     }
 
     for requirement in [
@@ -96,6 +101,9 @@ fn phase_navigation_contract_preserves_boundaries_and_promotion_rule() {
         "The first PR for this track is documentation-only",
         "must not create live `phase` runtime behavior yet",
     ] {
-        assert!(doc.contains(requirement), "missing safety or promotion rule: {requirement}");
+        assert!(
+            doc.contains(requirement),
+            "missing safety or promotion rule: {requirement}"
+        );
     }
 }
