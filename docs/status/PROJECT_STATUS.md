@@ -3,22 +3,23 @@
 Status kind: estimated roadmap progress
 Source marker: [`site/status.json`](../../site/status.json)
 Badge marker: [`site/status-badge.json`](../../site/status-badge.json)
-Generated from commit: `3c75180da9e62be73533610ae052cd01ab71bc99`
-Last updated UTC: `2026-05-14T20:42:44Z`
+Generated from commit: `5ad5a73e54602e970f75843a6f0928187ce1e411`
+Last updated UTC: `2026-05-15T06:10:00Z`
 
 ## Current estimate
 
 | Project | Estimated completion | Current state | Next milestone |
 | --- | ---: | --- | --- |
-| Phase1 operator console | 82% | usable edge console with guarded host access, VFS, dashboards, help UI, themes, learning, and tests | wire safe Fyr black_arts staged runtime stubs while preserving non-live defaults |
+| Phase1 operator console | 84% | usable edge console with guarded host access, VFS, dashboards, help UI, themes, learning, tests, Optics PRO rails, and source-native Phase Compass status commands | move from status-only Phase Compass into tested trace/breadcrumb state fixtures before any live movement |
 | Fyr native language | 58% | seed language and toolchain surface exist with F3/F4/F5/F6 evidence, runtime-safety fixtures, standard-library contracts, Fyr-aware tab completion, and black_arts staged-candidate design/operator-visual/source-wiring handoff evidence | implement the first safe fyr staged runtime stub from issue #317 without candidate writes, host commands, network access, validation execution, promotion, discard, or live-system changes |
-| Base1 secure host / OS track | 40% | B2 focused test-suite evidence passed, reviewed B3 VM evidence is present, and the B6 X200 marker chain is published through evidence, checkpoint, public status, and release note; claim remains not_claimed | continue B4 recovery validation and repeatable physical boot evidence while preserving installer, hardening, release-candidate, and daily-driver non-claims |
+| Phase universe / Optics PRO | 34% | route/origin contract, proof ladder, Optics ROOT map, recovery/status/danger/trace rails, source-native Phase Compass status, and lore-mode issue #386 are present; live movement remains future work | add state fixtures and invariant tests for path, breadcrumb, origin return, safe portal, and domain health before movement |
+| Base1 secure host / OS track | 40% | B2 focused test-suite evidence passed, reviewed B3 VM evidence is present, and the B6 X200 marker chain is published through evidence, checkpoint, public status, and release note; claim remains not_claimed | continue B4 recovery validation, fresh-spawn contingency planning, and repeatable physical boot evidence while preserving installer, hardening, release-candidate, and daily-driver non-claims |
 | X200 / Libreboot hardware path | 44% | X200 Linux-libre host generated reviewed B3 VM evidence and B6 marker evidence with phase1_marker_seen; the checkpoint and release note are published; repeatable physical boot validation remains separate | capture repeatable physical boot evidence and keep emulator, USB, recovery, installer, and hardware-readiness claims separated |
 | Security and crypto policy | 55% | trust model, crypto policy roadmap, provider registry, profile docs, config schema, and integrity checks are present | move from documentation policy into scoped implementation only after tests and review evidence |
-| Website and public docs | 90% | public site, status page, status JSON, badge endpoint, native GitHub Wiki, refreshed source wiki, organized docs, X200 evidence report, B6 checkpoint trail, Base1 B6 X200 release note, and Fyr black_arts public status trail are in place | keep the public status synchronized with implementation evidence and non-claims |
+| Website and public docs | 91% | public site, status page, status JSON, badge endpoint, native GitHub Wiki, refreshed source wiki, organized docs, Phase Compass status note, X200 evidence report, B6 checkpoint trail, Base1 B6 X200 release note, and Fyr black_arts public status trail are in place | keep the public status synchronized with implementation evidence and non-claims |
 | Repository organization | 100% | minimal root has 11 tracked files, 17 top-level folders, 0 unplanned root files, 0 tracked build files, and 0 root status duplicates | keep generated artifacts out of Git and keep compatibility links clean as work lands |
 
-Overall estimated roadmap completion: **67%**.
+Overall estimated roadmap completion: **68%**.
 
 ## Repository organization inputs
 
@@ -39,14 +40,21 @@ https://bryforge.github.io/phase1/status-badge.json
 
 ## Current public report
 
-Current report: Fyr black_arts staged-candidate evidence and [`docs/base1/releases/RELEASE_BASE1_B6_X200_MARKER_CHECKPOINT_V1.md`](../../docs/base1/releases/RELEASE_BASE1_B6_X200_MARKER_CHECKPOINT_V1.md)
+Current report: Phase Compass source-native status checkpoint, Optics PRO visibility rails, Fyr black_arts staged-candidate evidence, and [`docs/base1/releases/RELEASE_BASE1_B6_X200_MARKER_CHECKPOINT_V1.md`](../../docs/base1/releases/RELEASE_BASE1_B6_X200_MARKER_CHECKPOINT_V1.md)
 
-Fyr now has command and action-aware tab completion for `fyr`, `fyr run`, `fyr cat`, and the default `hello_hacker.fyr` VFS demo; Fyr black_arts also has staged-candidate design, fixture, visual-mode, checklist, and runtime-stub handoff evidence. The first safe runtime wiring remains pending under issue #317.
+Phase1 now has a status-only Phase universe checkpoint: Optics PRO renders ROOT-centered route visibility, origin/recovery rails, danger/status overlays, and trace/breadcrumb labels; `phase whereami`, `phase compass`, `phase path`, and `phase map` report a source-native Phase Compass status surface. These are prerequisites only and do not claim live directional movement, origin mutation, runtime domain mutation, recovery execution, host mutation, or external effects.
+
+Fyr has command and action-aware tab completion for `fyr`, `fyr run`, `fyr cat`, and the default `hello_hacker.fyr` VFS demo; Fyr black_arts also has staged-candidate design, fixture, visual-mode, checklist, and runtime-stub handoff evidence. The first safe runtime wiring remains pending under issue #317.
 
 The B6 X200 marker chain is still published through raw evidence, checkpoint, public status, and Base1 checkpoint release note.
 
 | Item | Value |
 | --- | --- |
+| Phase Compass commands | `phase whereami`, `phase compass`, `phase path`, `phase map` |
+| Phase Compass runtime | `source-native` |
+| Phase universe issue | `#379` |
+| Phase proof/evidence issue | `#381` |
+| Spawn Basilisk lore-mode issue | `#386` |
 | Fyr black_arts runtime issue | `#317` |
 | Fyr black_arts design | [`docs/fyr/STAGED_CANDIDATES.md`](../../docs/fyr/STAGED_CANDIDATES.md) |
 | Fyr black_arts operator visuals | [`docs/fyr/BLACK_ARTS_OPERATOR_VISUALS.md`](../../docs/fyr/BLACK_ARTS_OPERATOR_VISUALS.md) |
@@ -58,11 +66,13 @@ The B6 X200 marker chain is still published through raw evidence, checkpoint, pu
 | Final evidence anchor | `095786e808d3908d27c045f04f3de0b5cd538ab9` |
 | Artifact SHA256 | `688518c1437003c7b8325b1d5d479bc97f77c3404c8fd27dace6d823d406b79b` |
 
-This report does not claim installer readiness, recovery completion, hardening, release-candidate readiness, daily-driver readiness, broad hardware validation, live-system mutation, or autonomous promotion.
+This report does not claim installer readiness, recovery completion, hardening, release-candidate readiness, daily-driver readiness, broad hardware validation, live-system mutation, live Phase movement, origin mutation, autonomous promotion, or external effects.
 
 ## Non-claims
 
 These percentages are planning estimates. They do not claim that Phase1, Base1, or Fyr are production-ready, installer-ready, daily-driver ready, hardware-validated across targets, hardened, cryptographically complete, live-self-updating, or capable of autonomous promotion/mutation.
+
+The Phase universe / Optics PRO / Phase Compass checkpoint is status-only and visualization-first. It does not implement live directional movement, origin mutation, runtime domain mutation, safe-portal recovery execution, host networking changes, or external effects.
 
 Fyr black_arts staged-candidate evidence is fixture-backed and design/contract oriented. The first safe runtime wiring remains pending under issue #317.
 
