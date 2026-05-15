@@ -42,6 +42,7 @@ fn run_phase1_in_dir_with_host_tools(run_dir: &Path, input: &str, host_tools: bo
         .current_dir(run_dir)
         .env("PHASE1_NO_COLOR", "1")
         .env("PHASE1_ASCII", "1")
+        .env("PHASE1_BOOT_SELECTOR", "1")
         .env("COLUMNS", "100")
         .env("LINES", "30")
         .stdin(Stdio::piped())

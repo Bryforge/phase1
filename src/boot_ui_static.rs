@@ -370,10 +370,28 @@ pub fn display_version(release_version: &str, config: BootConfig) -> String {
     }
 }
 
+fn optics_pro_direct_shell_enabled() -> bool {
+    env_flag("PHASE1_OPTICS_PRO").unwrap_or(true)
+        && env_flag("PHASE1_LEGACY_SHELL_UI") != Some(true)
+        && env_flag("PHASE1_BOOT_SELECTOR") != Some(true)
+}
+
 pub fn configure_boot(version: &str) -> BootSelection {
     let mut config = BootConfig::default();
     let boot_stamp = static_boot_stamp();
     std::env::set_var("PHASE1_BOOT_STAMP", &boot_stamp);
+
+    if optics_pro_direct_shell_enabled() {
+        crate::ops_log::log_event(
+            "boot.direct_optics",
+            &format!("profile={}", config.profile_name()),
+        );
+        if let Err(err) = config.save() {
+            eprintln!("boot config save warning: {err}");
+        }
+        return BootSelection::Boot(config);
+    }
+
     crate::ops_log::log_event(
         "boot.selector",
         &format!("opened profile={}", config.profile_name()),

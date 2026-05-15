@@ -31,6 +31,7 @@ fn run_phase1_raw(input: &str) -> String {
         .env("PHASE1_MOBILE_MODE", "0")
         .env("PHASE1_DEVICE_MODE", "desktop")
         .env("PHASE1_COOKED_INPUT", "1")
+        .env("PHASE1_BOOT_SELECTOR", "1")
         .env_remove("PHASE1_THEME")
         .env_remove("PHASE1_SIMPLE_LINE_EDITOR")
         .env_remove("PHASE1_FORCE_RAW_LINE_EDITOR")
