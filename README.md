@@ -1,6 +1,6 @@
 # Phase1
 
-> [Live project status](https://bryforge.github.io/phase1/status.html) · [status.json](https://bryforge.github.io/phase1/status.json) · current roadmap estimate: **66%**
+> [Live project status](https://bryforge.github.io/phase1/status.html) · [status.json](https://bryforge.github.io/phase1/status.json) · current roadmap estimate: **68%**
 
 <p align="center">
   <a href="https://bryforge.github.io/phase1/">
@@ -48,7 +48,7 @@
 
 ## What is Phase1?
 
-Phase1 is a Rust-built, terminal-first virtual operating-system console created by Chase Bryan / Bryforge. It gives a futuristic operator surface backed by practical systems ideas: a simulated kernel, virtual filesystem, process table, audit log, command metadata, guarded host access, storage helpers, local learning, the Fyr native language, Nested Phase1 metadata-control, and a long-term operating-system track through Base1.
+Phase1 is a Rust-built, terminal-first virtual operating-system console created by Chase Bryan / Bryforge. It gives a futuristic operator surface backed by practical systems ideas: a simulated kernel, virtual filesystem, process table, audit log, command metadata, guarded host access, storage helpers, local learning, the Fyr native language, Nested Phase1 metadata-control, Optics PRO visibility rails, source-native Phase Compass status, and a long-term operating-system track through Base1.
 
 Phase1 is not yet a kernel, hardened sandbox, or drop-in replacement for Linux, macOS, or Windows. The OS track is a staged plan to make Phase1 the primary user environment on bootable hardware through a minimal Base1 foundation, recovery path, installer, hardware matrix, x86_64 boot-support planning, and conservative security claims.
 
@@ -60,6 +60,7 @@ Phase1 is not yet a kernel, hardened sandbox, or drop-in replacement for Linux, 
 | Virtual OS model | Simulated kernel, VFS, process table, `/proc`, `/dev`, `/var/log`, architecture reports, and system inspection commands. |
 | Guarded host access | Safe mode on by default, explicit trust gates, command capability metadata, and secret redaction. |
 | Fyr native language | `.fyr` scripts with prints, returns, let bindings, arithmetic, assertions, comparisons, boolean chains, grouped expressions, `if` return statements, test runner, package checks, syntax color output, and Fyr-aware tab completion for actions and demo files. |
+| Optics PRO and Phase universe | ROOT-centered direction map, origin/route/safe-portal/rollback rails, domain health/risk/lock/dark_phase overlays, trace/breadcrumb visibility, and source-native `phase whereami` / `phase compass` / `phase path` / `phase map` status output. |
 | Nested Phase1 | Metadata-only recursive operator contexts with `nest status`, `nest spawn`, `nest enter`, `nest destroy`, `nest inspect`, and `nest tree`. |
 | Base1 OS track | Long-term path toward a bootable Phase1-first system with Base1 as the trusted host layer, recovery, installer, update, storage, x86_64 boot profiles, and hardware validation. |
 | Learning system | `phase1-learn` stores local sanitized memory, imports history, learns notes/rules, and suggests next actions. |
@@ -119,6 +120,9 @@ help
 capabilities
 sysinfo
 security
+optics rails
+phase whereami
+phase compass
 nest status
 nest tree
 wiki-quick
@@ -160,6 +164,7 @@ Phase1 separates implemented features from experimental host integrations and fu
 | --- | --- | --- |
 | Terminal shell, VFS, process table, audit log, `/proc`, text tools, and dashboards | Implemented | Simulated Phase1 subsystems covered by tests and smoke checks. |
 | Fyr native language | Implemented and growing | Current edge supports a practical seed language surface and package test flow. |
+| Optics PRO and Phase Compass | Implemented checkpoint | ROOT direction map, origin/recovery rails, danger/status overlays, trace/breadcrumb rails, and source-native Phase Compass status commands are present; live Phase movement is future work. |
 | Nested Phase1 metadata contexts | Implemented checkpoint | Metadata-only context controls are present; runtime-backed child kernels are future work. |
 | Local learning memory | Implemented | Local, sanitized, bounded, and git-ignored. |
 | WASI-lite plugins | Implemented | Phase1's sandboxed plugin path; no host shell/network passthrough. |
@@ -171,6 +176,44 @@ Phase1 separates implemented features from experimental host integrations and fu
 | Phase1 OS track | Long-term roadmap | Base1-backed path toward a bootable Phase1-first environment; not a current drop-in OS replacement. |
 
 Inside Phase1, run `capabilities` to inspect command-level gates and guard status.
+
+## Phase universe and Optics checkpoint
+
+The Phase universe track is now visible before it is live. The current checkpoint is status-only and rendering-only: it proves the route/origin vocabulary, Optics rail visibility, and Phase Compass status surface without claiming real movement, recovery execution, host mutation, or external effects.
+
+Current commands:
+
+```text
+optics rails
+phase whereami
+phase compass
+phase path
+phase map
+phase help
+```
+
+Current status fields include:
+
+```text
+origin=0/0
+root-anchor=ROOT
+current-route=ROOT
+current-axis=ROOT
+path=ROOT>0/0
+breadcrumb=ROOT
+trace-id=trace-preview
+safe-portal=planned
+rollback-target=available
+health=nominal
+risk=low
+lock-state=open
+dark_phase=off
+host-effect=none
+external-effect=none
+runtime=source-native
+```
+
+Boundary: these surfaces are status and visualization prerequisites only. They do not implement live directional movement, origin mutation, safe-portal recovery, runtime domain mutation, host networking changes, or external effects.
 
 ## Nested Phase1 checkpoint
 
@@ -341,7 +384,7 @@ base1/                Base1 compatibility entry points and root-level Base1 docs
 docs/                 Repository-first manual, navigation, roadmaps, support docs, and security docs
 docs/releases/        Organized release and checkpoint documentation
 docs/website/         Website, branding, accessibility, and public content planning
-examples/             Safe examples, walkthrough inputs, Fyr scripts, and dry-run demo material
+examples/             Safe examples, Fyr scripts, walkthrough inputs, and dry-run demo material
 scripts/              Quality, runtime, Base1, wiki, and learning helpers
 tests/                Rust tests and documentation guard tests
 tools/                Internal maintainer utilities and future automation helpers
@@ -533,6 +576,7 @@ Keep stable bases boring. Move tested work through edge/stable.
 - Current edge version: `v7.0.1`
 - Stable base: `base/v6.0.0`
 - Active path: `edge/stable`
+- Latest Phase universe checkpoint: Optics PRO visibility plus source-native Phase Compass status (`phase whereami`, `phase compass`, `phase path`, `phase map`).
 - Docs are generated by `scripts/update-docs.py`.
 <!-- phase1:auto:current-status:end -->
 
