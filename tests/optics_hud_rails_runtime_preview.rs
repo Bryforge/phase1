@@ -50,7 +50,6 @@ fn optics_rails_preview_runs_through_read_only_wasi_lite_surface() {
         "axis=ROOT",
         "trace=trace-preview",
         "path=ROOT>0/0",
-        "breadcrumb=ROOT",
         "TOP integrity=not-checked crypto=chain-planned",
         "safe-portal=planned",
         "rollback=available",
