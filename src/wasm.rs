@@ -130,6 +130,10 @@ fn optics_status(args: &[String]) -> String {
     out.push_str("renderer    : rust-static-renderer\n");
     out.push_str("top-rail    : ready-preview\n");
     out.push_str("bottom-rail : ready-preview\n");
+    out.push_str(&format!(
+        "devices     : {}\n",
+        optics::supported_device_labels()
+    ));
     out.push_str("live-hud    : disabled\n");
     out.push_str("activation  : explicit-gate-required\n");
     out.push_str("input       : raw-command-preserved\n");
@@ -434,6 +438,7 @@ mod tests {
         assert!(out.contains("renderer    : rust-static-renderer"));
         assert!(out.contains("top-rail    : ready-preview"));
         assert!(out.contains("bottom-rail : ready-preview"));
+        assert!(out.contains("devices     : mobile,laptop,desktop,terminal"));
         assert!(out.contains("live-hud    : disabled"));
         assert!(out.contains("activation  : explicit-gate-required"));
         assert!(out.contains("parser      : unchanged"));
