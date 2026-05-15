@@ -147,6 +147,12 @@ fn optics_status(args: &[String]) -> String {
     out.push_str("history     : unchanged\n");
     out.push_str("parser      : unchanged\n");
     out.push_str("non-claims  : not-compositor not-terminal-emulator not-sandbox not-security-boundary not-crypto-enforcement not-system-integrity-guarantee not-base1-boot-environment\n");
+    out.push_str("OPTICS PRO SHELL RAIL CONTRACT\n");
+    out.push_str(&optics::render_pro_shell_layers(
+        &optics::OpticsRailState::pro_static(optics::OpticsDeviceProfile::Terminal),
+        "optics status",
+        false,
+    ));
     out.push_str("status : ok\n");
     out.push_str("exit   : 0\n");
     out
@@ -504,6 +510,12 @@ mod tests {
         assert!(out.contains("devices     : mobile,laptop,desktop,terminal"));
         assert!(out.contains("live-hud    : disabled"));
         assert!(out.contains("activation  : explicit-gate-required"));
+        assert!(out.contains("OPTICS PRO SHELL RAIL CONTRACT"));
+        assert!(out.contains("A TOP RAIL"));
+        assert!(out.contains("B COMMAND RAIL"));
+        assert!(out.contains("C STATUS HUD"));
+        assert!(out.contains("D BOTTOM HUD"));
+        assert!(out.contains("phase1://edge/root > optics status\n\nC STATUS HUD"));
         assert!(out.contains("parser      : unchanged"));
         assert!(out.contains("not-security-boundary"));
         assert!(out.contains("status : ok"));
